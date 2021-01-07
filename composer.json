@@ -1,5 +1,5 @@
 {
-  "name": "apite/shopgate-module",
+  "name": "apite/shopgate-shopware6-module",
   "description": "Shopgate Module for Shopware 6",
   "license": "Apache-2.0",
   "type": "shopware-platform-plugin",
