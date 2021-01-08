@@ -17,7 +17,7 @@
   },
   "extra": {
     "shopware-plugin-class": "Apite\\Shopware\\ShopgateModule",
-    "plugin-icon": "src/Resources/shopgate_logo.png",
+    "plugin-icon": "src/Resources/public/shopgate_logo.png",
     "copyright": "by Apite",
     "label": {
       "de-DE": "Shopgate Modul",

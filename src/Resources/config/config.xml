@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>English Title</title>
+        <title lang="de-DE">German Titel</title>
+        <input-field type="text">
+            <name>textField</name>
+            <label>label eng</label>
+            <label lang="de-DE">label deutsch</label>
+            <defaultValue>test</defaultValue>
+        </input-field>
+    </card>
+</config>
