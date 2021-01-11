@@ -3,7 +3,7 @@
   "description": "Shopgate Module for Shopware 6",
   "license": "Apache-2.0",
   "type": "shopware-platform-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": ["mobile", "app"],
   "authors":[
     {
@@ -16,7 +16,7 @@
     "shopgate/cart-integration-sdk": "2.9.79"
   },
   "extra": {
-    "shopware-plugin-class": "Apite\\Shopware\\ShopgateModule",
+    "shopware-plugin-class": "Shopgate\\Shopware\\ShopgateModule",
     "plugin-icon": "src/Resources/public/shopgate_logo.png",
     "copyright": "by Apite",
     "label": {
@@ -38,7 +38,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Apite\\Shopware\\": "src/"
+      "Shopgate\\Shopware\\": "src/"
     }
   }
 }

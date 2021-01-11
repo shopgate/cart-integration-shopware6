@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Apite\Shopware;
+namespace Shopgate\Shopware;
 
 use ShopgateCart;
 use ShopgateCartItem;
@@ -19,6 +19,9 @@ class Plugin extends ShopgatePlugin
     public function startup()
     {
         // TODO: Implement startup() method.
+        if (!defined("SHOPGATE_PLUGIN_VERSION")) {
+            define("SHOPGATE_PLUGIN_VERSION", 'dummy version plugin');
+        }
     }
 
     public function cron($jobname, $params, &$message, &$errorcount)
@@ -89,5 +92,19 @@ class Plugin extends ShopgatePlugin
     protected function createReviews($limit = null, $offset = null, array $uids = array())
     {
         // TODO: Implement createReviews() method.
+    }
+
+    public function createPluginInfo()
+    {
+        return['Shopware version' => 'dummy version shopware'];
+    }
+
+    public function createShopInfo()
+    {
+        return[
+            'category_count' => 'dummy count category',
+            'item_count'     => 'dummy count item',
+            'review_count'   => 'dummy count review'
+            ];
     }
 }

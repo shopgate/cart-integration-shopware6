@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Apite\Shopware;
+namespace Shopgate\Shopware;
 
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
