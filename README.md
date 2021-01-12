@@ -1,10 +1,10 @@
-# Shopgate Shopware62 Integration
+# Shopgate Shopware6 Integration
 
 ### Usage
 
 Go to Shopware 6 root folder and add the composer package to the require list, e.g.:
 ```
-composer require composer/alias
+composer require shopgate/cart-integration-shopware6
 ```
 
 Install and activate the module:

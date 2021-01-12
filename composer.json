@@ -1,9 +1,9 @@
 {
-  "name": "apite/shopgate-shopware6-module",
+  "name": "shopgate/cart-integration-shopware6",
   "description": "Shopgate Module for Shopware 6",
   "license": "Apache-2.0",
   "type": "shopware-platform-plugin",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "keywords": ["mobile", "app"],
   "authors":[
     {
