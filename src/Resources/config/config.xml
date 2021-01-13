@@ -3,13 +3,68 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
 
     <card>
-        <title>English Title</title>
-        <title lang="de-DE">German Titel</title>
+        <title>Basic Configuration</title>
+        <input-field type="bool">
+            <name>isActive</name>
+            <label>Enable</label>
+        </input-field>
         <input-field type="text">
-            <name>textField</name>
-            <label>label eng</label>
-            <label lang="de-DE">label deutsch</label>
-            <defaultValue>test</defaultValue>
+            <name>customerNumber</name>
+            <label>Customer number</label>
+        </input-field>
+        <input-field type="text">
+            <name>shopNumber</name>
+            <label>Shop number</label>
+        </input-field>
+        <input-field type="text">
+            <name>apiKey</name>
+            <label>API key</label>
+        </input-field>
+    </card>
+    <!--    <card>-->
+    <!--        <title>Mobile Website</title>-->
+    <!--        <input-field type="text">-->
+    <!--            <name>shopAlias</name>-->
+    <!--            <label>Shop alias</label>-->
+    <!--        </input-field>-->
+    <!--        <input-field type="text">-->
+    <!--            <name>cname</name>-->
+    <!--            <label>CNAME</label>-->
+    <!--        </input-field>-->
+    <!--        <input-field type="single-select">-->
+    <!--            <name>redirectType</name>-->
+    <!--            <label>Redirect Type</label>-->
+    <!--            <options>-->
+    <!--                <option>-->
+    <!--                    <id>http</id>-->
+    <!--                    <name>HTTP (recommended)</name>-->
+    <!--                </option>-->
+    <!--                <option>-->
+    <!--                    <id>js</id>-->
+    <!--                    <name>JavaScript</name>-->
+    <!--                </option>-->
+    <!--            </options>-->
+    <!--        </input-field>-->
+    <!--    </card>-->
+    <card>
+        <title>Product Export</title>
+        <input-field type="multi-select">
+            <name>productTypesToExport</name>
+            <label>Product types to be exported</label>
+            <options>
+                <option>
+                    <id>simple</id>
+                    <name>Simple</name>
+                </option>
+                <option>
+                    <id>configurable</id>
+                    <name>Configurable</name>
+                </option>
+            </options>
+        </input-field>
+        <input-field type="text">
+            <name>attributes</name>
+            <label>Which attributes to export (or something like that)</label>
         </input-field>
     </card>
 </config>
