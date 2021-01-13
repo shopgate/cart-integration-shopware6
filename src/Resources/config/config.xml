@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
-
     <card>
         <title>Basic Configuration</title>
         <input-field type="bool">
             <name>isActive</name>
             <label>Enable</label>
         </input-field>
-        <input-field type="text">
+        <input-field>
             <name>customerNumber</name>
             <label>Customer number</label>
         </input-field>
-        <input-field type="text">
+        <input-field>
             <name>shopNumber</name>
             <label>Shop number</label>
         </input-field>
-        <input-field type="text">
+        <input-field>
             <name>apiKey</name>
             <label>API key</label>
         </input-field>
     </card>
     <!--    <card>-->
     <!--        <title>Mobile Website</title>-->
-    <!--        <input-field type="text">-->
+    <!--        <input-field>-->
     <!--            <name>shopAlias</name>-->
     <!--            <label>Shop alias</label>-->
     <!--        </input-field>-->
-    <!--        <input-field type="text">-->
+    <!--        <input-field>-->
     <!--            <name>cname</name>-->
     <!--            <label>CNAME</label>-->
     <!--        </input-field>-->
@@ -62,7 +61,7 @@
                 </option>
             </options>
         </input-field>
-        <input-field type="text">
+        <input-field>
             <name>attributes</name>
             <label>Which attributes to export (or something like that)</label>
         </input-field>

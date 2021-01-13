@@ -2,24 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Controller;
+namespace Shopgate\Shopware\Storefront\Controller;
 
-use ShopgateConfig;
-use ShopgateBuilder;
 use Shopgate\Shopware\Plugin;
+use ShopgateBuilder;
+use ShopgateConfig;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Symfony\Component\HttpFoundation\Request;
+use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ShopgateController
+class MainController extends StorefrontController
 {
     // TODO this needs to contain all possible params for all supported methods
-    protected $params = ['action', 'apikey', 'customer_number', 'shop_number', 'cart', 'user', 'pass',];
+    protected $params = ['action', 'apikey', 'customer_number', 'shop_number', 'cart', 'user', 'pass'];
 
     /**
      * @RouteScope(scopes={"storefront"})
      * @Route("/shopgate/plugin", name="shopgate_action", methods={"GET","POST"}, defaults={"csrf_protected": false})
+     * @param Request $request
+     * @return JsonResponse
      */
     public function execute(Request $request): JsonResponse
     {
@@ -34,9 +37,9 @@ class ShopgateController
         }
 
         // TODO read plugin config in a shopware specific config class, instead of using the default class
-        $config  = new ShopgateConfig();
+        $config = new ShopgateConfig();
         $builder = new ShopgateBuilder($config);
-        $plugin  = new Plugin($builder);
+        $plugin = new Plugin($builder);
 
         $plugin->handleRequest($requestData);
 
