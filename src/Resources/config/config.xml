@@ -62,8 +62,8 @@
             </options>
         </input-field>
         <input-field>
-            <name>attributes</name>
-            <label>Which attributes to export (or something like that)</label>
+            <name>ProductProperties</name>
+            <label>Product properties to export</label>
         </input-field>
     </card>
 </config>
