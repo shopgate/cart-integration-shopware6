@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\Components\ConfigReader;
 
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+// TODO mybe this should be called ConfigHandler, since we might set settings here as well
 class ConfigReader implements ConfigReaderInterface
 {
     public const SYSTEM_CONFIG_DOMAIN = 'ShopgateModule.config.';

@@ -47,9 +47,9 @@ class MainController extends StorefrontController
             }
         }
 
+        // TODO use the specific sttorefront ID here. In theory we should be able to know which one it is from the path
         $this->systemConfigService->read();
 
-        // TODO read plugin config in a shopware specific config class, instead of using the default class
         $config = new Config();
         $config->initShopwareConfig($this->systemConfigService);
         $builder = new ShopgateBuilder($config);

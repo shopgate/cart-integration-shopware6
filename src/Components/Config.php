@@ -29,6 +29,8 @@ class Config extends ShopgateConfig
      */
     public function initShopwareConfig( ConfigReaderInterface $configReader)
     {
+        // TODO do we need to save the config to the class as a property?
+        // TODO read all the data from config (work in progress)
         $this->configReader = $configReader;
         $this->setShopIsActive($this->configReader->get('isActive'));
         $this->setCustomerNumber($this->configReader->get('customerNumber'));
