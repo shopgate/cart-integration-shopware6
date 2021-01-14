@@ -6,7 +6,6 @@ namespace Shopgate\Shopware\Storefront\Controller;
 
 use Shopgate\Shopware\Plugin;
 use ShopgateBuilder;
-use ShopgateConfig;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopgate\Shopware\Components\Config;
 use Shopgate\Shopware\Components\ConfigReader\ConfigReaderInterface;
@@ -17,11 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends StorefrontController
 {
-    // TODO this needs to contain all possible params for all supported methods
-    // TODO should this be a const?
-    /** @var array */
-    protected $params = ['action', 'apikey', 'customer_number', 'shop_number', 'cart', 'user', 'pass'];
-
     /** @var ConfigReaderInterface */
     private $systemConfigService;
 
@@ -37,11 +31,11 @@ class MainController extends StorefrontController
      */
     public function execute(Request $request): JsonResponse
     {
-        // TODO remove this to enable authentication
-        define('SHOPGATE_DEBUG', 1);
+        // TODO authentication tested, remove if you are good
+        //define('SHOPGATE_DEBUG', 1);
 
         $requestData = [];
-        foreach ($this->params as $param) {
+        foreach ($this->getParameter('payload.key.whitelist') as $param) {
             if ($value = $request->get($param)) {
                 $requestData[$param] = $value;
             }

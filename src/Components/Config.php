@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Components;
 
-use Shopgate\Shopware\Components\ConfigReader\ConfigReader;
 use Shopgate\Shopware\Components\ConfigReader\ConfigReaderInterface;
 use ShopgateConfig;
 
@@ -16,18 +15,9 @@ class Config extends ShopgateConfig
     protected $configReader;
 
     /**
-     * @return bool
+     * @param ConfigReaderInterface $configReader
      */
-    protected function startup()
-    {
-        return true;
-    }
-
-    /**
-     * @param ConfigReader $configReader
-     * @return bool
-     */
-    public function initShopwareConfig( ConfigReaderInterface $configReader)
+    public function initShopwareConfig(ConfigReaderInterface $configReader): void
     {
         // TODO do we need to save the config to the class as a property?
         // TODO read all the data from config (work in progress)
@@ -36,5 +26,13 @@ class Config extends ShopgateConfig
         $this->setCustomerNumber($this->configReader->get('customerNumber'));
         $this->setShopNumber($this->configReader->get('shopNumber'));
         $this->setApikey($this->configReader->get('apiKey'));
+    }
+
+    /**
+     * @return bool
+     */
+    protected function startup(): bool
+    {
+        return true;
     }
 }

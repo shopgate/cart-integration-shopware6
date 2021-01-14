@@ -2,14 +2,26 @@
 
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="payload.key.whitelist" type="collection">
+            <parameter>action</parameter>
+            <parameter>apikey</parameter>
+            <parameter>customer_number</parameter>
+            <parameter>shop_number</parameter>
+            <parameter>cart</parameter>
+            <parameter>user</parameter>
+            <parameter>pass</parameter>
+        </parameter>
+    </parameters>
     <services>
+        <defaults autoconfigure="true" autowire="true" />
         <service id="Shopgate\Shopware\Components\ConfigReader\ConfigReader">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
-
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true">
-            <argument type="service" id="Shopgate\Shopware\Components\ConfigReader\ConfigReader" />
+            <argument type="service" id="Shopgate\Shopware\Components\ConfigReader\ConfigReader"/>
         </service>
     </services>
 </container>

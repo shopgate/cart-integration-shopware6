@@ -16,11 +16,11 @@ class ShopgateModule extends Plugin
         parent::install($installContext);
     }
 
-    public function uninstall(UninstallContext $context): void
+    public function uninstall(UninstallContext $uninstallContext): void
     {
-        parent::uninstall($context);
+        parent::uninstall($uninstallContext);
 
-        if ($context->keepUserData()) {
+        if ($uninstallContext->keepUserData()) {
             return;
         }
 
