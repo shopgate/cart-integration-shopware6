@@ -8,7 +8,7 @@ use Shopgate\Shopware\Plugin;
 use ShopgateBuilder;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopgate\Shopware\Components\Config;
-use Shopgate\Shopware\Components\ConfigReader\ConfigReaderInterface;
+use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

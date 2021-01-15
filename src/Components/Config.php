@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Components;
 
-use Shopgate\Shopware\Components\ConfigReader\ConfigReaderInterface;
+use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
 use ShopgateConfig;
 
 class Config extends ShopgateConfig

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Components\ConfigReader;
+namespace Shopgate\Shopware\Components\ConfigManager;
 
 interface ConfigReaderInterface
 {
