@@ -33,6 +33,12 @@ class MainController extends StorefrontController
     {
         // TODO authentication tested, remove if you are good
         //define('SHOPGATE_DEBUG', 1);
+        if ($request->attributes->getBoolean('sw-maintenance', true)) {
+            return new JsonResponse('Site in maintenance', 503); // todo-prod
+        }
+        if (!$request->attributes->has('sw-sales-channel-id')) {
+            return new JsonResponse('SalesChannel does not exist', 404); // todo-prod
+        }
 
         $requestData = [];
         foreach ($this->getParameter('payload.key.whitelist') as $param) {
@@ -41,8 +47,9 @@ class MainController extends StorefrontController
             }
         }
 
-        // TODO use the specific sttorefront ID here. In theory we should be able to know which one it is from the path
-        $this->systemConfigService->read();
+//        $request->attributes->get('sw-domain-id');
+//        $request->attributes->get('sw-currency-id');
+        $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
 
         $config = new Config();
         $config->initShopwareConfig($this->systemConfigService);
