@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
+use Shopgate\Shopware\Components\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use ShopgateBuilder;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopgate\Shopware\Components\Config;
 use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
 use Shopware\Storefront\Controller\StorefrontController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,10 +20,13 @@ class MainController extends StorefrontController
 {
     /** @var ConfigReaderInterface */
     private $systemConfigService;
+    /** @var Facade */
+    private $facade;
 
-    public function __construct(ConfigReaderInterface $systemConfigService)
+    public function __construct(ConfigReaderInterface $systemConfigService, ContainerInterface $container)
     {
         $this->systemConfigService = $systemConfigService;
+        Facade::init($container); //todo: need to do this for non HTTP calls too
     }
     /**
      * @RouteScope(scopes={"storefront"})
