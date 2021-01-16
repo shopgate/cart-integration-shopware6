@@ -6,7 +6,7 @@ use Shopgate\Shopware\Export\Catalog\Categories;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
 
-class Service
+class ExportService
 {
     /**
      * @var LoggerInterface

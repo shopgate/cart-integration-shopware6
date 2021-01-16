@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shopgate\Shopware;
 
 use Shopgate\Shopware\Components\Di\Facade;
+use Shopgate\Shopware\Components\Di\Forwarder;
+use Shopgate\Shopware\Exceptions\DiException;
 use ShopgateCart;
 use ShopgateCustomer;
 use ShopgateOrder;
@@ -12,13 +14,15 @@ use ShopgatePlugin;
 
 class Plugin extends ShopgatePlugin
 {
+    /** @var Forwarder $forwarder */
+    protected $forwarder;
 
-    public function startup()
+    /**
+     * @throws DiException
+     */
+    public function startup(): void
     {
-        // TODO: Implement startup() method.
-        if (!defined("SHOPGATE_PLUGIN_VERSION")) {
-            define("SHOPGATE_PLUGIN_VERSION", 'dummy version plugin');
-        }
+        $this->forwarder = Facade::create(Forwarder::class);
     }
 
     public function cron($jobname, $params, &$message, &$errorcount)
@@ -90,8 +94,8 @@ class Plugin extends ShopgatePlugin
             $limit  = is_null($limit) ? $this->exportLimit : $limit;
             $offset = is_null($offset) ? $this->exportOffset : $offset;
         }
-        $export = Facade::create('Shopgate\Shopware\Export\Service');
-        $categories = $export->getCategories($limit, $offset, $uids);
+
+        $categories = $this->forwarder->getExportService()->getCategories($limit, $offset, $uids);
 
         foreach ($categories as $category) {
             $this->addCategoryModel($category);

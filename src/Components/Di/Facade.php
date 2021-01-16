@@ -2,7 +2,7 @@
 
 namespace Shopgate\Shopware\Components\Di;
 
-use Exception;
+use Shopgate\Shopware\Exceptions\DiException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Facade
@@ -29,12 +29,12 @@ class Facade
      * @param string $serviceId
      *
      * @return object
-     * @throws Exception
+     * @throws DiException
      */
     public static function create(string $serviceId): object
     {
         if (null === self::$instance) {
-            throw new Exception("Facade is not instantiated");
+            throw new DiException('Facade is not instantiated');
         }
 
         return self::$myContainer->get($serviceId);
