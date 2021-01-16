@@ -32,7 +32,7 @@ class Plugin extends ShopgatePlugin
     /**
      * @param Context $context
      */
-    public function setContext(Context $context)
+    public function setContext(Context $context): void
     {
         $this->context = $context;
     }
@@ -123,13 +123,6 @@ class Plugin extends ShopgatePlugin
 
     public function createPluginInfo(): array
     {
-        try {
-            $shopwareVersion = \PackageVersions\Versions::getVersion('shopware/core');
-        } catch (OutOfBoundsException $e) {
-            // shopware/core ist not installed
-            $shopwareVersion = 'not available';
-        }
-
-        return ['Shopware core version' => $shopwareVersion];
+        return $this->forwarder->getExportService()->getInfo($this->context);
     }
 }

@@ -5,6 +5,7 @@ namespace Shopgate\Shopware\Export;
 use Shopgate\Shopware\Export\Catalog\Categories;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
+use Shopware\Core\Framework\Context;
 
 class ExportService
 {
@@ -16,15 +17,19 @@ class ExportService
      * @var Categories
      */
     private $categoryHelper;
+    /** @var ConfigExport */
+    private $configExport;
 
     /**
      * @param LoggerInterface $logger
      * @param Categories $categoryHelper
+     * @param ConfigExport $configExport
      */
-    public function __construct(LoggerInterface $logger, Categories $categoryHelper)
+    public function __construct(LoggerInterface $logger, Categories $categoryHelper, ConfigExport $configExport)
     {
         $this->log = $logger;
         $this->categoryHelper = $categoryHelper;
+        $this->configExport = $configExport;
     }
 
     /**
@@ -42,5 +47,17 @@ class ExportService
         $this->log->info('Finished Category Export...');
 
         return $export;
+    }
+
+    /**
+     * @param Context $context
+     * @return string[]
+     */
+    public function getInfo(Context $context): array
+    {
+        define('SHOPGATE_PLUGIN_VERSION', $this->configExport->getShopgatePluginVersion($context));
+        return [
+            'Shopware core version' => $this->configExport->getShopwareVersion()
+        ];
     }
 }

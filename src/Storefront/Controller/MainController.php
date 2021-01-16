@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
-use Shopgate\ConnectSdk\Exception\Exception;
 use Shopgate\Shopware\Components\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use ShopgateBuilder;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopgate\Shopware\Components\Config;
 use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
@@ -46,8 +43,6 @@ class MainController extends StorefrontController
      */
     public function execute(Request $request, Context $context): JsonResponse
     {
-        // TODO authentication tested, remove if you are good
-        //define('SHOPGATE_DEBUG', 1);
         if ($request->attributes->getBoolean('sw-maintenance', true)) {
             return new JsonResponse('Site in maintenance', 503); // todo-prod
         }
@@ -61,17 +56,6 @@ class MainController extends StorefrontController
                 $requestData[$param] = $value;
             }
         }
-
-        try {
-            $pluginRepository = Facade::create('plugin.repository');
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('name', 'ShopgateModule'));
-            $result = $pluginRepository->search($criteria, $context)->first();
-            $version = $result->getVersion();
-        } catch (Exception $e) {
-            $version = 'not installed';
-        }
-        define("SHOPGATE_PLUGIN_VERSION", $version);
 
 //        $request->attributes->get('sw-domain-id');
 //        $request->attributes->get('sw-currency-id');
