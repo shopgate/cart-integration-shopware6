@@ -13,25 +13,20 @@
             <parameter>cart</parameter>
             <parameter>user</parameter>
             <parameter>pass</parameter>
+            <parameter>limit</parameter>
+            <parameter>offset</parameter>
         </parameter>
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
-        <service id="Shopgate\Shopware\Utility\Logger" />
         <service id="Shopgate\Shopware\Export\Catalog\Categories" />
+        <service id="Shopgate\Shopware\Export\Service" public="true" />
+        <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
+        <!-- Interfaces -->
+        <service id="Shopgate\Shopware\Utility\Logger" />
         <service id="Shopgate\Shopware\Utility\LoggerInterface" alias="Shopgate\Shopware\Utility\Logger"/>
-        <service id="shopgate.shopware.export.service" class="Shopgate\Shopware\Export\Service" public="true">
-            <argument type="service" id="Shopgate\Shopware\Utility\Logger"/>
-            <argument type="service" id="Shopgate\Shopware\Export\Catalog\Categories"/>
-        </service>
-        <service id="shopgate" class="Shopgate\Shopware\Plugin">
-            <call method="dependencyInjector">
-                <argument type="service" id="shopgate.shopware.export.service"/>
-            </call>
-        </service>
         <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
         <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface"
                  alias="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
-        <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
     </services>
 </container>

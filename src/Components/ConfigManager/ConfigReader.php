@@ -36,7 +36,7 @@ class ConfigReader implements ConfigReaderInterface
             $config[$property] = $value;
         }
 
-        $this->config= $config;
+        $this->config = $config;
     }
 
     public function get(string $key, $default = '')

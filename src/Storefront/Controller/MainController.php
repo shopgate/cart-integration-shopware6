@@ -23,6 +23,10 @@ class MainController extends StorefrontController
     /** @var Facade */
     private $facade;
 
+    /**
+     * @param ConfigReaderInterface $systemConfigService
+     * @param ContainerInterface $container
+     */
     public function __construct(ConfigReaderInterface $systemConfigService, ContainerInterface $container)
     {
         $this->systemConfigService = $systemConfigService;
@@ -56,7 +60,7 @@ class MainController extends StorefrontController
 //        $request->attributes->get('sw-currency-id');
         $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
 
-        $config = new Config();
+        $config = new Config(['facade' => $this->facade]);
         $config->initShopwareConfig($this->systemConfigService);
         $builder = new ShopgateBuilder($config);
         $plugin = new Plugin($builder);

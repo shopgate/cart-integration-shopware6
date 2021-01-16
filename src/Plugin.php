@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
+use Shopgate\Shopware\Components\Di\Facade;
 use ShopgateCart;
-use ShopgateCartItem;
 use ShopgateCustomer;
-use ShopgateExternalOrder;
-use ShopgateLibraryException;
 use ShopgateOrder;
 use ShopgatePlugin;
-use ShopgateSyncItem;
 
 class Plugin extends ShopgatePlugin
 {
@@ -84,9 +81,23 @@ class Plugin extends ShopgatePlugin
         // TODO: Implement createItems() method.
     }
 
-    protected function createCategories($limit = null, $offset = null, array $uids = array())
+    /**
+     * @inheritdoc
+     */
+    protected function createCategories($limit = null, $offset = null, array $uids = []): array
     {
-        // TODO: Implement createCategories() method.
+        if ($this->splittedExport) {
+            $limit  = is_null($limit) ? $this->exportLimit : $limit;
+            $offset = is_null($offset) ? $this->exportOffset : $offset;
+        }
+        $export = Facade::create('Shopgate\Shopware\Export\Service');
+        $categories = $export->getCategories($limit, $offset, $uids);
+
+        foreach ($categories as $category) {
+            $this->addCategoryModel($category);
+        }
+
+        return $categories;
     }
 
     protected function createReviews($limit = null, $offset = null, array $uids = array())
@@ -94,17 +105,17 @@ class Plugin extends ShopgatePlugin
         // TODO: Implement createReviews() method.
     }
 
-    public function createPluginInfo()
+    public function createPluginInfo(): array
     {
-        return['Shopware version' => 'dummy version shopware'];
+        return ['Shopware version' => 'dummy version shopware'];
     }
 
-    public function createShopInfo()
+    public function createShopInfo(): array
     {
-        return[
+        return [
             'category_count' => 'dummy count category',
-            'item_count'     => 'dummy count item',
-            'review_count'   => 'dummy count review'
-            ];
+            'item_count' => 'dummy count item',
+            'review_count' => 'dummy count review'
+        ];
     }
 }
