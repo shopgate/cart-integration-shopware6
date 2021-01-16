@@ -11,11 +11,15 @@ use ShopgateCart;
 use ShopgateCustomer;
 use ShopgateOrder;
 use ShopgatePlugin;
+use Shopware\Core\Framework\Context;
 
 class Plugin extends ShopgatePlugin
 {
     /** @var Forwarder $forwarder */
     protected $forwarder;
+
+    /** @var Context $context */
+    protected $context;
 
     /**
      * @throws DiException
@@ -23,6 +27,14 @@ class Plugin extends ShopgatePlugin
     public function startup(): void
     {
         $this->forwarder = Facade::create(Forwarder::class);
+    }
+
+    /**
+     * @param Context $context
+     */
+    public function setContext(Context $context)
+    {
+        $this->context = $context;
     }
 
     public function cron($jobname, $params, &$message, &$errorcount)
@@ -111,15 +123,13 @@ class Plugin extends ShopgatePlugin
 
     public function createPluginInfo(): array
     {
-        return ['Shopware version' => 'dummy version shopware'];
-    }
+        try {
+            $shopwareVersion = \PackageVersions\Versions::getVersion('shopware/core');
+        } catch (OutOfBoundsException $e) {
+            // shopware/core ist not installed
+            $shopwareVersion = 'not available';
+        }
 
-    public function createShopInfo(): array
-    {
-        return [
-            'category_count' => 'dummy count category',
-            'item_count' => 'dummy count item',
-            'review_count' => 'dummy count review'
-        ];
+        return ['Shopware core version' => $shopwareVersion];
     }
 }

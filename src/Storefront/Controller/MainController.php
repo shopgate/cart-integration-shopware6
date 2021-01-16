@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
+use Shopgate\ConnectSdk\Exception\Exception;
 use Shopgate\Shopware\Components\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use ShopgateBuilder;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopgate\Shopware\Components\Config;
 use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
@@ -15,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Shopware\Core\Framework\Context;
 
 class MainController extends StorefrontController
 {
@@ -32,13 +36,15 @@ class MainController extends StorefrontController
         $this->systemConfigService = $systemConfigService;
         Facade::init($container); //todo: need to do this for non HTTP calls too
     }
+
     /**
      * @RouteScope(scopes={"storefront"})
      * @Route("/shopgate/plugin", name="shopgate_action", methods={"GET","POST"}, defaults={"csrf_protected": false})
      * @param Request $request
+     * @param Context $context
      * @return JsonResponse
      */
-    public function execute(Request $request): JsonResponse
+    public function execute(Request $request, Context $context): JsonResponse
     {
         // TODO authentication tested, remove if you are good
         //define('SHOPGATE_DEBUG', 1);
@@ -56,6 +62,17 @@ class MainController extends StorefrontController
             }
         }
 
+        try {
+            $pluginRepository = Facade::create('plugin.repository');
+            $criteria = new Criteria();
+            $criteria->addFilter(new EqualsFilter('name', 'ShopgateModule'));
+            $result = $pluginRepository->search($criteria, $context)->first();
+            $version = $result->getVersion();
+        } catch (Exception $e) {
+            $version = 'not installed';
+        }
+        define("SHOPGATE_PLUGIN_VERSION", $version);
+
 //        $request->attributes->get('sw-domain-id');
 //        $request->attributes->get('sw-currency-id');
         $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
@@ -65,6 +82,7 @@ class MainController extends StorefrontController
         $builder = new ShopgateBuilder($config);
         $plugin = new Plugin($builder);
 
+        $plugin->setContext($context);
         $plugin->handleRequest($requestData);
 
         exit;
