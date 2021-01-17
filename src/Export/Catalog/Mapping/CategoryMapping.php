@@ -2,6 +2,8 @@
 
 namespace Shopgate\Shopware\Export\Catalog\Mapping;
 
+use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -11,9 +13,20 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     /** @var CategoryEntity */
     protected $item;
     /** @var null */
-    protected $parentId;
+    private $parentId;
     /** @var null | int */
-    protected $maxPosition;
+    private $maxPosition;
+    /** @var ContextManager */
+    private $contextManager;
+
+    /**
+     * @param ContextManager $contextManager
+     */
+    public function __construct(ContextManager $contextManager)
+    {
+        $this->contextManager = $contextManager;
+        parent::__construct();
+    }
 
     /**
      * @param int $position - position of the max category element
@@ -25,14 +38,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
         $this->maxPosition = $position;
 
         return $this;
-    }
-
-    /**
-     * @return null | int
-     */
-    public function getMaximumPosition(): ?int
-    {
-        return $this->maxPosition;
     }
 
     /**
@@ -62,8 +67,15 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setSortOrder(): void
     {
-        // todo-konstantin: figure out category sort position
-        parent::setSortOrder($this->getMaximumPosition() - 0);
+        parent::setSortOrder($this->getMaximumPosition() - $this->item->getAutoIncrement());
+    }
+
+    /**
+     * @return null | int
+     */
+    public function getMaximumPosition(): ?int
+    {
+        return $this->maxPosition;
     }
 
     /**
@@ -79,15 +91,34 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setParentUid(): void
     {
-        parent::setParentUid($this->item->getParentId() !== $this->parentId ? $this->item->getParentId() : null);
+        parent::setParentUid($this->item->getId() !== $this->parentId ? $this->item->getParentId() : null);
     }
 
     /**
      * Category link in shop
+     * @throws MissingContextException
      */
     public function setDeeplink(): void
     {
         parent::setDeeplink($this->getDeepLinkUrl($this->item));
+    }
+
+    /**
+     * @param CategoryEntity $category
+     * @return string
+     * @throws MissingContextException
+     */
+    private function getDeepLinkUrl(CategoryEntity $category): string
+    {
+        $channelId = $this->contextManager->getSalesContext()->getSalesChannel()->getId();
+        $entity = $category->getSeoUrls()
+            ? $category->getSeoUrls()->filterBySalesChannelId($channelId)
+            : null;
+        if ($entity && $entity->first()) {
+            // todo-konstantin: contact domain to seoPath
+            return $entity->first()->get('url') ??  $entity->first()->getSeoPathInfo();
+        }
+        return '';
     }
 
     /**
@@ -100,27 +131,15 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     }
 
     /**
-     * @param $parentId
+     * @param string $parentId
      *
      * @return $this
      */
-    public function setParentId($parentId): CategoryMapping
+    public function setParentId(string $parentId): CategoryMapping
     {
         $this->parentId = $parentId;
 
         return $this;
-    }
-
-    /**
-     * @param CategoryEntity $category
-     * @return string
-     */
-    private function getDeepLinkUrl(CategoryEntity $category): string
-    {
-        //todo-konstantin get salesChannel here
-        $seo = $category->getSeoUrls();
-
-        return $seo ? $seo->filterBySalesChannelId(0) : '';
     }
 
     /**
@@ -131,10 +150,11 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
         if ($this->item->getMediaId()) {
             $imageItem = new Shopgate_Model_Media_Image();
             $media = $this->item->getMedia();
-            $imageItem->setUid(1);
+            $imageItem->setUid($media ? $media->getId() : 1);
             $imageItem->setSortOrder(1);
             $imageItem->setUrl($media ? $media->getUrl() : '');
-            $imageItem->setTitle($this->item->getName());
+            $imageItem->setTitle($media && $media->getTitle() ? $media->getTitle() : $this->item->getName());
+            $imageItem->setAlt($media && $media->getAlt() ? $media->getAlt() : $this->item->getName());
 
             parent::setImage($imageItem);
         }
@@ -145,43 +165,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setIsActive(): void
     {
-        $isActive = $this->item->getActive();
-        $isActive = $this->isActiveForceRewrite($isActive);
-
-        parent::setIsActive($isActive);
-    }
-
-    /**
-     * Checks if the category is forced to be enabled by merchant
-     * via the Stores > Config value
-     *
-     * @param int $isActive
-     *
-     * @return int
-     */
-    private function isActiveForceRewrite(int $isActive): int
-    {
-        if ($isActive === 1) {
-            return $isActive;
-        }
-
-        // todo: get forced cat id's from config
-        $catIds      = [];
-        $catIdsArray = array_map('trim', explode(',', $catIds));
-
-        if (empty($catIds)) {
-            return $isActive;
-        }
-
-//        if ((in_array($this->item->getId(), $catIdsArray, true)
-//            || array_intersect(
-//                $catIdsArray,
-//                $this->item->getParentIds()
-//            ))
-//        ) {
-//            $isActive = 1;
-//        }
-
-        return $isActive;
+        parent::setIsActive($this->item->getActive());
     }
 }

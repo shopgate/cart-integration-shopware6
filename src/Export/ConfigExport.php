@@ -48,7 +48,10 @@ class ConfigExport
         try {
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('name', 'ShopgateModule'));
-            $result = $this->pluginRepository->search($criteria, $this->contextManager->getApiContext())->first();
+            $result = $this->pluginRepository->search(
+                $criteria,
+                $this->contextManager->getSalesContext()->getContext()
+            )->first();
             $version = $result->getVersion();
         } catch (Throwable $e) {
             $version = 'not installed';

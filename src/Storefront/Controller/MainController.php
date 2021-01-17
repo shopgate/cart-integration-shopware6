@@ -10,8 +10,8 @@ use Shopgate\Shopware\Components\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateBuilder;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,10 +46,10 @@ class MainController extends StorefrontController
      * @RouteScope(scopes={"storefront"})
      * @Route("/shopgate/plugin", name="shopgate_action", methods={"GET","POST"}, defaults={"csrf_protected": false})
      * @param Request $request
-     * @param Context $context
+     * @param SalesChannelContext $salesChannelContext
      * @return JsonResponse
      */
-    public function execute(Request $request, Context $context): JsonResponse
+    public function execute(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
     {
         if ($request->attributes->getBoolean('sw-maintenance', true)) {
             return new JsonResponse('Site in maintenance', 503); // todo-prod
@@ -65,8 +65,6 @@ class MainController extends StorefrontController
             }
         }
 
-//        $request->attributes->get('sw-domain-id');
-//        $request->attributes->get('sw-currency-id');
         $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
 
         $config = new Config(['facade' => $this->facade]);
@@ -74,7 +72,7 @@ class MainController extends StorefrontController
         $builder = new ShopgateBuilder($config);
         $plugin = new Plugin($builder);
 
-        $this->contextManager->setApiContext($context);
+        $this->contextManager->setSalesChannelContext($salesChannelContext);
         $plugin->handleRequest($requestData);
 
         exit;

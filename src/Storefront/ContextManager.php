@@ -2,34 +2,36 @@
 
 namespace Shopgate\Shopware\Storefront;
 
-use Shopware\Core\Framework\Context as FrameworkContext;
+use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Holds our context for DI usage
  */
 class ContextManager
 {
-    /**
-     * @var FrameworkContext|null
-     */
-    private $apiContext;
+    /** @var SalesChannelContext|null */
+    private $salesContext;
 
     /**
-     * @param FrameworkContext $context
-     * @return ContextManager
+     * @param SalesChannelContext $salesChannelContext
+     * @return $this
      */
-    public function setApiContext(FrameworkContext $context): ContextManager
+    public function setSalesChannelContext(SalesChannelContext $salesChannelContext): ContextManager
     {
-        $this->apiContext = $context;
-
+        $this->salesContext = $salesChannelContext;
         return $this;
     }
 
     /**
-     * @return FrameworkContext|null
+     * @return SalesChannelContext
+     * @throws MissingContextException
      */
-    public function getApiContext(): ?FrameworkContext
+    public function getSalesContext(): SalesChannelContext
     {
-        return $this->apiContext;
+        if (null === $this->salesContext) {
+            throw new MissingContextException('Context not initialized');
+        }
+        return $this->salesContext;
     }
 }
