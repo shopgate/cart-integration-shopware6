@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
-use Shopgate\Shopware\Components\Di\Facade;
-use Shopgate\Shopware\Plugin;
-use ShopgateBuilder;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopgate\Shopware\Components\Config;
 use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
+use Shopgate\Shopware\Components\Di\Facade;
+use Shopgate\Shopware\Plugin;
+use Shopgate\Shopware\Storefront\ContextManager;
+use ShopgateBuilder;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Shopware\Core\Framework\Context;
 
 class MainController extends StorefrontController
 {
@@ -23,14 +24,21 @@ class MainController extends StorefrontController
     private $systemConfigService;
     /** @var Facade */
     private $facade;
+    /** @var ContextManager */
+    private $contextManager;
 
     /**
      * @param ConfigReaderInterface $systemConfigService
      * @param ContainerInterface $container
+     * @param ContextManager $context
      */
-    public function __construct(ConfigReaderInterface $systemConfigService, ContainerInterface $container)
-    {
+    public function __construct(
+        ConfigReaderInterface $systemConfigService,
+        ContainerInterface $container,
+        ContextManager $context
+    ) {
         $this->systemConfigService = $systemConfigService;
+        $this->contextManager = $context;
         Facade::init($container); //todo: need to do this for non HTTP calls too
     }
 
@@ -66,7 +74,7 @@ class MainController extends StorefrontController
         $builder = new ShopgateBuilder($config);
         $plugin = new Plugin($builder);
 
-        $plugin->setContext($context);
+        $this->contextManager->setApiContext($context);
         $plugin->handleRequest($requestData);
 
         exit;

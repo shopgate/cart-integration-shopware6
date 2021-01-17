@@ -2,7 +2,7 @@
 
 namespace Shopgate\Shopware\Export;
 
-use Shopware\Core\Framework\Context;
+use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -14,17 +14,22 @@ class ConfigExport
     private $shopwareVersion;
     /** @var EntityRepositoryInterface */
     private $pluginRepository;
+    /** @var ContextManager */
+    private $contextManager;
 
     /**
      * @param EntityRepositoryInterface $pluginRepository
      * @param string $shopwareVersion
+     * @param ContextManager $contextManager
      */
     public function __construct(
         EntityRepositoryInterface $pluginRepository,
-        string $shopwareVersion
+        string $shopwareVersion,
+        ContextManager $contextManager
     ) {
         $this->pluginRepository = $pluginRepository;
         $this->shopwareVersion = $shopwareVersion;
+        $this->contextManager = $contextManager;
     }
 
     /**
@@ -36,15 +41,14 @@ class ConfigExport
     }
 
     /**
-     * @param Context $context
      * @return string
      */
-    public function getShopgatePluginVersion(Context $context): string
+    public function getShopgatePluginVersion(): string
     {
         try {
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('name', 'ShopgateModule'));
-            $result = $this->pluginRepository->search($criteria, $context)->first();
+            $result = $this->pluginRepository->search($criteria, $this->contextManager->getApiContext())->first();
             $version = $result->getVersion();
         } catch (Throwable $e) {
             $version = 'not installed';

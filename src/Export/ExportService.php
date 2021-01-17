@@ -5,7 +5,6 @@ namespace Shopgate\Shopware\Export;
 use Shopgate\Shopware\Export\Catalog\Categories;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
-use Shopware\Core\Framework\Context;
 
 class ExportService
 {
@@ -50,12 +49,11 @@ class ExportService
     }
 
     /**
-     * @param Context $context
      * @return string[]
      */
-    public function getInfo(Context $context): array
+    public function getInfo(): array
     {
-        define('SHOPGATE_PLUGIN_VERSION', $this->configExport->getShopgatePluginVersion($context));
+        define('SHOPGATE_PLUGIN_VERSION', $this->configExport->getShopgatePluginVersion());
         return [
             'Shopware core version' => $this->configExport->getShopwareVersion()
         ];
