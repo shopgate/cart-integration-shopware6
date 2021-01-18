@@ -26,7 +26,9 @@ class Config extends ShopgateConfig
         $this->setCustomerNumber($this->configReader->get('customerNumber'));
         $this->setShopNumber($this->configReader->get('shopNumber'));
         $this->setApikey($this->configReader->get('apiKey'));
-        $this->loadArray(['enable_get_categories' => true]); // todo: can DI inject same as M2-Base
+        $this->setEnableGetSettings(true);
+        $this->setEnableGetCategories(true);
+        // todo: can DI inject same as M2-Base
     }
 
     /**

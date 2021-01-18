@@ -63,7 +63,7 @@ class Plugin extends ShopgatePlugin
 
     public function getSettings()
     {
-        // TODO: Implement getSettings() method.
+        return $this->forwarder->getExportService()->getSettings();
     }
 
     public function getOrders(

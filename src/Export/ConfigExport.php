@@ -58,4 +58,48 @@ class ConfigExport
         }
         return $version;
     }
+
+    /**
+     * @return array
+     */
+    public function getCustomerGroups(): array
+    {
+        // todo-rainer implement
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getTaxSettings(): array
+    {
+        // todo-rainer implement
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedBillingCountries(): array
+    {
+        // todo-rainer implement
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedShippingCountries(): array
+    {
+        // todo-rainer implement
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllPaymentMethods(): array
+    {
+        return [];
+    }
 }

@@ -65,4 +65,18 @@ class ExportService
             'Shopware core version' => $this->configExport->getShopwareVersion()
         ];
     }
+
+    /**
+     * @return array[]
+     */
+    public function getSettings(): array
+    {
+        return [
+            'customer_groups'            => $this->configExport->getCustomerGroups(),
+            'tax'                        => $this->configExport->getTaxSettings(),
+            'allowed_address_countries'  => $this->configExport->getAllowedBillingCountries(),
+            'allowed_shipping_countries' => $this->configExport->getAllowedShippingCountries(),
+            'payment_methods'            => $this->configExport->getAllPaymentMethods(),
+        ];
+    }
 }
