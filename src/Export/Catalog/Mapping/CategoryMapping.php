@@ -7,6 +7,7 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
 class CategoryMapping extends Shopgate_Model_Catalog_Category
 {
@@ -110,24 +111,32 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     private function getDeepLinkUrl(CategoryEntity $category): string
     {
-        $channelId = $this->contextManager->getSalesContext()->getSalesChannel()->getId();
-        $entity = $category->getSeoUrls()
-            ? $category->getSeoUrls()->filterBySalesChannelId($channelId)
+        $channel = $this->contextManager->getSalesContext()->getSalesChannel();
+        $entityList = $category->getSeoUrls()
+            ? $category->getSeoUrls()->filterBySalesChannelId($channel->getId())
             : null;
-        if ($entity && $entity->first()) {
-            // todo-konstantin: contact domain to seoPath
-            return $entity->first()->get('url') ??  $entity->first()->getSeoPathInfo();
+        if ($entityList && $entity = $entityList->first()) {
+            // intentional use of get, URL can be null which throws Shopware exception
+            if ($entity->get('url')) {
+                return $entity->getUrl();
+            }
+            if (null !== $channel->getDomains()) {
+                $domainCollection = $channel->getDomains()->filterByProperty('salesChannelId', $channel->getId());
+                /** @var null|SalesChannelDomainEntity $domain */
+                $domain = $domainCollection->first();
+                return $domain ? $domain->getUrl() . $entity->getPathInfo() : '';
+            }
         }
         return '';
     }
 
     /**
-     * Check if category is anchor
+     * Seems like SW6 shows sub-cat products
+     * by default, don't see a setting for this
      */
     public function setIsAnchor(): void
     {
-        //todo-konstantin: what was an anchor?
-        parent::setIsAnchor();
+        parent::setIsAnchor(true);
     }
 
     /**
@@ -154,7 +163,7 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
             $imageItem->setSortOrder(1);
             $imageItem->setUrl($media ? $media->getUrl() : '');
             $imageItem->setTitle($media && $media->getTitle() ? $media->getTitle() : $this->item->getName());
-            $imageItem->setAlt($media && $media->getAlt() ? $media->getAlt() : $this->item->getName());
+            $imageItem->setAlt($media && $media->getAlt() ? $media->getAlt() : '');
 
             parent::setImage($imageItem);
         }
