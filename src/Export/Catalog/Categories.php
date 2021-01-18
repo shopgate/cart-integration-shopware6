@@ -49,34 +49,21 @@ class Categories
      */
     public function buildCategoryTree(?array $ids, ?int $limit, ?int $offset): array
     {
+        $sliceOffset = ($offset - 1) * $limit;
         $parentId = $this->getRootCategoryId();
         $this->log->info('Build Tree with Parent-ID: ' . $parentId);
-        $criteria = (new Criteria())
-            ->setOffset($offset)
-            ->setLimit($limit)
-            ->addAssociation('media')
-            ->addAssociation('seoUrls');
+        $allCategories = $this->getChildCategories($parentId);
 
         if (empty($ids)) {
-            $criteria->addFilter(
-                new ContainsFilter('path', '|' . $parentId . '|'),
-                new RangeFilter('level', [
-                    RangeFilter::GT => 1,
-                    RangeFilter::LTE => 99,
-                ]),
-                new EqualsFilter('active', 1),
-                new EqualsFilter('visible', 1)
-            );
-
-            $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NEXT_PAGES);
-            $list = $this->repository->search($criteria, $this->contextManager->getSalesContext()->getContext());
-            return $this->mapCategories($list->getEntities()->getElements());
+            $sliced = array_slice($allCategories->getElements(), $sliceOffset, $limit);
+            return $this->mapCategories($sliced);
         }
 
-        //$criteria->addFilter(new EqualsAnyFilter('id', $ids))
-        $criteria->setIds($ids);
-        $result = $this->repository->search($criteria, $this->contextManager->getSalesContext()->getContext());
-        return $result->first() ? $this->mapCategories($result->first()->getChildren()) : [];
+        $filteredById = $allCategories->filter(function (CategoryEntity $item) use ($ids) {
+            return in_array($item->getId(), $ids, true);
+        });
+        $sliced = array_slice($filteredById->getElements(), $sliceOffset, $limit);
+        return $this->mapCategories($sliced);
     }
 
     /**
@@ -99,19 +86,48 @@ class Categories
     }
 
     /**
-     * @param CategoryCollection|CategoryEntity[] $collection
+     * @param string $parentId
+     * @return CategoryCollection
+     * @throws MissingContextException
+     */
+    private function getChildCategories(string $parentId): CategoryCollection
+    {
+        $criteria = (new Criteria())
+            ->addAssociation('media')
+            ->addAssociation('seoUrls');
+        $criteria->addFilter(
+            new ContainsFilter('path', '|' . $parentId . '|'),
+            new RangeFilter('level', [
+                RangeFilter::GT => 1,
+                RangeFilter::LTE => 99,
+            ]),
+            new EqualsFilter('active', 1),
+            new EqualsFilter('visible', 1)
+        );
+        $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE);
+        $list = $this->repository->search($criteria, $this->contextManager->getSalesContext()->getContext());
+        /** @var CategoryCollection $collection */
+        $collection = $list->getEntities();
+        $sorted = $collection->sortByPosition();
+        $maxCategories = $collection->count();
+        foreach ($sorted as $key => $entity) {
+            $entity->setCustomFields(['sortOrder' => $maxCategories - $key]);
+        }
+        return $collection;
+    }
+
+    /**
+     * @param CategoryEntity[] $collection
      * @return CategoryMapping[]
      */
     private function mapCategories(array $collection): array
     {
-        $maxPosition = 100;
         $export = [];
         foreach ($collection as $entity) {
             $this->log->info('Loading category with ID: ' . $entity->getId());
             $categoryExportModel = new CategoryMapping($this->contextManager);
             $categoryExportModel->setItem($entity);
             $categoryExportModel->setParentId($entity->getParentId());
-            $categoryExportModel->setMaximumPosition($maxPosition);
             $export[] = $categoryExportModel->generateData();
         }
 

@@ -15,8 +15,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     protected $item;
     /** @var null */
     private $parentId;
-    /** @var null | int */
-    private $maxPosition;
     /** @var ContextManager */
     private $contextManager;
 
@@ -27,18 +25,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     {
         $this->contextManager = $contextManager;
         parent::__construct();
-    }
-
-    /**
-     * @param int $position - position of the max category element
-     *
-     * @return $this
-     */
-    public function setMaximumPosition(int $position): CategoryMapping
-    {
-        $this->maxPosition = $position;
-
-        return $this;
     }
 
     /**
@@ -56,27 +42,19 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     }
 
     /**
+     * Set category sort order
+     */
+    public function setSortOrder(): void
+    {
+        parent::setSortOrder($this->item->getCustomFields()['sortOrder'] ?? 0);
+    }
+
+    /**
      * Set category id
      */
     public function setUid(): void
     {
         parent::setUid($this->item->getId());
-    }
-
-    /**
-     * Set category sort order
-     */
-    public function setSortOrder(): void
-    {
-        parent::setSortOrder($this->getMaximumPosition() - $this->item->getAutoIncrement());
-    }
-
-    /**
-     * @return null | int
-     */
-    public function getMaximumPosition(): ?int
-    {
-        return $this->maxPosition;
     }
 
     /**
@@ -92,7 +70,7 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setParentUid(): void
     {
-        parent::setParentUid($this->item->getId() !== $this->parentId ? $this->item->getParentId() : null);
+        parent::setParentUid($this->item->getLevel() > 2 ? $this->item->getParentId() : null);
     }
 
     /**
