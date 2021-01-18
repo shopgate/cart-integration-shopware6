@@ -58,13 +58,6 @@ class MainController extends StorefrontController
             return new JsonResponse('SalesChannel does not exist', 404); // todo-prod
         }
 
-        $requestData = [];
-        foreach ($this->getParameter('payload.key.whitelist') as $param) {
-            if ($value = $request->get($param)) {
-                $requestData[$param] = $value;
-            }
-        }
-
         $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
 
         $config = new Config(['facade' => $this->facade]);
@@ -73,7 +66,7 @@ class MainController extends StorefrontController
         $plugin = new Plugin($builder);
 
         $this->contextManager->setSalesChannelContext($salesChannelContext);
-        $plugin->handleRequest($requestData);
+        $plugin->handleRequest($request->request->all());
 
         exit;
     }

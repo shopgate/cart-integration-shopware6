@@ -4,19 +4,6 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
-    <parameters>
-        <parameter key="payload.key.whitelist" type="collection">
-            <parameter>action</parameter>
-            <parameter>apikey</parameter>
-            <parameter>customer_number</parameter>
-            <parameter>shop_number</parameter>
-            <parameter>cart</parameter>
-            <parameter>user</parameter>
-            <parameter>pass</parameter>
-            <parameter>limit</parameter>
-            <parameter>offset</parameter>
-        </parameter>
-    </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
         <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
