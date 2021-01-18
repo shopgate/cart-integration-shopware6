@@ -23,6 +23,7 @@ class Plugin extends ShopgatePlugin
     public function startup(): void
     {
         $this->forwarder = Facade::create(Forwarder::class);
+        $this->forwarder->getExportService()->definePluginVersion();
     }
 
     public function cron($jobname, $params, &$message, &$errorcount)

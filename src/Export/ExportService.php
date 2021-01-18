@@ -49,11 +49,18 @@ class ExportService
     }
 
     /**
+     *
+     */
+    public function definePluginVersion(): void
+    {
+        define('SHOPGATE_PLUGIN_VERSION', $this->configExport->getShopgatePluginVersion());
+    }
+
+    /**
      * @return string[]
      */
     public function getInfo(): array
     {
-        define('SHOPGATE_PLUGIN_VERSION', $this->configExport->getShopgatePluginVersion());
         return [
             'Shopware core version' => $this->configExport->getShopwareVersion()
         ];

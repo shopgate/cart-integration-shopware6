@@ -22,6 +22,8 @@ class MainController extends StorefrontController
 {
     /** @var ConfigReaderInterface */
     private $systemConfigService;
+
+    // todo-konstantin $this->facade is never set. remove?!
     /** @var Facade */
     private $facade;
     /** @var ContextManager */
@@ -59,13 +61,14 @@ class MainController extends StorefrontController
         }
 
         $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
+        $this->contextManager->setSalesChannelContext($salesChannelContext);
 
+        // todo-konstantin $this->facade is not set but that doesnt seems to be a problem. Just remove?
         $config = new Config(['facade' => $this->facade]);
         $config->initShopwareConfig($this->systemConfigService);
         $builder = new ShopgateBuilder($config);
         $plugin = new Plugin($builder);
 
-        $this->contextManager->setSalesChannelContext($salesChannelContext);
         $plugin->handleRequest($request->request->all());
 
         exit;
