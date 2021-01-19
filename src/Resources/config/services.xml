@@ -16,10 +16,14 @@
         <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
         <service id="Shopgate\Shopware\Export\Catalog\Categories"/>
         <service id="Shopgate\Shopware\Export\ConfigExport">
+            <argument type="service" id="customer_group.repository"/>
+            <argument type="service" id="tax.repository"/>
+            <argument type="service" id="tax_rule.repository"/>
             <argument type="service" id="plugin.repository"/>
             <argument type="string">%kernel.shopware_version%</argument>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
+        <!-- ExportService should be renamed to CatalogExport or something like that -->
         <service id="Shopgate\Shopware\Export\ExportService"/>
         <service id="Shopgate\Shopware\Utility\Logger"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager"/>

@@ -13,20 +13,37 @@ class ConfigExport
     /** @var string */
     private $shopwareVersion;
     /** @var EntityRepositoryInterface */
+    private $customerGroupRepository;
+    /** @var EntityRepositoryInterface */
+    private $taxRepository;
+    /** @var EntityRepositoryInterface */
+    private $taxRuleRepository;
+    /** @var EntityRepositoryInterface */
     private $pluginRepository;
     /** @var ContextManager */
     private $contextManager;
 
     /**
+     * ConfigExport constructor.
+     * @param EntityRepositoryInterface $customerGroupRepository
+     * @param EntityRepositoryInterface $taxRepository
+     * @param EntityRepositoryInterface $taxRuleRepository
      * @param EntityRepositoryInterface $pluginRepository
      * @param string $shopwareVersion
      * @param ContextManager $contextManager
      */
     public function __construct(
+        EntityRepositoryInterface $customerGroupRepository,
+        EntityRepositoryInterface $taxRepository,
+        EntityRepositoryInterface $taxRuleRepository,
         EntityRepositoryInterface $pluginRepository,
         string $shopwareVersion,
         ContextManager $contextManager
-    ) {
+    )
+    {
+        $this->customerGroupRepository = $customerGroupRepository;
+        $this->taxRepository = $taxRepository;
+        $this->taxRuleRepository = $taxRuleRepository;
         $this->pluginRepository = $pluginRepository;
         $this->shopwareVersion = $shopwareVersion;
         $this->contextManager = $contextManager;
@@ -64,8 +81,19 @@ class ConfigExport
      */
     public function getCustomerGroups(): array
     {
-        // todo-rainer implement
-        return [];
+        $defaultCustomerGroupId = $this->contextManager->getSalesContext()->getCurrentCustomerGroup()->getId();
+        $customerGroups = $this->getAllElements($this->customerGroupRepository);
+
+        $result = [];
+        foreach ($customerGroups as $id => $customerGroup) {
+            $result[] = [
+                'name' => $customerGroup->getName(),
+                'id' => $id,
+                'is_default' => $id === $defaultCustomerGroupId ? '1' : '0',
+                'customer_tax_class_key' => 'default',
+            ];
+        }
+        return $result;
     }
 
     /**
@@ -73,8 +101,30 @@ class ConfigExport
      */
     public function getTaxSettings(): array
     {
+        $shopwareTaxRates = $this->getAllElements($this->taxRepository);
+        $productTaxClasses = [];
+        /** @var $shopwareRate \Shopware\Core\System\Tax\TaxEntity */
+        foreach ($shopwareTaxRates as $id => $shopwareTaxRate) {
+            $productTaxClasses[] = [
+                'id' => $id,
+                'key' => $shopwareTaxRate->getName(),
+            ];
+        }
+
+        $shopwareTaxRules = $this->getAllElements($this->taxRuleRepository);
+
+        /** @var $shopwareTaxRule \Shopware\Core\System\Tax\Aggregate\TaxRule\TaxRuleEntity */
+        foreach ($shopwareTaxRules as $id => $shopwareTaxRule) {
+            $countryId = $shopwareTaxRule->getCountryId();
+            $taxId = $shopwareTaxRule->getTaxId();
+        }
         // todo-rainer implement
-        return [];
+        return [
+            "product_tax_classes"  => $productTaxClasses,
+            "customer_tax_classes" => [['id' => '1', 'key' => 'default', 'is_default' => '1']],
+            "tax_rates"            => [],
+            "tax_rules"            => [],
+        ];
     }
 
     /**
@@ -101,5 +151,15 @@ class ConfigExport
     public function getAllPaymentMethods(): array
     {
         return [];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAllElements(EntityRepositoryInterface $repo): array
+    {
+        return $repo->search(new Criteria(), $this->contextManager->getSalesContext()->getContext())
+            ->getEntities()
+            ->getElements();
     }
 }
