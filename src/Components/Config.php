@@ -9,8 +9,6 @@ use ShopgateConfig;
 
 class Config extends ShopgateConfig
 {
-    public const SYSTEM_CONFIG_DOMAIN = 'ShopgateModule.config.';
-
     /** @var ConfigReaderInterface */
     protected $configReader;
 
@@ -26,9 +24,6 @@ class Config extends ShopgateConfig
         $this->setCustomerNumber($this->configReader->get('customerNumber'));
         $this->setShopNumber($this->configReader->get('shopNumber'));
         $this->setApikey($this->configReader->get('apiKey'));
-        $this->setEnableGetSettings(true);
-        $this->setEnableGetCategories(true);
-        // todo: can DI inject same as M2-Base
     }
 
     /**
