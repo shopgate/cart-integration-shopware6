@@ -15,6 +15,7 @@
         <defaults autoconfigure="true" autowire="true"/>
         <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
         <service id="Shopgate\Shopware\Export\Catalog\Categories"/>
+        <service id="Shopgate\Shopware\Export\Customer"/>
         <service id="Shopgate\Shopware\Export\ConfigExport">
             <argument type="service" id="country.repository"/>
             <argument type="service" id="country_state.repository"/>
@@ -30,6 +31,7 @@
         <service id="Shopgate\Shopware\Export\ExportService"/>
         <service id="Shopgate\Shopware\Utility\Logger"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager"/>
+        <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <!-- Public (needed for controllers and classes instantiated via Facade class -->
         <service id="Shopgate\Shopware\Components\Di\Forwarder" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>

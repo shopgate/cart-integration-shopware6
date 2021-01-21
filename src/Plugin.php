@@ -31,9 +31,14 @@ class Plugin extends ShopgatePlugin
         // TODO: Implement cron() method.
     }
 
-    public function getCustomer($user, $pass)
+    /**
+     * @param string $user
+     * @param string $pass
+     * @return ShopgateCustomer
+     */
+    public function getCustomer($user, $pass): ShopgateCustomer
     {
-        // TODO: Implement getCustomer() method.
+        return $this->forwarder->getExportService()->getCustomer($user, $pass);
     }
 
     public function registerCustomer($user, $pass, ShopgateCustomer $customer)
@@ -99,6 +104,7 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @inheritdoc
+     * @throws Exceptions\MissingContextException
      */
     protected function createCategories($limit = null, $offset = null, array $uids = []): array
     {

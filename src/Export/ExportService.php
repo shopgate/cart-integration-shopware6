@@ -2,9 +2,12 @@
 
 namespace Shopgate\Shopware\Export;
 
+use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Export\Catalog\Categories;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
+use ShopgateCustomer;
+use ShopgateLibraryException;
 
 class ExportService
 {
@@ -18,17 +21,25 @@ class ExportService
     private $categoryHelper;
     /** @var ConfigExport */
     private $configExport;
+    /** @var Customer */
+    private $customerHelper;
 
     /**
      * @param LoggerInterface $logger
      * @param Categories $categoryHelper
      * @param ConfigExport $configExport
+     * @param Customer $customerHelper
      */
-    public function __construct(LoggerInterface $logger, Categories $categoryHelper, ConfigExport $configExport)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        Categories $categoryHelper,
+        ConfigExport $configExport,
+        Customer $customerHelper
+    ) {
         $this->log = $logger;
         $this->categoryHelper = $categoryHelper;
         $this->configExport = $configExport;
+        $this->customerHelper = $customerHelper;
     }
 
     /**
@@ -36,6 +47,7 @@ class ExportService
      * @param null | string $offset
      * @param string[] $ids
      * @return Shopgate_Model_Catalog_Category[]
+     * @throws MissingContextException
      */
     public function getCategories($limit = null, $offset = null, array $ids = []): array
     {
@@ -49,7 +61,19 @@ class ExportService
     }
 
     /**
-     *
+     * @param string $user
+     * @param string $password
+     * @return ShopgateCustomer
+     * @throws MissingContextException
+     * @throws ShopgateLibraryException
+     */
+    public function getCustomer(string $user, string $password): ShopgateCustomer
+    {
+        return $this->customerHelper->getCustomerData($user, $password);
+    }
+
+    /**
+     * Sets plugin version globally before action handler runs
      */
     public function definePluginVersion(): void
     {
@@ -72,11 +96,11 @@ class ExportService
     public function getSettings(): array
     {
         return [
-            'customer_groups'            => $this->configExport->getCustomerGroups(),
-            'tax'                        => $this->configExport->getTaxSettings(),
-            'allowed_address_countries'  => $this->configExport->getAllowedBillingCountries(),
+            'customer_groups' => $this->configExport->getCustomerGroups(),
+            'tax' => $this->configExport->getTaxSettings(),
+            'allowed_address_countries' => $this->configExport->getAllowedBillingCountries(),
             'allowed_shipping_countries' => $this->configExport->getAllowedShippingCountries(),
-            'payment_methods'            => $this->configExport->getAllPaymentMethods(),
+            'payment_methods' => $this->configExport->getAllPaymentMethods(),
         ];
     }
 }
