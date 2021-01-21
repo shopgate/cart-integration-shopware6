@@ -66,6 +66,10 @@ class Plugin extends ShopgatePlugin
         // TODO: Implement checkStock() method.
     }
 
+    /**
+     * @inheritdoc
+     * @throws Exceptions\MissingContextException
+     */
     public function getSettings()
     {
         return $this->forwarder->getExportService()->getSettings();

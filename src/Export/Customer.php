@@ -18,23 +18,16 @@ use Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class Customer
 {
-    /**
-     * @var ContextManager
-     */
+    /** @var ContextManager */
     private $contextManager;
-    /**
-     * @var LoginRoute
-     */
+    /** @var LoginRoute */
     private $loginRoute;
-    /**
-     * @var RequestDataBag
-     */
+    /** @var RequestDataBag */
     private $dataBag;
     /** @var CustomerRoute */
     private $customerRoute;
@@ -42,9 +35,8 @@ class Customer
     /**
      * @param ContextManager $contextManager
      * @param LoginRoute $loginRoute
-     * @param CustomerRoute $customerRoute
      * @param RequestDataBag $dataBag
-     * @param SalesChannelContextService $channelContextService
+     * @param CustomerRoute $customerRoute
      */
     public function __construct(
         ContextManager $contextManager,

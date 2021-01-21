@@ -21,6 +21,10 @@ class ExportService
     private $categoryHelper;
     /** @var ConfigExport */
     private $configExport;
+    /** @var CustomerExport */
+    private $customerExport;
+    /** @var TaxExport */
+    private $taxExport;
     /** @var Customer */
     private $customerHelper;
 
@@ -28,17 +32,23 @@ class ExportService
      * @param LoggerInterface $logger
      * @param Categories $categoryHelper
      * @param ConfigExport $configExport
+     * @param CustomerExport $customerExport
+     * @param TaxExport $taxExport
      * @param Customer $customerHelper
      */
     public function __construct(
         LoggerInterface $logger,
         Categories $categoryHelper,
         ConfigExport $configExport,
+        CustomerExport $customerExport,
+        TaxExport $taxExport,
         Customer $customerHelper
     ) {
         $this->log = $logger;
         $this->categoryHelper = $categoryHelper;
         $this->configExport = $configExport;
+        $this->customerExport = $customerExport;
+        $this->taxExport = $taxExport;
         $this->customerHelper = $customerHelper;
     }
 
@@ -92,15 +102,16 @@ class ExportService
 
     /**
      * @return array[]
+     * @throws MissingContextException
      */
     public function getSettings(): array
     {
         return [
-            'customer_groups' => $this->configExport->getCustomerGroups(),
-            'tax' => $this->configExport->getTaxSettings(),
-            'allowed_address_countries' => $this->configExport->getAllowedBillingCountries(),
-            'allowed_shipping_countries' => $this->configExport->getAllowedShippingCountries(),
-            'payment_methods' => $this->configExport->getAllPaymentMethods(),
+            'customer_groups' => $this->customerExport->getCustomerGroups(),
+            'tax' => $this->taxExport->getTaxSettings(),
+            'allowed_address_countries' => [],
+            'allowed_shipping_countries' => [],
+            'payment_methods' => [],
         ];
     }
 }
