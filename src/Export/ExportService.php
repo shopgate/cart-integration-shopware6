@@ -4,8 +4,10 @@ namespace Shopgate\Shopware\Export;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Export\Catalog\Categories;
+use Shopgate\Shopware\Export\Catalog\Products;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
+use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;
 use ShopgateLibraryException;
 
@@ -27,6 +29,8 @@ class ExportService
     private $taxExport;
     /** @var Customer */
     private $customerHelper;
+    /** @var Products */
+    private $productHelper;
 
     /**
      * @param LoggerInterface $logger
@@ -35,6 +39,7 @@ class ExportService
      * @param CustomerExport $customerExport
      * @param TaxExport $taxExport
      * @param Customer $customerHelper
+     * @param Products $productHelper
      */
     public function __construct(
         LoggerInterface $logger,
@@ -42,7 +47,8 @@ class ExportService
         ConfigExport $configExport,
         CustomerExport $customerExport,
         TaxExport $taxExport,
-        Customer $customerHelper
+        Customer $customerHelper,
+        Products $productHelper
     ) {
         $this->log = $logger;
         $this->categoryHelper = $categoryHelper;
@@ -50,6 +56,7 @@ class ExportService
         $this->customerExport = $customerExport;
         $this->taxExport = $taxExport;
         $this->customerHelper = $customerHelper;
+        $this->productHelper = $productHelper;
     }
 
     /**
@@ -59,13 +66,29 @@ class ExportService
      * @return Shopgate_Model_Catalog_Category[]
      * @throws MissingContextException
      */
-    public function getCategories($limit = null, $offset = null, array $ids = []): array
+    public function getCategories(int $limit = null, int $offset = null, array $ids = []): array
     {
         $this->log->info('Start Category Export...');
 
         $export = $this->categoryHelper->buildCategoryTree($ids, $limit, $offset);
         $this->log->info('End Category-Tree Build...');
         $this->log->info('Finished Category Export...');
+
+        return $export;
+    }
+
+    /**
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param array $ids
+     * @return Shopgate_Model_Catalog_Product[]
+     * @throws MissingContextException
+     */
+    public function getProducts(int $limit = null, int $offset = null, array $ids = []): array
+    {
+        $this->log->info('Start Product Export...');
+        $export = $this->productHelper->loadProducts($limit, $offset, $ids);
+        $this->log->info('Finished Product Export...');
 
         return $export;
     }

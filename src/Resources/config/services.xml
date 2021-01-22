@@ -9,12 +9,14 @@
             <parameter key="enable_get_settings">true</parameter>
             <parameter key="enable_get_categories">true</parameter>
             <parameter key="enable_get_customer">true</parameter>
+            <parameter key="enable_get_items">true</parameter>
         </parameter>
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
         <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
         <service id="Shopgate\Shopware\Export\Catalog\Categories"/>
+        <service id="Shopgate\Shopware\Export\Catalog\Products"/>
         <service id="Shopgate\Shopware\Export\Customer"/>
         <service id="Shopgate\Shopware\Export\ConfigExport">
             <argument type="service" id="plugin.repository"/>

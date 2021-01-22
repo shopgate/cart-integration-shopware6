@@ -7,6 +7,7 @@ namespace Shopgate\Shopware;
 use Shopgate\Shopware\Components\Di\Facade;
 use Shopgate\Shopware\Components\Di\Forwarder;
 use Shopgate\Shopware\Exceptions\DiException;
+use Shopgate_Model_Catalog_Product;
 use ShopgateCart;
 use ShopgateCustomer;
 use ShopgateOrder;
@@ -101,9 +102,27 @@ class Plugin extends ShopgatePlugin
         // TODO: Implement createMediaCsv() method.
     }
 
-    protected function createItems($limit = null, $offset = null, array $uids = array())
+    /**
+     * @param null $limit
+     * @param null $offset
+     * @param array $uids
+     * @return Shopgate_Model_Catalog_Product[]
+     * @throws Exceptions\MissingContextException
+     */
+    protected function createItems($limit = null, $offset = null, array $uids = array()): array
     {
-        // TODO: Implement createItems() method.
+        if ($this->splittedExport) {
+            $limit = is_null($limit) ? $this->exportLimit : $limit;
+            $offset = is_null($offset) ? $this->exportOffset : $offset;
+        }
+
+        $products = $this->forwarder->getExportService()->getProducts($limit, $offset, $uids);
+
+        foreach ($products as $product) {
+            $this->addItemModel($product);
+        }
+
+        return $products;
     }
 
     /**
