@@ -6,8 +6,11 @@ use Exception;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_CategoryPath;
+use Shopgate_Model_Catalog_Identifier;
 use Shopgate_Model_Catalog_Product;
 use Shopgate_Model_Catalog_Property;
+use Shopgate_Model_Catalog_Tag;
+use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
@@ -169,6 +172,23 @@ class ProductMapping extends Shopgate_Model_Catalog_Product
         parent::setCategoryPaths($paths);
     }
 
+    public function setShipping(): void
+    {
+        $shipping = $this->getShipping();
+        $shipping->setIsFree($this->item->getShippingFree());
+        parent::setShipping($shipping);
+    }
+
+    public function setVisibility(): void
+    {
+        $visibility = $this->getVisibility();
+        $visible = $this->item->getActive()
+            ? Shopgate_Model_Catalog_Visibility::DEFAULT_VISIBILITY_CATALOG_AND_SEARCH
+            : Shopgate_Model_Catalog_Visibility::DEFAULT_VISIBILITY_NOTHING;
+        $visibility->setLevel($visible);
+        parent::setVisibility($visibility);
+    }
+
     public function setManufacturer(): void
     {
         if (!$this->item->getManufacturer()) {
@@ -217,5 +237,41 @@ class ProductMapping extends Shopgate_Model_Catalog_Product
         }
 
         parent::setProperties($properties);
+    }
+
+    public function setStock(): void
+    {
+        $stock = $this->getStock();
+        $stock->setUseStock($this->item->getAvailableStock() > 0);
+        $stock->setIsSaleable($this->item->getAvailableStock() > 0);
+        $stock->setMinimumOrderQuantity($this->item->getMinPurchase());
+        $stock->setMaximumOrderQuantity($this->item->getMaxPurchase());
+        //$stock->setBackorders(!$this->item->getIsCloseout());
+        parent::setStock($stock);
+    }
+
+    public function setIdentifiers(): void
+    {
+        $identifier = new Shopgate_Model_Catalog_Identifier();
+        if ($this->item->getEan()) {
+            $identifier->setType('ean');
+            $identifier->setValue($this->item->getEan());
+        }
+        parent::setIdentifiers([$identifier]);
+    }
+
+    public function setTags(): void
+    {
+        if (!$shopwareTags = $this->item->getTags()) {
+            return;
+        }
+        $tags = [];
+        foreach ($shopwareTags as $shopwareTag) {
+            $tag = new Shopgate_Model_Catalog_Tag();
+            $tag->setUid($shopwareTag->getId());
+            $tag->setValue($shopwareTag->getName());
+            $tags[] = $tag;
+        }
+        parent::setTags($tags);
     }
 }
