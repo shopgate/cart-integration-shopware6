@@ -206,34 +206,15 @@ class ProductMapping extends Shopgate_Model_Catalog_Product
             return;
         }
         $properties = [];
-        // different properties per group, e.g. 3 width props with different values, 5mm, 10mm, 12mm
-//        foreach ($shopwareProps as $shopwareProp) {
-//            $property = new \Shopgate_Model_Catalog_Property();
-//            $property->setUid($shopwareProp->getId());
-//            $property->setValue($shopwareProp->getName());
-//            if ($shopwareProp->getGroup()) {
-//                $property->setLabel($shopwareProp->getGroup()->getName());
-//            }
-//            $properties[] = $property;
-//        }
-
-        // manually merged values, one 'width' property with value '10mm, 5mm, 12mm'
-        foreach ($shopwareProps->getGroups() as $group) {
-            $props = $shopwareProps->filterByGroupId($group->getId());
-            if (!$props) {
-                //todo-log
-                continue;
-            }
+        // different properties per group, e.g. 3 'width' props with different values, 5mm, 10mm, 12mm
+        foreach ($shopwareProps as $shopwareProp) {
             $property = new Shopgate_Model_Catalog_Property();
-            $property->setUid($group->getId());
-            $property->setLabel($group->getName());
-            $value = [];
-            foreach ($props as $shopwareProp) {
-                $value[] = $shopwareProp->getName();
+            $property->setUid($shopwareProp->getId());
+            $property->setValue($shopwareProp->getName());
+            if ($shopwareProp->getGroup()) {
+                $property->setLabel($shopwareProp->getGroup()->getName());
             }
-            $property->setValue(implode(', ', $value));
             $properties[] = $property;
-
         }
 
         parent::setProperties($properties);
