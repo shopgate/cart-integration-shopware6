@@ -9,6 +9,7 @@ use Shopgate_Model_Catalog_CategoryPath;
 use Shopgate_Model_Catalog_Identifier;
 use Shopgate_Model_Catalog_Product;
 use Shopgate_Model_Catalog_Property;
+use Shopgate_Model_Catalog_Relation;
 use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
@@ -254,5 +255,21 @@ class ProductMapping extends Shopgate_Model_Catalog_Product
             $tags[] = $tag;
         }
         parent::setTags($tags);
+    }
+
+    public function setRelations(): void
+    {
+        $relationProducts = [];
+        if ($crossSellProducts = $this->item->getCrossSellings()) {
+            $relationProduct = new Shopgate_Model_Catalog_Relation();
+            $relationProduct->setType(Shopgate_Model_Catalog_Relation::DEFAULT_RELATION_TYPE_CROSSSELL);
+            $values = [];
+            foreach ($crossSellProducts as $crossSellProduct) {
+                $values[] = $crossSellProduct->getId();
+            }
+            $relationProduct->setValues($values);
+            $relationProducts[] = $relationProduct;
+        }
+        parent::setRelations($relationProducts);
     }
 }
