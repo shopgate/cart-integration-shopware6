@@ -15,13 +15,9 @@ use Throwable;
 
 class Products
 {
-    /**
-     * @var ProductListListRoute
-     */
+    /** @var ProductListListRoute */
     private $productListRoute;
-    /**
-     * @var ContextManager
-     */
+    /** @var ContextManager */
     private $contextManager;
     /** @var LoggerInterface */
     private $logger;
@@ -70,13 +66,16 @@ class Products
                 'media',
                 'properties',
                 'properties.group',
+                'manufacturer',
                 'options',
                 'seoUrls',
                 'categories',
                 'visibilities',
                 'variation',
                 'children',
-                'children.options'
+                'children.media',
+                'children.options',
+                'children.seoUrls'
             ])
             ->addSorting(...$this->productSorting->getDefaultSorting());
         $response = $this->productListRoute->load($criteria, $context);

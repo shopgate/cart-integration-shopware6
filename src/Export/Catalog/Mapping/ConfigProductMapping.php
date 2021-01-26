@@ -32,16 +32,18 @@ class ConfigProductMapping extends SimpleProductMapping
     public function setAttributeGroups(): void
     {
         /** @noinspection NullPointerExceptionInspection */
-        $optionIds = $this->item->getChildren()->first()->getOptions()->getPropertyGroupIds();
-        $optionGroups = $this->productProperties->getGroupOptions($optionIds);
-        $result = [];
-        foreach ($optionGroups as $optionGroup) {
-            $attributeGroup = new Shopgate_Model_Catalog_AttributeGroup();
-            $attributeGroup->setUid($optionGroup->getId());
-            $attributeGroup->setLabel($optionGroup->getName());
-            $result[] = $attributeGroup;
+        if (($first = $this->item->getChildren()->first()) && $first->getOptions()) {
+            $optionIds = $first->getOptions()->getPropertyGroupIds();
+            $optionGroups = $this->productProperties->getGroupOptions($optionIds);
+            $result = [];
+            foreach ($optionGroups as $optionGroup) {
+                $attributeGroup = new Shopgate_Model_Catalog_AttributeGroup();
+                $attributeGroup->setUid($optionGroup->getId());
+                $attributeGroup->setLabel($optionGroup->getName());
+                $result[] = $attributeGroup;
+            }
+            parent::setAttributeGroups($result);
         }
-        parent::setAttributeGroups($result);
     }
 
     public function setDisplayType(): void
@@ -56,7 +58,6 @@ class ConfigProductMapping extends SimpleProductMapping
         foreach ($children as $child) {
             $exportChild = new ChildProductMapping($this->contextManager, 0);
             $exportChild->setItem($child);
-            $exportChild->setIsChild(true);
             $result[] = $exportChild->generateData();
         }
         parent::setChildren($result);

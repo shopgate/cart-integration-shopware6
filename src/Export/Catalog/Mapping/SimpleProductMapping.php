@@ -125,15 +125,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $shopgatePrice->setCost($cost->getGross());
         }
 
-        //todo: cannot easily support tier prices as they are customizable
-        /*if ($listPrices = $this->item->getListingPrices()) {
-            $priceGroups = [];
-            foreach ($listPrices as $price) {
-                $priceGroup = new \Shopgate_Model_Catalog_TierPrice();
-                $priceGroups[] = $priceGroup;
-            }
-            $shopgatePrice->setTierPricesGroup($priceGroups);
-        }*/
         parent::setPrice($shopgatePrice);
     }
 
@@ -143,16 +134,20 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             return;
         }
         $images = [];
-        foreach ($this->item->getMedia()->getMedia() as $key => $media) {
+        foreach ($this->item->getMedia() as $productMedia) {
+            if (!$media = $productMedia->getMedia()) {
+                continue;
+            }
             $image = new Shopgate_Model_Media_Image();
             $image->setUid($media->getId());
             $image->setAlt($media->getAlt());
             $image->setTitle($media->getTitle());
             $image->setUrl($media->getUrl());
-            $image->setSortOrder($key);
-            $image->setIsCover($this->item->getCoverId() && $this->item->getCoverId() === $media->getId());
+            $image->setSortOrder(100 - $productMedia->getPosition());
+            $image->setIsCover(
+                $this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
+            );
             $images[] = $image;
-            //todo: finish up, sort order test
         }
         parent::setImages($images);
     }
@@ -192,12 +187,12 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setManufacturer(): void
     {
-        if (!$this->item->getManufacturer()) {
-            return;
-        }
         $manufacturer = $this->getManufacturer();
-        $manufacturer->setItemNumber($this->item->getManufacturer()->getId());
-        $manufacturer->setTitle($this->item->getManufacturer()->getName());
+        if ($this->item->getManufacturer()) {
+            $manufacturer->setTitle($this->item->getManufacturer()->getName());
+        }
+        $manufacturer->setUid($this->item->getManufacturerId());
+        $manufacturer->setItemNumber($this->item->getManufacturerNumber());
         parent::setManufacturer($manufacturer);
     }
 
