@@ -58,8 +58,11 @@ class Customer
      */
     public function getCustomerData(string $user, string $password): ShopgateCustomer
     {
-        $this->authenticate($user, $password);
-        $shopwareCustomer = $this->contextManager->getSalesContext()->getCustomer();
+        $token = $this->authenticate($user, $password);
+        if (null === $token) {
+            throw new MissingContextException('User token not found');
+        }
+        $shopwareCustomer = $this->contextManager->load($token->getToken())->getCustomer();
         if (null === $shopwareCustomer) {
             throw new MissingContextException('User logged in context missing');
         }
