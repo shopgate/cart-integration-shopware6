@@ -44,7 +44,7 @@ class Plugin extends ShopgatePlugin
 
     public function registerCustomer($user, $pass, ShopgateCustomer $customer)
     {
-        // TODO: Implement registerCustomer() method.
+        return $this->forwarder->getImportService()->registerCustomer($user, $pass, $customer);
     }
 
     public function addOrder(ShopgateOrder $order)

@@ -10,6 +10,7 @@
             <parameter key="enable_get_categories">true</parameter>
             <parameter key="enable_get_customer">true</parameter>
             <parameter key="enable_get_items">true</parameter>
+            <parameter key="enable_register_customer">true</parameter>
         </parameter>
     </parameters>
     <services>
@@ -44,6 +45,7 @@
         </service>
         <!-- ExportService should be renamed to CatalogExport or something like that -->
         <service id="Shopgate\Shopware\Export\ExportService"/>
+        <service id="Shopgate\Shopware\Export\ImportService"/>
         <service id="Shopgate\Shopware\Utility\Logger"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
