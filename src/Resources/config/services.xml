@@ -27,6 +27,10 @@
             <argument type="service" id="customer_group.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
+        <service id="Shopgate\Shopware\Export\Catalog\Mapping\ProductMapFactory"/>
+        <service id="Shopgate\Shopware\Export\Catalog\Products\ProductProperties">
+            <argument type="service" id="property_group.repository"/>
+        </service>
         <service id="Shopgate\Shopware\Export\Catalog\Products\ProductSorting">
             <argument type="service" id="product_sorting.repository"/>
         </service>

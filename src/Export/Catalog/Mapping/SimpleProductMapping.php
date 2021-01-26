@@ -16,14 +16,14 @@ use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
-class ProductMapping extends Shopgate_Model_Catalog_Product
+class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
     /** @var ProductEntity */
     protected $item;
     /** @var ContextManager */
-    private $contextManager;
+    protected $contextManager;
     /** @var int */
-    private $sortOrder;
+    protected $sortOrder;
 
     /**
      * @param ContextManager $contextManager

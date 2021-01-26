@@ -3,7 +3,7 @@
 namespace Shopgate\Shopware\Export\Catalog;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Export\Catalog\Mapping\ProductMapping;
+use Shopgate\Shopware\Export\Catalog\Mapping\ProductMapFactory;
 use Shopgate\Shopware\Export\Catalog\Products\ProductSorting;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\Utility\LoggerInterface;
@@ -27,23 +27,28 @@ class Products
     private $logger;
     /** @var ProductSorting */
     private $productSorting;
+    /** @var ProductMapFactory */
+    private $productMapFactory;
 
     /**
      * @param LoggerInterface $logger
      * @param ProductListListRoute $productListRoute
      * @param ContextManager $contextManager
      * @param ProductSorting $productSorting
+     * @param ProductMapFactory $productMapFactory
      */
     public function __construct(
         LoggerInterface $logger,
         ProductListListRoute $productListRoute,
         ContextManager $contextManager,
-        ProductSorting $productSorting
+        ProductSorting $productSorting,
+        ProductMapFactory $productMapFactory
     ) {
         $this->logger = $logger;
         $this->productListRoute = $productListRoute;
         $this->contextManager = $contextManager;
         $this->productSorting = $productSorting;
+        $this->productMapFactory = $productMapFactory;
     }
 
     /**
@@ -61,14 +66,25 @@ class Products
             ->setLimit($limit)
             ->setOffset($offset)
             ->addFilter(new ProductAvailableFilter($context->getSalesChannel()->getId()))
-            ->addAssociations(['media', 'properties', 'properties.group', 'options', 'seoUrls', 'categories'])
+            ->addAssociations([
+                'media',
+                'properties',
+                'properties.group',
+                'options',
+                'seoUrls',
+                'categories',
+                'visibilities',
+                'variation',
+                'children',
+                'children.options'
+            ])
             ->addSorting(...$this->productSorting->getDefaultSorting());
         $response = $this->productListRoute->load($criteria, $context);
         $list = [];
         $i = 0;
         foreach ($response->getProducts() as $product) {
             $sortOrder = 1000000 - ($minSortOrder + $i++);
-            $shopgateProduct = new ProductMapping($this->contextManager, $sortOrder);
+            $shopgateProduct = $this->productMapFactory->createMapClass($product, $sortOrder);
             $shopgateProduct->setItem($product);
             try {
                 $list[] = $shopgateProduct->generateData();

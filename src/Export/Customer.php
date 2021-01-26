@@ -62,7 +62,7 @@ class Customer
         if (null === $token) {
             throw new MissingContextException('User token not found');
         }
-        $shopwareCustomer = $this->contextManager->load($token->getToken())->getCustomer();
+        $shopwareCustomer = $this->contextManager->loadByCustomerToken($token->getToken())->getCustomer();
         if (null === $shopwareCustomer) {
             throw new MissingContextException('User logged in context missing');
         }
