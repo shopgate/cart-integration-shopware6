@@ -41,7 +41,9 @@
         <!-- ExportService should be renamed to CatalogExport or something like that -->
         <service id="Shopgate\Shopware\Export\ExportService"/>
         <service id="Shopgate\Shopware\Utility\Logger"/>
-        <service id="Shopgate\Shopware\Storefront\ContextManager"/>
+        <service id="Shopgate\Shopware\Storefront\ContextManager">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+        </service>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <!-- Public (needed for controllers and classes instantiated via Facade class -->
         <service id="Shopgate\Shopware\Components\Di\Forwarder" public="true"/>

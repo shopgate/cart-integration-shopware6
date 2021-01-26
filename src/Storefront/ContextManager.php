@@ -3,7 +3,7 @@
 namespace Shopgate\Shopware\Storefront;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -11,18 +11,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class ContextManager
 {
-    /** @var SalesChannelContextService */
+    /** @var SalesChannelContextServiceInterface */
     private $contextService;
     /** @var SalesChannelContext|null */
     private $salesContext;
 
-    /**
-     * ContextManager constructor.
-     * @param SalesChannelContextService $contextService
-     */
-    public function __construct(
-        SalesChannelContextService $contextService
-    ) {
+    /** @param SalesChannelContextServiceInterface $contextService */
+    public function __construct(SalesChannelContextServiceInterface $contextService)
+    {
         $this->contextService = $contextService;
     }
 
@@ -52,15 +48,16 @@ class ContextManager
      * @param string $token
      * @return SalesChannelContext
      */
-    public function load(string $token): SalesChannelContext
+    public function loadByCustomerToken(string $token): SalesChannelContext
     {
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
         $context = $this->contextService->get(
             $this->salesContext->getSalesChannel()->getId(),
             $token,
-            $this->salesContext->getSalesChannel()->getLanguageId()
+            $this->salesContext->getSalesChannel()->getLanguageId(),
+            $this->salesContext->getSalesChannel()->getCurrencyId()
         );
-        $this->salesContext = $context;
 
-        return $context;
+        return $this->salesContext = $context;
     }
 }
