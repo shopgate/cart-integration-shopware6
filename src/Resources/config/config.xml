@@ -61,9 +61,10 @@
                 </option>
             </options>
         </input-field>
-        <input-field>
-            <name>ProductProperties</name>
-            <label>Product properties to export</label>
-        </input-field>
+        <component name="sw-entity-multi-id-select">
+            <name>propertyForceExport</name>
+            <entity>property_group</entity>
+            <label>Force export specific properties</label>
+        </component>
     </card>
 </config>
