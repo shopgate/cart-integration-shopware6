@@ -19,8 +19,8 @@ class ImportService
     private $categoryHelper;
     /** @var ConfigExport */
     private $configExport;
-    /** @var CustomerExport */
-    private $customerExport;
+    /** @var CustomerImport */
+    private $customerImport;
     /** @var TaxExport */
     private $taxExport;
     /** @var Customer */
@@ -32,7 +32,7 @@ class ImportService
      * @param LoggerInterface $logger
      * @param Categories $categoryHelper
      * @param ConfigExport $configExport
-     * @param CustomerExport $customerExport
+     * @param CustomerImport $customerImport
      * @param TaxExport $taxExport
      * @param Customer $customerHelper
      * @param Products $productHelper
@@ -41,7 +41,7 @@ class ImportService
         LoggerInterface $logger,
         Categories $categoryHelper,
         ConfigExport $configExport,
-        CustomerExport $customerExport,
+        CustomerImport $customerImport,
         TaxExport $taxExport,
         Customer $customerHelper,
         Products $productHelper
@@ -49,7 +49,7 @@ class ImportService
         $this->log = $logger;
         $this->categoryHelper = $categoryHelper;
         $this->configExport = $configExport;
-        $this->customerExport = $customerExport;
+        $this->customerImport = $customerImport;
         $this->taxExport = $taxExport;
         $this->customerHelper = $customerHelper;
         $this->productHelper = $productHelper;
@@ -59,13 +59,12 @@ class ImportService
      * @param string $user
      * @param string $password
      * @param ShopgateCustomer $customer
+     * @throws MissingContextException
+     * @throws ShopgateLibraryException
      */
     public function registerCustomer(string $user, string $password, ShopgateCustomer $customer): void
     {
-        //todo-rainer actually register the customer
-
-//        no need for this, the library calls getCustomer anyway
-//        return $this->customerHelper->getCustomerData($user, $password);
+        $this->customerImport->registerCustomer($user, $password, $customer);
 
     }
 }

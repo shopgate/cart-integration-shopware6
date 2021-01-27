@@ -26,6 +26,7 @@
         </service>
         <service id="Shopgate\Shopware\Export\CustomerExport">
             <argument type="service" id="customer_group.repository"/>
+            <argument type="service" id="salutation.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\Export\Catalog\Mapping\ProductMapFactory"/>
@@ -43,9 +44,15 @@
             <argument type="service" id="tax_rule_type.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
+        <service id="Shopgate\Shopware\Export\LocationHelper">
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="country_state.repository"/>
+            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
+        </service>
         <!-- ExportService should be renamed to CatalogExport or something like that -->
         <service id="Shopgate\Shopware\Export\ExportService"/>
         <service id="Shopgate\Shopware\Export\ImportService"/>
+        <service id="Shopgate\Shopware\Export\CustomerImport"/>
         <service id="Shopgate\Shopware\Utility\Logger"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>

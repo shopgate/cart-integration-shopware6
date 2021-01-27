@@ -10,6 +10,7 @@ use Shopgate\Shopware\Exceptions\DiException;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCart;
 use ShopgateCustomer;
+use ShopgateLibraryException;
 use ShopgateOrder;
 use ShopgatePlugin;
 
@@ -36,15 +37,24 @@ class Plugin extends ShopgatePlugin
      * @param string $user
      * @param string $pass
      * @return ShopgateCustomer
+     * @throws Exceptions\MissingContextException
+     * @throws ShopgateLibraryException
      */
     public function getCustomer($user, $pass): ShopgateCustomer
     {
         return $this->forwarder->getExportService()->getCustomer($user, $pass);
     }
 
+    /**
+     * @param string $user
+     * @param string $pass
+     * @param ShopgateCustomer $customer
+     * @throws Exceptions\MissingContextException
+     * @throws ShopgateLibraryException
+     */
     public function registerCustomer($user, $pass, ShopgateCustomer $customer)
     {
-        return $this->forwarder->getImportService()->registerCustomer($user, $pass, $customer);
+        $this->forwarder->getImportService()->registerCustomer($user, $pass, $customer);
     }
 
     public function addOrder(ShopgateOrder $order)
