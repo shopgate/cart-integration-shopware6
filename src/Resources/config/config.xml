@@ -20,31 +20,6 @@
             <label>API key</label>
         </input-field>
     </card>
-    <!--    <card>-->
-    <!--        <title>Mobile Website</title>-->
-    <!--        <input-field>-->
-    <!--            <name>shopAlias</name>-->
-    <!--            <label>Shop alias</label>-->
-    <!--        </input-field>-->
-    <!--        <input-field>-->
-    <!--            <name>cname</name>-->
-    <!--            <label>CNAME</label>-->
-    <!--        </input-field>-->
-    <!--        <input-field type="single-select">-->
-    <!--            <name>redirectType</name>-->
-    <!--            <label>Redirect Type</label>-->
-    <!--            <options>-->
-    <!--                <option>-->
-    <!--                    <id>http</id>-->
-    <!--                    <name>HTTP (recommended)</name>-->
-    <!--                </option>-->
-    <!--                <option>-->
-    <!--                    <id>js</id>-->
-    <!--                    <name>JavaScript</name>-->
-    <!--                </option>-->
-    <!--            </options>-->
-    <!--        </input-field>-->
-    <!--    </card>-->
     <card>
         <title>Product Export</title>
         <input-field type="multi-select">
@@ -61,10 +36,5 @@
                 </option>
             </options>
         </input-field>
-        <component name="sw-entity-multi-id-select">
-            <name>propertyForceExport</name>
-            <entity>property_group</entity>
-            <label>Force export specific properties</label>
-        </component>
     </card>
 </config>
