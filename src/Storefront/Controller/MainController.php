@@ -57,6 +57,9 @@ class MainController extends StorefrontController
         }
 
         $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
+        if ($this->systemConfigService->get('isActive') !== true) {
+            return new JsonResponse('Plugin is not active in Shopware config', 503);
+        }
         $this->contextManager->setSalesChannelContext($salesChannelContext);
 
         $actionWhitelist = array_map(static function ($item) {
