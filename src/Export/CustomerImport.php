@@ -5,12 +5,12 @@ namespace Shopgate\Shopware\Export;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateAddress;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use ShopgateCustomer;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use ShopgateLibraryException;
+use Throwable;
 
 class CustomerImport
 {
@@ -25,6 +25,8 @@ class CustomerImport
 
     /**
      * @param RegisterRoute $registerRoute
+     * @param LocationHelper $locationHelper
+     * @param CustomerExport $customerExport
      * @param ContextManager $contextManager
      */
     public function __construct(
@@ -61,7 +63,32 @@ class CustomerImport
             $data['shippingAddress'] = $this->mapAddressData($shopgateShippingAddress);
         }
         $dataBag = new RequestDataBag($data);
-        $this->registerRoute->register($dataBag, $this->contextManager->getSalesContext(), false);
+        try {
+            $this->registerRoute->register($dataBag, $this->contextManager->getSalesContext(), false);
+        } catch (ConstraintViolationException $e) {
+            $errorMessages = [];
+            foreach ($e->getViolations() as $violation) {
+                if ($violation->getCode() === 'VIOLATION::CUSTOMER_EMAIL_NOT_UNIQUE') {
+                    throw new ShopgateLibraryException(
+                        ShopgateLibraryException::REGISTER_USER_ALREADY_EXISTS,
+                        $violation->getMessage(),
+                        true
+                    );
+                }
+                $errorMessages[] = 'violation: ' . $violation->getMessage() . ' path: ' . $violation->getPropertyPath();
+            }
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::REGISTER_FAILED_TO_ADD_USER,
+                implode(' ', $errorMessages),
+                true
+            );
+        } catch (Throwable $e) {
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::REGISTER_FAILED_TO_ADD_USER,
+                $e->getMessage(),
+                true
+            );
+        }
     }
 
     /**
@@ -131,7 +158,6 @@ class CustomerImport
      */
     protected function getSalutationIdByGender(string $gender): string
     {
-
         switch ($gender) {
             case 'm':
                 return $this->customerExport->getMaleSalutationId();

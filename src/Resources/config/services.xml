@@ -37,8 +37,7 @@
             <argument type="service" id="product_sorting.repository"/>
         </service>
         <service id="Shopgate\Shopware\Export\TaxExport">
-            <argument type="service" id="country.repository"/>
-            <argument type="service" id="country_state.repository"/>
+            <argument type="service" id="Shopgate\Shopware\Export\LocationHelper"/>
             <argument type="service" id="tax.repository"/>
             <argument type="service" id="tax_rule.repository"/>
             <argument type="service" id="tax_rule_type.repository"/>

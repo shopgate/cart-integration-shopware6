@@ -15,10 +15,8 @@ use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as Indiv
 
 class TaxExport
 {
-    /** @var EntityRepositoryInterface */
-    private $countryRepository;
-    /** @var EntityRepositoryInterface */
-    private $stateRepository;
+    /** @var LocationHelper */
+    private $locationHelper;
     /** @var EntityRepositoryInterface */
     private $taxRepository;
     /** @var EntityRepositoryInterface */
@@ -29,23 +27,20 @@ class TaxExport
     private $contextManager;
 
     /**
-     * @param EntityRepositoryInterface $countryRepository
-     * @param EntityRepositoryInterface $stateRepository
+     * @param LocationHelper $locationHelper
      * @param EntityRepositoryInterface $taxRepository
      * @param EntityRepositoryInterface $taxRuleRepository
      * @param EntityRepositoryInterface $taxRuleTypeRepository
      * @param ContextManager $contextManager
      */
     public function __construct(
-        EntityRepositoryInterface $countryRepository,
-        EntityRepositoryInterface $stateRepository,
+        LocationHelper $locationHelper,
         EntityRepositoryInterface $taxRepository,
         EntityRepositoryInterface $taxRuleRepository,
         EntityRepositoryInterface $taxRuleTypeRepository,
         ContextManager $contextManager
     ) {
-        $this->countryRepository = $countryRepository;
-        $this->stateRepository = $stateRepository;
+        $this->locationHelper = $locationHelper;
         $this->taxRepository = $taxRepository;
         $this->taxRuleRepository = $taxRuleRepository;
         $this->taxRuleTypeRepository = $taxRuleTypeRepository;
@@ -64,8 +59,7 @@ class TaxExport
         $taxRules = [];
         $taxFreeRateKeys = [];
 
-        $taxFreeCountries = $this->getTaxFreeCountries();
-        /** @var $taxFreeCountry CountryEntity */
+        $taxFreeCountries = $this->locationHelper->getTaxFreeCountries();
         foreach ($taxFreeCountries as $taxFreeCountry) {
             $countryIso = $taxFreeCountry->getIso();
             $taxRateKey = 'rate_' . $countryIso . '_free';
@@ -84,7 +78,6 @@ class TaxExport
         }
 
         $shopwareTaxRates = $this->getTaxClasses();
-        /** @var $shopwareTaxRate TaxEntity */
         foreach ($shopwareTaxRates as $shopwareTaxRate) {
             $taxRateKeys = [];
             $productTaxClassId = $shopwareTaxRate->getId();
@@ -109,10 +102,9 @@ class TaxExport
             $defaultTaxRateKey = ['key' => $taxRateKey];
 
             $shopwareCountryTaxRules = $this->getTaxRulesByTaxId($productTaxClassId, EntireCountry::TECHNICAL_NAME);
-            /** @var $shopwareTaxRule TaxRuleEntity */
             foreach ($shopwareCountryTaxRules as $shopwareTaxRule) {
                 $countryId = $shopwareTaxRule->getCountryId();
-                $countryIso = $this->getCountryIsoById($countryId);
+                $countryIso = $this->locationHelper->getCountryIsoById($countryId);
 
                 $taxRateKey = 'rate_' . $productTaxClassId . '_' . $countryIso;
                 $taxRates[] = [
@@ -130,13 +122,12 @@ class TaxExport
             }
 
             $shopwareStateTaxRules = $this->getTaxRulesByTaxId($productTaxClassId, IndividualStates::TECHNICAL_NAME);
-            /** @var $shopwareTaxRule TaxRuleEntity */
             foreach ($shopwareStateTaxRules as $shopwareTaxRule) {
                 $countryId = $shopwareTaxRule->getCountryId();
-                $countryIso = $this->getCountryIsoById($countryId);
+                $countryIso = $this->locationHelper->getCountryIsoById($countryId);
                 $stateIds = $shopwareTaxRule->getData()['states'];
                 foreach ($stateIds as $stateId) {
-                    $stateIso = $this->getStateIsoById($stateId);
+                    $stateIso = $this->locationHelper->getStateIsoById($stateId);
                     $taxRateKey = 'rate_' . $productTaxClassId . '_' . $countryIso . '_' . $stateIso;
                     $taxRates[] = [
                         'key' => $taxRateKey,
@@ -183,7 +174,7 @@ class TaxExport
     }
 
     /**
-     * @return array
+     * @return TaxEntity[]
      * @throws MissingContextException
      */
     protected function getTaxClasses(): array
@@ -196,7 +187,7 @@ class TaxExport
     /**
      * @param string $id
      * @param string $type
-     * @return array
+     * @return TaxRuleEntity[]
      * @throws MissingContextException
      */
     protected function getTaxRulesByTaxId(string $id, string $type): array
@@ -226,53 +217,5 @@ class TaxExport
         )->first();
 
         return $result->getId();
-    }
-
-    /**
-     * @return array
-     * @throws MissingContextException
-     */
-    protected function getTaxFreeCountries(): array
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('taxFree', 1));
-
-        return $this->countryRepository->search($criteria, $this->contextManager->getSalesContext()->getContext())
-            ->getEntities()
-            ->getElements();
-    }
-
-    /**
-     * @param string $id
-     * @return string
-     * @throws MissingContextException
-     */
-    protected function getCountryIsoById(string $id): string
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('id', $id));
-        $result = $this->countryRepository->search(
-            $criteria,
-            $this->contextManager->getSalesContext()->getContext()
-        )->first();
-
-        return $result->getIso();
-    }
-
-    /**
-     * @param string $id
-     * @return string
-     * @throws MissingContextException
-     */
-    protected function getStateIsoById(string $id): string
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('id', $id));
-        $result = $this->stateRepository->search(
-            $criteria,
-            $this->contextManager->getSalesContext()->getContext()
-        )->first();
-
-        return $result->getShortCode();
     }
 }

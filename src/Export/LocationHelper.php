@@ -8,10 +8,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Country\CountryEntity;
-use Shopware\Core\System\Tax\Aggregate\TaxRule\TaxRuleEntity;
-use Shopware\Core\System\Tax\TaxEntity;
-use Shopware\Core\System\Tax\TaxRuleType\EntireCountryRuleTypeFilter as EntireCountry;
-use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as IndividualStates;
 
 class LocationHelper
 {
@@ -93,7 +89,7 @@ class LocationHelper
      * @return string
      * @throws MissingContextException
      */
-    public function getStateIdByIso($code): string
+    public function getStateIdByIso(?string $code): string
     {
         if (empty($code)) {
             return '';
@@ -106,5 +102,19 @@ class LocationHelper
         )->first();
 
         return $result ? $result->getId() : '';
+    }
+
+    /**
+     * @return CountryEntity[]
+     * @throws MissingContextException
+     */
+    public function getTaxFreeCountries(): array
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('taxFree', 1));
+
+        return $this->countryRepository->search($criteria, $this->contextManager->getSalesContext()->getContext())
+            ->getEntities()
+            ->getElements();
     }
 }

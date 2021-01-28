@@ -31,6 +31,7 @@ class Config extends ShopgateConfig
      */
     protected function startup(): bool
     {
-        return false;
+        $this->setPluginName('Shopgate Go Plugin for Shopware 6');
+        return parent::startup();
     }
 }
