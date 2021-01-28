@@ -7,6 +7,7 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_CategoryPath;
 use Shopgate_Model_Catalog_Identifier;
+use Shopgate_Model_Catalog_Price;
 use Shopgate_Model_Catalog_Product;
 use Shopgate_Model_Catalog_Property;
 use Shopgate_Model_Catalog_Relation;
@@ -118,7 +119,12 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         }
 
         $shopgatePrice = $this->getPrice();
+
+        //todo-konstantin this is a hotfix, please check
+        $shopgatePrice->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
+
         $shopgatePrice->setPrice($shopwarePrice->getGross());
+
         $shopgatePrice->setMsrp($shopwarePrice->getListPrice() ? $shopwarePrice->getListPrice()->getGross() : 0);
         if ($this->item->getPurchasePrices() && $cost = $this->item->getPurchasePrices()
                 ->getCurrencyPrice($currencyId)) {
@@ -229,12 +235,15 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setIdentifiers(): void
     {
-        $identifier = new Shopgate_Model_Catalog_Identifier();
+        //todo-konstantin this is a hotfix, please check
+        $identifiers = [];
         if ($this->item->getEan()) {
+            $identifier = new Shopgate_Model_Catalog_Identifier();
             $identifier->setType('ean');
             $identifier->setValue($this->item->getEan());
+            $identifiers[] = $identifier;
         }
-        parent::setIdentifiers([$identifier]);
+        parent::setIdentifiers($identifiers);
     }
 
     public function setTags(): void

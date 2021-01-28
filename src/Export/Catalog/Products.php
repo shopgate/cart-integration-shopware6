@@ -11,6 +11,7 @@ use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\ProductListListRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Throwable;
 
 class Products
@@ -58,10 +59,15 @@ class Products
     {
         $minSortOrder = max($offset - 1, 0) * $limit;
         $context = $this->contextManager->getSalesContext();
+
+        //todo-konstantin this is a hotfix, please check
+        $filter = new ProductAvailableFilter($context->getSalesChannel()->getId());
+        $filter->addQuery(new EqualsFilter('product.parentId', null));
+
         $criteria = (new Criteria($uids))
             ->setLimit($limit)
             ->setOffset($offset)
-            ->addFilter(new ProductAvailableFilter($context->getSalesChannel()->getId()))
+            ->addFilter($filter)
             ->addAssociations([
                 'media',
                 'properties',
