@@ -8,6 +8,7 @@ use Shopgate\Shopware\Export\Catalog\Products;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Catalog_Product;
+use ShopgateCart;
 use ShopgateCustomer;
 use ShopgateLibraryException;
 
@@ -65,6 +66,25 @@ class ImportService
     public function registerCustomer(string $user, string $password, ShopgateCustomer $customer): void
     {
         $this->customerImport->registerCustomer($user, $password, $customer);
+
+    }
+
+    /**
+     * @param ShopgateCart $cart
+     * @return array
+     */
+    public function checkCart(ShopgateCart $cart): array
+    {
+        // todo-rainer implement
+
+        return [
+            "currency"         => 'EUR',
+            "external_coupons" => [],
+            "shipping_methods" => [],
+            "payment_methods"  => [],
+            "items"            => [],
+            "customer"         => new \ShopgateCartCustomer(),
+        ];
 
     }
 }

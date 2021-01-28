@@ -67,9 +67,13 @@ class Plugin extends ShopgatePlugin
         // TODO: Implement updateOrder() method.
     }
 
+    /**
+     * @param ShopgateCart $cart
+     * @return array
+     */
     public function checkCart(ShopgateCart $cart)
     {
-        // TODO: Implement checkCart() method.
+        return $this->forwarder->getImportService()->checkCart($cart);
     }
 
     public function checkStock(ShopgateCart $cart)
@@ -78,7 +82,7 @@ class Plugin extends ShopgatePlugin
     }
 
     /**
-     * @inheritdoc
+     * @return array[]
      * @throws Exceptions\MissingContextException
      */
     public function getSettings()

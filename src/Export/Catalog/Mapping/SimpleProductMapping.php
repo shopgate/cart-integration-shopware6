@@ -49,7 +49,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setTaxClass(): void
     {
-        parent::setTaxClass($this->item->getTaxId());
+        parent::setTaxClass('tax_' . $this->item->getTaxId());
     }
 
     /**
