@@ -25,14 +25,15 @@
         <input-field type="multi-select">
             <name>productTypesToExport</name>
             <label>Product types to be exported</label>
+            <defaultValue>simple,variant</defaultValue>
             <options>
                 <option>
                     <id>simple</id>
                     <name>Simple</name>
                 </option>
                 <option>
-                    <id>configurable</id>
-                    <name>Configurable</name>
+                    <id>variant</id>
+                    <name>Variant</name>
                 </option>
             </options>
         </input-field>
