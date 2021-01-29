@@ -120,6 +120,8 @@ class Customer
             $shopgateAddresses[] = $this->mapAddress($shopwareAddress, $type);
         }
         $shopgateCustomer->setAddresses($shopgateAddresses);
+        $shopgateCustomer->setTaxClassId('1');
+        $shopgateCustomer->setTaxClassKey('default');
 
         return $shopgateCustomer;
     }

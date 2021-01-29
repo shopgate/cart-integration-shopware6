@@ -54,7 +54,7 @@ class TaxExport
     public function getTaxSettings(): array
     {
         $productTaxClasses = [];
-        $CustomerTaxClass = ['id' => '1', 'key' => 'default2'];
+        $CustomerTaxClass = ['id' => '1', 'key' => 'default', 'is_default' => '1'];
         $taxRates = [];
         $taxRules = [];
         $taxFreeRateKeys = [];
