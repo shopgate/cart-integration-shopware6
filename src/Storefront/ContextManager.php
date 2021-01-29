@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Storefront;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -13,13 +14,21 @@ class ContextManager
 {
     /** @var SalesChannelContextServiceInterface */
     private $contextService;
+    /** @var SalesChannelContextRestorer */
+    private $contextRestorer;
     /** @var SalesChannelContext|null */
     private $salesContext;
 
-    /** @param SalesChannelContextServiceInterface $contextService */
-    public function __construct(SalesChannelContextServiceInterface $contextService)
-    {
+    /**
+     * @param SalesChannelContextServiceInterface $contextService
+     * @param SalesChannelContextRestorer $contextRestorer
+     */
+    public function __construct(
+        SalesChannelContextServiceInterface $contextService,
+        SalesChannelContextRestorer $contextRestorer
+    ) {
         $this->contextService = $contextService;
+        $this->contextRestorer = $contextRestorer;
     }
 
     /**
@@ -57,6 +66,17 @@ class ContextManager
             $this->salesContext->getSalesChannel()->getLanguageId(),
             $this->salesContext->getSalesChannel()->getCurrencyId()
         );
+
+        return $this->salesContext = $context;
+    }
+
+    /**
+     * @param string $customerId
+     * @return SalesChannelContext
+     */
+    public function loadByCustomerId(string $customerId): SalesChannelContext
+    {
+        $context = $this->contextRestorer->restore($customerId, $this->salesContext);
 
         return $this->salesContext = $context;
     }
