@@ -159,9 +159,9 @@ class CustomerImport
     protected function getSalutationIdByGender(string $gender): string
     {
         switch ($gender) {
-            case 'm':
+            case ShopgateCustomer::MALE:
                 return $this->customerExport->getMaleSalutationId();
-            case 'f':
+            case ShopgateCustomer::FEMALE:
                 return $this->customerExport->getFemaleSalutationId();
             default:
                 return $this->customerExport->getUnspecifiedSalutationId();

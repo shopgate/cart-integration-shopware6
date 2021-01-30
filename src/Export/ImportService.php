@@ -15,14 +15,11 @@ class ImportService
     private $orderImport;
 
     /**
-     * ImportService constructor.
      * @param CustomerImport $customerImport
      * @param OrderImport $orderImport
      */
-    public function __construct(
-        CustomerImport $customerImport,
-        OrderImport $orderImport
-    ) {
+    public function __construct(CustomerImport $customerImport, OrderImport $orderImport)
+    {
         $this->customerImport = $customerImport;
         $this->orderImport = $orderImport;
     }
@@ -37,7 +34,6 @@ class ImportService
     public function registerCustomer(string $user, string $password, ShopgateCustomer $customer): void
     {
         $this->customerImport->registerCustomer($user, $password, $customer);
-
     }
 
     /**
@@ -47,6 +43,5 @@ class ImportService
     public function checkCart(ShopgateCart $cart): array
     {
         return $this->orderImport->checkCart($cart);
-
     }
 }
