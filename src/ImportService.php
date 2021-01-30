@@ -1,24 +1,26 @@
 <?php
 
-namespace Shopgate\Shopware\Import;
+namespace Shopgate\Shopware;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\Customer\CustomerComposer;
+use Shopgate\Shopware\Order\OrderComposer;
 use ShopgateCart;
 use ShopgateCustomer;
 use ShopgateLibraryException;
 
 class ImportService
 {
-    /** @var CustomerImport */
+    /** @var CustomerComposer */
     private $customerImport;
-    /** @var OrderImport */
+    /** @var OrderComposer */
     private $orderImport;
 
     /**
-     * @param CustomerImport $customerImport
-     * @param OrderImport $orderImport
+     * @param CustomerComposer $customerImport
+     * @param OrderComposer $orderImport
      */
-    public function __construct(CustomerImport $customerImport, OrderImport $orderImport)
+    public function __construct(CustomerComposer $customerImport, OrderComposer $orderImport)
     {
         $this->customerImport = $customerImport;
         $this->orderImport = $orderImport;
@@ -39,6 +41,7 @@ class ImportService
     /**
      * @param ShopgateCart $cart
      * @return array
+     * @throws MissingContextException
      */
     public function checkCart(ShopgateCart $cart): array
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Export;
+namespace Shopgate\Shopware\System\Configuration;
 
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -8,7 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Throwable;
 
-class ConfigExport
+class ConfigBridge
 {
     /** @var string */
     private $shopwareVersion;
@@ -26,8 +26,7 @@ class ConfigExport
         EntityRepositoryInterface $pluginRepository,
         string $shopwareVersion,
         ContextManager $contextManager
-    )
-    {
+    ) {
         $this->pluginRepository = $pluginRepository;
         $this->shopwareVersion = $shopwareVersion;
         $this->contextManager = $contextManager;

@@ -1,38 +1,38 @@
 <?php
 
-namespace Shopgate\Shopware\Import;
+namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Export\LocationHelper;
+use Shopgate\Shopware\Customer\Mapping\LocationMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCart;
 use ShopgateCartCustomer;
 use ShopgateCartCustomerGroup;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 
-class OrderImport
+class OrderComposer
 {
-    /** @var LocationHelper */
-    private $locationHelper;
+    /** @var LocationMapping */
+    private $locationMapping;
     /** @var ContextManager */
     private $contextManager;
 
     /**
-     * @param LocationHelper $locationHelper
+     * @param LocationMapping $locationMapping
      * @param ContextManager $contextManager
      */
     public function __construct(
-        LocationHelper $locationHelper,
+        LocationMapping $locationMapping,
         ContextManager $contextManager
     ) {
-        $this->locationHelper = $locationHelper;
+        $this->locationMapping = $locationMapping;
         $this->contextManager = $contextManager;
     }
 
     /**
      * @param ShopgateCart $cart
      * @return array
+     * @throws MissingContextException
      */
     public function checkCart(ShopgateCart $cart): array
     {
@@ -51,16 +51,15 @@ class OrderImport
             "shipping_methods" => [],
             "payment_methods" => [],
             "items" => [],
-            "customer" => $this->getCartCustomer($context),
+            "customer" => $this->getCartCustomer(),
         ];
     }
 
     /**
-     * @param SalesChannelContext $context
      * @return ShopgateCartCustomer
      * @throws MissingContextException
      */
-    protected function getCartCustomer(SalesChannelContext $context): ShopgateCartCustomer
+    protected function getCartCustomer(): ShopgateCartCustomer
     {
         $customerGroupId = $this->contextManager->getSalesContext()->getCurrentCustomerGroup()->getId();
         $sgCustomerGroup = new ShopgateCartCustomerGroup();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Export;
+namespace Shopgate\Shopware\Customer\Mapping;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -9,7 +9,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Country\CountryEntity;
 
-class LocationHelper
+class LocationMapping
 {
     /** @var EntityRepositoryInterface */
     private $countryRepository;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Shopgate\Shopware\Export\Catalog\Mapping;
+namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Shopgate\Shopware\Export\Catalog\Products\ProductProperties;
+use Shopgate\Shopware\Catalog\Products\ProductProperties;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Product\ProductEntity;
 

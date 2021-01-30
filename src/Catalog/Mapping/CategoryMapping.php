@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Export\Catalog\Mapping;
+namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;

@@ -1,11 +1,11 @@
 <?php
 
-namespace Shopgate\Shopware\Export\Catalog;
+namespace Shopgate\Shopware\Catalog;
 
 use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Export\Catalog\Mapping\ProductMapFactory;
-use Shopgate\Shopware\Export\Catalog\Products\ProductSorting;
+use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
+use Shopgate\Shopware\Catalog\Products\ProductSorting;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Product;

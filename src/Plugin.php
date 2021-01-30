@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
-use Shopgate\Shopware\Components\Di\Facade;
-use Shopgate\Shopware\Components\Di\Forwarder;
+use Shopgate\Shopware\System\Di\Facade;
+use Shopgate\Shopware\System\Di\Forwarder;
 use Shopgate\Shopware\Exceptions\DiException;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCart;

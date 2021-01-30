@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
-use Shopgate\Shopware\Components\Config;
+use Shopgate\Shopware\System\Mapping\ConfigMapping;
 use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
-use Shopgate\Shopware\Components\Di\Facade;
+use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateBuilder;
@@ -85,7 +85,7 @@ class MainController extends StorefrontController
         $actionWhitelist = array_map(static function ($item) {
             return (bool)$item;
         }, $this->getParameter('shopgate.action.whitelist'));
-        $config = new Config($actionWhitelist);
+        $config = new ConfigMapping($actionWhitelist);
         $config->initShopwareConfig($this->systemConfigService);
         $builder = new ShopgateBuilder($config);
         $plugin = new Plugin($builder);

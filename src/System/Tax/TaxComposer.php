@@ -1,50 +1,27 @@
 <?php
 
-namespace Shopgate\Shopware\Export;
+namespace Shopgate\Shopware\System\Tax;
 
+use Shopgate\Shopware\Customer\Mapping\LocationMapping;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Storefront\ContextManager;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\Country\CountryEntity;
-use Shopware\Core\System\Tax\Aggregate\TaxRule\TaxRuleEntity;
-use Shopware\Core\System\Tax\TaxEntity;
 use Shopware\Core\System\Tax\TaxRuleType\EntireCountryRuleTypeFilter as EntireCountry;
 use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as IndividualStates;
 
-class TaxExport
+class TaxComposer
 {
-    /** @var LocationHelper */
-    private $locationHelper;
-    /** @var EntityRepositoryInterface */
-    private $taxRepository;
-    /** @var EntityRepositoryInterface */
-    private $taxRuleRepository;
-    /** @var EntityRepositoryInterface */
-    private $taxRuleTypeRepository;
-    /** @var ContextManager */
-    private $contextManager;
+    /** @var LocationMapping */
+    private $locationMapping;
+    /** @var TaxBridge */
+    private $taxBridge;
 
     /**
-     * @param LocationHelper $locationHelper
-     * @param EntityRepositoryInterface $taxRepository
-     * @param EntityRepositoryInterface $taxRuleRepository
-     * @param EntityRepositoryInterface $taxRuleTypeRepository
-     * @param ContextManager $contextManager
+     * @param LocationMapping $locationMapping
+     * @param TaxBridge $taxBridge
      */
-    public function __construct(
-        LocationHelper $locationHelper,
-        EntityRepositoryInterface $taxRepository,
-        EntityRepositoryInterface $taxRuleRepository,
-        EntityRepositoryInterface $taxRuleTypeRepository,
-        ContextManager $contextManager
-    ) {
-        $this->locationHelper = $locationHelper;
-        $this->taxRepository = $taxRepository;
-        $this->taxRuleRepository = $taxRuleRepository;
-        $this->taxRuleTypeRepository = $taxRuleTypeRepository;
-        $this->contextManager = $contextManager;
+    public function __construct(LocationMapping $locationMapping, TaxBridge $taxBridge)
+    {
+        $this->locationMapping = $locationMapping;
+        $this->taxBridge = $taxBridge;
     }
 
     /**
@@ -59,7 +36,7 @@ class TaxExport
         $taxRules = [];
         $taxFreeRateKeys = [];
 
-        $taxFreeCountries = $this->locationHelper->getTaxFreeCountries();
+        $taxFreeCountries = $this->locationMapping->getTaxFreeCountries();
         foreach ($taxFreeCountries as $taxFreeCountry) {
             $countryIso = $taxFreeCountry->getIso();
             $taxRateKey = 'rate_' . $countryIso . '_free';
@@ -77,7 +54,7 @@ class TaxExport
             $taxFreeRateKeys[] = ['key' => $taxRateKey];
         }
 
-        $shopwareTaxRates = $this->getTaxClasses();
+        $shopwareTaxRates = $this->taxBridge->getTaxClasses();
         foreach ($shopwareTaxRates as $shopwareTaxRate) {
             $taxRateKeys = [];
             $productTaxClassId = $shopwareTaxRate->getId();
@@ -101,10 +78,13 @@ class TaxExport
             ];
             $defaultTaxRateKey = ['key' => $taxRateKey];
 
-            $shopwareCountryTaxRules = $this->getTaxRulesByTaxId($productTaxClassId, EntireCountry::TECHNICAL_NAME);
+            $shopwareCountryTaxRules = $this->taxBridge->getTaxRulesByTaxId(
+                $productTaxClassId,
+                EntireCountry::TECHNICAL_NAME
+            );
             foreach ($shopwareCountryTaxRules as $shopwareTaxRule) {
                 $countryId = $shopwareTaxRule->getCountryId();
-                $countryIso = $this->locationHelper->getCountryIsoById($countryId);
+                $countryIso = $this->locationMapping->getCountryIsoById($countryId);
 
                 $taxRateKey = 'rate_' . $productTaxClassId . '_' . $countryIso;
                 $taxRates[] = [
@@ -121,13 +101,16 @@ class TaxExport
                 $taxRateKeys[] = ['key' => $taxRateKey];
             }
 
-            $shopwareStateTaxRules = $this->getTaxRulesByTaxId($productTaxClassId, IndividualStates::TECHNICAL_NAME);
+            $shopwareStateTaxRules = $this->taxBridge->getTaxRulesByTaxId(
+                $productTaxClassId,
+                IndividualStates::TECHNICAL_NAME
+            );
             foreach ($shopwareStateTaxRules as $shopwareTaxRule) {
                 $countryId = $shopwareTaxRule->getCountryId();
-                $countryIso = $this->locationHelper->getCountryIsoById($countryId);
+                $countryIso = $this->locationMapping->getCountryIsoById($countryId);
                 $stateIds = $shopwareTaxRule->getData()['states'];
                 foreach ($stateIds as $stateId) {
-                    $stateIso = $this->locationHelper->getStateIsoById($stateId);
+                    $stateIso = $this->locationMapping->getStateIsoById($stateId);
                     $taxRateKey = 'rate_' . $productTaxClassId . '_' . $countryIso . '_' . $stateIso;
                     $taxRates[] = [
                         'key' => $taxRateKey,
@@ -142,7 +125,6 @@ class TaxExport
                     ];
                     $taxRateKeys[] = ['key' => $taxRateKey];
                 }
-
             }
 
             $taxRule = [
@@ -171,51 +153,5 @@ class TaxExport
             'tax_rates' => $taxRates,
             'tax_rules' => $taxRules,
         ];
-    }
-
-    /**
-     * @return TaxEntity[]
-     * @throws MissingContextException
-     */
-    protected function getTaxClasses(): array
-    {
-        return $this->taxRepository->search(new Criteria(), $this->contextManager->getSalesContext()->getContext())
-            ->getEntities()
-            ->getElements();
-    }
-
-    /**
-     * @param string $id
-     * @param string $type
-     * @return TaxRuleEntity[]
-     * @throws MissingContextException
-     */
-    protected function getTaxRulesByTaxId(string $id, string $type): array
-    {
-        $typeId = $this->getTaxRuleTypeIdByTechnicalName($type);
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('taxId', $id));
-        $criteria->addFilter(new EqualsFilter('taxRuleTypeId', $typeId));
-
-        return $this->taxRuleRepository->search($criteria, $this->contextManager->getSalesContext()->getContext())
-            ->getEntities()
-            ->getElements();
-    }
-
-    /**
-     * @param string $technicalName
-     * @return string
-     * @throws MissingContextException
-     */
-    protected function getTaxRuleTypeIdByTechnicalName(string $technicalName): string
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('technicalName', $technicalName));
-        $result = $this->taxRuleTypeRepository->search(
-            $criteria,
-            $this->contextManager->getSalesContext()->getContext()
-        )->first();
-
-        return $result->getId();
     }
 }

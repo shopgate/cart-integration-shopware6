@@ -1,9 +1,9 @@
 <?php
 
-namespace Shopgate\Shopware\Export\Catalog;
+namespace Shopgate\Shopware\Catalog;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Export\Catalog\Mapping\CategoryMapping;
+use Shopgate\Shopware\Catalog\Mapping\CategoryMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;

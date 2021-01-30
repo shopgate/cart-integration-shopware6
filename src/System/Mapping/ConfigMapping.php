@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Components;
+namespace Shopgate\Shopware\System\Mapping;
 
 use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
 use ShopgateConfig;
 
-class Config extends ShopgateConfig
+class ConfigMapping extends ShopgateConfig
 {
     /** @var ConfigReaderInterface */
     protected $configReader;

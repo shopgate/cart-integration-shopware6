@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Components\Di;
+namespace Shopgate\Shopware\System\Di;
 
 use Shopgate\Shopware\Exceptions\DiException;
 use Symfony\Component\DependencyInjection\ContainerInterface;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Shopgate\Shopware\Export\Catalog\Mapping;
+namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Export\Catalog\Products\ProductProperties;
+use Shopgate\Shopware\Catalog\Products\ProductProperties;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;

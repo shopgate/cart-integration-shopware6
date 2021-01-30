@@ -1,9 +1,9 @@
 <?php
 
-namespace Shopgate\Shopware\Components\Di;
+namespace Shopgate\Shopware\System\Di;
 
-use Shopgate\Shopware\Export\ExportService;
-use Shopgate\Shopware\Import\ImportService;
+use Shopgate\Shopware\ExportService;
+use Shopgate\Shopware\ImportService;
 
 /**
  * Forwarder for Plugin class where we cannot use

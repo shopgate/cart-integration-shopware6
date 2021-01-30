@@ -1,10 +1,14 @@
 <?php
 
-namespace Shopgate\Shopware\Export;
+namespace Shopgate\Shopware;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Export\Catalog\Categories;
-use Shopgate\Shopware\Export\Catalog\Products;
+use Shopgate\Shopware\Catalog\Categories;
+use Shopgate\Shopware\Catalog\Products;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
+use Shopgate\Shopware\Customer\CustomerComposer;
+use Shopgate\Shopware\Customer\CustomerBridge;
+use Shopgate\Shopware\System\Tax\TaxComposer;
 use Shopgate\Shopware\Utility\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Catalog_Product;
@@ -13,49 +17,45 @@ use ShopgateLibraryException;
 
 class ExportService
 {
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private $log;
-    /**
-     * @var Categories
-     */
+    /** @var Categories */
     private $categoryHelper;
-    /** @var ConfigExport */
+    /** @var ConfigBridge */
     private $configExport;
-    /** @var CustomerExport */
-    private $customerExport;
-    /** @var TaxExport */
-    private $taxExport;
-    /** @var Customer */
-    private $customerHelper;
+    /** @var CustomerBridge */
+    private $customerBridge;
+    /** @var TaxComposer */
+    private $taxComposer;
+    /** @var CustomerComposer */
+    private $customerComposer;
     /** @var Products */
     private $productHelper;
 
     /**
      * @param LoggerInterface $logger
      * @param Categories $categoryHelper
-     * @param ConfigExport $configExport
-     * @param CustomerExport $customerExport
-     * @param TaxExport $taxExport
-     * @param Customer $customerHelper
+     * @param ConfigBridge $configExport
+     * @param CustomerBridge $customerBridge
+     * @param TaxComposer $taxComposer
+     * @param CustomerComposer $customerHelper
      * @param Products $productHelper
      */
     public function __construct(
         LoggerInterface $logger,
         Categories $categoryHelper,
-        ConfigExport $configExport,
-        CustomerExport $customerExport,
-        TaxExport $taxExport,
-        Customer $customerHelper,
+        ConfigBridge $configExport,
+        CustomerBridge $customerBridge,
+        TaxComposer $taxComposer,
+        CustomerComposer $customerHelper,
         Products $productHelper
     ) {
         $this->log = $logger;
         $this->categoryHelper = $categoryHelper;
         $this->configExport = $configExport;
-        $this->customerExport = $customerExport;
-        $this->taxExport = $taxExport;
-        $this->customerHelper = $customerHelper;
+        $this->customerBridge = $customerBridge;
+        $this->taxComposer = $taxComposer;
+        $this->customerComposer = $customerHelper;
         $this->productHelper = $productHelper;
     }
 
@@ -102,7 +102,7 @@ class ExportService
      */
     public function getCustomer(string $user, string $password): ShopgateCustomer
     {
-        return $this->customerHelper->getCustomerData($user, $password);
+        return $this->customerComposer->getCustomer($user, $password);
     }
 
     /**
@@ -130,8 +130,8 @@ class ExportService
     public function getSettings(): array
     {
         return [
-            'customer_groups' => $this->customerExport->getCustomerGroups(),
-            'tax' => $this->taxExport->getTaxSettings(),
+            'customer_groups' => $this->customerBridge->getCustomerGroups(),
+            'tax' => $this->taxComposer->getTaxSettings(),
             'allowed_address_countries' => [],
             'allowed_shipping_countries' => [],
             'payment_methods' => [],
