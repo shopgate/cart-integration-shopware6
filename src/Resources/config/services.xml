@@ -54,9 +54,9 @@
         </service>
         <!-- ExportService should be renamed to CatalogExport or something like that -->
         <service id="Shopgate\Shopware\Export\ExportService"/>
-        <service id="Shopgate\Shopware\Export\ImportService"/>
-        <service id="Shopgate\Shopware\Export\CustomerImport"/>
-        <service id="Shopgate\Shopware\Export\OrderImport"/>
+        <service id="Shopgate\Shopware\Import\ImportService"/>
+        <service id="Shopgate\Shopware\Import\CustomerImport"/>
+        <service id="Shopgate\Shopware\Import\OrderImport"/>
         <service id="Shopgate\Shopware\Utility\Logger"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>

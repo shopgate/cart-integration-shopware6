@@ -3,7 +3,7 @@
 namespace Shopgate\Shopware\Components\Di;
 
 use Shopgate\Shopware\Export\ExportService;
-use Shopgate\Shopware\Export\ImportService;
+use Shopgate\Shopware\Import\ImportService;
 
 /**
  * Forwarder for Plugin class where we cannot use

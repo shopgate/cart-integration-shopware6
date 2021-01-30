@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Export;
+namespace Shopgate\Shopware\Import;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use ShopgateCart;
