@@ -11,8 +11,6 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\BadCredentialsException;
-use Shopware\Core\Checkout\Customer\Exception\CustomerNotFoundException;
 use Shopware\Core\Checkout\Customer\Exception\InactiveCustomerException;
 use Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute;
@@ -20,6 +18,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Throwable;
 
 class Customer
 {
@@ -139,14 +139,13 @@ class Customer
         $context = $this->contextManager->getSalesContext();
         try {
             return $this->loginRoute->login($this->dataBag, $context);
-        } catch (BadCredentialsException $e) {
+        } catch (UnauthorizedHttpException $e) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_WRONG_USERNAME_OR_PASSWORD,
                 null,
                 false,
                 false
             );
-        } catch (CustomerNotFoundException $e) {
         } catch (InactiveCustomerException $e) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_CUSTOMER_ACCOUNT_NOT_CONFIRMED,
@@ -154,14 +153,14 @@ class Customer
                 false,
                 false
             );
+        } catch (Throwable $throwable) {
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::PLUGIN_CUSTOMER_UNKNOWN_ERROR,
+                null,
+                false,
+                false
+            );
         }
-        //todo-log
-        throw new ShopgateLibraryException(
-            ShopgateLibraryException::PLUGIN_CUSTOMER_UNKNOWN_ERROR,
-            null,
-            false,
-            false
-        );
     }
 
     /**
