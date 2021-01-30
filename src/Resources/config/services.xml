@@ -16,7 +16,10 @@
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
-        <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
+        <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="system_config.repository" />
+        </service>
         <service id="Shopgate\Shopware\Export\Catalog\Categories"/>
         <service id="Shopgate\Shopware\Export\Catalog\Products"/>
         <service id="Shopgate\Shopware\Export\Customer"/>

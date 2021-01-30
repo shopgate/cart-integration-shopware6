@@ -10,8 +10,10 @@ use Shopgate\Shopware\Components\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateBuilder;
+use ShopgateLibraryException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,19 +26,24 @@ class MainController extends StorefrontController
     private $systemConfigService;
     /** @var ContextManager */
     private $contextManager;
+    /** @var SalesChannelContextFactory */
+    private $channelContextFactory;
 
     /**
      * @param ConfigReaderInterface $systemConfigService
      * @param ContainerInterface $container
      * @param ContextManager $context
+     * @param SalesChannelContextFactory $channelContextFactory
      */
     public function __construct(
         ConfigReaderInterface $systemConfigService,
         ContainerInterface $container,
-        ContextManager $context
+        ContextManager $context,
+        SalesChannelContextFactory $channelContextFactory
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->contextManager = $context;
+        $this->channelContextFactory = $channelContextFactory;
         Facade::init($container); //todo: need to do this for non HTTP calls too
     }
 
@@ -44,24 +51,37 @@ class MainController extends StorefrontController
      * @RouteScope(scopes={"storefront"})
      * @Route("/shopgate/plugin", name="shopgate_action", methods={"GET","POST"}, defaults={"csrf_protected": false})
      * @param Request $request
-     * @param SalesChannelContext $salesChannelContext
      * @return JsonResponse
      */
-    public function execute(Request $request, SalesChannelContext $salesChannelContext): JsonResponse
+    public function execute(Request $request): JsonResponse
     {
-        if ($request->attributes->getBoolean('sw-maintenance', true)) {
-            return new JsonResponse('Site in maintenance', 503); // todo-prod
+        $salesChannelId = $this->systemConfigService->getSalesChannelId(
+            $request->request->get('shop_number')
+        );
+        if (null === $salesChannelId) {
+            return new JsonResponse(
+                [
+                    'error' => ShopgateLibraryException::PLUGIN_API_UNKNOWN_SHOP_NUMBER,
+                    'error_text' => 'No shop_number exists in the Shopgate configuration. Configure a specific channel.'
+                ]
+            );
         }
-        if (!$request->attributes->has('sw-sales-channel-id')) {
-            return new JsonResponse('SalesChannel does not exist', 404); // todo-prod
-        }
-
-        $this->systemConfigService->read($request->attributes->get('sw-sales-channel-id'));
+        $this->systemConfigService->load($salesChannelId);
         if ($this->systemConfigService->get('isActive') !== true) {
-            return new JsonResponse('Plugin is not active in Shopware config', 503);
+            return new JsonResponse([
+                'error' => ShopgateLibraryException::CONFIG_PLUGIN_NOT_ACTIVE,
+                'error_text' => 'Plugin is not active in Shopware config'
+            ]);
         }
+        $salesChannelContext = $this->channelContextFactory->create(Uuid::randomHex(), $salesChannelId);
         $this->contextManager->setSalesChannelContext($salesChannelContext);
 
+        if ($salesChannelContext->getSalesChannel()->isMaintenance()) {
+            return new JsonResponse([
+                'error' => ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                'error_text' => 'site in maintenance mode'
+            ]);
+        }
         $actionWhitelist = array_map(static function ($item) {
             return (bool)$item;
         }, $this->getParameter('shopgate.action.whitelist'));
