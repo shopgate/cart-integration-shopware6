@@ -42,6 +42,8 @@ class ContextManager
     }
 
     /**
+     * Will only throw if developer messes the context system up
+     *
      * @return SalesChannelContext
      * @throws MissingContextException
      */

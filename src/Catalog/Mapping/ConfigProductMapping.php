@@ -2,8 +2,8 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Catalog\Products\ProductProperties;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
@@ -12,16 +12,19 @@ class ConfigProductMapping extends SimpleProductMapping
 {
     /** @var ContextManager */
     protected $contextManager;
-    /** @var ProductProperties */
+    /** @var PropertyBridge */
     private $productProperties;
 
     /**
      * @param ContextManager $contextManager
      * @param int $sortOrder
-     * @param ProductProperties $productProperties
+     * @param PropertyBridge $productProperties
      */
-    public function __construct(ContextManager $contextManager, int $sortOrder, ProductProperties $productProperties)
-    {
+    public function __construct(
+        ContextManager $contextManager,
+        int $sortOrder,
+        PropertyBridge $productProperties
+    ) {
         parent::__construct($contextManager, $sortOrder);
         $this->productProperties = $productProperties;
     }

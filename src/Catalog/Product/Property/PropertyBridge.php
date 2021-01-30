@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Catalog\Products;
+namespace Shopgate\Shopware\Catalog\Product\Property;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -8,7 +8,7 @@ use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
-class ProductProperties
+class PropertyBridge
 {
     /** @var EntityRepositoryInterface */
     private $propertyGroupOptionRepo;

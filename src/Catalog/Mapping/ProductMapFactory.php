@@ -2,7 +2,7 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Shopgate\Shopware\Catalog\Products\ProductProperties;
+use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Product\ProductEntity;
 
@@ -10,10 +10,10 @@ class ProductMapFactory
 {
     /** @var ContextManager */
     private $contextManager;
-    /** @var ProductProperties */
+    /** @var PropertyBridge */
     private $productProperties;
 
-    public function __construct(ContextManager $contextManager, ProductProperties $productProperties)
+    public function __construct(ContextManager $contextManager, PropertyBridge $productProperties)
     {
         $this->contextManager = $contextManager;
         $this->productProperties = $productProperties;

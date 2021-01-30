@@ -2,9 +2,9 @@
 
 namespace Shopgate\Shopware;
 
+use Shopgate\Shopware\Catalog\Category\CategoryComposer;
+use Shopgate\Shopware\Catalog\Product\ProductComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Catalog\Categories;
-use Shopgate\Shopware\Catalog\Products;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Customer\CustomerBridge;
@@ -19,8 +19,8 @@ class ExportService
 {
     /** @var LoggerInterface */
     private $log;
-    /** @var Categories */
-    private $categoryHelper;
+    /** @var CategoryComposer */
+    private $categoryComposer;
     /** @var ConfigBridge */
     private $configExport;
     /** @var CustomerBridge */
@@ -29,29 +29,29 @@ class ExportService
     private $taxComposer;
     /** @var CustomerComposer */
     private $customerComposer;
-    /** @var Products */
+    /** @var ProductComposer */
     private $productHelper;
 
     /**
      * @param LoggerInterface $logger
-     * @param Categories $categoryHelper
+     * @param CategoryComposer $categoryComposer
      * @param ConfigBridge $configExport
      * @param CustomerBridge $customerBridge
      * @param TaxComposer $taxComposer
      * @param CustomerComposer $customerHelper
-     * @param Products $productHelper
+     * @param ProductComposer $productHelper
      */
     public function __construct(
         LoggerInterface $logger,
-        Categories $categoryHelper,
+        CategoryComposer $categoryComposer,
         ConfigBridge $configExport,
         CustomerBridge $customerBridge,
         TaxComposer $taxComposer,
         CustomerComposer $customerHelper,
-        Products $productHelper
+        ProductComposer $productHelper
     ) {
         $this->log = $logger;
-        $this->categoryHelper = $categoryHelper;
+        $this->categoryComposer = $categoryComposer;
         $this->configExport = $configExport;
         $this->customerBridge = $customerBridge;
         $this->taxComposer = $taxComposer;
@@ -70,7 +70,7 @@ class ExportService
     {
         $this->log->info('Start Category Export...');
 
-        $export = $this->categoryHelper->buildCategoryTree($ids, $limit, $offset);
+        $export = $this->categoryComposer->buildCategoryTree($ids, $limit, $offset);
         $this->log->info('End Category-Tree Build...');
         $this->log->info('Finished Category Export...');
 

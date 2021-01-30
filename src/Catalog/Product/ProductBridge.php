@@ -1,34 +1,29 @@
 <?php
 
-namespace Shopgate\Shopware\Catalog;
+namespace Shopgate\Shopware\Catalog\Product;
 
-use Shopgate\Shopware\System\Configuration\ConfigBridge;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
-use Shopgate\Shopware\Catalog\Products\ProductSorting;
+use Shopgate\Shopware\Catalog\Product\Sort\SortBridge;
+use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Log\LoggerInterface;
-use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\ProductListListRoute;
+use Shopware\Core\Content\Product\SalesChannel\ProductListResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
-use Throwable;
 
-class Products
+class ProductBridge
 {
     /** @var ProductListListRoute */
     private $productListRoute;
     /** @var ContextManager */
     private $contextManager;
-    /** @var LoggerInterface */
-    private $logger;
-    /** @var ProductSorting */
+    /** @var SortBridge */
     private $productSorting;
-    /** @var ProductMapFactory */
-    private $productMapFactory;
     /** @var ConfigBridge */
     private $configReader;
 
@@ -36,23 +31,19 @@ class Products
      * @param LoggerInterface $logger
      * @param ProductListListRoute $productListRoute
      * @param ContextManager $contextManager
-     * @param ProductSorting $productSorting
+     * @param SortBridge $productSorting
      * @param ProductMapFactory $productMapFactory
      * @param ConfigBridge $configReader
      */
     public function __construct(
-        LoggerInterface $logger,
         ProductListListRoute $productListRoute,
         ContextManager $contextManager,
-        ProductSorting $productSorting,
-        ProductMapFactory $productMapFactory,
+        SortBridge $productSorting,
         ConfigBridge $configReader
     ) {
-        $this->logger = $logger;
         $this->productListRoute = $productListRoute;
         $this->contextManager = $contextManager;
         $this->productSorting = $productSorting;
-        $this->productMapFactory = $productMapFactory;
         $this->configReader = $configReader;
     }
 
@@ -60,12 +51,11 @@ class Products
      * @param int|null $limit
      * @param int|null $offset
      * @param array $uids
-     * @return Shopgate_Model_Catalog_Product[]
+     * @return ProductListResponse
      * @throws MissingContextException
      */
-    public function loadProducts(?int $limit, ?int $offset, array $uids = []): array
+    public function getProductList(?int $limit, ?int $offset, array $uids = []): ProductListResponse
     {
-        $minSortOrder = max($offset - 1, 0) * $limit;
         $context = $this->contextManager->getSalesContext();
 
         $criteria = (new Criteria($uids))
@@ -102,22 +92,7 @@ class Products
             }
             $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_OR, $filter));
         }
-        $response = $this->productListRoute->load($criteria, $context);
-        $list = [];
-        $i = 0;
-        foreach ($response->getProducts() as $product) {
-            $sortOrder = 1000000 - ($minSortOrder + $i++);
-            $shopgateProduct = $this->productMapFactory->createMapClass($product, $sortOrder);
-            $shopgateProduct->setItem($product);
-            try {
-                $list[] = $shopgateProduct->generateData();
-            } catch (Throwable $exception) {
-                $this->logger->error(
-                    "Skipping export of product with id: {$product->getId()}, message: " . $exception->getMessage()
-                );
-            }
-        }
 
-        return $list;
+        return $this->productListRoute->load($criteria, $context);
     }
 }

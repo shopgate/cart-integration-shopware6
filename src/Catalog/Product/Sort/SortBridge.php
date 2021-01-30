@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Catalog\Products;
+namespace Shopgate\Shopware\Catalog\Product\Sort;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -11,7 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class ProductSorting
+class SortBridge
 {
     /** @var SystemConfigService */
     private $systemConfigService;
