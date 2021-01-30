@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Utility;
+namespace Shopgate\Shopware\System\Log;
 
 interface LoggerInterface
 {

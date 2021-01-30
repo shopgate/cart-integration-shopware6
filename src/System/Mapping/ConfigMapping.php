@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Mapping;
 
-use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use ShopgateConfig;
 
 class ConfigMapping extends ShopgateConfig
 {
-    /** @var ConfigReaderInterface */
+    /** @var ConfigBridge */
     protected $configReader;
 
     /**
-     * @param ConfigReaderInterface $configReader
+     * @param ConfigBridge $configReader
      */
-    public function initShopwareConfig(ConfigReaderInterface $configReader): void
+    public function initShopwareConfig(ConfigBridge $configReader): void
     {
         // TODO do we need to save the config to the class as a property?
         // TODO read all the data from config (work in progress)

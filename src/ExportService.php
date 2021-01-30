@@ -9,7 +9,7 @@ use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Customer\CustomerBridge;
 use Shopgate\Shopware\System\Tax\TaxComposer;
-use Shopgate\Shopware\Utility\LoggerInterface;
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;

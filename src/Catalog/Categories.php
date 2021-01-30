@@ -5,7 +5,7 @@ namespace Shopgate\Shopware\Catalog;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Catalog\Mapping\CategoryMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\Utility\LoggerInterface;
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Category;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;

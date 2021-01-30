@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Mapping\ConfigMapping;
-use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
 use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends StorefrontController
 {
-    /** @var ConfigReaderInterface */
+    /** @var ConfigBridge */
     private $systemConfigService;
     /** @var ContextManager */
     private $contextManager;
@@ -30,13 +30,13 @@ class MainController extends StorefrontController
     private $channelContextFactory;
 
     /**
-     * @param ConfigReaderInterface $systemConfigService
+     * @param ConfigBridge $systemConfigService
      * @param ContainerInterface $container
      * @param ContextManager $context
      * @param SalesChannelContextFactory $channelContextFactory
      */
     public function __construct(
-        ConfigReaderInterface $systemConfigService,
+        ConfigBridge $systemConfigService,
         ContainerInterface $container,
         ContextManager $context,
         SalesChannelContextFactory $channelContextFactory

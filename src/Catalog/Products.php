@@ -2,12 +2,12 @@
 
 namespace Shopgate\Shopware\Catalog;
 
-use Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
 use Shopgate\Shopware\Catalog\Products\ProductSorting;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\Utility\LoggerInterface;
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\ProductListListRoute;
@@ -29,7 +29,7 @@ class Products
     private $productSorting;
     /** @var ProductMapFactory */
     private $productMapFactory;
-    /** @var ConfigReaderInterface */
+    /** @var ConfigBridge */
     private $configReader;
 
     /**
@@ -38,7 +38,7 @@ class Products
      * @param ContextManager $contextManager
      * @param ProductSorting $productSorting
      * @param ProductMapFactory $productMapFactory
-     * @param ConfigReaderInterface $configReader
+     * @param ConfigBridge $configReader
      */
     public function __construct(
         LoggerInterface $logger,
@@ -46,7 +46,7 @@ class Products
         ContextManager $contextManager,
         ProductSorting $productSorting,
         ProductMapFactory $productMapFactory,
-        ConfigReaderInterface $configReader
+        ConfigBridge $configReader
     ) {
         $this->logger = $logger;
         $this->productListRoute = $productListRoute;
@@ -94,10 +94,10 @@ class Products
         $types = $this->configReader->get('productTypesToExport');
         if (count($types) < 2) {
             $filter = [];
-            if (!in_array(ConfigReaderInterface::PROD_EXPORT_TYPE_SIMPLE, $types, true)) {
+            if (!in_array(ConfigBridge::PROD_EXPORT_TYPE_SIMPLE, $types, true)) {
                 $filter[] = new EqualsFilter('childCount', 0);
             }
-            if (!in_array(ConfigReaderInterface::PROD_EXPORT_TYPE_VARIANT, $types, true)) {
+            if (!in_array(ConfigBridge::PROD_EXPORT_TYPE_VARIANT, $types, true)) {
                 $filter[] = new RangeFilter('childCount', [RangeFilter::GT => 0]);
             }
             $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_OR, $filter));

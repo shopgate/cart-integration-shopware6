@@ -16,10 +16,6 @@
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
-        <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReader">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="system_config.repository" />
-        </service>
         <service id="Shopgate\Shopware\Catalog\Categories"/>
         <service id="Shopgate\Shopware\Catalog\Products"/>
         <service id="Shopgate\Shopware\Customer\CustomerComposer"/>
@@ -27,6 +23,8 @@
             <argument type="service" id="plugin.repository"/>
             <argument type="string">%kernel.shopware_version%</argument>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="system_config.repository" />
         </service>
         <service id="Shopgate\Shopware\Customer\CustomerBridge">
             <argument type="service" id="customer_group.repository"/>
@@ -62,7 +60,7 @@
         <service id="Shopgate\Shopware\ExportService"/>
         <service id="Shopgate\Shopware\ImportService"/>
         <service id="Shopgate\Shopware\Order\OrderComposer"/>
-        <service id="Shopgate\Shopware\Utility\Logger"/>
+        <service id="Shopgate\Shopware\System\Log\Logger"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
         </service>
@@ -71,8 +69,6 @@
         <service id="Shopgate\Shopware\System\Di\Forwarder" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <!-- Interfaces -->
-        <service id="Shopgate\Shopware\Utility\LoggerInterface" alias="Shopgate\Shopware\Utility\Logger"/>
-        <service id="Shopgate\Shopware\Components\ConfigManager\ConfigReaderInterface"
-                 alias="Shopgate\Shopware\Components\ConfigManager\ConfigReader"/>
+        <service id="Shopgate\Shopware\System\Log\LoggerInterface" alias="Shopgate\Shopware\System\Log\Logger"/>
     </services>
 </container>
