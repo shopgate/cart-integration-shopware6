@@ -3,9 +3,11 @@
 namespace Shopgate\Shopware\Catalog\Product;
 
 use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
+use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
+use Shopware\Core\Content\Product\ProductEntity;
 use Throwable;
 
 class ProductComposer
@@ -21,6 +23,7 @@ class ProductComposer
      * @param LoggerInterface $logger
      * @param ProductMapFactory $productMapFactory
      * @param ProductBridge $productBridge
+     * @param SortTree $sortTree
      */
     public function __construct(
         LoggerInterface $logger,
@@ -41,13 +44,11 @@ class ProductComposer
      */
     public function loadProducts(?int $limit, ?int $offset, array $uids = []): array
     {
-        $minSortOrder = max($offset - 1, 0) * $limit;
         $response = $this->productBridge->getProductList($limit, $offset, $uids);
         $list = [];
-        $i = 0;
+        /** @var ProductEntity $product */
         foreach ($response->getProducts() as $product) {
-            $sortOrder = 1000000 - ($minSortOrder + $i++);
-            $shopgateProduct = $this->productMapFactory->createMapClass($product, $sortOrder);
+            $shopgateProduct = $this->productMapFactory->createMapClass($product);
             $shopgateProduct->setItem($product);
             try {
                 $list[] = $shopgateProduct->generateData();

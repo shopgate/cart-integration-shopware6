@@ -35,12 +35,16 @@
             <argument type="service" id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Product\Property\PropertyBridge">
             <argument type="service" id="property_group.repository"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Product\Sort\SortBridge">
             <argument type="service" id="product_sorting.repository"/>
         </service>
+        <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree" />
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
             <argument type="service" id="salutation.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>

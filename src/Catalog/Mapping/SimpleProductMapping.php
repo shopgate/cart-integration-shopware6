@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Exception;
+use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_CategoryPath;
@@ -14,6 +15,7 @@ use Shopgate_Model_Catalog_Relation;
 use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
@@ -23,17 +25,17 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected $item;
     /** @var ContextManager */
     protected $contextManager;
-    /** @var int */
-    protected $sortOrder;
+    /** @var SortTree */
+    protected $sortTree;
 
     /**
      * @param ContextManager $contextManager
-     * @param int $sortOrder
+     * @param SortTree $sortTree
      */
-    public function __construct(ContextManager $contextManager, int $sortOrder)
+    public function __construct(ContextManager $contextManager, SortTree $sortTree)
     {
         $this->contextManager = $contextManager;
-        $this->sortOrder = $sortOrder;
+        $this->sortTree = $sortTree;
         parent::__construct();
     }
 
@@ -119,12 +121,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         }
 
         $shopgatePrice = $this->getPrice();
-
-        //todo-konstantin this is a hotfix, please check
         $shopgatePrice->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
-
         $shopgatePrice->setPrice($shopwarePrice->getGross());
-
         $shopgatePrice->setMsrp($shopwarePrice->getListPrice() ? $shopwarePrice->getListPrice()->getGross() : 0);
         if ($this->item->getPurchasePrices() && $cost = $this->item->getPurchasePrices()
                 ->getCurrencyPrice($currencyId)) {
@@ -161,14 +159,19 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     /**
      * Setting the same sort order for every category as supposedly
      * we have a sort order for the whole catalog.
+     * @throws MissingContextException
      */
     public function setCategoryPaths(): void
     {
+        $sortTree = $this->sortTree->getSortTree();
         $paths = [];
+        /** @var CategoryEntity $category */
         foreach ($this->item->getCategories() as $category) {
             $path = new Shopgate_Model_Catalog_CategoryPath();
-            $path->setSortOrder($this->sortOrder);
             $path->setUid($category->getId());
+            if (isset($sortTree[$category->getId()][$this->item->getId()])) {
+                $path->setSortOrder($sortTree[$category->getId()][$this->item->getId()]);
+            }
             $paths[] = $path;
         }
         parent::setCategoryPaths($paths);
@@ -236,7 +239,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setIdentifiers(): void
     {
-        //todo-konstantin this is a hotfix, please check
         $identifiers = [];
         if ($this->item->getEan()) {
             $identifier = new Shopgate_Model_Catalog_Identifier();

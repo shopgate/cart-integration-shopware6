@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
+use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_AttributeGroup;
@@ -12,21 +13,28 @@ class ConfigProductMapping extends SimpleProductMapping
 {
     /** @var ContextManager */
     protected $contextManager;
+    /** @var SortTree */
+    protected $sortTree;
     /** @var PropertyBridge */
     private $productProperties;
+    /** @var ChildProductMapping */
+    private $childProductMapping;
 
     /**
      * @param ContextManager $contextManager
-     * @param int $sortOrder
+     * @param SortTree $sortTree
      * @param PropertyBridge $productProperties
+     * @param ChildProductMapping $childProductMapping
      */
     public function __construct(
         ContextManager $contextManager,
-        int $sortOrder,
-        PropertyBridge $productProperties
+        SortTree $sortTree,
+        PropertyBridge $productProperties,
+        ChildProductMapping $childProductMapping
     ) {
-        parent::__construct($contextManager, $sortOrder);
+        parent::__construct($contextManager, $sortTree);
         $this->productProperties = $productProperties;
+        $this->childProductMapping = $childProductMapping;
     }
 
     /**
@@ -59,7 +67,7 @@ class ConfigProductMapping extends SimpleProductMapping
         $result = [];
         $children = $this->item->getChildren();
         foreach ($children as $child) {
-            $exportChild = new ChildProductMapping($this->contextManager, 0);
+            $exportChild = clone $this->childProductMapping;
             $exportChild->setItem($child);
             $result[] = $exportChild->generateData();
         }

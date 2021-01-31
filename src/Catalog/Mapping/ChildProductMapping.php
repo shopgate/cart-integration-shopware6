@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_Attribute;
 
@@ -10,11 +11,11 @@ class ChildProductMapping extends SimpleProductMapping
 
     /**
      * @param ContextManager $contextManager
-     * @param int $sortOrder
+     * @param SortTree $sortTree
      */
-    public function __construct(ContextManager $contextManager, int $sortOrder)
+    public function __construct(ContextManager $contextManager, SortTree $sortTree)
     {
-        parent::__construct($contextManager, $sortOrder);
+        parent::__construct($contextManager, $sortTree);
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';
     }

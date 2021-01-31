@@ -2,21 +2,23 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
-use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Product\ProductEntity;
 
 class ProductMapFactory
 {
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var PropertyBridge */
-    private $productProperties;
+    /** @var SimpleProductMapping */
+    private $simpleProductMapping;
+    /** @var ConfigProductMapping */
+    private $configProductMapping;
 
-    public function __construct(ContextManager $contextManager, PropertyBridge $productProperties)
+    /**
+     * @param SimpleProductMapping $simpleProductMapping
+     * @param ConfigProductMapping $configProductMapping
+     */
+    public function __construct(SimpleProductMapping $simpleProductMapping, ConfigProductMapping $configProductMapping)
     {
-        $this->contextManager = $contextManager;
-        $this->productProperties = $productProperties;
+        $this->simpleProductMapping = $simpleProductMapping;
+        $this->configProductMapping = $configProductMapping;
     }
 
     /**
@@ -24,13 +26,13 @@ class ProductMapFactory
      * @param int $sortPosition - todo: implement via cache and use DI instead
      * @return SimpleProductMapping|ConfigProductMapping
      */
-    public function createMapClass(ProductEntity $entity, int $sortPosition)
+    public function createMapClass(ProductEntity $entity)
     {
         /** @noinspection IsEmptyFunctionUsageInspection */
         if (empty($entity->getChildCount())) {
-            $product = new SimpleProductMapping($this->contextManager, $sortPosition);
+            $product = clone $this->simpleProductMapping;
         } else {
-            $product = new ConfigProductMapping($this->contextManager, $sortPosition, $this->productProperties);
+            $product = clone $this->configProductMapping;
         }
         return $product;
     }
