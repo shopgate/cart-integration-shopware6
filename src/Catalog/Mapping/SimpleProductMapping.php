@@ -246,6 +246,12 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $identifier->setValue($this->item->getEan());
             $identifiers[] = $identifier;
         }
+        if ($this->item->getProductNumber()) {
+            $identifier = new Shopgate_Model_Catalog_Identifier();
+            $identifier->setType('sku');
+            $identifier->setValue($this->item->getProductNumber());
+            $identifiers[] = $identifier;
+        }
         parent::setIdentifiers($identifiers);
     }
 
