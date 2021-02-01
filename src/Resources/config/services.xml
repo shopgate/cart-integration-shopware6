@@ -44,6 +44,9 @@
         <service id="Shopgate\Shopware\Catalog\Product\Sort\SortBridge">
             <argument type="service" id="product_sorting.repository"/>
         </service>
+        <service id="Shopgate\Shopware\Catalog\Product\Subscribers\ProductUpdateSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\System\FileCache">
             <argument>shopgate</argument>
             <argument>86400</argument>

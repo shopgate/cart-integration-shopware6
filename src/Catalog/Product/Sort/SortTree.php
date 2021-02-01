@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SortTree
 {
+    public const CACHE_KEY = 'shopgate.sort.tree';
     /** @var ContextManager */
     private $contextManager;
     /** @var CategoryBridge */
@@ -52,7 +53,7 @@ class SortTree
     public function getSortTree(?string $rootCategoryId = null): array
     {
         /** @var CacheItemInterface $tree */
-        $tree = $this->cache->getItem('shopgate.product.sort');
+        $tree = $this->cache->getItem(self::CACHE_KEY);
         if (!$tree->isHit()) {
             $build = $this->build($rootCategoryId);
             $tree->set($build);
