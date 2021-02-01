@@ -2,9 +2,12 @@
 
 namespace Shopgate\Shopware\Catalog\Product\Sort;
 
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\InvalidArgumentException;
 use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\FileCache;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute;
@@ -19,36 +22,43 @@ class SortTree
     private $categoryBridge;
     /** @var ProductListingRoute */
     private $listingRoute;
-    /** @var array */
-    private $sortTree;
+    /** @var FileCache */
+    private $cache;
 
     /**
      * @param ContextManager $contextManager
      * @param CategoryBridge $categoryBridge
      * @param ProductListingRoute $listingRoute
+     * @param FileCache $cacheObject
      */
     public function __construct(
+        FileCache $cacheObject,
         ContextManager $contextManager,
         CategoryBridge $categoryBridge,
         ProductListingRoute $listingRoute
     ) {
+        $this->cache = $cacheObject;
         $this->contextManager = $contextManager;
         $this->categoryBridge = $categoryBridge;
         $this->listingRoute = $listingRoute;
     }
 
     /**
-     * @todo-konstantin: cache this
      * @param string|null $rootCategoryId
      * @return array
      * @throws MissingContextException
+     * @throws InvalidArgumentException
      */
     public function getSortTree(?string $rootCategoryId = null): array
     {
-        if (null === $this->sortTree) {
-            $this->sortTree = $this->build($rootCategoryId);
+        /** @var CacheItemInterface $tree */
+        $tree = $this->cache->getItem('shopgate.product.sort');
+        if (!$tree->isHit()) {
+            $build = $this->build($rootCategoryId);
+            $tree->set($build);
+            $this->cache->save($tree);
         }
-        return $this->sortTree;
+        return $tree->get();
     }
 
     /**
