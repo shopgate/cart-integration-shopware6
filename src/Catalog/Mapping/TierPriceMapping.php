@@ -48,7 +48,7 @@ class TierPriceMapping
         /** @var ProductPriceEntity $swTier */
         foreach ($productEntity->getPrices() as $swTier) {
             $rule = $swTier->getRule();
-            if ($rule && $this->isValidRule($rule)) {
+            if ($rule && $this->validateRule($rule)) {
                 if (null === ($tierPrice = $this->mapProductTier($swTier, $productEntity))) {
                     continue;
                 }
@@ -71,35 +71,38 @@ class TierPriceMapping
     }
 
     /**
-     * Check if rule is valid for Shopgate export.
-     * We consider valid if:
-     * In AND condition only AlwaysValid or Group rule is present
-     * In OR condition if one of AlwaysValid or Group rules are present
-     *
      * @param RuleEntity $rule
      * @return bool
      */
-    private function isValidRule(RuleEntity $rule): bool
+    private function validateRule(RuleEntity $rule): bool
     {
         $payload = $rule->getPayload();
         if (!$payload instanceof Rule) {
             return false;
         }
-        if ($payload instanceof OrRule) {
-            return array_reduce($payload->getRules(), static function (bool $carry, Rule $item) {
-                return $carry || $item instanceof AlwaysValidRule || $item instanceof CustomerGroupRule;
-            }, false);
-        }
-        if ($payload instanceof AndRule) {
-            $rules = $payload->getRules();
-            $result = array_reduce($rules, static function (bool $carry, Rule $item) {
-                return $carry && ($item instanceof AlwaysValidRule || $item instanceof CustomerGroupRule);
-            }, true);
-            // will return true (valid) if array is empty, so we gotta check
-            return $rules && count($rules) && $result;
+
+        return $this->isValidRule(true, $payload);
+    }
+
+    /**
+     * Check if rule is valid for Shopgate export.
+     * We consider valid if:
+     * In AND condition only AlwaysValid or Group rule is present
+     * In OR condition if one of AlwaysValid or Group rules are present
+     *
+     * @param bool $carry - recursive memory
+     * @param AndRule|OrRule|Rule $rule
+     * @return bool
+     */
+    private function isValidRule(bool $carry, Rule $rule): bool
+    {
+        if ($rule instanceof OrRule || $rule instanceof AndRule) {
+            return array_reduce($rule->getRules(), function ($carry, Rule $rule) {
+                return $this->isValidRule($carry, $rule);
+            }, $carry);
         }
 
-        return false;
+        return $rule instanceof AlwaysValidRule || $rule instanceof CustomerGroupRule;
     }
 
     /**
@@ -140,13 +143,8 @@ class TierPriceMapping
      */
     private function getConditionalCustomerGroups($ruleContainer, CustomerGroupCollection $groupCollection): array
     {
+        $customerGroupRule = $this->findCustomerGroup(null, $ruleContainer);
         /** @var null|CustomerGroupRule $customerGroupRule */
-        $customerGroupRule = array_reduce($ruleContainer->getRules(), static function ($carry, Rule $item) {
-            if ($item instanceof CustomerGroupRule) {
-                return $item;
-            }
-            return $carry;
-        });
         if (null !== $customerGroupRule) {
             $reflection = new ReflectionClass(get_class($customerGroupRule));
             $grpProp = $reflection->getProperty('customerGroupIds');
@@ -162,5 +160,24 @@ class TierPriceMapping
         }
 
         return [];
+    }
+
+    /**
+     * @param null|CustomerGroupRule $carry
+     * @param AndRule|OrRule|Rule $rule
+     * @return CustomerGroupRule|null
+     */
+    private function findCustomerGroup(?CustomerGroupRule $carry, Rule $rule): ?CustomerGroupRule
+    {
+        if ($rule instanceof AndRule || $rule instanceof OrRule) {
+            return array_reduce($rule->getRules(), function ($carry, Rule $item) {
+                return $this->findCustomerGroup($carry, $item);
+            }, $carry);
+        }
+        if ($rule instanceof CustomerGroupRule) {
+            return $rule;
+        }
+
+        return $carry;
     }
 }
