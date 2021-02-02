@@ -5,6 +5,7 @@ namespace Shopgate\Shopware\Customer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
 use Shopware\Core\Checkout\Customer\Exception\InactiveCustomerException;
 use Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -45,10 +46,10 @@ class CustomerBridge
     }
 
     /**
-     * @return EntityCollection
+     * @return CustomerGroupCollection|EntityCollection
      * @throws MissingContextException
      */
-    public function getGroups(): EntityCollection
+    public function getGroups()
     {
         return $this->customerGroupRepository
             ->search(new Criteria(), $this->contextManager->getSalesContext()->getContext())

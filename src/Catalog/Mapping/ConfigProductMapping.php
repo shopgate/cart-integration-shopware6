@@ -23,16 +23,18 @@ class ConfigProductMapping extends SimpleProductMapping
     /**
      * @param ContextManager $contextManager
      * @param SortTree $sortTree
+     * @param TierPriceMapping $tierPriceMapping
      * @param PropertyBridge $productProperties
      * @param ChildProductMapping $childProductMapping
      */
     public function __construct(
         ContextManager $contextManager,
         SortTree $sortTree,
+        TierPriceMapping $tierPriceMapping,
         PropertyBridge $productProperties,
         ChildProductMapping $childProductMapping
     ) {
-        parent::__construct($contextManager, $sortTree);
+        parent::__construct($contextManager, $sortTree, $tierPriceMapping);
         $this->productProperties = $productProperties;
         $this->childProductMapping = $childProductMapping;
     }

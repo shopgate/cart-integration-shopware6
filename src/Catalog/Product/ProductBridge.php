@@ -76,7 +76,9 @@ class ProductBridge
                 'children',
                 'children.media',
                 'children.options',
-                'children.seoUrls'
+                'children.seoUrls',
+                'prices',
+                'prices.rule'
             ])
             ->addSorting(...$this->productSorting->getDefaultSorting());
 

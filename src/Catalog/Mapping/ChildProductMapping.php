@@ -12,10 +12,11 @@ class ChildProductMapping extends SimpleProductMapping
     /**
      * @param ContextManager $contextManager
      * @param SortTree $sortTree
+     * @param TierPriceMapping $tierPriceMapping
      */
-    public function __construct(ContextManager $contextManager, SortTree $sortTree)
+    public function __construct(ContextManager $contextManager, SortTree $sortTree, TierPriceMapping $tierPriceMapping)
     {
-        parent::__construct($contextManager, $sortTree);
+        parent::__construct($contextManager, $sortTree, $tierPriceMapping);
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';
     }

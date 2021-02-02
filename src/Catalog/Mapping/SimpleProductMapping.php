@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Exception;
+use Psr\Cache\InvalidArgumentException;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -27,15 +28,19 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected $contextManager;
     /** @var SortTree */
     protected $sortTree;
+    /** @var TierPriceMapping */
+    protected $tierPriceMapping;
 
     /**
      * @param ContextManager $contextManager
      * @param SortTree $sortTree
+     * @param TierPriceMapping $tierPriceMapping
      */
-    public function __construct(ContextManager $contextManager, SortTree $sortTree)
+    public function __construct(ContextManager $contextManager, SortTree $sortTree, TierPriceMapping $tierPriceMapping)
     {
         $this->contextManager = $contextManager;
         $this->sortTree = $sortTree;
+        $this->tierPriceMapping = $tierPriceMapping;
         parent::__construct();
     }
 
@@ -117,7 +122,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     {
         $currencyId = $this->contextManager->getSalesContext()->getCurrency()->getId();
         if (!$shopwarePrice = $this->item->getCurrencyPrice($currencyId)) {
-            throw new Exception('Could not find context currency: ' . $currencyId);
+            throw new MissingContextException('Could not find context currency: ' . $currencyId);
         }
 
         $shopgatePrice = $this->getPrice();
@@ -128,6 +133,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 ->getCurrencyPrice($currencyId)) {
             $shopgatePrice->setCost($cost->getGross());
         }
+        $shopgatePrice->setTierPricesGroup($this->tierPriceMapping->mapTierPrices($this->item));
 
         parent::setPrice($shopgatePrice);
     }
@@ -160,6 +166,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
      * Setting the same sort order for every category as supposedly
      * we have a sort order for the whole catalog.
      * @throws MissingContextException
+     * @throws InvalidArgumentException
      */
     public function setCategoryPaths(): void
     {

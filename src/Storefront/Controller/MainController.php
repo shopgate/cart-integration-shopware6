@@ -55,6 +55,7 @@ class MainController extends StorefrontController
      */
     public function execute(Request $request): JsonResponse
     {
+        define('SHOPGATE_DEBUG', 1);
         $salesChannelId = $this->systemConfigService->getSalesChannelId(
             $request->request->get('shop_number')
         );

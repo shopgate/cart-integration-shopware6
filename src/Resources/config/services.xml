@@ -34,10 +34,14 @@
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute"/>
             <argument type="service" id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         </service>
-        <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\TierPriceMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Product\Price\PriceRuleBridge">
+            <argument type="service" id="rule.repository"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Product\Property\PropertyBridge">
             <argument type="service" id="property_group.repository"/>
         </service>
