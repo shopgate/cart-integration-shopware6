@@ -7,6 +7,7 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Exception\InactiveCustomerException;
 use Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -44,27 +45,14 @@ class CustomerBridge
     }
 
     /**
-     * @return array[]
+     * @return EntityCollection
      * @throws MissingContextException
      */
-    public function getCustomerGroups(): array
+    public function getGroups(): EntityCollection
     {
-        $defaultCustomerGroupId = $this->contextManager->getSalesContext()->getCurrentCustomerGroup()->getId();
-        $customerGroups = $this->customerGroupRepository
+        return $this->customerGroupRepository
             ->search(new Criteria(), $this->contextManager->getSalesContext()->getContext())
-            ->getEntities()
-            ->getElements();
-
-        $result = [];
-        foreach ($customerGroups as $id => $customerGroup) {
-            $result[] = [
-                'name' => $customerGroup->getName(),
-                'id' => $id,
-                'is_default' => $id === $defaultCustomerGroupId ? '1' : '0',
-                'customer_tax_class_key' => 'default',
-            ];
-        }
-        return $result;
+            ->getEntities();
     }
 
     /**

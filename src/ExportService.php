@@ -4,12 +4,11 @@ namespace Shopgate\Shopware;
 
 use Shopgate\Shopware\Catalog\Category\CategoryComposer;
 use Shopgate\Shopware\Catalog\Product\ProductComposer;
+use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
-use Shopgate\Shopware\Customer\CustomerComposer;
-use Shopgate\Shopware\Customer\CustomerBridge;
-use Shopgate\Shopware\System\Tax\TaxComposer;
 use Shopgate\Shopware\System\Log\LoggerInterface;
+use Shopgate\Shopware\System\Tax\TaxComposer;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;
@@ -22,46 +21,41 @@ class ExportService
     /** @var CategoryComposer */
     private $categoryComposer;
     /** @var ConfigBridge */
-    private $configExport;
-    /** @var CustomerBridge */
-    private $customerBridge;
+    private $configBridge;
     /** @var TaxComposer */
     private $taxComposer;
     /** @var CustomerComposer */
     private $customerComposer;
     /** @var ProductComposer */
-    private $productHelper;
+    private $productComposer;
 
     /**
      * @param LoggerInterface $logger
      * @param CategoryComposer $categoryComposer
-     * @param ConfigBridge $configExport
-     * @param CustomerBridge $customerBridge
+     * @param ConfigBridge $configBridge
      * @param TaxComposer $taxComposer
      * @param CustomerComposer $customerHelper
-     * @param ProductComposer $productHelper
+     * @param ProductComposer $productComposer
      */
     public function __construct(
         LoggerInterface $logger,
         CategoryComposer $categoryComposer,
-        ConfigBridge $configExport,
-        CustomerBridge $customerBridge,
+        ConfigBridge $configBridge,
         TaxComposer $taxComposer,
         CustomerComposer $customerHelper,
-        ProductComposer $productHelper
+        ProductComposer $productComposer
     ) {
         $this->log = $logger;
         $this->categoryComposer = $categoryComposer;
-        $this->configExport = $configExport;
-        $this->customerBridge = $customerBridge;
+        $this->configBridge = $configBridge;
         $this->taxComposer = $taxComposer;
         $this->customerComposer = $customerHelper;
-        $this->productHelper = $productHelper;
+        $this->productComposer = $productComposer;
     }
 
     /**
-     * @param null | string $limit
-     * @param null | string $offset
+     * @param null | int $limit
+     * @param null | int $offset
      * @param string[] $ids
      * @return Shopgate_Model_Catalog_Category[]
      * @throws MissingContextException
@@ -87,7 +81,7 @@ class ExportService
     public function getProducts(int $limit = null, int $offset = null, array $ids = []): array
     {
         $this->log->info('Start Product Export...');
-        $export = $this->productHelper->loadProducts($limit, $offset, $ids);
+        $export = $this->productComposer->loadProducts($limit, $offset, $ids);
         $this->log->info('Finished Product Export...');
 
         return $export;
@@ -110,7 +104,7 @@ class ExportService
      */
     public function definePluginVersion(): void
     {
-        define('SHOPGATE_PLUGIN_VERSION', $this->configExport->getShopgatePluginVersion());
+        define('SHOPGATE_PLUGIN_VERSION', $this->configBridge->getShopgatePluginVersion());
     }
 
     /**
@@ -119,7 +113,7 @@ class ExportService
     public function getInfo(): array
     {
         return [
-            'Shopware core version' => $this->configExport->getShopwareVersion()
+            'Shopware core version' => $this->configBridge->getShopwareVersion()
         ];
     }
 
@@ -130,7 +124,7 @@ class ExportService
     public function getSettings(): array
     {
         return [
-            'customer_groups' => $this->customerBridge->getCustomerGroups(),
+            'customer_groups' => $this->customerComposer->getCustomerGroups(),
             'tax' => $this->taxComposer->getTaxSettings(),
             'allowed_address_countries' => [],
             'allowed_shipping_countries' => [],
