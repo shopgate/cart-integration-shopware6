@@ -47,23 +47,11 @@
         <service id="Shopgate\Shopware\Catalog\Product\Subscribers\ProductUpdateSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Shopgate\Shopware\System\FileCache">
-            <argument>shopgate</argument>
-            <argument>86400</argument>
-            <argument>%kernel.cache_dir%</argument>
-        </service>
         <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree"/>
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
             <argument type="service" id="salutation.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
-        <service id="Shopgate\Shopware\System\Tax\TaxBridge">
-            <argument type="service" id="tax.repository"/>
-            <argument type="service" id="tax_rule.repository"/>
-            <argument type="service" id="tax_rule_type.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
-        </service>
-        <service id="Shopgate\Shopware\System\Tax\TaxComposer" />
         <service id="Shopgate\Shopware\Customer\Mapping\AddressMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\GroupMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\LocationMapping">
@@ -74,7 +62,19 @@
         <service id="Shopgate\Shopware\ExportService"/>
         <service id="Shopgate\Shopware\ImportService"/>
         <service id="Shopgate\Shopware\Order\OrderComposer"/>
+        <service id="Shopgate\Shopware\System\FileCache">
+            <argument>shopgate</argument>
+            <argument>86400</argument>
+            <argument>%kernel.cache_dir%</argument>
+        </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
+        <service id="Shopgate\Shopware\System\Tax\TaxBridge">
+            <argument type="service" id="tax.repository"/>
+            <argument type="service" id="tax_rule.repository"/>
+            <argument type="service" id="tax_rule_type.repository"/>
+            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
+        </service>
+        <service id="Shopgate\Shopware\System\Tax\TaxComposer" />
         <service id="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
         </service>
