@@ -108,13 +108,9 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
         return '';
     }
 
-    /**
-     * Seems like SW6 shows sub-cat products
-     * by default, don't see a setting for this
-     */
     public function setIsAnchor(): void
     {
-        parent::setIsAnchor(true);
+        parent::setIsAnchor($this->item->getDisplayNestedProducts());
     }
 
     /**
