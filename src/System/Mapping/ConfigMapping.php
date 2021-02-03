@@ -17,8 +17,6 @@ class ConfigMapping extends ShopgateConfig
      */
     public function initShopwareConfig(ConfigBridge $configReader): void
     {
-        // TODO do we need to save the config to the class as a property?
-        // TODO read all the data from config (work in progress)
         $this->configReader = $configReader;
         $this->setShopIsActive($this->configReader->get('isActive'));
         $this->setCustomerNumber($this->configReader->get('customerNumber'));

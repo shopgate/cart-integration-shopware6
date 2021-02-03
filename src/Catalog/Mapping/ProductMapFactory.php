@@ -23,7 +23,6 @@ class ProductMapFactory
 
     /**
      * @param ProductEntity $entity
-     * @param int $sortPosition - todo: implement via cache and use DI instead
      * @return SimpleProductMapping|ConfigProductMapping
      */
     public function createMapClass(ProductEntity $entity)
