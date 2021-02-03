@@ -73,7 +73,6 @@ class SortTree
         if (null === $rootCategoryId) {
             $rootCategoryId = $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
         }
-        //todo-konstantin: don't load no product categories
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
         /** @var CategoryEntity $category */
         foreach ($categories as $category) {
