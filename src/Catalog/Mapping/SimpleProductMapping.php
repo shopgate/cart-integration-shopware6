@@ -9,10 +9,13 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_CategoryPath;
 use Shopgate_Model_Catalog_Identifier;
+use Shopgate_Model_Catalog_Manufacturer;
 use Shopgate_Model_Catalog_Price;
 use Shopgate_Model_Catalog_Product;
 use Shopgate_Model_Catalog_Property;
 use Shopgate_Model_Catalog_Relation;
+use Shopgate_Model_Catalog_Shipping;
+use Shopgate_Model_Catalog_Stock;
 use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
@@ -125,7 +128,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             throw new MissingContextException('Could not find context currency: ' . $currencyId);
         }
 
-        $shopgatePrice = $this->getPrice();
+        $shopgatePrice = new Shopgate_Model_Catalog_Price();
         $shopgatePrice->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
         $shopgatePrice->setPrice($shopwarePrice->getGross());
         $shopgatePrice->setMsrp($shopwarePrice->getListPrice() ? $shopwarePrice->getListPrice()->getGross() : 0);
@@ -186,14 +189,14 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setShipping(): void
     {
-        $shipping = $this->getShipping();
+        $shipping = new Shopgate_Model_Catalog_Shipping();
         $shipping->setIsFree($this->item->getShippingFree());
         parent::setShipping($shipping);
     }
 
     public function setVisibility(): void
     {
-        $visibility = $this->getVisibility();
+        $visibility = new Shopgate_Model_Catalog_Visibility();
         $visible = $this->item->getActive()
             ? Shopgate_Model_Catalog_Visibility::DEFAULT_VISIBILITY_CATALOG_AND_SEARCH
             : Shopgate_Model_Catalog_Visibility::DEFAULT_VISIBILITY_NOTHING;
@@ -203,7 +206,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setManufacturer(): void
     {
-        $manufacturer = $this->getManufacturer();
+        $manufacturer = new Shopgate_Model_Catalog_Manufacturer();
         if ($this->item->getManufacturer()) {
             $manufacturer->setTitle($this->item->getManufacturer()->getName());
         }
@@ -234,7 +237,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setStock(): void
     {
-        $stock = $this->getStock();
+        $stock = new Shopgate_Model_Catalog_Stock();
         $stock->setUseStock($this->item->getAvailableStock() > 0);
         $stock->setIsSaleable($this->item->getAvailableStock() > 0);
         $stock->setStockQuantity($this->item->getAvailableStock());

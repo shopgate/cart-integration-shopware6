@@ -9,7 +9,6 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\FileCache;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,7 +83,6 @@ class SortTree
             $result = $this->listingRoute
                 ->load($category->getId(), $request, $this->contextManager->getSalesContext(), new Criteria())
                 ->getResult();
-            /** @var ProductCollection $entities */
             $products = $result->getEntities();
             $maxProducts = $products->count();
             $i = 0;

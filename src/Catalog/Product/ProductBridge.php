@@ -57,7 +57,6 @@ class ProductBridge
     public function getProductList(?int $limit, ?int $offset, array $uids = []): ProductListResponse
     {
         $context = $this->contextManager->getSalesContext();
-
         $criteria = (new Criteria($uids))
             ->setLimit($limit)
             ->setOffset($offset)
