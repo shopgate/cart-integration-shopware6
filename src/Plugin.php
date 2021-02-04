@@ -59,7 +59,17 @@ class Plugin extends ShopgatePlugin
 
     public function addOrder(ShopgateOrder $order)
     {
-        // TODO: Implement addOrder() method.
+//        todo-rainer remove the logging
+//         log an order to have an example to work with
+//        $this->log('addOrder: ');
+//        $this->log(print_r($order->toArray(), true));
+
+        throw new ShopgateLibraryException(
+            ShopgateLibraryException::PLUGIN_CUSTOMER_UNKNOWN_ERROR,
+            'not implemented yes. this is work in progress',
+            true,
+            false
+        );
     }
 
     public function updateOrder(ShopgateOrder $order)
@@ -70,9 +80,14 @@ class Plugin extends ShopgatePlugin
     /**
      * @param ShopgateCart $cart
      * @return array
+     * @throws Exceptions\MissingContextException
      */
     public function checkCart(ShopgateCart $cart)
     {
+//        todo-rainer remove the logging
+//        log a request to have an example to work with
+//        $this->log('check_cart: ');
+//        $this->log(print_r($cart->toArray(), true));
         return $this->forwarder->getImportService()->checkCart($cart);
     }
 
