@@ -125,18 +125,20 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     {
         $currencyId = $this->contextManager->getSalesContext()->getCurrency()->getId();
         if (!$shopwarePrice = $this->item->getCurrencyPrice($currencyId)) {
-            throw new MissingContextException('Could not find context currency: ' . $currencyId);
+            throw new MissingContextException('Could not find price for currency: ' . $currencyId);
         }
-
+        $highestPrice = $this->tierPriceMapping->getHighestPrice($this->item->getPrices(), $shopwarePrice);
         $shopgatePrice = new Shopgate_Model_Catalog_Price();
         $shopgatePrice->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
-        $shopgatePrice->setPrice($shopwarePrice->getGross());
+        $shopgatePrice->setPrice($highestPrice->getGross());
         $shopgatePrice->setMsrp($shopwarePrice->getListPrice() ? $shopwarePrice->getListPrice()->getGross() : 0);
         if ($this->item->getPurchasePrices() && $cost = $this->item->getPurchasePrices()
                 ->getCurrencyPrice($currencyId)) {
             $shopgatePrice->setCost($cost->getGross());
         }
-        $shopgatePrice->setTierPricesGroup($this->tierPriceMapping->mapTierPrices($this->item));
+        $shopgatePrice->setTierPricesGroup(
+            $this->tierPriceMapping->mapTierPrices($this->item->getPrices(), $highestPrice)
+        );
 
         parent::setPrice($shopgatePrice);
     }

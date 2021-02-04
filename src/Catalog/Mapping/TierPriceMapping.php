@@ -11,9 +11,10 @@ use Shopgate_Model_Catalog_TierPrice;
 use Shopware\Core\Checkout\Cart\Rule\AlwaysValidRule;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
 use Shopware\Core\Checkout\Customer\Rule\CustomerGroupRule;
+use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceEntity;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Rule\RuleEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\Framework\Rule\Container\OrRule;
 use Shopware\Core\Framework\Rule\Rule;
@@ -36,38 +37,55 @@ class TierPriceMapping
     }
 
     /**
-     * @param ProductEntity $productEntity
+     * @param ProductPriceCollection $priceCollection
+     * @param Price $mainPrice
      * @return Shopgate_Model_Catalog_TierPrice[]
      * @throws MissingContextException
      * @throws ReflectionException
      */
-    public function mapTierPrices(ProductEntity $productEntity): array
+    public function mapTierPrices(ProductPriceCollection $priceCollection, Price $mainPrice): array
     {
         $groups = $this->customerBridge->getGroups();
         $list = [];
-        /** @var ProductPriceEntity $swTier */
-        foreach ($productEntity->getPrices() as $swTier) {
-            $rule = $swTier->getRule();
-            if ($rule && $this->validateRule($rule)) {
-                if (null === ($tierPrice = $this->mapProductTier($swTier, $productEntity))) {
-                    continue;
+        foreach ($this->getValidTiers($priceCollection) as $swTier) {
+            if (null === ($tierPrice = $this->mapProductTier($swTier, $mainPrice))) {
+                continue;
+            }
+            /** @var AndRule|OrRule $payload */
+            /** @noinspection NullPointerExceptionInspection */
+            $payload = $swTier->getRule()->getPayload();
+            $validGroupIds = $this->getConditionalCustomerGroups($payload, $groups);
+            if ($validGroupIds) {
+                foreach ($validGroupIds as $groupId) {
+                    $newTierPrice = clone $tierPrice;
+                    $newTierPrice->setCustomerGroupUid($groupId);
+                    $list[] = $newTierPrice;
                 }
-                /** @var AndRule|OrRule $payload */
-                $payload = $rule->getPayload();
-                $validGroupIds = $this->getConditionalCustomerGroups($payload, $groups);
-                if ($validGroupIds) {
-                    foreach ($validGroupIds as $groupId) {
-                        $newTierPrice = clone $tierPrice;
-                        $newTierPrice->setCustomerGroupUid($groupId);
-                        $list[] = $newTierPrice;
-                    }
-                } else {
-                    $list[] = $tierPrice;
-                }
+            } else {
+                $list[] = $tierPrice;
             }
         }
 
         return $list;
+    }
+
+    /**
+     * Only returns tier price with valid rules
+     *
+     * @param ProductPriceCollection $priceCollection
+     * @return ProductPriceEntity[]
+     */
+    private function getValidTiers(ProductPriceCollection $priceCollection): array
+    {
+        $validRules = [];
+        /** @var ProductPriceEntity $swTier */
+        foreach ($priceCollection as $swTier) {
+            $rule = $swTier->getRule();
+            if ($rule && $this->validateRule($rule)) {
+                $validRules[] = $swTier;
+            }
+        }
+        return $validRules;
     }
 
     /**
@@ -107,22 +125,20 @@ class TierPriceMapping
 
     /**
      * @param ProductPriceEntity $priceEntity
-     * @param ProductEntity $productEntity
+     * @param Price $normalPrice
      * @return null|Shopgate_Model_Catalog_TierPrice
      * @throws MissingContextException
      */
     private function mapProductTier(
         ProductPriceEntity $priceEntity,
-        ProductEntity $productEntity
+        Price $normalPrice
     ): ?Shopgate_Model_Catalog_TierPrice {
         $currencyId = $this->contextManager->getSalesContext()->getSalesChannel()->getCurrencyId();
         $tierPrice = new Shopgate_Model_Catalog_TierPrice();
         $tierPrice->setFromQuantity($priceEntity->getQuantityStart());
         $tierPrice->setToQuantity($priceEntity->getQuantityEnd());
         $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
-        if ($productEntity->getPrice()
-            && $priceEntity->getPrice()
-            && ($normalPrice = $productEntity->getPrice()->getCurrencyPrice($currencyId, true))
+        if ($priceEntity->getPrice()
             && ($reducedPrice = $priceEntity->getPrice()->getCurrencyPrice($currencyId, true))
         ) {
             $tierPrice->setReduction($normalPrice->getGross() - $reducedPrice->getGross());
@@ -179,5 +195,26 @@ class TierPriceMapping
         }
 
         return $carry;
+    }
+
+    /**
+     * @param ProductPriceCollection $priceCollection
+     * @param Price $basePrice
+     * @return Price
+     * @throws MissingContextException
+     */
+    public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice): Price
+    {
+        $currencyId = $this->contextManager->getSalesContext()->getSalesChannel()->getCurrencyId();
+        $reduced = array_reduce(
+            $this->getValidTiers($priceCollection),
+            static function (Price $carry, ProductPriceEntity $entity) use ($currencyId) {
+                $curPrice = $entity->getPrice()->getCurrencyPrice($currencyId);
+                return $carry > $curPrice ? $carry : $curPrice;
+            },
+            $basePrice
+        );
+
+        return $reduced;
     }
 }
