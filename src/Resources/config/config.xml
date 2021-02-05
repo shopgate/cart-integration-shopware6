@@ -25,7 +25,6 @@
         <input-field type="multi-select">
             <name>productTypesToExport</name>
             <label>Product types to be exported</label>
-            <defaultValue>simple,variant</defaultValue>
             <options>
                 <option>
                     <id>simple</id>

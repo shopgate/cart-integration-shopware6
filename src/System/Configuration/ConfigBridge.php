@@ -17,6 +17,7 @@ use Throwable;
 class ConfigBridge
 {
     public const SYSTEM_CONFIG_DOMAIN = 'ShopgateModule.config.';
+    public const SYSTEM_CONFIG_PROD_EXPORT = self::SYSTEM_CONFIG_DOMAIN . 'productTypesToExport';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 
