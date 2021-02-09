@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\System\Di\Forwarder;
 use Shopgate\Shopware\Exceptions\DiException;
@@ -88,7 +89,8 @@ class Plugin extends ShopgatePlugin
 //        log a request to have an example to work with
 //        $this->log('check_cart: ');
 //        $this->log(print_r($cart->toArray(), true));
-        return $this->forwarder->getImportService()->checkCart($cart);
+        $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
+        return $this->forwarder->getImportService()->checkCart($newCart);
     }
 
     public function checkStock(ShopgateCart $cart)

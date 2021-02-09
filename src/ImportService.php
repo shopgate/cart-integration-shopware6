@@ -2,10 +2,10 @@
 
 namespace Shopgate\Shopware;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Customer\CustomerComposer;
+use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\OrderComposer;
-use ShopgateCart;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use ShopgateCustomer;
 use ShopgateLibraryException;
 
@@ -39,11 +39,11 @@ class ImportService
     }
 
     /**
-     * @param ShopgateCart $cart
+     * @param ExtendedCart $cart
      * @return array
      * @throws MissingContextException
      */
-    public function checkCart(ShopgateCart $cart): array
+    public function checkCart(ExtendedCart $cart): array
     {
         return $this->orderImport->checkCart($cart);
     }

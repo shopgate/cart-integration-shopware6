@@ -3,53 +3,54 @@
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Customer\Mapping\LocationMapping;
+use Shopgate\Shopware\Order\Mapping\LineItemMapping;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
-use ShopgateCart;
 use ShopgateCartBase;
 use ShopgateCartCustomer;
 use ShopgateCartCustomerGroup;
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\CartCalculator;
-use Shopware\Core\Checkout\Cart\CartRuleLoader;
-use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartItemAddRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 class OrderComposer
 {
-    /** @var LocationMapping */
-    private $locationMapping;
     /** @var ContextManager */
     private $contextManager;
-    /** @var CartRuleLoader */
-    private $cartRuleLoader;
-    /** @var CartCalculator */
-    private $cartCalculator;
+    /** @var CartLoadRoute */
+    private $cartLoadRoute;
+    /** @var CartItemAddRoute */
+    private $cartItemAddRoute;
+    /** @var LineItemMapping */
+    private $lineItemMapping;
 
     /**
-     * @param LocationMapping $locationMapping
      * @param ContextManager $contextManager
+     * @param CartLoadRoute $cartLoadRoute
+     * @param CartItemAddRoute $cartItemAddRoute
+     * @param LineItemMapping $lineItemMapping
      */
     public function __construct(
-        LocationMapping $locationMapping,
         ContextManager $contextManager,
-        CartRuleLoader $cartRuleLoader,
-        CartCalculator $cartCalculator
+        CartLoadRoute $cartLoadRoute,
+        CartItemAddRoute $cartItemAddRoute,
+        LineItemMapping $lineItemMapping
     ) {
-        $this->locationMapping = $locationMapping;
         $this->contextManager = $contextManager;
-        $this->cartRuleLoader = $cartRuleLoader;
-        $this->cartCalculator = $cartCalculator;
+        $this->cartLoadRoute = $cartLoadRoute;
+        $this->cartItemAddRoute = $cartItemAddRoute;
+        $this->lineItemMapping = $lineItemMapping;
     }
 
     /**
-     * @param ShopgateCart $cart
+     * @param ExtendedCart $cart
      * @return array
      * @throws MissingContextException
      */
-    public function checkCart(ShopgateCart $cart): array
+    public function checkCart(ExtendedCart $cart): array
     {
         try {
             $this->contextManager->loadByCustomerId($cart->getExternalCustomerId());
@@ -59,14 +60,15 @@ class OrderComposer
         $context = $this->contextManager->getSalesContext();
 
         $shopwareCart = $this->buildShopwareCart($context, $cart);
+        $items = $this->lineItemMapping->mapOutgoingLineItems($shopwareCart, $cart);
 
         return [
-            "currency" => $context->getCurrency()->getIsoCode(),
-            "external_coupons" => [], // todo-rainer implement
-            "shipping_methods" => [], // todo-rainer implement
-            "payment_methods" => [], // out of scope
-            "items" => [], // todo-rainer implement
-            "customer" => $this->getCartCustomer(),
+            'currency' => $context->getCurrency()->getIsoCode(),
+            'external_coupons' => [], // todo-rainer implement
+            'shipping_methods' => [], // todo-rainer implement
+            'payment_methods' => [], // out of scope
+            'items' => $items,
+            'customer' => $this->getCartCustomer(),
         ];
     }
 
@@ -77,21 +79,13 @@ class OrderComposer
      */
     protected function buildShopwareCart(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
-        $shopwareCart = $this->cartRuleLoader->loadByToken($context, $context->getToken())->getCart();
-
-        $lineItems = [];
-        foreach ($cart->getItems() as $item) {
-            $productId = $item->getItemNumber();
-            //todo-rainer manage configurable items
-            $lineItems[] = new LineItem($productId, 'product', $productId, $item->getQuantity());
-        }
-
-        $shopwareCart->setLineItems(new LineItemCollection($lineItems));
-
-        $shopwareCart = $this->cartCalculator->calculate($shopwareCart, $context);
+        $shopwareCart = $this->cartLoadRoute->load(new Request(), $context)->getCart();
+        $lineItems = $this->lineItemMapping->mapIncomingLineItems($cart);
+        $request = new Request();
+        $request->request->set('items', $lineItems);
+        $shopwareCart = $this->cartItemAddRoute->add($request, $shopwareCart, $context, null)->getCart();
 
         return $shopwareCart;
-
     }
 
     /**
