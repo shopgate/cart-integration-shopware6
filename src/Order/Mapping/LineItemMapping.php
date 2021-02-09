@@ -9,6 +9,7 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
 use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
@@ -58,7 +59,17 @@ class LineItemMapping
             }
             if ($price = $lineItem->getPrice()) {
                 $sgCartItem->setStockQuantity($price->getQuantity());
-                $sgCartItem->setUnitAmountWithTax(round($price->getUnitPrice(), 4));
+                $sgCartItem->setUnitAmountWithTax(round($price->getUnitPrice(), 2));
+
+                /** @var CalculatedTax $tax */
+                $tax = array_reduce(
+                    $price->getCalculatedTaxes()->getElements(),
+                    static function (float $carry, CalculatedTax $tax) {
+                        return $carry + $tax->getTax();
+                    },
+                    0.0
+                );
+                $sgCartItem->setUnitAmount(round($price->getUnitPrice() - ($tax / $price->getQuantity()), 2));
 
                 if ($errors = $this->getProductErrors($cart, $id)) {
                     $text = '';
