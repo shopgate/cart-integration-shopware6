@@ -9,7 +9,6 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
 use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
@@ -24,7 +23,6 @@ class LineItemMapping
     {
         $lineItems = [];
         foreach ($cart->getItems() as $item) {
-            //todo-rainer manage configurable items
             $lineItems[] = [
                 'id' => $item->getItemNumber(),
                 'referencedId' => $item->getItemNumber(),
@@ -53,6 +51,7 @@ class LineItemMapping
             }
             $sgCartItem = (new ExtendedCartItem())->transformFromOrderItem($incomingItem);
             $sgCartItem->setItemNumber($id);
+            $sgCartItem->setIsBuyable(1);
             $sgCartItem->setQtyBuyable($lineItem->getQuantity());
             if ($delivery = $lineItem->getDeliveryInformation()) {
                 $sgCartItem->setQtyBuyable($delivery->getStock());
@@ -60,18 +59,7 @@ class LineItemMapping
             if ($price = $lineItem->getPrice()) {
                 $sgCartItem->setStockQuantity($price->getQuantity());
                 $sgCartItem->setUnitAmountWithTax(round($price->getUnitPrice(), 4));
-                /** @var CalculatedTax $tax */
-                $tax = array_reduce(
-                    $price->getCalculatedTaxes()->getElements(),
-                    static function (float $carry, CalculatedTax $tax) {
-                        return $carry + $tax->getTax();
-                    },
-                    0.0
-                );
-                //todo investigate tax calculation issues
-                if ($tax < $price->getUnitPrice()) {
-                    $sgCartItem->setUnitAmount(round($price->getUnitPrice() - $tax, 4));
-                }
+
                 if ($errors = $this->getProductErrors($cart, $id)) {
                     $text = '';
                     foreach ($errors as $error) {
