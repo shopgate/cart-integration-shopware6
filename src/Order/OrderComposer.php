@@ -3,7 +3,6 @@
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Order\Mapping\LineItemMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCartBase;
@@ -24,25 +23,25 @@ class OrderComposer
     private $cartLoadRoute;
     /** @var CartItemAddRoute */
     private $cartItemAddRoute;
-    /** @var LineItemMapping */
-    private $lineItemMapping;
+    /** @var LineItemComposer */
+    private $lineItemComposer;
 
     /**
      * @param ContextManager $contextManager
      * @param CartLoadRoute $cartLoadRoute
      * @param CartItemAddRoute $cartItemAddRoute
-     * @param LineItemMapping $lineItemMapping
+     * @param LineItemComposer $lineItemComposer
      */
     public function __construct(
         ContextManager $contextManager,
         CartLoadRoute $cartLoadRoute,
         CartItemAddRoute $cartItemAddRoute,
-        LineItemMapping $lineItemMapping
+        LineItemComposer $lineItemComposer
     ) {
         $this->contextManager = $contextManager;
         $this->cartLoadRoute = $cartLoadRoute;
         $this->cartItemAddRoute = $cartItemAddRoute;
-        $this->lineItemMapping = $lineItemMapping;
+        $this->lineItemComposer = $lineItemComposer;
     }
 
     /**
@@ -58,16 +57,15 @@ class OrderComposer
             // todo-rainer log
         }
         $context = $this->contextManager->getSalesContext();
-
         $shopwareCart = $this->buildShopwareCart($context, $cart);
-        $items = $this->lineItemMapping->mapOutgoingLineItems($shopwareCart, $cart);
+        $items = $this->lineItemComposer->mapOutgoingLineItems($shopwareCart, $cart);
 
         return [
-            'currency' => $context->getCurrency()->getIsoCode(),
-            'shipping_methods' => [], // todo-rainer implement
-            'payment_methods' => [], // out of scope
-            'customer' => $this->getCartCustomer(),
-        ] + $items;
+                'currency' => $context->getCurrency()->getIsoCode(),
+                'shipping_methods' => [], // todo-rainer implement
+                'payment_methods' => [], // out of scope
+                'customer' => $this->getCartCustomer(),
+            ] + $items;
     }
 
     /**
@@ -78,7 +76,7 @@ class OrderComposer
     protected function buildShopwareCart(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
         $shopwareCart = $this->cartLoadRoute->load(new Request(), $context)->getCart();
-        $lineItems = $this->lineItemMapping->mapIncomingLineItems($cart);
+        $lineItems = $this->lineItemComposer->mapIncomingLineItems($cart);
         $request = new Request();
         $request->request->set('items', $lineItems);
         $shopwareCart = $this->cartItemAddRoute->add($request, $shopwareCart, $context, null)->getCart();
