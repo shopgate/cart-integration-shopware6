@@ -240,12 +240,13 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setStock(): void
     {
         $stock = new Shopgate_Model_Catalog_Stock();
-        $stock->setUseStock($this->item->getAvailableStock() > 0);
-        $stock->setIsSaleable($this->item->getAvailableStock() > 0);
+        $allowBackorders = !$this->item->getIsCloseout();
+        $stock->setUseStock(true);
+        $stock->setIsSaleable($this->item->getAvailableStock() > 0 || $allowBackorders);
         $stock->setStockQuantity($this->item->getAvailableStock());
         $stock->setMinimumOrderQuantity($this->item->getMinPurchase());
         $stock->setMaximumOrderQuantity($this->item->getMaxPurchase());
-        //$stock->setBackorders(!$this->item->getIsCloseout());
+        $stock->setBackorders($allowBackorders);
         parent::setStock($stock);
     }
 
