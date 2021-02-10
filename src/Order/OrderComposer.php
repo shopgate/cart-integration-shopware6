@@ -64,12 +64,10 @@ class OrderComposer
 
         return [
             'currency' => $context->getCurrency()->getIsoCode(),
-            'external_coupons' => [], // todo-rainer implement
             'shipping_methods' => [], // todo-rainer implement
             'payment_methods' => [], // out of scope
-            'items' => $items,
             'customer' => $this->getCartCustomer(),
-        ];
+        ] + $items;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Shopgate\Extended;
 
 use ShopgateCart;
+use ShopgateExternalCoupon;
 use ShopgateOrderItem;
 
 class ExtendedCart extends ShopgateCart
@@ -29,6 +30,21 @@ class ExtendedCart extends ShopgateCart
                 return $item->getItemNumber() === $itemId;
             }
         );
-        return $foundItems ? $foundItems[0] : null;
+        return $foundItems ? array_pop($foundItems) : null;
+    }
+
+    /**
+     * @param string $code
+     * @return ShopgateExternalCoupon|null
+     */
+    public function findExternalCoupon(string $code): ?ShopgateExternalCoupon
+    {
+        $foundItems = array_filter(
+            $this->external_coupons,
+            static function (ShopgateExternalCoupon $coupon) use ($code) {
+                return $coupon->getCode() === $code;
+            }
+        );
+        return $foundItems ? array_pop($foundItems) : null;
     }
 }
