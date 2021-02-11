@@ -6,6 +6,7 @@ use Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping;
 use Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use ShopgateCartBase;
+use ShopgateExternalCoupon;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotFoundError;
@@ -67,11 +68,10 @@ class LineItemComposer
                     );
                     break;
                 case LineItem::PROMOTION_LINE_ITEM_TYPE:
-                    $sgPromoItem = $sgCart->findExternalCoupon($lineItem->getReferencedId());
-                    if (null === $sgPromoItem) {
-                        break;
-                    }
-                    $sgPromoItem->setCurrency($sgCart->getCurrency()); // note the use
+                    $refId = $lineItem->getReferencedId();
+                    $sgPromoItem = $sgCart->findExternalCoupon($refId) ?? new ShopgateExternalCoupon();
+                    $sgPromoItem->setCode(empty($refId) ? $id : $refId); // for cart_rule
+                    $sgPromoItem->setCurrency($sgCart->getCurrency());
                     $externalCoupons[$id] = $this->promoMapping->mapValidCoupon($lineItem, $sgPromoItem);
                     break;
             }
