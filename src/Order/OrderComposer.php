@@ -92,9 +92,9 @@ class OrderComposer
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($cart);
         $request = new Request();
         $request->request->set('items', $lineItems);
-        $this->cartItemAddRoute->add($request, $shopwareCart, $context, null);
+        $response = $this->cartItemAddRoute->add($request, $shopwareCart, $context, null);
 
-        return $shopwareCart;
+        return $response->getCart();
     }
 
     /**
