@@ -28,6 +28,8 @@ class OrderComposer
     private $lineItemComposer;
     /** @var ShippingMapping */
     private $shippingMapping;
+    /** @var ShippingMethodBridge */
+    private $shippingBridge;
 
     /**
      * @param ContextManager $contextManager
@@ -35,19 +37,22 @@ class OrderComposer
      * @param CartItemAddRoute $cartItemAddRoute
      * @param LineItemComposer $lineItemComposer
      * @param ShippingMapping $shippingMapping
+     * @param ShippingMethodBridge $shippingBridge
      */
     public function __construct(
         ContextManager $contextManager,
         CartLoadRoute $cartLoadRoute,
         CartItemAddRoute $cartItemAddRoute,
         LineItemComposer $lineItemComposer,
-        ShippingMapping $shippingMapping
+        ShippingMapping $shippingMapping,
+        ShippingMethodBridge $shippingBridge
     ) {
         $this->contextManager = $contextManager;
         $this->cartLoadRoute = $cartLoadRoute;
         $this->cartItemAddRoute = $cartItemAddRoute;
         $this->lineItemComposer = $lineItemComposer;
         $this->shippingMapping = $shippingMapping;
+        $this->shippingBridge = $shippingBridge;
     }
 
     /**
@@ -66,10 +71,11 @@ class OrderComposer
 
         $swCart = $this->checkoutBuilder($context, $sgCart);
         $items = $this->lineItemComposer->mapOutgoingLineItems($swCart, $sgCart);
+        $deliveries = $this->shippingBridge->getCalculatedDeliveries($context);
 
         return [
                 'currency' => $context->getCurrency()->getIsoCode(),
-                'shipping_methods' => $this->shippingMapping->mapShippingMethods(),
+                'shipping_methods' => $this->shippingMapping->mapShippingMethods($deliveries),
                 'payment_methods' => [], // out of scope
                 'customer' => $this->getCartCustomer(),
             ] + $items;
