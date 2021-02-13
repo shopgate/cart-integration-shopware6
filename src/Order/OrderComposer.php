@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\Order\Mapping\ShippingMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCartBase;
@@ -25,44 +26,50 @@ class OrderComposer
     private $cartItemAddRoute;
     /** @var LineItemComposer */
     private $lineItemComposer;
+    /** @var ShippingMapping */
+    private $shippingMapping;
 
     /**
      * @param ContextManager $contextManager
      * @param CartLoadRoute $cartLoadRoute
      * @param CartItemAddRoute $cartItemAddRoute
      * @param LineItemComposer $lineItemComposer
+     * @param ShippingMapping $shippingMapping
      */
     public function __construct(
         ContextManager $contextManager,
         CartLoadRoute $cartLoadRoute,
         CartItemAddRoute $cartItemAddRoute,
-        LineItemComposer $lineItemComposer
+        LineItemComposer $lineItemComposer,
+        ShippingMapping $shippingMapping
     ) {
         $this->contextManager = $contextManager;
         $this->cartLoadRoute = $cartLoadRoute;
         $this->cartItemAddRoute = $cartItemAddRoute;
         $this->lineItemComposer = $lineItemComposer;
+        $this->shippingMapping = $shippingMapping;
     }
 
     /**
-     * @param ExtendedCart $cart
+     * @param ExtendedCart $sgCart
      * @return array
      * @throws MissingContextException
      */
-    public function checkCart(ExtendedCart $cart): array
+    public function checkCart(ExtendedCart $sgCart): array
     {
         try {
-            $this->contextManager->loadByCustomerId($cart->getExternalCustomerId());
+            $context = $this->contextManager->loadByCustomerId($sgCart->getExternalCustomerId());
         } catch (Throwable $e) {
-            // todo-rainer log
+            //todo: log, issue with customer therefore load guest cart?
+            $context = $this->contextManager->getSalesContext();
         }
-        $context = $this->contextManager->getSalesContext();
-        $shopwareCart = $this->buildShopwareCart($context, $cart);
-        $items = $this->lineItemComposer->mapOutgoingLineItems($shopwareCart, $cart);
+
+        $swCart = $this->checkoutBuilder($context, $sgCart);
+        $items = $this->lineItemComposer->mapOutgoingLineItems($swCart, $sgCart);
 
         return [
                 'currency' => $context->getCurrency()->getIsoCode(),
-                'shipping_methods' => [], // todo-rainer implement
+                'shipping_methods' => $this->shippingMapping->mapShippingMethods(),
                 'payment_methods' => [], // out of scope
                 'customer' => $this->getCartCustomer(),
             ] + $items;
@@ -73,13 +80,13 @@ class OrderComposer
      * @param ShopgateCartBase $cart
      * @return Cart
      */
-    protected function buildShopwareCart(SalesChannelContext $context, ShopgateCartBase $cart): Cart
+    protected function checkoutBuilder(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
         $shopwareCart = $this->cartLoadRoute->load(new Request(), $context)->getCart();
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($cart);
         $request = new Request();
         $request->request->set('items', $lineItems);
-        $shopwareCart = $this->cartItemAddRoute->add($request, $shopwareCart, $context, null)->getCart();
+        $this->cartItemAddRoute->add($request, $shopwareCart, $context, null);
 
         return $shopwareCart;
     }
