@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\Order\Mapping;
 
+use ShopgateDeliveryNote;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 
@@ -21,7 +22,7 @@ class ShippingMapping
             $exportShipping->setTitle($method->getName());
             $exportShipping->setDescription($method->getDescription());
             $exportShipping->setAmountWithTax($delivery->getShippingCosts()->getTotalPrice());
-            $exportShipping->setShippingGroup('SHOPGATE');
+            $exportShipping->setShippingGroup(ShopgateDeliveryNote::OTHER);
             $list[$method->getId()] = $exportShipping;
         }
 
