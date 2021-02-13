@@ -3,8 +3,11 @@
 namespace Shopgate\Shopware\Storefront;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
+use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -18,17 +21,24 @@ class ContextManager
     private $contextRestorer;
     /** @var SalesChannelContext|null */
     private $salesContext;
+    /**
+     * @var ContextSwitchRoute
+     */
+    private $contextSwitchRoute;
 
     /**
      * @param SalesChannelContextServiceInterface $contextService
      * @param SalesChannelContextRestorer $contextRestorer
+     * @param ContextSwitchRoute $contextSwitchRoute
      */
     public function __construct(
         SalesChannelContextServiceInterface $contextService,
-        SalesChannelContextRestorer $contextRestorer
+        SalesChannelContextRestorer $contextRestorer,
+        ContextSwitchRoute $contextSwitchRoute
     ) {
         $this->contextService = $contextService;
         $this->contextRestorer = $contextRestorer;
+        $this->contextSwitchRoute = $contextSwitchRoute;
     }
 
     /**
@@ -56,6 +66,32 @@ class ContextManager
     }
 
     /**
+     * @param string $customerId
+     * @return SalesChannelContext
+     */
+    public function loadByCustomerId(string $customerId): SalesChannelContext
+    {
+        $context = $this->contextRestorer->restore($customerId, $this->salesContext);
+
+        return $this->salesContext = $context;
+    }
+
+    /**
+     * @param string $shippingMethodId
+     * @return SalesChannelContext
+     */
+    public function setShippingMethod(string $shippingMethodId): SalesChannelContext
+    {
+        $dataBag = new RequestDataBag(
+            [SalesChannelContextService::SHIPPING_METHOD_ID => $shippingMethodId]
+        );
+        $token = $this->contextSwitchRoute->switchContext($dataBag, $this->salesContext)->getToken();
+        $context = $this->loadByCustomerToken($token);
+
+        return $this->salesContext = $context;
+    }
+
+    /**
      * @param string $token
      * @return SalesChannelContext
      */
@@ -68,17 +104,6 @@ class ContextManager
             $this->salesContext->getSalesChannel()->getLanguageId(),
             $this->salesContext->getSalesChannel()->getCurrencyId()
         );
-
-        return $this->salesContext = $context;
-    }
-
-    /**
-     * @param string $customerId
-     * @return SalesChannelContext
-     */
-    public function loadByCustomerId(string $customerId): SalesChannelContext
-    {
-        $context = $this->contextRestorer->restore($customerId, $this->salesContext);
 
         return $this->salesContext = $context;
     }
