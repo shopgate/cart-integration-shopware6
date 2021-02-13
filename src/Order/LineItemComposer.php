@@ -55,6 +55,9 @@ class LineItemComposer
          * Handle line items that are still in cart after all validations
          */
         foreach ($cart->getLineItems() as $id => $lineItem) {
+            if (!$this->isValidUuid($id)) {
+                break;
+            }
             switch ($lineItem->getType()) {
                 case LineItem::PRODUCT_LINE_ITEM_TYPE:
                     $incomingItem = $sgCart->findItemById($id);
@@ -108,5 +111,16 @@ class LineItemComposer
             'items' => $lineItems,
             'external_coupons' => $externalCoupons
         ];
+    }
+
+    /**
+     * Safety check for strange cart cases with duplicate
+     * line items without proper ID's
+     * @param string $uuid
+     * @return bool
+     */
+    private function isValidUuid(string $uuid): bool
+    {
+        return ctype_xdigit($uuid);
     }
 }
