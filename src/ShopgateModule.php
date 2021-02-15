@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
+use Doctrine\DBAL\Connection;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
@@ -36,10 +37,11 @@ class ShopgateModule extends Plugin
             return;
         }
 
-//        $connection = $this->container->get(Connection::class);
-//        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0;');
-//        $connection->executeQuery('DROP TABLE IF EXISTS `shopgate_orders`');
-//        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
+        if ($connection = $this->container->get(Connection::class)) {
+            $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0;');
+            $connection->executeQuery('DROP TABLE IF EXISTS `shopgate_orders`');
+            $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
+        }
     }
 
     public function update(UpdateContext $updateContext): void
@@ -51,5 +53,15 @@ class ShopgateModule extends Plugin
 //        if (version_compare($updateContext->getCurrentPluginVersion(), '1.0.1', '<')) {
 //            // stuff
 //        }
+    }
+
+    /**
+     * Where you should look for Migration database scripts
+     *
+     * @return string
+     */
+    public function getMigrationNamespace(): string
+    {
+        return 'Shopgate\Shopware\System\Db';
     }
 }

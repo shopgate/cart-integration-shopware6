@@ -22,13 +22,6 @@
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge"/>
         <service id="Shopgate\Shopware\Catalog\Product\ProductComposer"/>
         <service id="Shopgate\Shopware\Customer\CustomerComposer"/>
-        <service id="Shopgate\Shopware\System\Configuration\ConfigBridge">
-            <argument type="service" id="plugin.repository"/>
-            <argument type="string">%kernel.shopware_version%</argument>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="system_config.repository" />
-        </service>
         <service id="Shopgate\Shopware\Customer\CustomerBridge">
             <argument type="service" id="customer_group.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
@@ -73,6 +66,16 @@
         <service id="Shopgate\Shopware\Order\Mapping\ShippingMapping"/>
         <service id="Shopgate\Shopware\Order\OrderComposer"/>
         <service id="Shopgate\Shopware\Order\ShippingMethodBridge"/>
+        <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
+            <tag name="shopware.entity.definition" entity="shopgate_order" />
+        </service>
+        <service id="Shopgate\Shopware\System\Configuration\ConfigBridge">
+            <argument type="service" id="plugin.repository"/>
+            <argument type="string">%kernel.shopware_version%</argument>
+            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="system_config.repository" />
+        </service>
         <service id="Shopgate\Shopware\System\FileCache">
             <argument>shopgate</argument>
             <argument>86400</argument>

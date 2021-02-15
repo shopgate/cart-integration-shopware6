@@ -1,0 +1,51 @@
+<?php
+
+namespace Shopgate\Shopware\System\Db;
+
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
+use Shopware\Core\Framework\Migration\MigrationStep;
+
+class Migration1613391581Order extends MigrationStep
+{
+    /**
+     * @return int
+     */
+    public function getCreationTimestamp(): int
+    {
+        return 1613391581;
+    }
+
+    /**
+     * @param Connection $connection
+     * @throws DBALException
+     */
+    public function update(Connection $connection): void
+    {
+        $sql = <<<SQL
+        CREATE TABLE IF NOT EXISTS `shopgate_order` (
+          `id` BINARY(16) NOT NULL COMMENT 'Entity ID',
+          `sw_order_id` BINARY(16) NOT NULL COMMENT 'Shopware Order Id',
+          `sales_channel_id` BINARY(16) DEFAULT NULL COMMENT 'SalesChannel Id',
+          `shopgate_order_number` BINARY(16) NOT NULL COMMENT 'Shopgate order number',
+          `is_paid` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Is paid',
+          `is_sent` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Is sent to shopgate',
+          `is_cancellation_sent` TINYINT(1) NOT NULL COMMENT 'Is cancellation sent to shopgate',
+          `is_test` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Is a test order',
+          `received_data` text DEFAULT NULL COMMENT 'Received data',
+          PRIMARY KEY (`shopgate_order_number`),
+          UNIQUE `uniq.id` (`id`),
+          KEY `SHOPGATE_ORDER_ORDER_ID` (`sw_order_id`),
+          KEY `SHOPGATE_ORDER_STORE_ID` (`sales_channel_id`),
+          CONSTRAINT `SHOPGATE_ORDER_ORDER_ID_SALES_ORDER_ENTITY_ID` FOREIGN KEY (`sw_order_id`) REFERENCES `order` (`id`) ON DELETE CASCADE,
+          CONSTRAINT `SHOPGATE_ORDER_STORE_ID_STORE_STORE_ID` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Shopgate Orders' COLLATE=utf8mb4_unicode_ci;
+SQL;
+        $connection->executeUpdate($sql);
+    }
+
+    public function updateDestructive(Connection $connection): void
+    {
+        //no destructive update
+    }
+}
