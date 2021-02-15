@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
+use Shopgate\Shopware\Exceptions\DiException;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\System\Di\Forwarder;
-use Shopgate\Shopware\Exceptions\DiException;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCart;
 use ShopgateCustomer;
@@ -29,7 +29,7 @@ class Plugin extends ShopgatePlugin
         $this->forwarder->getExportService()->definePluginVersion();
     }
 
-    public function cron($jobname, $params, &$message, &$errorcount)
+    public function cron($jobname, $params, &$message, &$errorcount): void
     {
         // TODO: Implement cron() method.
     }
@@ -53,12 +53,12 @@ class Plugin extends ShopgatePlugin
      * @throws Exceptions\MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function registerCustomer($user, $pass, ShopgateCustomer $customer)
+    public function registerCustomer($user, $pass, ShopgateCustomer $customer): void
     {
         $this->forwarder->getImportService()->registerCustomer($user, $pass, $customer);
     }
 
-    public function addOrder(ShopgateOrder $order)
+    public function addOrder(ShopgateOrder $order): array
     {
 //        todo-rainer remove the logging
 //         log an order to have an example to work with
@@ -83,13 +83,10 @@ class Plugin extends ShopgatePlugin
      * @return array
      * @throws Exceptions\MissingContextException
      */
-    public function checkCart(ShopgateCart $cart)
+    public function checkCart(ShopgateCart $cart): array
     {
-//        todo-rainer remove the logging
-//        log a request to have an example to work with
-//        $this->log('check_cart: ');
-//        $this->log(print_r($cart->toArray(), true));
         $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
+
         return $this->forwarder->getImportService()->checkCart($newCart);
     }
 
@@ -102,7 +99,7 @@ class Plugin extends ShopgatePlugin
      * @return array[]
      * @throws Exceptions\MissingContextException
      */
-    public function getSettings()
+    public function getSettings(): array
     {
         return $this->forwarder->getExportService()->getSettings();
     }
