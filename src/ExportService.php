@@ -6,6 +6,8 @@ use Shopgate\Shopware\Catalog\Category\CategoryComposer;
 use Shopgate\Shopware\Catalog\Product\ProductComposer;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\Order\OrderComposer;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate\Shopware\System\Tax\TaxComposer;
@@ -28,6 +30,10 @@ class ExportService
     private $customerComposer;
     /** @var ProductComposer */
     private $productComposer;
+    /**
+     * @var OrderComposer
+     */
+    private $orderComposer;
 
     /**
      * @param LoggerInterface $logger
@@ -36,6 +42,7 @@ class ExportService
      * @param TaxComposer $taxComposer
      * @param CustomerComposer $customerHelper
      * @param ProductComposer $productComposer
+     * @param OrderComposer $orderComposer
      */
     public function __construct(
         LoggerInterface $logger,
@@ -43,7 +50,8 @@ class ExportService
         ConfigBridge $configBridge,
         TaxComposer $taxComposer,
         CustomerComposer $customerHelper,
-        ProductComposer $productComposer
+        ProductComposer $productComposer,
+        OrderComposer $orderComposer
     ) {
         $this->log = $logger;
         $this->categoryComposer = $categoryComposer;
@@ -51,6 +59,7 @@ class ExportService
         $this->taxComposer = $taxComposer;
         $this->customerComposer = $customerHelper;
         $this->productComposer = $productComposer;
+        $this->orderComposer = $orderComposer;
     }
 
     /**
@@ -130,5 +139,15 @@ class ExportService
             'allowed_shipping_countries' => [],
             'payment_methods' => [],
         ];
+    }
+
+    /**
+     * @param ExtendedCart $cart
+     * @return array
+     * @throws MissingContextException
+     */
+    public function checkCart(ExtendedCart $cart): array
+    {
+        return $this->orderComposer->checkCart($cart);
     }
 }

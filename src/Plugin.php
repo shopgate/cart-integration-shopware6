@@ -87,7 +87,7 @@ class Plugin extends ShopgatePlugin
     {
         $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
 
-        return $this->forwarder->getImportService()->checkCart($newCart);
+        return $this->forwarder->getExportService()->checkCart($newCart);
     }
 
     public function checkStock(ShopgateCart $cart)
