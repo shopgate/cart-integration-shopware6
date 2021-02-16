@@ -9,20 +9,156 @@ class ShopgateOrderEntity extends Entity
 {
     use EntityIdTrait;
 
-    public const NOT_SENT = 0;
-    public const STATUS_SENT = 1;
-    public const STATUS_SENT_NOT_CANCELLED = 2;
+    private $shopwareOrderId;
+    private $salesChannelId;
+    private $shopgateOrderNumber;
+    private $isSent;
+    private $isCancelled;
+    private $isPaid;
+    private $isTest;
+    private $receivedData;
 
-    /** @var string */
-    protected $technicalName;
-
-    public function getTechnicalName(): string
+    /**
+     * @return string
+     */
+    public function getShopwareOrderId(): string
     {
-        return $this->technicalName;
+        return $this->shopwareOrderId;
     }
 
-    public function setTechnicalName(string $technicalName): void
+    /**
+     * @param string $shopwareOrderId
+     * @return ShopgateOrderEntity
+     */
+    public function setShopwareOrderId(string $shopwareOrderId): ShopgateOrderEntity
     {
-        $this->technicalName = $technicalName;
+        $this->shopwareOrderId = $shopwareOrderId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSalesChannelId(): string
+    {
+        return $this->salesChannelId;
+    }
+
+    /**
+     * @param string $salesChannelId
+     * @return ShopgateOrderEntity
+     */
+    public function setSalesChannelId(string $salesChannelId): ShopgateOrderEntity
+    {
+        $this->salesChannelId = $salesChannelId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShopgateOrderNumber(): string
+    {
+        return $this->shopgateOrderNumber;
+    }
+
+    /**
+     * @param string $shopgateOrderNumber
+     * @return ShopgateOrderEntity
+     */
+    public function setShopgateOrderNumber(string $shopgateOrderNumber): ShopgateOrderEntity
+    {
+        $this->shopgateOrderNumber = $shopgateOrderNumber;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsSent(): bool
+    {
+        return $this->isSent;
+    }
+
+    /**
+     * @param bool $isSent
+     * @return ShopgateOrderEntity
+     */
+    public function setIsSent(bool $isSent): ShopgateOrderEntity
+    {
+        $this->isSent = $isSent;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsCancelled(): bool
+    {
+        return $this->isCancelled;
+    }
+
+    /**
+     * @param bool $isCancelled
+     * @return ShopgateOrderEntity
+     */
+    public function setIsCancelled(bool $isCancelled): ShopgateOrderEntity
+    {
+        $this->isCancelled = $isCancelled;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsPaid(): bool
+    {
+        return $this->isPaid;
+    }
+
+    /**
+     * @param bool $isPaid
+     * @return ShopgateOrderEntity
+     */
+    public function setIsPaid(bool $isPaid): ShopgateOrderEntity
+    {
+        $this->isPaid = $isPaid;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsTest(): bool
+    {
+        return $this->isTest;
+    }
+
+    /**
+     * @param bool $isTest
+     * @return ShopgateOrderEntity
+     */
+    public function setIsTest(bool $isTest): ShopgateOrderEntity
+    {
+        $this->isTest = $isTest;
+        return $this;
+    }
+
+    /**
+     * @return object
+     */
+    public function getReceivedData(): object
+    {
+        return $this->receivedData;
+    }
+
+    /**
+     * @param object $receivedData
+     * @return ShopgateOrderEntity
+     */
+    public function setReceivedData(object $receivedData): ShopgateOrderEntity
+    {
+        $this->receivedData = $receivedData;
+        return $this;
     }
 }

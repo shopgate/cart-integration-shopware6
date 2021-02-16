@@ -33,6 +33,8 @@ class Migration1613391581Order extends MigrationStep
           `is_cancellation_sent` TINYINT(1) NOT NULL COMMENT 'Is cancellation sent to shopgate',
           `is_test` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Is a test order',
           `received_data` text DEFAULT NULL COMMENT 'Received data',
+          `created_at` DATETIME(3) NOT NULL,
+          `updated_at` DATETIME(3) NULL,
           PRIMARY KEY (`shopgate_order_number`),
           UNIQUE `uniq.id` (`id`),
           KEY `SHOPGATE_ORDER_ORDER_ID` (`sw_order_id`),

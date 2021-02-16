@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware;
 
 use Doctrine\DBAL\Connection;
+use Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Db\PaymentMethodInstaller;
 use Shopware\Core\Framework\Plugin;
@@ -38,7 +39,7 @@ class ShopgateModule extends Plugin
 
         if ($connection = $this->container->get(Connection::class)) {
             $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0;');
-            $connection->executeQuery('DROP TABLE IF EXISTS `shopgate_orders`');
+            $connection->executeQuery(sprintf('DROP TABLE IF EXISTS `%s`', ShopgateOrderDefinition::ENTITY_NAME));
             $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
         }
     }
