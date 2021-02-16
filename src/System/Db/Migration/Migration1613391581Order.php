@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\System\Db;
+namespace Shopgate\Shopware\System\Db\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
