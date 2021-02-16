@@ -92,6 +92,9 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <tag name="shopware.payment.method.sync" />
         </service>
+        <service id="Shopgate\Shopware\System\PaymentHandler\PaymentLoaderSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer" />
         <service id="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
