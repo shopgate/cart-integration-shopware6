@@ -5,6 +5,8 @@ namespace Shopgate\Shopware\Order;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader;
@@ -47,7 +49,10 @@ class ShippingMethodBridge
             $initContext
         )->getShippingMethods();
         foreach ($shippingMethods->getElements() as $shipMethod) {
-            $context = $this->contextManager->setShippingMethod($shipMethod->getId());
+            $dataBag = new RequestDataBag(
+                [SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]
+            );
+            $context = $this->contextManager->switchContext($dataBag);
             $cart = $this->cartPageLoader->load(new Request(), $context)->getCart();
             foreach ($cart->getDeliveries()->getElements() as $delivery) {
                 $list[$delivery->getShippingMethod()->getId()] = $delivery;

@@ -5,7 +5,6 @@ namespace Shopgate\Shopware\Storefront;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -77,14 +76,11 @@ class ContextManager
     }
 
     /**
-     * @param string $shippingMethodId
+     * @param RequestDataBag $dataBag
      * @return SalesChannelContext
      */
-    public function setShippingMethod(string $shippingMethodId): SalesChannelContext
+    public function switchContext(RequestDataBag $dataBag): SalesChannelContext
     {
-        $dataBag = new RequestDataBag(
-            [SalesChannelContextService::SHIPPING_METHOD_ID => $shippingMethodId]
-        );
         $token = $this->contextSwitchRoute->switchContext($dataBag, $this->salesContext)->getToken();
         $context = $this->loadByCustomerToken($token);
 
