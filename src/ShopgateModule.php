@@ -6,31 +6,30 @@ namespace Shopgate\Shopware;
 
 use Doctrine\DBAL\Connection;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
+use Shopgate\Shopware\System\Db\PaymentMethodInstaller;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
-use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class ShopgateModule extends Plugin
 {
 
-    /**
-     * @param InstallContext $installContext
-     */
     public function install(InstallContext $installContext): void
     {
-        parent::install($installContext);
         /** @var SystemConfigService $configBridge */
         $configBridge = $this->container->get(SystemConfigService::class);
         $configBridge->set(
             ConfigBridge::SYSTEM_CONFIG_PROD_EXPORT,
             [ConfigBridge::PROD_EXPORT_TYPE_SIMPLE, ConfigBridge::PROD_EXPORT_TYPE_VARIANT]
         );
+        (new PaymentMethodInstaller($this->container))->install($installContext);
+        parent::install($installContext);
     }
 
     public function uninstall(UninstallContext $uninstallContext): void
     {
+        (new PaymentMethodInstaller($this->container))->deactivate($uninstallContext->getContext());
         parent::uninstall($uninstallContext);
 
         if ($uninstallContext->keepUserData()) {
@@ -44,15 +43,16 @@ class ShopgateModule extends Plugin
         }
     }
 
-    public function update(UpdateContext $updateContext): void
+    public function activate(Plugin\Context\ActivateContext $activateContext): void
     {
-        parent::update($updateContext);
+        (new PaymentMethodInstaller($this->container))->activate($activateContext);
+        parent::activate($activateContext);
+    }
 
-//        (new Update())->update($this->container, $updateContext);
-//
-//        if (version_compare($updateContext->getCurrentPluginVersion(), '1.0.1', '<')) {
-//            // stuff
-//        }
+    public function deactivate(Plugin\Context\DeactivateContext $deactivateContext): void
+    {
+        (new PaymentMethodInstaller($this->container))->deactivate($deactivateContext->getContext());
+        parent::deactivate($deactivateContext);
     }
 
     /**
@@ -62,6 +62,6 @@ class ShopgateModule extends Plugin
      */
     public function getMigrationNamespace(): string
     {
-        return 'Shopgate\Shopware\System\Db';
+        return 'Shopgate\Shopware\System\Db\Migration';
     }
 }
