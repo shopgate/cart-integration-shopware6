@@ -58,19 +58,15 @@ class Plugin extends ShopgatePlugin
         $this->forwarder->getImportService()->registerCustomer($user, $pass, $customer);
     }
 
+    /**
+     * @param ShopgateOrder $order
+     * @return array
+     * @throws Exceptions\MissingContextException
+     * @throws ShopgateLibraryException
+     */
     public function addOrder(ShopgateOrder $order): array
     {
-//        todo-rainer remove the logging
-//         log an order to have an example to work with
-//        $this->log('addOrder: ');
-//        $this->log(print_r($order->toArray(), true));
-
-        throw new ShopgateLibraryException(
-            ShopgateLibraryException::PLUGIN_CUSTOMER_UNKNOWN_ERROR,
-            'not implemented yes. this is work in progress',
-            true,
-            false
-        );
+        return $this->forwarder->getImportService()->addOrder($order);
     }
 
     public function updateOrder(ShopgateOrder $order)

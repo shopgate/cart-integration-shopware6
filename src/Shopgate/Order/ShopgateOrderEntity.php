@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\Shopgate\Order;
 
+use ShopgateOrder;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -147,18 +148,55 @@ class ShopgateOrderEntity extends Entity
     /**
      * @return object
      */
-    public function getReceivedData(): object
+    public function getReceivedData(): ShopgateOrder
     {
-        return $this->receivedData;
+        return new ShopgateOrder($this->receivedData);
     }
 
     /**
-     * @param object $receivedData
+     * @param ShopgateOrder $receivedData
      * @return ShopgateOrderEntity
      */
-    public function setReceivedData(object $receivedData): ShopgateOrderEntity
+    public function setReceivedData(ShopgateOrder $receivedData): ShopgateOrderEntity
     {
-        $this->receivedData = $receivedData;
+        $this->receivedData = $receivedData->toArray();
         return $this;
+    }
+
+    /**
+     * @param string $id
+     * @param string $channelId
+     * @param ShopgateOrder $order
+     * @return ShopgateOrderEntity
+     */
+    public function mapQuote(string $id, string $channelId, ShopgateOrder $order): ShopgateOrderEntity
+    {
+        return $this
+            ->setShopwareOrderId($id)
+            ->setShopgateOrderNumber((string)$order->getOrderNumber())
+            ->setSalesChannelId($channelId)
+            ->setIsTest((bool)$order->getIsTest())
+            ->setIsPaid((bool)$order->getIsPaid())
+            ->setIsSent(false)
+            ->setIsCancelled(false)
+            ->setReceivedData($order);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'shopwareOrderId' => $this->shopwareOrderId,
+            'salesChannelId' => $this->salesChannelId,
+            'shopgateOrderNumber' => $this->shopgateOrderNumber,
+            'isSent' => $this->isSent,
+            'isCancelled' => $this->isCancelled,
+            'isPaid' => $this->isPaid,
+            'isTest' => $this->isTest,
+            'receivedData' => $this->receivedData,
+        ];
     }
 }
