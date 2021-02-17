@@ -154,7 +154,6 @@ class OrderComposer
 
         $newContext = $this->contextManager->switchContext($dataBag);
         // todo: fix issue with payment appearing on frontend (deactivation doesn't work)
-        // todo: assign items (check errors)
         $swCart = $this->checkoutBuilder($newContext, $order);
         $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
             return $error->isPersistent() === false; //todo: test all errors
