@@ -1,19 +1,18 @@
 <?php
 
-namespace Shopgate\Shopware\System\Rule;
+namespace Shopgate\Shopware\System\Db\Rule;
 
 use Shopgate\Shopware\System\Di\Facade;
 use Shopware\Core\Framework\Rule\Rule;
 use Shopware\Core\Framework\Rule\RuleScope;
 use Symfony\Component\Validator\Constraints\Type;
 
-class IsShopgateRule extends Rule
+class IsShopgateRuleCondition extends Rule
 {
     public const UUID = 'b344814108424254b7c5147b2020f77e';
     public const RULE_NAME = 'is_shopgate';
     /** @var bool */
     protected $isShopgate = false;
-
 
     public function getName(): string
     {
