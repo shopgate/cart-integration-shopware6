@@ -9,9 +9,11 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class IsShopgateRule extends Rule
 {
+    public const UUID = 'b344814108424254b7c5147b2020f77e';
     public const RULE_NAME = 'is_shopgate';
     /** @var bool */
     protected $isShopgate = false;
+
 
     public function getName(): string
     {

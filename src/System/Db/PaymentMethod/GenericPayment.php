@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\System\Db\PaymentMethod;
 
+use Shopgate\Shopware\System\Db\Rule\IsShopgateRuleGroup;
 use Shopgate\Shopware\System\PaymentHandler\GenericHandler;
 
 class GenericPayment extends AbstractPayment
@@ -14,4 +15,5 @@ class GenericPayment extends AbstractPayment
     protected $paymentHandler = GenericHandler::class;
     protected $position = 10;
     protected $afterOrder = false;
+    protected $availabilityRuleId = IsShopgateRuleGroup::UUID;
 }

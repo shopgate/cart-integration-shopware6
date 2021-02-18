@@ -10,6 +10,7 @@ class AbstractPayment implements PaymentMethodInterface
     protected $paymentHandler;
     protected $position;
     protected $afterOrder;
+    protected $availabilityRuleId;
 
     public function getId(): string
     {
@@ -40,4 +41,23 @@ class AbstractPayment implements PaymentMethodInterface
     {
         return $this->afterOrder;
     }
+
+    public function getAvailabilityRuleId()
+    {
+        return $this->availabilityRuleId;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'position' => $this->position,
+            'handlerIdentifier' => $this->paymentHandler,
+            'afterOrderEnabled' => $this->afterOrder,
+            'availabilityRuleId' => $this->availabilityRuleId
+        ];
+    }
+
 }

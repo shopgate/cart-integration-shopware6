@@ -10,11 +10,15 @@ use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
+use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use ShopgateCartBase;
 use ShopgateLibraryException;
 use ShopgateOrder;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Error\Error;
+use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -108,6 +112,13 @@ class OrderComposer
     protected function checkoutBuilder(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
+        $price = new CalculatedPrice(
+            $cart->getAmountShipping(),
+            $cart->getAmountShipping(),
+            $shopwareCart->getShippingCosts()->getCalculatedTaxes(),
+            $shopwareCart->getShippingCosts()->getTaxRules()
+        );
+        $shopwareCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($cart);
         $request = new Request();
         $request->request->set('items', $lineItems);
@@ -141,7 +152,7 @@ class OrderComposer
             array_merge(
                 [
                     SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
-                    SalesChannelContextService::SHIPPING_METHOD_ID => '40ba83a5e6aa448caeb2387ba85f733d'
+                    SalesChannelContextService::SHIPPING_METHOD_ID => GenericShippingMethod::UUID
                 ],
                 $order->getDeliveryAddress()->getId() && $channel->getCustomer()
                     ? [SalesChannelContextService::SHIPPING_ADDRESS_ID => $order->getDeliveryAddress()->getId()]
@@ -153,12 +164,24 @@ class OrderComposer
         );
 
         $newContext = $this->contextManager->switchContext($dataBag);
-        // todo: fix issue with payment appearing on frontend (deactivation doesn't work)
         $swCart = $this->checkoutBuilder($newContext, $order);
         $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
-            return $error->isPersistent() === false; //todo: test all errors
+            return $error->isPersistent() === false;
         }));
-        $swOrder = $this->quoteBridge->createOrder($swCart, $channel);
+        try {
+            $swOrder = $this->quoteBridge->createOrder($swCart, $channel);
+        } catch (InvalidCartException $error) {
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                $error->getErrors(true),
+                true //todo-prod: change to false
+            );
+        } catch (Throwable $error) {
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                $error->getMessage()
+            );
+        }
         $this->shopgateOrderBridge->saveEntity(
             (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $channel->getSalesChannelId(), $order),
             $channel

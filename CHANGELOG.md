@@ -1,8 +1,10 @@
 # 0.0.5
 - added cart support with shipping, items (partial), promos, customer - check_cart
-- added order table
-- added generic shopgate payment method
-- added is_shopgate rule (untested)
+- added order support
+- added shopgate_order table
+- added generic payment method
+- added generic shipping method
+- added is_shopgate rule for shipping/payment to not appear on frontend
 
 # 0.0.4
 - Added authentication configuration

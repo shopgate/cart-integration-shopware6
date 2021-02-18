@@ -2,7 +2,9 @@
 
 namespace Shopgate\Shopware\System\Db\PaymentMethod;
 
-interface PaymentMethodInterface
+use Shopgate\Shopware\System\Db\ClassCastInterface;
+
+interface PaymentMethodInterface extends ClassCastInterface
 {
     public function getId(): string;
 
