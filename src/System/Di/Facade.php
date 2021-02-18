@@ -53,4 +53,14 @@ class Facade
 
         return self::$instance;
     }
+
+    /**
+     * Essentially a check for whether it's a Shopgate call
+     *
+     * @return bool
+     */
+    public static function isInstantiated(): bool
+    {
+        return null !== self::$instance;
+    }
 }

@@ -86,6 +86,9 @@
             <argument>%kernel.cache_dir%</argument>
         </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
+        <service id="Shopgate\Shopware\System\Rule\IsShopgateRule">
+            <tag name="shopware.rule.definition"/>
+        </service>
         <service id="Shopgate\Shopware\System\Tax\TaxBridge">
             <argument type="service" id="tax.repository"/>
             <argument type="service" id="tax_rule.repository"/>
