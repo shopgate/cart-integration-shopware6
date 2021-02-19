@@ -6,13 +6,16 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\InactiveCustomerException;
+use Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
 
@@ -26,23 +29,28 @@ class CustomerBridge
     private $loginRoute;
     /** @var RequestDataBag */
     private $dataBag;
+    /** @var CustomerRoute */
+    private $customerRoute;
 
     /**
      * @param EntityRepositoryInterface $customerGroupRepository
      * @param ContextManager $contextManager
      * @param LoginRoute $loginRoute
      * @param RequestDataBag $dataBag
+     * @param CustomerRoute $customerRoute
      */
     public function __construct(
         EntityRepositoryInterface $customerGroupRepository,
         ContextManager $contextManager,
         LoginRoute $loginRoute,
-        RequestDataBag $dataBag
+        RequestDataBag $dataBag,
+        CustomerRoute $customerRoute
     ) {
         $this->customerGroupRepository = $customerGroupRepository;
         $this->contextManager = $contextManager;
         $this->loginRoute = $loginRoute;
         $this->dataBag = $dataBag;
+        $this->customerRoute = $customerRoute;
     }
 
     /**
@@ -91,5 +99,23 @@ class CustomerBridge
                 false
             );
         }
+    }
+
+    /**
+     * @return CustomerEntity
+     * @throws MissingContextException
+     */
+    public function getDetailedContextCustomer(): CustomerEntity
+    {
+        return $this->customerRoute->load(
+            new Request(),
+            $this->contextManager->getSalesContext(),
+            (new Criteria())->setLimit(1)
+                ->addAssociation('group')
+                ->addAssociation('salutation')
+                ->addAssociation('addresses')
+                ->addAssociation('addresses.country')
+                ->addAssociation('addresses.countryState')
+        )->getCustomer();
     }
 }

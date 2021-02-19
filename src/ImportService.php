@@ -12,10 +12,8 @@ use ShopgateOrder;
 class ImportService
 {
     /** @var CustomerComposer */
-    private $customerImport;
-    /**
-     * @var OrderComposer
-     */
+    private $customerComposer;
+    /** @var OrderComposer */
     private $orderComposer;
 
     /**
@@ -24,7 +22,7 @@ class ImportService
      */
     public function __construct(CustomerComposer $customerImport, OrderComposer $orderComposer)
     {
-        $this->customerImport = $customerImport;
+        $this->customerComposer = $customerImport;
         $this->orderComposer = $orderComposer;
     }
 
@@ -34,10 +32,11 @@ class ImportService
      * @param ShopgateCustomer $customer
      * @throws MissingContextException
      * @throws ShopgateLibraryException
+     * @noinspection PhpUnusedParameterInspection
      */
     public function registerCustomer(string $user, string $password, ShopgateCustomer $customer): void
     {
-        $this->customerImport->registerCustomer($user, $password, $customer);
+        $this->customerComposer->registerCustomer($password, $customer);
     }
 
     /**

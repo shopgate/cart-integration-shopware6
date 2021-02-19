@@ -51,6 +51,7 @@
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\AddressMapping"/>
+        <service id="Shopgate\Shopware\Customer\Mapping\CustomerMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\GroupMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\LocationMapping">
             <argument type="service" id="country.repository"/>
