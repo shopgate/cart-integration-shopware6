@@ -76,17 +76,27 @@ class CustomerMapping
      */
     public function mapToShopwareEntity(ShopgateCustomer $customer, ?string $password): RequestDataBag
     {
-        $data = null === $password ? ['guest' => true]: ['password' => $password];
-        $data['email'] = $customer->getMail();
-        $data['salutationId'] = $this->salutationMapping->getSalutationIdByGender($customer->getGender());
-        $data['firstName'] = $customer->getFirstName();
-        $data['lastName'] = $customer->getLastName();
+        $data = [];
+        $bd = [];
         $shopgateBillingAddress = $this->addressMapping->getBillingAddress($customer);
         $shopgateShippingAddress = $this->addressMapping->getShippingAddress($customer);
-        $data['billingAddress'] = $this->addressMapping->mapAddressData($shopgateBillingAddress);
-        if ($shopgateShippingAddress !== false) {
-            $data['shippingAddress'] = $this->addressMapping->mapAddressData($shopgateShippingAddress);
+        if (!empty($customer->getBirthday())) {
+            $bd = explode('-', $customer->getBirthday()); // yyyy-mm-dd
         }
+        $data = array_merge(
+            $data,
+            null === $password ? ['guest' => true] : ['password' => $password],
+            $customer->getMail() ? ['email' => $customer->getMail()] : [],
+            $customer->getGender()
+                ? ['salutationId' => $this->salutationMapping->getSalutationIdByGender($customer->getGender())] : [],
+            $customer->getFirstName() ? ['firstName' => $customer->getFirstName()] : [],
+            $customer->getLastName() ? ['lastName' => $customer->getFirstName()] : [],
+            count($bd) === 3 ? ['birthdayYear' => $bd[0], 'birthdayMonth' => $bd[1], 'birthdayDay' => $bd[2]] : [],
+            $shopgateBillingAddress
+                ? ['billingAddress' => $this->addressMapping->mapAddressData($shopgateBillingAddress)] : [],
+            $shopgateShippingAddress
+                ? ['shippingAddress' => $this->addressMapping->mapAddressData($shopgateShippingAddress)] : []
+        );
         return new RequestDataBag($data);
     }
 }

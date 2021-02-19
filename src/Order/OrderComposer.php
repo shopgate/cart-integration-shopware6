@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\Order;
 
+use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Mapping\CustomerMapping;
 use Shopgate\Shopware\Order\Mapping\ShippingMapping;
@@ -41,6 +42,8 @@ class OrderComposer
     private $shopgateOrderBridge;
     /** @var QuoteBridge */
     private $quoteBridge;
+    /** @var CustomerComposer */
+    private $customerComposer;
 
     /**
      * @param ContextManager $contextManager
@@ -50,6 +53,7 @@ class OrderComposer
      * @param CustomerMapping $customerMapping
      * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param QuoteBridge $quoteBridge
+     * @param CustomerComposer $customerComposer
      */
     public function __construct(
         ContextManager $contextManager,
@@ -58,7 +62,8 @@ class OrderComposer
         ShippingMethodBridge $shippingBridge,
         CustomerMapping $customerMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
-        QuoteBridge $quoteBridge
+        QuoteBridge $quoteBridge,
+        CustomerComposer $customerComposer
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -67,6 +72,7 @@ class OrderComposer
         $this->customerMapping = $customerMapping;
         $this->shopgateOrderBridge = $shopgateOrderBridge;
         $this->quoteBridge = $quoteBridge;
+        $this->customerComposer = $customerComposer;
     }
 
     /**
@@ -84,7 +90,7 @@ class OrderComposer
         return [
                 'currency' => $context->getCurrency()->getIsoCode(),
                 'shipping_methods' => $this->shippingMapping->mapShippingMethods($deliveries),
-                'payment_methods' => [], // out of scope
+                'payment_methods' => [],
                 'customer' => $this->customerMapping->mapCartCustomer($context),
             ] + $items;
     }
@@ -99,7 +105,6 @@ class OrderComposer
         try {
             return $this->contextManager->loadByCustomerId($customerNumber);
         } catch (Throwable $e) {
-            //todo: log, issue with customer therefore load guest cart?
             return $this->contextManager->getSalesContext();
         }
     }
@@ -134,7 +139,13 @@ class OrderComposer
      */
     public function addOrder(ShopgateOrder $order): array
     {
-        $channel = $this->getContextByCustomer($order->getExternalCustomerId() ?? '');
+        $customerId = $order->getExternalCustomerId();
+        // if is guest
+        if (empty($customerId)) {
+            $customer = $this->customerMapping->orderToShopgateCustomer($order);
+            $this->customerComposer->registerCustomer(null, $customer);
+        }
+        $channel = $this->getContextByCustomer($customerId??'');
         if ($this->shopgateOrderBridge->orderExists($order->getOrderNumber(), $channel)) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
@@ -169,7 +180,7 @@ class OrderComposer
             return $error->isPersistent() === false;
         }));
         try {
-            $swOrder = $this->quoteBridge->createOrder($swCart, $channel);
+            $swOrder = $this->quoteBridge->createOrder($swCart, $newContext);
         } catch (InvalidCartException $error) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::UNKNOWN_ERROR_CODE,
@@ -183,8 +194,8 @@ class OrderComposer
             );
         }
         $this->shopgateOrderBridge->saveEntity(
-            (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $channel->getSalesChannelId(), $order),
-            $channel
+            (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $newContext->getSalesChannelId(), $order),
+            $newContext
         );
 
         return [

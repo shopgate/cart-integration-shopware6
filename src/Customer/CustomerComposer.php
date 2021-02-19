@@ -7,7 +7,6 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCustomer;
 use ShopgateLibraryException;
-use Shopware\Core\Checkout\Customer\SalesChannel\CustomerResponse;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Throwable;
@@ -65,15 +64,14 @@ class CustomerComposer
     /**
      * @param string|null $password - pass null for guest customer
      * @param ShopgateCustomer $customer
-     * @return CustomerResponse
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function registerCustomer(?string $password, ShopgateCustomer $customer): CustomerResponse
+    public function registerCustomer(?string $password, ShopgateCustomer $customer): void
     {
         $dataBag = $this->customerMapping->mapToShopwareEntity($customer, $password);
         try {
-            return $this->registerRoute->register($dataBag, $this->contextManager->getSalesContext(), false);
+            $this->registerRoute->register($dataBag, $this->contextManager->getSalesContext(), false);
         } catch (ConstraintViolationException $e) {
             $errorMessages = [];
             foreach ($e->getViolations() as $violation) {

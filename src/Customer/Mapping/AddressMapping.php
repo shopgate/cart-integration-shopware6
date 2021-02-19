@@ -44,6 +44,13 @@ class AddressMapping
         $address['city'] = $shopgateAddress->getCity();
         $address['countryId'] = $this->locationMapping->getCountryIdByIso($shopgateAddress->getCountry());
         $address['countryStateId'] = $this->locationMapping->getStateIdByIso($shopgateAddress->getState());
+        $address = array_merge(
+            $address,
+            $shopgateAddress->getCompany() ? ['company' => $shopgateAddress->getCompany()] : [],
+            $shopgateAddress->getStreet2() ? ['additionalAddressLine1' => $shopgateAddress->getStreet2()] : [],
+            $shopgateAddress->getPhone() ? ['phoneNumber' => $shopgateAddress->getPhone()] : [],
+            $shopgateAddress->getMobile() ? ['phoneNumber' => $shopgateAddress->getMobile()] : []
+        );
 
         return new RequestDataBag($address);
     }
