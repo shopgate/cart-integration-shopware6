@@ -153,12 +153,6 @@ class OrderComposer
                 true
             );
         }
-        //todo: needed implementation if sg_address->id is not provided
-//        $deliveryId = $this->customerMapping->getSelectedAddressId($order->getDeliveryAddress(), $channel);
-//        if (!$deliveryId) {
-//            //todo: create delivery address for this customer and get ID
-//            $deliveryId = '';
-//        }
         $dataBag = new RequestDataBag(
             array_merge(
                 [

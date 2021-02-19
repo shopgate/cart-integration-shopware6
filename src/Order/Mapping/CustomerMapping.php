@@ -2,8 +2,6 @@
 
 namespace Shopgate\Shopware\Order\Mapping;
 
-use Shopgate\Shopware\Customer\Mapping\AddressMapping;
-use ShopgateAddress;
 use ShopgateCartCustomer;
 use ShopgateCartCustomerGroup;
 use ShopgateCustomer;
@@ -12,15 +10,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CustomerMapping
 {
-    /**
-     * @var AddressMapping
-     */
-    private $addressMapping;
-
-    public function __construct(AddressMapping $addressMapping)
-    {
-        $this->addressMapping = $addressMapping;
-    }
 
     /**
      * @param SalesChannelContext $context
@@ -36,22 +25,6 @@ class CustomerMapping
         $customer->setCustomerGroups([$sgCustomerGroup]);
 
         return $customer;
-    }
-
-    /**
-     * @param ShopgateAddress $address
-     * @param SalesChannelContext $context
-     * @return string|null
-     */
-    public function getSelectedAddressId(ShopgateAddress $address, SalesChannelContext $context): ?string
-    {
-        $addresses = $this->addressMapping->mapFromShopware($context->getCustomer());
-        foreach ($addresses as $shopwareAddress) {
-            if ($shopwareAddress->equals($address)) {
-                return $shopwareAddress->getId();
-            }
-        }
-        return null;
     }
 
     /**
