@@ -2,22 +2,23 @@
 
 namespace Shopgate\Shopware\System\Log;
 
+use ShopgateLogger;
+
 class Logger implements LoggerInterface
 {
-
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function info(string $info): void
+    public function debug(string $info): void
     {
-        // TODO: Implement info() method.
+        ShopgateLogger::getInstance()->log($info, ShopgateLogger::LOGTYPE_DEBUG);
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function error(string $error): void
     {
-        // TODO: Implement error() method.
+        ShopgateLogger::getInstance()->log($error, ShopgateLogger::LOGTYPE_ERROR);
     }
 }

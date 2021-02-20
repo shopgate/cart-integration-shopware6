@@ -71,11 +71,11 @@ class ExportService
      */
     public function getCategories(int $limit = null, int $offset = null, array $ids = []): array
     {
-        $this->log->info('Start Category Export...');
+        $this->log->debug('Start Category Export...');
 
         $export = $this->categoryComposer->buildCategoryTree($ids, $limit, $offset);
-        $this->log->info('End Category-Tree Build...');
-        $this->log->info('Finished Category Export...');
+        $this->log->debug('End Category-Tree Build...');
+        $this->log->debug('Finished Category Export...');
 
         return $export;
     }
@@ -89,9 +89,9 @@ class ExportService
      */
     public function getProducts(int $limit = null, int $offset = null, array $ids = []): array
     {
-        $this->log->info('Start Product Export...');
+        $this->log->debug('Start Product Export...');
         $export = $this->productComposer->loadProducts($limit, $offset, $ids);
-        $this->log->info('Finished Product Export...');
+        $this->log->debug('Finished Product Export...');
 
         return $export;
     }

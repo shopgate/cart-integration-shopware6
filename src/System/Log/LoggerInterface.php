@@ -5,11 +5,11 @@ namespace Shopgate\Shopware\System\Log;
 interface LoggerInterface
 {
     /**
-     * Information level log
+     * Debug level log
      *
      * @param string $info
      */
-    public function info(string $info): void;
+    public function debug(string $info): void;
 
     /**
      * Error level log

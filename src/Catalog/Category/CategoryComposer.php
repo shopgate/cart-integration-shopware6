@@ -41,7 +41,7 @@ class CategoryComposer
     {
         $sliceOffset = ($offset - 1) * $limit;
         $parentId = $this->categoryBridge->getRootCategoryId();
-        $this->log->info('Build Tree with Parent-ID: ' . $parentId);
+        $this->log->debug('Build Tree with Parent-ID: ' . $parentId);
         $allCategories = $this->categoryBridge->getChildCategories($parentId);
 
         if (empty($ids)) {
@@ -65,7 +65,7 @@ class CategoryComposer
     {
         $export = [];
         foreach ($collection as $entity) {
-            $this->log->info('Loading category with ID: ' . $entity->getId());
+            $this->log->debug('Loading category with ID: ' . $entity->getId());
             $categoryExportModel = new CategoryMapping($this->contextManager);
             $categoryExportModel->setItem($entity);
             $categoryExportModel->setParentId($entity->getParentId());
