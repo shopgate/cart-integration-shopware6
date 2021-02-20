@@ -13,6 +13,7 @@
             <parameter key="enable_register_customer">true</parameter>
             <parameter key="enable_check_cart">true</parameter>
             <parameter key="enable_add_order">true</parameter>
+            <parameter key="enable_cron">true</parameter>
         </parameter>
     </parameters>
     <services>

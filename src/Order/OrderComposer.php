@@ -198,4 +198,25 @@ class OrderComposer
             'external_order_number' => $swOrder->getOrderNumber()
         ];
     }
+
+    /**
+     * @throws MissingContextException
+     */
+    public function setShippingCompleted(): void
+    {
+        $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynched($this->contextManager->getSalesContext());
+        foreach ($shopgateOrders as $shopgateOrder) {
+// todo-konstantin the $shopgateOrder object has almost no data. just the id and created timestamp
+            $a = $shopgateOrder->getReceivedData();
+
+        }
+    }
+
+    /**
+     * @throws MissingContextException
+     */
+    public function cancelOrders(): void
+    {
+        $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynched($this->contextManager->getSalesContext());
+    }
 }

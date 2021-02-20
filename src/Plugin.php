@@ -29,9 +29,16 @@ class Plugin extends ShopgatePlugin
         $this->forwarder->getExportService()->definePluginVersion();
     }
 
+    /**
+     * @param string $jobname
+     * @param array $params
+     * @param string $message
+     * @param int $errorcount
+     * @throws ShopgateLibraryException
+     */
     public function cron($jobname, $params, &$message, &$errorcount): void
     {
-        // TODO: Implement cron() method.
+        $this->forwarder->getExportService()->cron($jobname, $params, $message, $errorcount);
     }
 
     /**

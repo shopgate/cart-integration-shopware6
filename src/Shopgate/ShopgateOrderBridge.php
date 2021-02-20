@@ -37,6 +37,21 @@ class ShopgateOrderBridge
     }
 
     /**
+     * @param SalesChannelContext $channel
+     * @return ShopgateOrderEntity[]
+     */
+    public function getOrdersNotSynched(SalesChannelContext $channel): array
+    {
+        return $this->shopgateOrderRepository
+                ->search((new Criteria())->addFilter(
+                    new EqualsFilter('isSent', 0)
+                )->addFilter(
+                    new EqualsFilter('isCancelled', 0)
+                ), $channel->getContext())
+                ->getElements();
+    }
+
+    /**
      * @param ShopgateOrderEntity $orderEntity
      * @param SalesChannelContext $channel
      * @return EntityWrittenContainerEvent
