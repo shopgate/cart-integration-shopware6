@@ -176,9 +176,10 @@ class OrderComposer
         try {
             $swOrder = $this->quoteBridge->createOrder($swCart, $newContext);
         } catch (InvalidCartException $error) {
+            $elements = $error->getCartErrors()->getElements();
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                $error->getErrors(true),
+                array_pop($elements)->getMessage(),
                 true //todo-prod: change to false
             );
         } catch (Throwable $error) {
@@ -188,7 +189,7 @@ class OrderComposer
             );
         }
         $this->shopgateOrderBridge->saveEntity(
-            (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $newContext->getSalesChannelId(), $order),
+            (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $newContext->getSalesChannel()->getId(), $order),
             $newContext
         );
 
