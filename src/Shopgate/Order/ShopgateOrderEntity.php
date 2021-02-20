@@ -10,14 +10,17 @@ class ShopgateOrderEntity extends Entity
 {
     use EntityIdTrait;
 
-    private $shopwareOrderId;
-    private $salesChannelId;
-    private $shopgateOrderNumber;
-    private $isSent;
-    private $isCancelled;
-    private $isPaid;
-    private $isTest;
-    private $receivedData;
+    /**
+     * Keep public as assigner does not use methods, e.g. $this->$key = value
+     */
+    public $shopwareOrderId;
+    public $salesChannelId;
+    public $shopgateOrderNumber;
+    public $isSent;
+    public $isCancelled;
+    public $isPaid;
+    public $isTest;
+    public $receivedData;
 
     /**
      * @return string

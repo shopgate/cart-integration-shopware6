@@ -27,7 +27,7 @@ class Migration1613391581Order extends MigrationStep
           `id` BINARY(16) NOT NULL COMMENT 'Entity ID',
           `sw_order_id` BINARY(16) NOT NULL COMMENT 'Shopware Order Id',
           `sales_channel_id` BINARY(16) DEFAULT NULL COMMENT 'SalesChannel Id',
-          `shopgate_order_number` BINARY(16) NOT NULL COMMENT 'Shopgate order number',
+          `shopgate_order_number` VARCHAR(20) NOT NULL COMMENT 'Shopgate order number',
           `is_paid` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Is paid',
           `is_sent` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Is sent to shopgate',
           `is_cancellation_sent` TINYINT(1) NOT NULL COMMENT 'Is cancellation sent to shopgate',
