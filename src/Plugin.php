@@ -12,6 +12,7 @@ use Shopgate_Model_Catalog_Product;
 use ShopgateCart;
 use ShopgateCustomer;
 use ShopgateLibraryException;
+use ShopgateMerchantApiException;
 use ShopgateOrder;
 use ShopgatePlugin;
 
@@ -31,14 +32,16 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @param string $jobname
-     * @param array $params
+     * @param $params
      * @param string $message
      * @param int $errorcount
+     * @throws Exceptions\MissingContextException
      * @throws ShopgateLibraryException
+     * @throws ShopgateMerchantApiException
      */
     public function cron($jobname, $params, &$message, &$errorcount): void
     {
-        $this->forwarder->getExportService()->cron($jobname, $params, $message, $errorcount);
+        $this->forwarder->getExportService()->cron($jobname, $this->builder->buildMerchantApi());
     }
 
     /**

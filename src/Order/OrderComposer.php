@@ -13,7 +13,10 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use ShopgateCartBase;
+use ShopgateDeliveryNote;
 use ShopgateLibraryException;
+use ShopgateMerchantApi;
+use ShopgateMerchantApiException;
 use ShopgateOrder;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
@@ -28,6 +31,8 @@ use Throwable;
 
 class OrderComposer
 {
+    protected const statusesShipped = ['shipped', 'completed'];
+    protected const statusesCancelled = ['refunded', 'cancelled'];
     /** @var ContextManager */
     private $contextManager;
     /** @var LineItemComposer */
@@ -38,6 +43,8 @@ class OrderComposer
     private $shippingBridge;
     /** @var CustomerMapping */
     private $customerMapping;
+    /** @var OrderBridge */
+    private $orderBridge;
     /** @var ShopgateOrderBridge */
     private $shopgateOrderBridge;
     /** @var QuoteBridge */
@@ -54,6 +61,7 @@ class OrderComposer
      * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param QuoteBridge $quoteBridge
      * @param CustomerComposer $customerComposer
+     * @param OrderBridge $orderBridge
      */
     public function __construct(
         ContextManager $contextManager,
@@ -63,7 +71,8 @@ class OrderComposer
         CustomerMapping $customerMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
         QuoteBridge $quoteBridge,
-        CustomerComposer $customerComposer
+        CustomerComposer $customerComposer,
+        OrderBridge $orderBridge
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -73,6 +82,7 @@ class OrderComposer
         $this->shopgateOrderBridge = $shopgateOrderBridge;
         $this->quoteBridge = $quoteBridge;
         $this->customerComposer = $customerComposer;
+        $this->orderBridge = $orderBridge;
     }
 
     /**
@@ -200,21 +210,59 @@ class OrderComposer
     }
 
     /**
+     * @param ShopgateMerchantApi $merchantApi
      * @throws MissingContextException
+     * @throws ShopgateLibraryException
+     * @throws ShopgateMerchantApiException
      */
-    public function setShippingCompleted(): void
+    public function setShippingCompleted(ShopgateMerchantApi $merchantApi): void
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
         foreach ($shopgateOrders as $shopgateOrder) {
-            $a = $shopgateOrder->getReceivedData();
+            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(), $this->contextManager->getSalesContext());
+            if ($swOrder === null) {
+                // should not happen, but in this case the order shouldn't be handled again
+                $shopgateOrder->setIsSent(true);
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+                continue;
+            }
+            $stateName = $swOrder->getStateMachineState() ? $swOrder->getStateMachineState()->getTechnicalName() : '';
+            if (in_array($stateName, self::statusesShipped)) {
+                $merchantApi->addOrderDeliveryNote(
+                    $shopgateOrder->getShopgateOrderNumber(),
+                    ShopgateDeliveryNote::OTHER,
+                    '',
+                    true
+                );
+                $shopgateOrder->setIsSent(true);
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+            }
         }
     }
 
     /**
+     * @param ShopgateMerchantApi $merchantApi
      * @throws MissingContextException
+     * @throws ShopgateLibraryException
+     * @throws ShopgateMerchantApiException
      */
-    public function cancelOrders(): void
+    public function cancelOrders(ShopgateMerchantApi $merchantApi): void
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
+        foreach ($shopgateOrders as $shopgateOrder) {
+            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(), $this->contextManager->getSalesContext());
+            if ($swOrder === null) {
+                // should not happen, but in this case the order shouldn't be handled again
+                $shopgateOrder->setIsCancelled(true);
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+                continue;
+            }
+            $stateName = $swOrder->getStateMachineState() ? $swOrder->getStateMachineState()->getTechnicalName() : '';
+            if (in_array($stateName, self::statusesCancelled)) {
+                $merchantApi->cancelOrder($shopgateOrder->getShopgateOrderNumber());
+                $shopgateOrder->setIsCancelled(true);
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+            }
+        }
     }
 }

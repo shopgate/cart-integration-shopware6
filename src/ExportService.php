@@ -15,6 +15,7 @@ use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;
 use ShopgateLibraryException;
+use ShopgateMerchantApiException;
 use ShopgatePluginApi;
 
 class ExportService
@@ -153,24 +154,23 @@ class ExportService
     }
 
     /**
-     * @param string $jobname
-     * @param string|mixed $params
-     * @param string $message
-     * @param int $errorcount
-     * @throws ShopgateLibraryException
+     * @param $jobname
+     * @param $merchantApi
      * @throws MissingContextException
+     * @throws ShopgateLibraryException
+     * @throws ShopgateMerchantApiException
      */
-    public function cron($jobname, $params, &$message, &$errorcount): void
+    public function cron($jobname, $merchantApi): void
     {
         $this->log->debug('Start cronjob '. $jobname);
         switch ($jobname) {
             case ShopgatePluginApi::JOB_SET_SHIPPING_COMPLETED:
                 $this->log->debug('Start setShippingCompleted');
-                $this->orderComposer->setShippingCompleted();
+                $this->orderComposer->setShippingCompleted($merchantApi);
                 break;
             case ShopgatePluginApi::JOB_CANCEL_ORDERS:
                 $this->log->debug('Start cancelOrders');
-                $this->orderComposer->cancelOrders();
+                $this->orderComposer->cancelOrders($merchantApi);
                 break;
             default:
                 $this->log->debug('Cronjob name could not be mapped');
