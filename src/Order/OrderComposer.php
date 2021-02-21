@@ -153,9 +153,9 @@ class OrderComposer
         // if is guest
         if (empty($customerId)) {
             $customer = $this->customerMapping->orderToShopgateCustomer($order);
-            $this->customerComposer->registerCustomer(null, $customer);
+            $customerId = $this->customerComposer->registerCustomer(null, $customer)->getId();
         }
-        $channel = $this->getContextByCustomer($customerId??'');
+        $channel = $this->getContextByCustomer($customerId ?? '');
         if ($this->shopgateOrderBridge->orderExists($order->getOrderNumber(), $channel)) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
@@ -219,7 +219,8 @@ class OrderComposer
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
         foreach ($shopgateOrders as $shopgateOrder) {
-            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(), $this->contextManager->getSalesContext());
+            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(),
+                $this->contextManager->getSalesContext());
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
                 $shopgateOrder->setIsSent(true);
@@ -250,7 +251,8 @@ class OrderComposer
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
         foreach ($shopgateOrders as $shopgateOrder) {
-            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(), $this->contextManager->getSalesContext());
+            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(),
+                $this->contextManager->getSalesContext());
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
                 $shopgateOrder->setIsCancelled(true);

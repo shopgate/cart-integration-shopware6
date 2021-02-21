@@ -78,6 +78,9 @@
         <service id="Shopgate\Shopware\Shopgate\ShopgateOrderBridge">
             <argument type="service" id="shopgate_order.repository"/>
         </service>
+        <service id="Shopgate\Shopware\System\DomainBridge">
+            <argument type="service" id="sales_channel_domain.repository"/>
+        </service>
         <service id="Shopgate\Shopware\System\Configuration\ConfigBridge">
             <argument type="service" id="plugin.repository"/>
             <argument type="string">%kernel.shopware_version%</argument>

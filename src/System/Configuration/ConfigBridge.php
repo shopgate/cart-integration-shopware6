@@ -3,6 +3,8 @@
 namespace Shopgate\Shopware\System\Configuration;
 
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\DomainBridge;
+use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -10,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
@@ -33,6 +36,8 @@ class ConfigBridge
     private $systemConfigRepo;
     /** @var array */
     private $config;
+    /** @var DomainBridge */
+    private $domainBridge;
 
     /**
      * @param EntityRepositoryInterface $pluginRepository
@@ -40,19 +45,22 @@ class ConfigBridge
      * @param ContextManager $contextManager
      * @param SystemConfigService $systemConfigService
      * @param EntityRepositoryInterface $systemConfigRepo
+     * @param DomainBridge $domainBridge
      */
     public function __construct(
         EntityRepositoryInterface $pluginRepository,
         string $shopwareVersion,
         ContextManager $contextManager,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $systemConfigRepo
+        EntityRepositoryInterface $systemConfigRepo,
+        DomainBridge $domainBridge
     ) {
         $this->pluginRepository = $pluginRepository;
         $this->shopwareVersion = $shopwareVersion;
         $this->contextManager = $contextManager;
         $this->systemConfigService = $systemConfigService;
         $this->systemConfigRepo = $systemConfigRepo;
+        $this->domainBridge = $domainBridge;
     }
 
     /**
@@ -161,5 +169,22 @@ class ConfigBridge
         }
 
         return $this->config[$key];
+    }
+
+    /**
+     * @param SalesChannelContext $context
+     * @return string
+     * @throws SalesChannelDomainNotFoundException
+     */
+    public function getCustomerOptInConfirmUrl(SalesChannelContext $context): string
+    {
+        /** @var string $domainUrl */
+        $domainUrl = $this->systemConfigService
+            ->get('core.loginRegistration.doubleOptInDomain', $context->getSalesChannel()->getId());
+        if (!$domainUrl) {
+            $domainUrl = $this->domainBridge->getDomain($context);
+        }
+
+        return $domainUrl;
     }
 }
