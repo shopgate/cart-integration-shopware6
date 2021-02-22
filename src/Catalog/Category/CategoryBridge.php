@@ -5,23 +5,29 @@ namespace Shopgate\Shopware\Catalog\Category;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Category\CategoryCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\SalesChannel\CategoryListRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 class CategoryBridge
 {
-    /** @var EntityRepositoryInterface */
-    private $repository;
+    /** @var CategoryListRoute */
+    private $categoryListRoute;
     /** @var ContextManager */
     private $contextManager;
 
-    public function __construct(EntityRepositoryInterface $categoryRepository, ContextManager $contextManager)
-    {
-        $this->repository = $categoryRepository;
+    /**
+     * @param CategoryListRoute $categoryListRoute
+     * @param ContextManager $contextManager
+     */
+    public function __construct(
+        CategoryListRoute $categoryListRoute,
+        ContextManager $contextManager
+    ) {
+        $this->categoryListRoute = $categoryListRoute;
         $this->contextManager = $contextManager;
     }
 
@@ -31,17 +37,7 @@ class CategoryBridge
      */
     public function getRootCategoryId(): string
     {
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('category.parentId', null));
-        $criteria->addSorting(new FieldSorting('category.createdAt', FieldSorting::ASCENDING));
-
-        $categories = $this->repository->searchIds(
-            $criteria,
-            $this->contextManager->getSalesContext()->getContext()
-        )->getIds();
-
-        return array_shift($categories);
+        return $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
     }
 
     /**
@@ -63,14 +59,56 @@ class CategoryBridge
             new EqualsFilter('visible', 1)
         );
         $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE);
-        $list = $this->repository->search($criteria, $this->contextManager->getSalesContext()->getContext());
-        /** @var CategoryCollection $collection */
-        $collection = $list->getEntities();
-        $sorted = $collection->sortByPosition();
-        $maxCategories = $collection->count();
-        foreach ($sorted as $key => $entity) {
-            $entity->setCustomFields(['sortOrder' => $maxCategories - $key]);
+        $list = $this->categoryListRoute->load($criteria, $this->contextManager->getSalesContext())->getCategories();
+        $tree = $this->buildTree($parentId, $list->getElements());
+        $flatten = $this->flattenTree($tree->getElements());
+
+        return new CategoryCollection($flatten);
+    }
+
+    /**
+     * @param string|null $parentId
+     * @param array $categories
+     * @return CategoryCollection
+     */
+    private function buildTree(?string $parentId, array $categories): CategoryCollection
+    {
+        $children = new CategoryCollection();
+        foreach ($categories as $key => $category) {
+            if ($category->getParentId() !== $parentId) {
+                continue;
+            }
+            unset($categories[$key]);
+
+            $children->add($category);
         }
-        return $collection;
+
+        $children->sortByPosition();
+
+        $items = new CategoryCollection();
+        $maxChildren = $children->count();
+        foreach ($children as $key => $child) {
+            $child->setChildren($this->buildTree($child->getId(), $categories));
+            $child->setCustomFields(['sortOrder' => $maxChildren - $key]);
+            $items->add($child);
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param CategoryEntity[] $list
+     * @param CategoryEntity[] $result
+     * @return array
+     */
+    private function flattenTree(array $list, array $result = []): array
+    {
+        foreach ($list as $item) {
+            if ($item->getChildren()) {
+                $result = $this->flattenTree($item->getChildren()->getElements(), $result);
+            }
+            $result[] = $item;
+        }
+        return $result;
     }
 }
