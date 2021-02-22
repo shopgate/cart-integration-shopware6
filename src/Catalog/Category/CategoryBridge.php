@@ -9,7 +9,6 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\SalesChannel\CategoryListRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class CategoryBridge
@@ -55,8 +54,7 @@ class CategoryBridge
             new RangeFilter('level', [
                 RangeFilter::GT => 1,
                 RangeFilter::LTE => 99,
-            ]),
-            new EqualsFilter('visible', 1)
+            ])
         );
         $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE);
         $list = $this->categoryListRoute->load($criteria, $this->contextManager->getSalesContext())->getCategories();

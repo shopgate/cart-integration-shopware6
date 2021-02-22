@@ -148,6 +148,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setIsActive(): void
     {
-        parent::setIsActive($this->item->getActive());
+        parent::setIsActive($this->item->getActive() && $this->item->getVisible());
     }
 }
