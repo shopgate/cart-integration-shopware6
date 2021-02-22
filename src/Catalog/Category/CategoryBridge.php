@@ -60,7 +60,6 @@ class CategoryBridge
                 RangeFilter::GT => 1,
                 RangeFilter::LTE => 99,
             ]),
-            new EqualsFilter('active', 1),
             new EqualsFilter('visible', 1)
         );
         $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE);
