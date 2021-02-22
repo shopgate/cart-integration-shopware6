@@ -34,9 +34,6 @@
         <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\TierPriceMapping"/>
-        <service id="Shopgate\Shopware\Catalog\Product\Price\PriceRuleBridge">
-            <argument type="service" id="rule.repository"/>
-        </service>
         <service id="Shopgate\Shopware\Catalog\Product\Property\PropertyBridge">
             <argument type="service" id="property_group.repository"/>
         </service>

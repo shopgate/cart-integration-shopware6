@@ -46,7 +46,6 @@ class ProductComposer
     {
         $response = $this->productBridge->getProductList($limit, $offset, $uids);
         $list = [];
-        /** @var ProductEntity $product */
         foreach ($response->getProducts() as $product) {
             $shopgateProduct = $this->productMapFactory->createMapClass($product);
             $shopgateProduct->setItem($product);
