@@ -19,7 +19,6 @@ use Shopgate_Model_Catalog_Stock;
 use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
-use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
@@ -177,8 +176,10 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     {
         $sortTree = $this->sortTree->getSortTree();
         $paths = [];
-        /** @var CategoryEntity $category */
         foreach ($this->item->getCategories() as $category) {
+            if ($this->isRootCategory($category->getId())) {
+                continue;
+            }
             $path = new Shopgate_Model_Catalog_CategoryPath();
             $path->setUid($category->getId());
             if (isset($sortTree[$category->getId()][$this->item->getId()])) {
@@ -187,6 +188,18 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $paths[] = $path;
         }
         parent::setCategoryPaths($paths);
+    }
+
+    /**
+     * Check if provided category is a root category
+     *
+     * @param string $id
+     * @return bool
+     * @throws MissingContextException
+     */
+    private function isRootCategory(string $id): bool
+    {
+        return $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId() === $id;
     }
 
     public function setShipping(): void

@@ -8,7 +8,6 @@ use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\FileCache;
-use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,7 +72,6 @@ class SortTree
             $rootCategoryId = $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
         }
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
-        /** @var CategoryEntity $category */
         foreach ($categories as $category) {
             $request = new Request();
             $config = array_merge(...array_values($category->getSlotConfig()));
