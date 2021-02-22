@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Order;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute;
@@ -19,20 +20,25 @@ class QuoteBridge
     private $cartLoadRoute;
     /** @var CartItemAddRoute */
     private $cartItemAddRoute;
+    /** @var CartDeleteRoute */
+    private $cartDeleteRoute;
 
     /**
      * @param CartOrderRoute $cartOrderRoute
      * @param CartLoadRoute $cartLoadRoute
      * @param CartItemAddRoute $cartItemAddRoute
+     * @param CartDeleteRoute $cartDeleteRoute
      */
     public function __construct(
         CartOrderRoute $cartOrderRoute,
         CartLoadRoute $cartLoadRoute,
-        CartItemAddRoute $cartItemAddRoute
+        CartItemAddRoute $cartItemAddRoute,
+        CartDeleteRoute $cartDeleteRoute
     ) {
         $this->cartOrderRoute = $cartOrderRoute;
         $this->cartLoadRoute = $cartLoadRoute;
         $this->cartItemAddRoute = $cartItemAddRoute;
+        $this->cartDeleteRoute = $cartDeleteRoute;
     }
 
     /**
@@ -64,5 +70,13 @@ class QuoteBridge
     public function createOrder(Cart $cart, SalesChannelContext $context, ?RequestDataBag $data = null): OrderEntity
     {
         return $this->cartOrderRoute->order($cart, $context, $data)->getOrder();
+    }
+
+    /**
+     * @param SalesChannelContext $context
+     */
+    public function deleteCart(SalesChannelContext $context): void
+    {
+        $this->cartDeleteRoute->delete($context);
     }
 }

@@ -96,13 +96,16 @@ class OrderComposer
         $swCart = $this->checkoutBuilder($context, $sgCart);
         $items = $this->lineItemComposer->mapOutgoingLineItems($swCart, $sgCart);
         $deliveries = $this->shippingBridge->getCalculatedDeliveries($context);
-
-        return [
+        $result = [
                 'currency' => $context->getCurrency()->getIsoCode(),
                 'shipping_methods' => $this->shippingMapping->mapShippingMethods($deliveries),
                 'payment_methods' => [],
                 'customer' => $this->customerMapping->mapCartCustomer($context),
             ] + $items;
+
+        $this->quoteBridge->deleteCart($context);
+
+        return $result;
     }
 
     /**
