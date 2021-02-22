@@ -27,7 +27,8 @@ class LineItemProductMapping
                 'id' => $item->getItemNumber(),
                 'referencedId' => $item->getItemNumber(),
                 'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
-                'quantity' => (int)$item->getQuantity()
+                'quantity' => (int)$item->getQuantity(),
+                'stackable' => true
             ];
         }
 
