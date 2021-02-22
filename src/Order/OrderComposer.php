@@ -43,8 +43,6 @@ class OrderComposer
     private $shippingBridge;
     /** @var CustomerMapping */
     private $customerMapping;
-    /** @var OrderBridge */
-    private $orderBridge;
     /** @var ShopgateOrderBridge */
     private $shopgateOrderBridge;
     /** @var QuoteBridge */
@@ -61,7 +59,6 @@ class OrderComposer
      * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param QuoteBridge $quoteBridge
      * @param CustomerComposer $customerComposer
-     * @param OrderBridge $orderBridge
      */
     public function __construct(
         ContextManager $contextManager,
@@ -71,8 +68,7 @@ class OrderComposer
         CustomerMapping $customerMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
         QuoteBridge $quoteBridge,
-        CustomerComposer $customerComposer,
-        OrderBridge $orderBridge
+        CustomerComposer $customerComposer
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -82,7 +78,6 @@ class OrderComposer
         $this->shopgateOrderBridge = $shopgateOrderBridge;
         $this->quoteBridge = $quoteBridge;
         $this->customerComposer = $customerComposer;
-        $this->orderBridge = $orderBridge;
     }
 
     /**
@@ -222,7 +217,7 @@ class OrderComposer
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
         foreach ($shopgateOrders as $shopgateOrder) {
-            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(),
+            $swOrder = $this->quoteBridge->loadOrderById($shopgateOrder->getShopwareOrderId(),
                 $this->contextManager->getSalesContext());
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
@@ -254,7 +249,7 @@ class OrderComposer
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
         foreach ($shopgateOrders as $shopgateOrder) {
-            $swOrder = $this->orderBridge->load($shopgateOrder->getShopwareOrderId(),
+            $swOrder = $this->quoteBridge->loadOrderById($shopgateOrder->getShopwareOrderId(),
                 $this->contextManager->getSalesContext());
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
