@@ -108,7 +108,6 @@ class SalutationMapping
     /**
      * @param SalutationEntity $entity
      * @return string|null
-     * @todo-rainer check if this is according to your import as well or should we use backups?
      */
     public function toShopgateGender(SalutationEntity $entity): ?string
     {
