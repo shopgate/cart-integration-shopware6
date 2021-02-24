@@ -63,7 +63,7 @@ class CustomerComposer
         if (null === $shopwareCustomer) {
             throw new MissingContextException('User logged in context missing');
         }
-        $detailedCustomer = $this->customerBridge->getDetailedContextCustomer();
+        $detailedCustomer = $this->customerBridge->getDetailedContextCustomer($this->contextManager->getSalesContext());
 
         return $this->customerMapping->mapToShopgateEntity($detailedCustomer);
     }

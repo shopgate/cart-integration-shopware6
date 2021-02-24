@@ -2,7 +2,10 @@
 
 namespace Shopgate\Shopware\Order;
 
+use Shopgate\Shopware\Customer\AddressBridge;
+use Shopgate\Shopware\Customer\CustomerBridge;
 use Shopgate\Shopware\Customer\CustomerComposer;
+use Shopgate\Shopware\Customer\Mapping\AddressMapping;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Mapping\CustomerMapping;
 use Shopgate\Shopware\Order\Mapping\ShippingMapping;
@@ -12,6 +15,7 @@ use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
+use ShopgateAddress;
 use ShopgateCartBase;
 use ShopgateDeliveryNote;
 use ShopgateLibraryException;
@@ -49,6 +53,12 @@ class OrderComposer
     private $quoteBridge;
     /** @var CustomerComposer */
     private $customerComposer;
+    /** @var AddressMapping */
+    private $addressMapping;
+    /** @var AddressBridge */
+    private $addressBridge;
+    /** @var CustomerBridge */
+    private $customerBridge;
 
     /**
      * @param ContextManager $contextManager
@@ -59,6 +69,9 @@ class OrderComposer
      * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param QuoteBridge $quoteBridge
      * @param CustomerComposer $customerComposer
+     * @param CustomerBridge $customerBridge
+     * @param AddressMapping $addressMapping
+     * @param AddressBridge $addressBridge
      */
     public function __construct(
         ContextManager $contextManager,
@@ -68,7 +81,10 @@ class OrderComposer
         CustomerMapping $customerMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
         QuoteBridge $quoteBridge,
-        CustomerComposer $customerComposer
+        CustomerComposer $customerComposer,
+        CustomerBridge $customerBridge,
+        AddressMapping $addressMapping,
+        AddressBridge $addressBridge
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -78,6 +94,9 @@ class OrderComposer
         $this->shopgateOrderBridge = $shopgateOrderBridge;
         $this->quoteBridge = $quoteBridge;
         $this->customerComposer = $customerComposer;
+        $this->addressMapping = $addressMapping;
+        $this->addressBridge = $addressBridge;
+        $this->customerBridge = $customerBridge;
     }
 
     /**
@@ -150,8 +169,8 @@ class OrderComposer
         $customerId = $order->getExternalCustomerId();
         // if is guest
         if (empty($customerId)) {
-            $customer = $this->customerMapping->orderToShopgateCustomer($order);
-            $customerId = $this->customerComposer->registerCustomer(null, $customer)->getId();
+            $detailCustomer = $this->customerMapping->orderToShopgateCustomer($order);
+            $customerId = $this->customerComposer->registerCustomer(null, $detailCustomer)->getId();
         }
         $channel = $this->getContextByCustomer($customerId ?? '');
         if ($this->shopgateOrderBridge->orderExists($order->getOrderNumber(), $channel)) {
@@ -161,18 +180,28 @@ class OrderComposer
                 true
             );
         }
+
+        /**
+         * Logged in customer, map incoming data to existing addresses or create new ones.
+         * In case of failure, shopware order creation will use default shopware customer addresses.
+         */
+        $addressBag = [];
+        if ($order->getExternalCustomerId() && $channel->getCustomer()) {
+            $deliveryId = $this->getOrCreateAddress($order->getDeliveryAddress(), $channel);
+            $invoiceId = $this->getOrCreateAddress($order->getInvoiceAddress(), $channel);
+            $addressBag = [
+                SalesChannelContextService::SHIPPING_ADDRESS_ID => $deliveryId,
+                SalesChannelContextService::BILLING_ADDRESS_ID => $invoiceId
+            ];
+        }
+
         $dataBag = new RequestDataBag(
             array_merge(
                 [
                     SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
                     SalesChannelContextService::SHIPPING_METHOD_ID => GenericShippingMethod::UUID
                 ],
-                $order->getDeliveryAddress()->getId() && $channel->getCustomer()
-                    ? [SalesChannelContextService::SHIPPING_ADDRESS_ID => $order->getDeliveryAddress()->getId()]
-                    : [],
-                $order->getInvoiceAddress()->getId() && $channel->getCustomer()
-                    ? [SalesChannelContextService::BILLING_ADDRESS_ID => $order->getInvoiceAddress()->getId()]
-                    : []
+                $addressBag
             )
         );
 
@@ -205,6 +234,33 @@ class OrderComposer
             'external_order_id' => $swOrder->getId(),
             'external_order_number' => $swOrder->getOrderNumber()
         ];
+    }
+
+    /**
+     * Checks existing customer addresses & creates one if necessary
+     *
+     * @param ShopgateAddress $address
+     * @param SalesChannelContext $context
+     * @return string|null
+     * @throws MissingContextException
+     * @throws ShopgateLibraryException
+     */
+    private function getOrCreateAddress(ShopgateAddress $address, SalesChannelContext $context): ?string
+    {
+        $customer = $this->customerBridge->getDetailedContextCustomer($context);
+        $addressId = $this->addressMapping->getSelectedAddressId($address, $customer);
+        if (!$addressId) {
+            $shopwareAddress = $this->addressMapping->mapToShopwareAddress($address);
+            $addressId = $this->addressBridge->addAddress($shopwareAddress, $context, $customer)->getId();
+        }
+        if (!$addressId) {
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::PLUGIN_NO_ADDRESSES_FOUND,
+                var_export($address, true),
+                true
+            );
+        }
+        return $addressId;
     }
 
     /**

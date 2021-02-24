@@ -33,7 +33,7 @@ class AddressMapping
      * @return RequestDataBag
      * @throws MissingContextException
      */
-    public function mapAddressData(ShopgateAddress $shopgateAddress): RequestDataBag
+    public function mapToShopwareAddress(ShopgateAddress $shopgateAddress): RequestDataBag
     {
         $address = [];
         $address['salutationId'] = $this->salutationMapping->getSalutationIdByGender($shopgateAddress->getGender());
@@ -94,6 +94,51 @@ class AddressMapping
         }
         return false;
     }
+
+    /**
+     * @param CustomerAddressCollection $collection
+     * @return string|null
+     */
+    public function getWorkingPhone(CustomerAddressCollection $collection): ?string
+    {
+        foreach ($collection as $addressEntity) {
+            if ($addressEntity->getPhoneNumber()) {
+                return $addressEntity->getPhoneNumber();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param ShopgateAddress $address
+     * @param CustomerEntity $customer
+     * @return string|null
+     */
+    public function getSelectedAddressId(ShopgateAddress $address, CustomerEntity $customer): ?string
+    {
+        $addresses = $this->mapFromShopware($customer);
+        foreach ($addresses as $shopwareAddress) {
+            if ($shopwareAddress->equals($address)) {
+                return $shopwareAddress->getId();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param CustomerEntity $customerEntity
+     * @return ShopgateAddress[]
+     */
+    public function mapFromShopware(CustomerEntity $customerEntity): array
+    {
+        $shopgateAddresses = [];
+        foreach ($customerEntity->getAddresses() as $shopwareAddress) {
+            $type = $this->mapAddressType($customerEntity, $shopwareAddress);
+            $shopgateAddresses[] = $this->mapAddress($shopwareAddress, $type);
+        }
+        return $shopgateAddresses;
+    }
+
     /**
      * @param CustomerEntity $customerEntity
      * @param CustomerAddressEntity $addressEntity
@@ -142,35 +187,11 @@ class AddressMapping
         if ($shopwareAddress->getCustomer()) {
             $shopgateAddress->setMail($shopwareAddress->getCustomer()->getEmail());
         }
+        if ($shopwareAddress->getSalutation()) {
+            $shopgateAddress->setGender($this->salutationMapping->toShopgateGender($shopwareAddress->getSalutation()));
+        }
 
         return $shopgateAddress;
     }
 
-    /**
-     * @param CustomerAddressCollection $collection
-     * @return string|null
-     */
-    public function getWorkingPhone(CustomerAddressCollection $collection): ?string
-    {
-        foreach ($collection as $addressEntity) {
-            if ($addressEntity->getPhoneNumber()) {
-                return $addressEntity->getPhoneNumber();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param CustomerEntity $customerEntity
-     * @return ShopgateAddress[]
-     */
-    public function mapFromShopware(CustomerEntity $customerEntity): array
-    {
-        $shopgateAddresses = [];
-        foreach ($customerEntity->getAddresses() as $shopwareAddress) {
-            $type = $this->mapAddressType($customerEntity, $shopwareAddress);
-            $shopgateAddresses[] = $this->mapAddress($shopwareAddress, $type);
-        }
-        return $shopgateAddresses;
-    }
 }

@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
@@ -102,20 +103,21 @@ class CustomerBridge
     }
 
     /**
+     * @param SalesChannelContext $context
      * @return CustomerEntity
-     * @throws MissingContextException
      */
-    public function getDetailedContextCustomer(): CustomerEntity
+    public function getDetailedContextCustomer(SalesChannelContext $context): CustomerEntity
     {
         return $this->customerRoute->load(
             new Request(),
-            $this->contextManager->getSalesContext(),
+            $context,
             (new Criteria())->setLimit(1)
                 ->addAssociation('group')
                 ->addAssociation('salutation')
                 ->addAssociation('addresses')
                 ->addAssociation('addresses.country')
                 ->addAssociation('addresses.countryState')
+                ->addAssociation('addresses.salutation')
         )->getCustomer();
     }
 }

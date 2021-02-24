@@ -23,6 +23,7 @@
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge"/>
         <service id="Shopgate\Shopware\Catalog\Product\ProductComposer"/>
         <service id="Shopgate\Shopware\Customer\CustomerComposer"/>
+        <service id="Shopgate\Shopware\Customer\AddressBridge"/>
         <service id="Shopgate\Shopware\Customer\CustomerBridge">
             <argument type="service" id="customer_group.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
