@@ -1,3 +1,7 @@
+# 0.0.6
+- fixed order address mapping
+- fixed check_cart exporting shopgate shipping method
+
 # 0.0.5
 - added cart support with shipping, items (partial), promos, customer - check_cart
 - added order support
