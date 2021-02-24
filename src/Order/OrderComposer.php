@@ -137,9 +137,10 @@ class OrderComposer
     protected function checkoutBuilder(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
+        /** @noinspection UnnecessaryCastingInspection */
         $price = new CalculatedPrice(
-            $cart->getAmountShipping(),
-            $cart->getAmountShipping(),
+            (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
+            (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
             $shopwareCart->getShippingCosts()->getCalculatedTaxes(),
             $shopwareCart->getShippingCosts()->getTaxRules()
         );
@@ -189,7 +190,8 @@ class OrderComposer
                 unset($dataBag[SalesChannelContextService::BILLING_ADDRESS_ID]);
                 $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag));
             } else {
-                $newContext = $this->contextManager->switchContext(new RequestDataBag(array_merge($dataBag, $addressBag)));
+                $newContext = $this->contextManager->switchContext(new RequestDataBag(array_merge($dataBag,
+                    $addressBag)));
             }
         } catch (ConstraintViolationException $exception) {
             throw $this->errorMapping->mapConstraintError($exception);
