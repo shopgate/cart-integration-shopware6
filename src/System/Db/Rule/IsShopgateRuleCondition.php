@@ -2,7 +2,7 @@
 
 namespace Shopgate\Shopware\System\Db\Rule;
 
-use Shopgate\Shopware\System\Di\Facade;
+use Shopgate\Shopware\Storefront\Controller\MainController;
 use Shopware\Core\Framework\Rule\Rule;
 use Shopware\Core\Framework\Rule\RuleScope;
 use Symfony\Component\Validator\Constraints\Type;
@@ -22,7 +22,7 @@ class IsShopgateRuleCondition extends Rule
     public function match(RuleScope $scope): bool
     {
         // Not implemented in this example
-        $isShopgate = Facade::isInstantiated();
+        $isShopgate = defined(MainController::IS_SHOPGATE);
 
         // Checks if the shop administrator set the rule to "Is Shopgate => Yes"
         if ($this->isShopgate) {

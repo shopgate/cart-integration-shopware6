@@ -22,6 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends StorefrontController
 {
+    public const IS_SHOPGATE = 'IS_SHOPGATE_CALL';
     /** @var ConfigBridge */
     private $systemConfigService;
     /** @var ContextManager */
@@ -55,6 +56,7 @@ class MainController extends StorefrontController
      */
     public function execute(Request $request): JsonResponse
     {
+        define(self::IS_SHOPGATE, true);
         $salesChannelId = $this->systemConfigService->getSalesChannelId(
             $request->request->get('shop_number')
         );
