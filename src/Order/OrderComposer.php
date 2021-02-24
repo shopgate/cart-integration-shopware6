@@ -190,8 +190,9 @@ class OrderComposer
                 unset($dataBag[SalesChannelContextService::BILLING_ADDRESS_ID]);
                 $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag));
             } else {
-                $newContext = $this->contextManager->switchContext(new RequestDataBag(array_merge($dataBag,
-                    $addressBag)));
+                $newContext = $this->contextManager->switchContext(
+                    new RequestDataBag(array_merge($dataBag, $addressBag))
+                );
             }
         } catch (ConstraintViolationException $exception) {
             throw $this->errorMapping->mapConstraintError($exception);

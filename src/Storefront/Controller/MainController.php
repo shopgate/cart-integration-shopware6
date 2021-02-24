@@ -45,7 +45,7 @@ class MainController extends StorefrontController
         $this->systemConfigService = $systemConfigService;
         $this->contextManager = $context;
         $this->channelContextFactory = $channelContextFactory;
-        Facade::init($container); //todo: need to do this for non HTTP calls too
+        Facade::init($container);
     }
 
     /**
