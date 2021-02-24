@@ -2,12 +2,10 @@
 
 namespace Shopgate\Shopware\Order;
 
-use Shopgate\Shopware\Customer\AddressBridge;
-use Shopgate\Shopware\Customer\CustomerBridge;
 use Shopgate\Shopware\Customer\CustomerComposer;
-use Shopgate\Shopware\Customer\Mapping\AddressMapping;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Mapping\CustomerMapping;
+use Shopgate\Shopware\Order\Mapping\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Mapping\ShippingMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
@@ -15,7 +13,6 @@ use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
-use ShopgateAddress;
 use ShopgateCartBase;
 use ShopgateDeliveryNote;
 use ShopgateLibraryException;
@@ -28,6 +25,7 @@ use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,12 +51,10 @@ class OrderComposer
     private $quoteBridge;
     /** @var CustomerComposer */
     private $customerComposer;
-    /** @var AddressMapping */
-    private $addressMapping;
-    /** @var AddressBridge */
-    private $addressBridge;
-    /** @var CustomerBridge */
-    private $customerBridge;
+    /** @var AddressComposer */
+    private $addressComposer;
+    /** @var QuoteErrorMapping */
+    private $errorMapping;
 
     /**
      * @param ContextManager $contextManager
@@ -69,9 +65,8 @@ class OrderComposer
      * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param QuoteBridge $quoteBridge
      * @param CustomerComposer $customerComposer
-     * @param CustomerBridge $customerBridge
-     * @param AddressMapping $addressMapping
-     * @param AddressBridge $addressBridge
+     * @param AddressComposer $addressComposer
+     * @param QuoteErrorMapping $errorMapping
      */
     public function __construct(
         ContextManager $contextManager,
@@ -82,9 +77,8 @@ class OrderComposer
         ShopgateOrderBridge $shopgateOrderBridge,
         QuoteBridge $quoteBridge,
         CustomerComposer $customerComposer,
-        CustomerBridge $customerBridge,
-        AddressMapping $addressMapping,
-        AddressBridge $addressBridge
+        AddressComposer $addressComposer,
+        QuoteErrorMapping $errorMapping
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -94,9 +88,8 @@ class OrderComposer
         $this->shopgateOrderBridge = $shopgateOrderBridge;
         $this->quoteBridge = $quoteBridge;
         $this->customerComposer = $customerComposer;
-        $this->addressMapping = $addressMapping;
-        $this->addressBridge = $addressBridge;
-        $this->customerBridge = $customerBridge;
+        $this->addressComposer = $addressComposer;
+        $this->errorMapping = $errorMapping;
     }
 
     /**
@@ -181,31 +174,27 @@ class OrderComposer
             );
         }
 
-        /**
-         * Logged in customer, map incoming data to existing addresses or create new ones.
-         * In case of failure, shopware order creation will use default shopware customer addresses.
-         */
-        $addressBag = [];
-        if ($order->getExternalCustomerId() && $channel->getCustomer()) {
-            $deliveryId = $this->getOrCreateAddress($order->getDeliveryAddress(), $channel);
-            $invoiceId = $this->getOrCreateAddress($order->getInvoiceAddress(), $channel);
-            $addressBag = [
-                SalesChannelContextService::SHIPPING_ADDRESS_ID => $deliveryId,
-                SalesChannelContextService::BILLING_ADDRESS_ID => $invoiceId
-            ];
+        $addressBag = $this->addressComposer->createAddressSwitchData($order, $channel);
+        $dataBag = [
+            SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
+            SalesChannelContextService::SHIPPING_METHOD_ID => GenericShippingMethod::UUID
+        ];
+
+        try {
+            if (count($addressBag) === 2 && $addressBag[0] !== $addressBag[1]) {
+                // dirty hack because of some validation bug that causes to keep billing address ID in search criteria
+                $dataBag[SalesChannelContextService::BILLING_ADDRESS_ID] = array_pop($addressBag);
+                $this->contextManager->switchContext(new RequestDataBag($dataBag));
+                $dataBag[SalesChannelContextService::SHIPPING_ADDRESS_ID] = array_pop($addressBag);
+                unset($dataBag[SalesChannelContextService::BILLING_ADDRESS_ID]);
+                $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag));
+            } else {
+                $newContext = $this->contextManager->switchContext(new RequestDataBag(array_merge($dataBag, $addressBag)));
+            }
+        } catch (ConstraintViolationException $exception) {
+            throw $this->errorMapping->mapConstraintError($exception);
         }
 
-        $dataBag = new RequestDataBag(
-            array_merge(
-                [
-                    SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
-                    SalesChannelContextService::SHIPPING_METHOD_ID => GenericShippingMethod::UUID
-                ],
-                $addressBag
-            )
-        );
-
-        $newContext = $this->contextManager->switchContext($dataBag);
         $swCart = $this->checkoutBuilder($newContext, $order);
         $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
             return $error->isPersistent() === false;
@@ -213,12 +202,9 @@ class OrderComposer
         try {
             $swOrder = $this->quoteBridge->createOrder($swCart, $newContext);
         } catch (InvalidCartException $error) {
-            $elements = $error->getCartErrors()->getElements();
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                array_pop($elements)->getMessage(),
-                true //todo-prod: change to false
-            );
+            throw $this->errorMapping->mapInvalidCartError($error);
+        } catch (ConstraintViolationException $exception) {
+            throw $this->errorMapping->mapConstraintError($exception);
         } catch (Throwable $error) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::UNKNOWN_ERROR_CODE,
@@ -236,32 +222,6 @@ class OrderComposer
         ];
     }
 
-    /**
-     * Checks existing customer addresses & creates one if necessary
-     *
-     * @param ShopgateAddress $address
-     * @param SalesChannelContext $context
-     * @return string|null
-     * @throws MissingContextException
-     * @throws ShopgateLibraryException
-     */
-    private function getOrCreateAddress(ShopgateAddress $address, SalesChannelContext $context): ?string
-    {
-        $customer = $this->customerBridge->getDetailedContextCustomer($context);
-        $addressId = $this->addressMapping->getSelectedAddressId($address, $customer);
-        if (!$addressId) {
-            $shopwareAddress = $this->addressMapping->mapToShopwareAddress($address);
-            $addressId = $this->addressBridge->addAddress($shopwareAddress, $context, $customer)->getId();
-        }
-        if (!$addressId) {
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::PLUGIN_NO_ADDRESSES_FOUND,
-                var_export($address, true),
-                true
-            );
-        }
-        return $addressId;
-    }
 
     /**
      * @param ShopgateMerchantApi $merchantApi
