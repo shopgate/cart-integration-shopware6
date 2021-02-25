@@ -1,0 +1,12 @@
+{% block sw_order_detail_base_secondary_info_delivery %}
+    <dt>{{ $tc('sw-order.detailBase.labelShippingMethod') }}</dt>
+    <dd>{{ getShippingName() }}</dd>
+{% endblock %}
+
+{% block sw_order_detail_base_secondary_info_payment %}
+    <!--suppress HtmlUnknownAttribute -->
+    <template v-if="currentOrder.transactions.length > 0">
+        <dt>{{ $tc('sw-order.detailBase.labelPaymentMethod') }}</dt>
+        <dd>{{ getPaymentName() }}</dd>
+    </template>
+{% endblock %}
