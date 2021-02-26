@@ -211,7 +211,8 @@ class OrderComposer
         } catch (Throwable $error) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                $error->getMessage()
+                $error->getMessage(),
+                true
             );
         }
         $this->shopgateOrderBridge->saveEntity(
