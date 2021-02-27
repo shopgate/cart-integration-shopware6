@@ -1,0 +1,31 @@
+{% sw_extends '@Storefront/storefront/page/account/order-history/order-detail.html.twig' %}
+
+{% block page_account_order_item_detail_overview %}
+    {# @var shopgateOrder \Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity #}
+    {% set shopgateOrder = order.extensions.shopgateOrder %}
+    {{ parent() }}
+{% endblock %}
+
+{% block page_account_order_item_detail_payment_method_value %}
+
+    {% if shopgateOrder %}
+        <dd class="col-6 col-md-7 order-item-detail-labels-value">
+            {{ shopgateOrder.receivedData.payment_infos.shopgate_payment_name }}
+        </dd>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+
+{% endblock %}
+
+{% block page_account_order_item_detail_shipping_method_value %}
+
+    {% if shopgateOrder %}
+        <dd class="col-6 col-md-7 order-item-detail-labels-value">
+            {{ shopgateOrder.receivedData.shipping_infos.display_name }}
+        </dd>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+
+{% endblock %}
