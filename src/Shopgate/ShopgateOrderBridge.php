@@ -48,7 +48,8 @@ class ShopgateOrderBridge
             ->search(
                 (new Criteria())
                     ->addFilter(new EqualsFilter('isSent', 0))
-                    ->addFilter(new EqualsFilter('isCancelled', 0)),
+                    ->addFilter(new EqualsFilter('isCancelled', 0))
+                    ->addAssociation('order'),
                 $channel->getContext()
             )->getElements();
     }

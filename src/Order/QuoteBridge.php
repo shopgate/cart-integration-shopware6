@@ -11,7 +11,6 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,8 +25,6 @@ class QuoteBridge
     private $cartItemAddRoute;
     /** @var CartDeleteRoute */
     private $cartDeleteRoute;
-    /** @var EntityRepositoryInterface */
-    private $orderRepository;
 
     /**
      * @param EntityRepositoryInterface $orderRepository
@@ -37,13 +34,11 @@ class QuoteBridge
      * @param CartDeleteRoute $cartDeleteRoute
      */
     public function __construct(
-        EntityRepositoryInterface $orderRepository,
         CartOrderRoute $cartOrderRoute,
         CartLoadRoute $cartLoadRoute,
         CartItemAddRoute $cartItemAddRoute,
         CartDeleteRoute $cartDeleteRoute
     ) {
-        $this->orderRepository = $orderRepository;
         $this->cartOrderRoute = $cartOrderRoute;
         $this->cartLoadRoute = $cartLoadRoute;
         $this->cartItemAddRoute = $cartItemAddRoute;
@@ -87,17 +82,5 @@ class QuoteBridge
     public function deleteCart(SalesChannelContext $context): void
     {
         $this->cartDeleteRoute->delete($context);
-    }
-
-    /**
-     * @param string $id
-     * @param SalesChannelContext $channel
-     * @return OrderEntity|null
-     */
-    public function loadOrderById(string $id, SalesChannelContext $channel): ?OrderEntity
-    {
-        return $this->orderRepository
-            ->search(new Criteria([$id]), $channel->getContext())
-            ->first();
     }
 }

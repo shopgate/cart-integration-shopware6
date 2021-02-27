@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Shopgate\Order;
 
 use ShopgateOrder;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -23,6 +24,7 @@ class ShopgateOrderEntity extends Entity
     public $isPaid;
     public $isTest;
     public $receivedData;
+    public $order;
 
     /**
      * @return string
@@ -166,6 +168,14 @@ class ShopgateOrderEntity extends Entity
     {
         $this->receivedData = $receivedData->toArray();
         return $this;
+    }
+
+    /**
+     * @return OrderEntity|null getOrder()
+     */
+    public function getOrder(): ?OrderEntity
+    {
+        return $this->order;
     }
 
     /**

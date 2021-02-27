@@ -239,8 +239,7 @@ class OrderComposer
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
         foreach ($shopgateOrders as $shopgateOrder) {
-            $swOrder = $this->quoteBridge->loadOrderById($shopgateOrder->getShopwareOrderId(),
-                $this->contextManager->getSalesContext());
+            $swOrder = $shopgateOrder->getOrder();
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
                 $shopgateOrder->setIsSent(true);
@@ -271,8 +270,7 @@ class OrderComposer
     {
         $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
         foreach ($shopgateOrders as $shopgateOrder) {
-            $swOrder = $this->quoteBridge->loadOrderById($shopgateOrder->getShopwareOrderId(),
-                $this->contextManager->getSalesContext());
+            $swOrder = $shopgateOrder->getOrder();
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
                 $shopgateOrder->setIsCancelled(true);
