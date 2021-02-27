@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\Catalog\Product;
 
 use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
@@ -7,7 +9,6 @@ use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
-use Shopware\Core\Content\Product\ProductEntity;
 use Throwable;
 
 class ProductComposer

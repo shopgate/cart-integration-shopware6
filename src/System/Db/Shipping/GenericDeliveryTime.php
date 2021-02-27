@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\System\Db\Shipping;
 
 use Shopgate\Shopware\System\Db\ClassCastInterface;

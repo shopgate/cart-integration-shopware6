@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\System;
 
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;

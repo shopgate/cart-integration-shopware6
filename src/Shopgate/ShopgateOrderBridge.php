@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\Shopgate;
 
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;

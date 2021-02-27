@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Storefront\ContextManager;

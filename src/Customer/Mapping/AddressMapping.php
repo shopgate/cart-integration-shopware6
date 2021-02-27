@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\Customer\Mapping;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
@@ -157,11 +159,11 @@ class AddressMapping
     }
 
     /**
-     * @param string $type
+     * @param int $type
      * @param CustomerAddressEntity $shopwareAddress
      * @return ShopgateAddress
      */
-    public function mapAddress(CustomerAddressEntity $shopwareAddress, string $type): ShopgateAddress
+    public function mapAddress(CustomerAddressEntity $shopwareAddress, int $type): ShopgateAddress
     {
         $shopgateAddress = new ShopgateAddress();
         $shopgateAddress->setAddressType($type);

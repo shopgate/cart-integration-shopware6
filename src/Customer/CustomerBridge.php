@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\Customer;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;

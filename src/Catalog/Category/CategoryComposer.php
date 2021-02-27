@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shopgate\Shopware\Catalog\Category;
 
 use Shopgate\Shopware\Catalog\Mapping\CategoryMapping;
