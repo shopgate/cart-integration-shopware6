@@ -60,6 +60,9 @@
         <service id="Shopgate\Shopware\ExportService"/>
         <service id="Shopgate\Shopware\ImportService"/>
         <service id="Shopgate\Shopware\Order\AddressComposer"/>
+        <service id="Shopgate\Shopware\Order\Document\DocumentSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\Order\LineItemComposer"/>
         <service id="Shopgate\Shopware\Order\Mapping\CustomerMapping"/>
         <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping"/>

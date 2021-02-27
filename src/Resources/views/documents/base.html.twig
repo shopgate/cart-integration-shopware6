@@ -1,0 +1,30 @@
+{% sw_extends '@Framework/documents/base.html.twig' %}
+{% block document_base %}
+    {# @var shopgateOrder \Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity  #}
+    {% set shopgateOrder = order.extensions.shopgateOrder %}
+    {{ parent() }}
+{% endblock %}
+
+{% block document_payment %}
+    {% if shopgateOrder %}
+        {{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': shopgateOrder.receivedData.payment_infos.shopgate_payment_name})|sw_sanitize }}<br>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block document_shipping %}
+    {% if shopgateOrder %}
+        {{ 'document.paymentShippingInfo.shippingMethod'|trans({'%shippingMethod%': shopgateOrder.receivedData.shipping_infos.display_name})|sw_sanitize }}<br><br>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block document_line_item_table_shipping_label %}
+    {% if shopgateOrder %}
+        <td class="line-item-breakable">{{ shopgateOrder.receivedData.shipping_infos.display_name }}</td>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
