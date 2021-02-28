@@ -169,7 +169,7 @@ class OrderComposer
             $customerId = $this->customerComposer->registerCustomer(null, $detailCustomer)->getId();
         }
         $channel = $this->getContextByCustomer($customerId ?? '');
-        if ($this->shopgateOrderBridge->orderExists($order->getOrderNumber(), $channel)) {
+        if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(), $channel)) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
                 $order->getOrderNumber(),
@@ -184,7 +184,8 @@ class OrderComposer
         ];
 
         try {
-            if (count($addressBag) === 2 && $addressBag[0] !== $addressBag[1]) {
+            // making sure that 2 address ID's are different from each other
+            if (count(array_unique($addressBag)) === 2) {
                 // dirty hack because of some validation bug that causes to keep billing address ID in search criteria
                 $dataBag[SalesChannelContextService::BILLING_ADDRESS_ID] = array_pop($addressBag);
                 $this->contextManager->switchContext(new RequestDataBag($dataBag));

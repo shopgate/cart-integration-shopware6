@@ -17,12 +17,12 @@ class QuoteErrorMapping
      */
     public function mapInvalidCartError(InvalidCartException $error): ShopgateLibraryException
     {
-        $elements = $error->getCartErrors()->getElements();
+        $errors = array_map(static function (Error $error) {
+            return $error->jsonSerialize();
+        }, $error->getCartErrors()->getElements());
         return new ShopgateLibraryException(
             ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-            print_r(array_map(static function (Error $error) {
-                return $error->jsonSerialize();
-            }, $elements), true),
+            $this->toJson($errors),
             true
         );
     }
@@ -38,5 +38,15 @@ class QuoteErrorMapping
             (string) $exception->getViolations(),
             true
         );
+    }
+
+    /**
+     * @param array $data
+     * @return bool|string
+     * @noinspection PhpComposerExtensionStubsInspection
+     */
+    private function toJson(array $data)
+    {
+        return extension_loaded('json') ? json_encode($data) : print_r($data, true);
     }
 }
