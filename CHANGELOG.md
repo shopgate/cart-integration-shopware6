@@ -1,3 +1,6 @@
+# 0.0.7
+- added shopgate shipping/payment showing up on admin/storefront
+
 # 0.0.6
 - fixed order address mapping
 - fixed check_cart exporting shopgate shipping method
