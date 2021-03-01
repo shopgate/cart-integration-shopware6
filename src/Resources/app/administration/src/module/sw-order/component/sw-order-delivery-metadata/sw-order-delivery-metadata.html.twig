@@ -1,4 +1,5 @@
 {% block sw_order_delivery_metadata_shipping_method %}
     <dt>{{ $tc('sw-order.detailDeliveries.labelShippingMethod') }}</dt>
-    <dd>{{ getShippingName() }}</dd>
+    <dd v-if="getShippingName">{{ getShippingName }}</dd>
+    <dd v-else>{{ delivery.shippingMethod.translated.name }}</dd>
 {% endblock %}

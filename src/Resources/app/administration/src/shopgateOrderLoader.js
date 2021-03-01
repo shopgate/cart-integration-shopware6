@@ -19,6 +19,18 @@ export default {
         shopgateOrderRepo() {
             return this.repositoryFactory.create('shopgate_order');
         },
+        getPaymentName() {
+            if (this.shopgateOrder) {
+                return this.shopgateOrder.receivedData.payment_infos.shopgate_payment_name
+            }
+            return null
+        },
+        getShippingName() {
+            if (this.shopgateOrder) {
+                return this.shopgateOrder.receivedData.shipping_infos.display_name
+            }
+            return null
+        },
     },
     created() {
         this.reload()
@@ -44,20 +56,6 @@ export default {
                 Criteria.equals('shopwareOrderId', this.getOrderId())
             );
             return criteria
-        },
-
-        getPaymentName() {
-            if (this.shopgateOrder) {
-                return this.shopgateOrder.receivedData.payment_infos.shopgate_payment_name
-            }
-            return 'Shopgate Payment'
-        },
-
-        getShippingName() {
-            if (this.shopgateOrder) {
-                return this.shopgateOrder.receivedData.shipping_infos.display_name
-            }
-            return 'Shopgate Shipping'
         },
 
         getOrderId() {

@@ -1,12 +1,17 @@
 {% block sw_order_detail_base_secondary_info_delivery %}
     <dt>{{ $tc('sw-order.detailBase.labelShippingMethod') }}</dt>
-    <dd>{{ getShippingName() }}</dd>
+    <dd v-if="getShippingName">{{ getShippingName }}</dd>
+    <dd v-else-if="hasDeliveries">{{ delivery.shippingMethod.translated.name }}</dd>
+    <dd v-else>{{ $tc('sw-order.detailBase.labelNoDeliveriesYet') }}</dd>
 {% endblock %}
 
 {% block sw_order_detail_base_secondary_info_payment %}
-    <!--suppress HtmlUnknownAttribute -->
-    <template v-if="currentOrder.transactions.length > 0">
+    <template v-if="getPaymentName">
         <dt>{{ $tc('sw-order.detailBase.labelPaymentMethod') }}</dt>
-        <dd>{{ getPaymentName() }}</dd>
+        <dd>{{ getPaymentName }}</dd>
+    </template>
+    <template v-else="currentOrder.transactions.last">
+        <dt>{{ $tc('sw-order.detailBase.labelPaymentMethod') }}</dt>
+        <dd>{{ currentOrder.transactions.last().paymentMethod.translated.name }}</dd>
     </template>
 {% endblock %}
