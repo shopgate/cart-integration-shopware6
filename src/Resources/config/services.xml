@@ -123,5 +123,6 @@
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <!-- Interfaces -->
         <service id="Shopgate\Shopware\System\Log\LoggerInterface" alias="Shopgate\Shopware\System\Log\Logger"/>
+        <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute" alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" />
     </services>
 </container>

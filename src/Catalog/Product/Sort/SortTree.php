@@ -10,7 +10,7 @@ use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\FileCache;
-use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute;
+use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -21,7 +21,7 @@ class SortTree
     private $contextManager;
     /** @var CategoryBridge */
     private $categoryBridge;
-    /** @var ProductListingRoute */
+    /** @var AbstractProductListingRoute */
     private $listingRoute;
     /** @var FileCache */
     private $cache;
@@ -29,14 +29,14 @@ class SortTree
     /**
      * @param ContextManager $contextManager
      * @param CategoryBridge $categoryBridge
-     * @param ProductListingRoute $listingRoute
+     * @param AbstractProductListingRoute $listingRoute
      * @param FileCache $cacheObject
      */
     public function __construct(
         FileCache $cacheObject,
         ContextManager $contextManager,
         CategoryBridge $categoryBridge,
-        ProductListingRoute $listingRoute
+        AbstractProductListingRoute $listingRoute
     ) {
         $this->cache = $cacheObject;
         $this->contextManager = $contextManager;
@@ -76,10 +76,11 @@ class SortTree
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
         foreach ($categories as $category) {
             $request = new Request();
-            $config = array_merge(...array_values($category->getSlotConfig()));
+            $config = array_merge(...array_values((array)$category->getSlotConfig()));
             if (isset($config['defaultSorting']['value'])) {
                 $request->request->set('order', $config['defaultSorting']['value']);
             }
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
             $result = $this->listingRoute
                 ->load($category->getId(), $request, $this->contextManager->getSalesContext(), new Criteria())
                 ->getResult();

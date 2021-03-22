@@ -1,3 +1,6 @@
+# 0.0.8
+- fixed co-existence with FindLogic Search & Navigation plugin
+
 # 0.0.7
 - added shopgate shipping/payment showing up on admin/storefront
 
