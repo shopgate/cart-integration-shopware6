@@ -1,6 +1,7 @@
 # 0.0.8
 - added support to sub-level root categories (2nd level+)
 - fixed co-existence with FindLogic Search & Navigation plugin
+- fixed products not exporting due to `array_value` null exception
 
 # 0.0.7
 - added shopgate shipping/payment showing up on admin/storefront
