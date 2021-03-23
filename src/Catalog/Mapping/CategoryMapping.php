@@ -70,7 +70,8 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setParentUid(): void
     {
-        parent::setParentUid($this->item->getLevel() > 2 ? $this->item->getParentId() : null);
+        $rootId = $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
+        parent::setParentUid($rootId !== $this->item->getParentId() ? $this->item->getParentId() : null);
     }
 
     /**

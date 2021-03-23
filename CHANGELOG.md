@@ -1,4 +1,5 @@
 # 0.0.8
+- added support to sub-level root categories (2nd level+)
 - fixed co-existence with FindLogic Search & Navigation plugin
 
 # 0.0.7
