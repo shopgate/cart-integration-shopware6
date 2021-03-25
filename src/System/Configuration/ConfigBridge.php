@@ -11,7 +11,6 @@ use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -105,11 +104,11 @@ class ConfigBridge
         $values = $this->systemConfigRepo->search(
             (new Criteria())
                 ->addFilter(
-                    new ContainsFilter(
+                    new EqualsFilter(
                         'configurationKey',
                         self::SYSTEM_CONFIG_DOMAIN . 'shopNumber'
                     )
-                )->addFilter(new ContainsFilter(
+                )->addFilter(new EqualsFilter(
                     'configurationValue',
                     $shopNumber
                 ))
