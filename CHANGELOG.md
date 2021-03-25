@@ -1,3 +1,8 @@
+# 0.0.9
+- added detailed error log to product export
+- fixed shopNumber matching to be more precise
+- fixed DeepLink logic to output SEO URI instead of internal
+
 # 0.0.8
 - added support to sub-level root categories (2nd level+)
 - fixed co-existence with FindLogic Search & Navigation plugin
