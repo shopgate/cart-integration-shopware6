@@ -20,10 +20,11 @@ use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
 class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
+    use MapTrait;
+
     /** @var ProductEntity */
     protected $item;
     /** @var ContextManager */
@@ -95,20 +96,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         $entityList = $productEntity->getSeoUrls()
             ? $productEntity->getSeoUrls()->filterBySalesChannelId($channel->getId())
             : null;
-        if ($entityList && $entity = $entityList->first()) {
-            // intentional use of get, URL can be null which throws Shopware exception
-            if ($entity->get('url')) {
-                return $entity->getUrl();
-            }
-            if (null !== $channel->getDomains()) {
-                $domainCollection = $channel->getDomains()->filterByProperty('salesChannelId', $channel->getId());
-                /** @var null|SalesChannelDomainEntity $domain */
-                $domain = $domainCollection->first();
-                return $domain ? $domain->getUrl() . $entity->getPathInfo() : '';
-            }
-        }
 
-        return '';
+        return $entityList ? $this->getSeoUrl($channel, $entityList->first()) : '';
     }
 
     public function setWeight(): void

@@ -7,10 +7,11 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
 class CategoryMapping extends Shopgate_Model_Catalog_Category
 {
+    use MapTrait;
+
     /** @var CategoryEntity */
     protected $item;
     /** @var null */
@@ -94,19 +95,8 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
         $entityList = $category->getSeoUrls()
             ? $category->getSeoUrls()->filterBySalesChannelId($channel->getId())
             : null;
-        if ($entityList && $entity = $entityList->first()) {
-            // intentional use of get, URL can be null which throws Shopware exception
-            if ($entity->get('url')) {
-                return $entity->getUrl();
-            }
-            if (null !== $channel->getDomains()) {
-                $domainCollection = $channel->getDomains()->filterByProperty('salesChannelId', $channel->getId());
-                /** @var null|SalesChannelDomainEntity $domain */
-                $domain = $domainCollection->first();
-                return $domain ? $domain->getUrl() . $entity->getPathInfo() : '';
-            }
-        }
-        return '';
+
+        return $entityList ? $this->getSeoUrl($channel, $entityList->first()) : '';
     }
 
     public function setIsAnchor(): void
