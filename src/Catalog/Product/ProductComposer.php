@@ -53,9 +53,11 @@ class ProductComposer
             try {
                 $list[] = $shopgateProduct->generateData();
             } catch (Throwable $exception) {
-                $this->logger->error(
-                    "Skipping export of product with id: {$product->getId()}, message: " . $exception->getMessage()
-                );
+                $error = "Skipping export of product with id: {$product->getId()}
+                    Message: {$exception->getMessage()},
+                    Location: {$exception->getFile()}:{$exception->getLine()}";
+                $this->logger->error($error);
+                $this->logger->debug($error . "\n" . $exception->getTraceAsString());
             }
         }
 
