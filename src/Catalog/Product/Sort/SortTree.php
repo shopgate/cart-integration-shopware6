@@ -113,7 +113,7 @@ class SortTree
     {
         if ($slot = (array)$category->getSlotConfig()) {
             $list = array_values($slot);
-            if (is_array($list)) {
+            if (is_array($list) && is_array($list[0])) {
                 $config = array_merge(...$list);
                 if (isset($config['defaultSorting']['value'])) {
                     return $config['defaultSorting']['value'];
