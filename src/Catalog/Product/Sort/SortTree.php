@@ -10,6 +10,8 @@ use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\FileCache;
+use Shopgate\Shopware\System\Log\LoggerInterface;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,23 +27,28 @@ class SortTree
     private $listingRoute;
     /** @var FileCache */
     private $cache;
+    /** @var LoggerInterface */
+    private $logger;
 
     /**
+     * @param FileCache $cacheObject
      * @param ContextManager $contextManager
      * @param CategoryBridge $categoryBridge
      * @param AbstractProductListingRoute $listingRoute
-     * @param FileCache $cacheObject
+     * @param LoggerInterface $logger
      */
     public function __construct(
         FileCache $cacheObject,
         ContextManager $contextManager,
         CategoryBridge $categoryBridge,
-        AbstractProductListingRoute $listingRoute
+        AbstractProductListingRoute $listingRoute,
+        LoggerInterface $logger
     ) {
         $this->cache = $cacheObject;
         $this->contextManager = $contextManager;
         $this->categoryBridge = $categoryBridge;
         $this->listingRoute = $listingRoute;
+        $this->logger = $logger;
     }
 
     /**
@@ -55,6 +62,7 @@ class SortTree
         /** @var CacheItemInterface $tree */
         $tree = $this->cache->getItem(self::CACHE_KEY);
         if (!$tree->isHit()) {
+            $this->logger->debug('Building new sort order cache');
             $build = $this->build($rootCategoryId);
             $tree->set($build);
             $this->cache->save($tree);
@@ -76,9 +84,9 @@ class SortTree
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
         foreach ($categories as $category) {
             $request = new Request();
-            $config = array_merge(...array_values((array)$category->getSlotConfig()));
-            if (isset($config['defaultSorting']['value'])) {
-                $request->request->set('order', $config['defaultSorting']['value']);
+
+            if ($orderKey = $this->getSortOrderKey($category)) {
+                $request->request->set('order', $orderKey);
             }
             /** @noinspection PhpMethodParametersCountMismatchInspection */
             $result = $this->listingRoute
@@ -93,5 +101,26 @@ class SortTree
         }
 
         return $tree;
+    }
+
+    /**
+     * Retrieves the default key to sort the category by
+     *
+     * @param CategoryEntity $category
+     * @return string|null - e.g. price-asc, topseller
+     */
+    private function getSortOrderKey(CategoryEntity $category): ?string
+    {
+        if ($slot = (array)$category->getSlotConfig()) {
+            $list = array_values($slot);
+            if (is_array($list)) {
+                $config = array_merge(...$list);
+                if (isset($config['defaultSorting']['value'])) {
+                    return $config['defaultSorting']['value'];
+                }
+            }
+        }
+
+        return null;
     }
 }
