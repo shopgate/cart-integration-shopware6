@@ -1,3 +1,9 @@
+# 0.0.10
+- added better error logging for item export
+- fixed cover picture warnings when empty
+- fixed empty shipping info when checking out
+- changed sortTree logic to be more error resistant
+
 # 0.0.9
 - added detailed error log to product export
 - fixed shopNumber matching to be more precise
