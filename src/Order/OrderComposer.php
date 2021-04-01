@@ -139,14 +139,17 @@ class OrderComposer
     protected function checkoutBuilder(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
-        /** @noinspection UnnecessaryCastingInspection */
-        $price = new CalculatedPrice(
-            (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
-            (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
-            $shopwareCart->getShippingCosts()->getCalculatedTaxes(),
-            $shopwareCart->getShippingCosts()->getTaxRules()
-        );
-        $shopwareCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
+        if ($cart->getAmountShipping() || $cart->getShippingInfos()) {
+            /** @noinspection UnnecessaryCastingInspection */
+            $price = new CalculatedPrice(
+                (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
+                (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
+                $shopwareCart->getShippingCosts()->getCalculatedTaxes(),
+                $shopwareCart->getShippingCosts()->getTaxRules()
+            );
+            $shopwareCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
+        }
+
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($cart);
         $request = new Request();
         $request->request->set('items', $lineItems);
