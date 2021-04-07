@@ -2,6 +2,7 @@
 - added better error logging for item export
 - fixed cover picture warnings when empty
 - fixed empty shipping info when checking out
+- fixed problematic country DB entries without ISO (we now skip these)
 - changed sortTree logic to be more error resistant
 
 # 0.0.9
