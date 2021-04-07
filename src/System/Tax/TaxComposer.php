@@ -41,6 +41,9 @@ class TaxComposer
         $taxFreeCountries = $this->locationMapping->getTaxFreeCountries();
         foreach ($taxFreeCountries as $taxFreeCountry) {
             $countryIso = $taxFreeCountry->getIso();
+            if (!$countryIso) {
+                continue;
+            }
             $taxRateKey = 'rate_' . $countryIso . '_free';
             $taxRates[] = [
                 'key' => $taxRateKey,
@@ -87,8 +90,11 @@ class TaxComposer
             foreach ($shopwareCountryTaxRules as $shopwareTaxRule) {
                 $countryId = $shopwareTaxRule->getCountryId();
                 $countryIso = $this->locationMapping->getCountryIsoById($countryId);
+                if (!$countryIso) {
+                    continue;
+                }
 
-                $taxRateKey = 'rate_' . $productTaxClassId . '_' . $countryIso;
+                $taxRateKey = implode('_', ['rate', $productTaxClassId, $countryIso]);
                 $taxRates[] = [
                     'key' => $taxRateKey,
                     'display_name' => $shopwareTaxRate->getName() . ' ' . $countryIso,
@@ -110,6 +116,9 @@ class TaxComposer
             foreach ($shopwareStateTaxRules as $shopwareTaxRule) {
                 $countryId = $shopwareTaxRule->getCountryId();
                 $countryIso = $this->locationMapping->getCountryIsoById($countryId);
+                if (!$countryIso) {
+                    continue;
+                }
                 $stateIds = $shopwareTaxRule->getData()['states'];
                 foreach ($stateIds as $stateId) {
                     $stateIso = $this->locationMapping->getStateIsoById($stateId);

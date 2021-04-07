@@ -37,36 +37,35 @@ class LocationMapping
 
     /**
      * @param string $id
-     * @return string
+     * @return string|null
      * @throws MissingContextException
      */
-    public function getCountryIsoById(string $id): string
+    public function getCountryIsoById(string $id): ?string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('id', $id));
+        $criteria = new Criteria([$id]);
+        /** @var CountryEntity|null $result */
         $result = $this->countryRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
         )->first();
 
-        return $result->getIso();
+        return $result ? $result->getIso() : null;
     }
 
     /**
      * @param string $id
-     * @return string
+     * @return string|null
      * @throws MissingContextException
      */
-    public function getStateIsoById(string $id): string
+    public function getStateIsoById(string $id): ?string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('id', $id));
+        $criteria = new Criteria([$id]);
         $result = $this->stateRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
         )->first();
 
-        return $result->getShortCode();
+        return $result ? $result->getShortCode() : null;
     }
 
     /**
