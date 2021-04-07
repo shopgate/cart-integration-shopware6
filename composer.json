@@ -13,7 +13,7 @@
   ],
   "require": {
     "shopware/core": "^6.3.4",
-    "shopgate/cart-integration-sdk": "2.9.79"
+    "shopgate/cart-integration-sdk": "2.9.80"
   },
   "extra": {
     "shopware-plugin-class": "Shopgate\\Shopware\\ShopgateModule",
