@@ -21,6 +21,7 @@ use ShopgateLibraryException;
 use ShopgateMerchantApi;
 use ShopgateMerchantApiException;
 use ShopgateOrder;
+use ShopgateShippingInfo;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Error\Error;
@@ -139,7 +140,7 @@ class OrderComposer
     protected function checkoutBuilder(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
-        if ($cart->getAmountShipping() || $cart->getShippingInfos()) {
+        if ($cart->getAmountShipping() || ($cart->getShippingInfos() instanceof ShopgateShippingInfo)) {
             /** @noinspection UnnecessaryCastingInspection */
             $price = new CalculatedPrice(
                 (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
