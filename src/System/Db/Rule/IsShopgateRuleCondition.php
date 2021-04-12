@@ -23,7 +23,6 @@ class IsShopgateRuleCondition extends Rule
 
     public function match(RuleScope $scope): bool
     {
-        // Not implemented in this example
         $isShopgate = defined(MainController::IS_SHOPGATE);
 
         // Checks if the shop administrator set the rule to "Is Shopgate => Yes"
@@ -32,7 +31,7 @@ class IsShopgateRuleCondition extends Rule
             return $isShopgate;
         }
 
-        // Shop administrator wants the rule to match if it's currently NOT a  shopgate call.
+        // Shop administrator wants the rule to match if it's currently NOT a shopgate call.
         return !$isShopgate;
     }
 

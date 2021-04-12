@@ -1,3 +1,6 @@
+# 0.0.11
+- added shopgate free shipping method for 0 priced imports
+
 # 0.0.10
 - added better error logging for item export
 - fixed cover picture warnings when empty

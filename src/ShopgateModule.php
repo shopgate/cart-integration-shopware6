@@ -12,6 +12,7 @@ use Shopgate\Shopware\System\Db\Installers\PaymentMethodInstaller;
 use Shopgate\Shopware\System\Db\Installers\RuleConditionInstaller;
 use Shopgate\Shopware\System\Db\Installers\RuleInstaller;
 use Shopgate\Shopware\System\Db\Installers\ShippingMethodInstaller;
+use Shopgate\Shopware\System\Db\Installers\ShippingMethodPriceInstaller;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
@@ -32,6 +33,7 @@ class ShopgateModule extends Plugin
         (new RuleConditionInstaller($this->container))->install();
         (new DeliveryTimeInstaller($this->container))->install($installContext);
         (new ShippingMethodInstaller($this->container))->install($installContext);
+        (new ShippingMethodPriceInstaller($this->container))->install($installContext);
         (new PaymentMethodInstaller($this->container))->install($installContext);
         parent::install($installContext);
     }

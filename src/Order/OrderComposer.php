@@ -14,6 +14,7 @@ use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
+use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use ShopgateCartBase;
 use ShopgateDeliveryNote;
@@ -140,11 +141,11 @@ class OrderComposer
     protected function checkoutBuilder(SalesChannelContext $context, ShopgateCartBase $cart): Cart
     {
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
-        if ($cart->getAmountShipping() || ($cart->getShippingInfos() instanceof ShopgateShippingInfo)) {
-            /** @noinspection UnnecessaryCastingInspection */
+        if (!$this->isShippingFree($cart)) {
+            $shippingCost = $this->getShippingCost($cart);
             $price = new CalculatedPrice(
-                (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
-                (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet()),
+                $shippingCost,
+                $shippingCost,
                 $shopwareCart->getShippingCosts()->getCalculatedTaxes(),
                 $shopwareCart->getShippingCosts()->getTaxRules()
             );
@@ -184,7 +185,8 @@ class OrderComposer
         $addressBag = $this->addressComposer->createAddressSwitchData($order, $channel);
         $dataBag = [
             SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
-            SalesChannelContextService::SHIPPING_METHOD_ID => GenericShippingMethod::UUID
+            SalesChannelContextService::SHIPPING_METHOD_ID =>
+                $this->isShippingFree($order) ? FreeShippingMethod::UUID : GenericShippingMethod::UUID
         ];
 
         try {
@@ -232,7 +234,6 @@ class OrderComposer
             'external_order_number' => $swOrder->getOrderNumber()
         ];
     }
-
 
     /**
      * @param ShopgateMerchantApi $merchantApi
@@ -289,5 +290,27 @@ class OrderComposer
                 $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
             }
         }
+    }
+
+    /**
+     * @param ShopgateCartBase $cart
+     * @return bool
+     */
+    private function isShippingFree(ShopgateCartBase $cart): bool
+    {
+        return $this->getShippingCost($cart) === 0.0;
+    }
+
+    /**
+     * @param ShopgateCartBase $cart
+     * @return float
+     */
+    private function getShippingCost(ShopgateCartBase $cart): float
+    {
+        $cost = 0.0;
+        if ($cart->getAmountShipping() || ($cart->getShippingInfos() instanceof ShopgateShippingInfo)) {
+            $cost = (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet());
+        }
+        return $cost;
     }
 }
