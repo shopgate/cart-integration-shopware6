@@ -28,6 +28,7 @@ use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -207,16 +208,18 @@ class OrderComposer
             throw $this->errorMapping->mapConstraintError($exception);
         }
 
-        $swCart = $this->checkoutBuilder($newContext, $order);
-        $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
-            return $error->isPersistent() === false;
-        }));
         try {
+            $swCart = $this->checkoutBuilder($newContext, $order);
+            $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
+                return $error->isPersistent() === false;
+            }));
             $swOrder = $this->quoteBridge->createOrder($swCart, $newContext);
         } catch (InvalidCartException $error) {
             throw $this->errorMapping->mapInvalidCartError($error);
         } catch (ConstraintViolationException $exception) {
             throw $this->errorMapping->mapConstraintError($exception);
+        } catch (ShopwareHttpException $error) {
+            throw $this->errorMapping->mapGenericHttpException($error);
         } catch (Throwable $error) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::UNKNOWN_ERROR_CODE,

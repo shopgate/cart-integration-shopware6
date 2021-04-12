@@ -4,19 +4,33 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Mapping;
 
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 
 class QuoteErrorMapping
 {
+    /** @var LoggerInterface */
+    private $logger;
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @param InvalidCartException $error
      * @return ShopgateLibraryException
      */
     public function mapInvalidCartError(InvalidCartException $error): ShopgateLibraryException
     {
+        $this->logWithTrace($error);
         $errors = array_map(static function (Error $error) {
             return $error->jsonSerialize();
         }, $error->getCartErrors()->getElements());
@@ -28,25 +42,53 @@ class QuoteErrorMapping
     }
 
     /**
-     * @param ConstraintViolationException $exception
-     * @return ShopgateLibraryException
+     * @param ShopwareHttpException $error
      */
-    public function mapConstraintError(ConstraintViolationException $exception): ShopgateLibraryException
+    private function logWithTrace(ShopwareHttpException $error): void
     {
-        return new ShopgateLibraryException(
-            ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-            (string) $exception->getViolations(),
-            true
-        );
+        $detailedErrors = [];
+        foreach ($error->getErrors(true) as $detailedError) {
+            $detailedErrors[] = $detailedError;
+        }
+        $this->logger->debug($this->toJson($detailedErrors));
     }
 
     /**
      * @param array $data
      * @return bool|string
-     * @noinspection PhpComposerExtensionStubsInspection
      */
     private function toJson(array $data)
     {
         return extension_loaded('json') ? json_encode($data) : print_r($data, true);
+    }
+
+    /**
+     * @param ConstraintViolationException $exception
+     * @return ShopgateLibraryException
+     */
+    public function mapConstraintError(ConstraintViolationException $exception): ShopgateLibraryException
+    {
+        $this->logWithTrace($exception);
+
+        return new ShopgateLibraryException(
+            ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+            (string)$exception->getViolations(),
+            true
+        );
+    }
+
+    /**
+     * @param ShopwareHttpException $error
+     * @return ShopgateLibraryException
+     */
+    public function mapGenericHttpException(ShopwareHttpException $error): ShopgateLibraryException
+    {
+        $this->logWithTrace($error);
+
+        return new ShopgateLibraryException(
+            ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+            $error->getMessage(),
+            true
+        );
     }
 }

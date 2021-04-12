@@ -1,5 +1,6 @@
 # 0.0.11
 - added shopgate free shipping method for 0 priced imports
+- added detailed trace SDK debug logs for addOrder issues
 
 # 0.0.10
 - added better error logging for item export
