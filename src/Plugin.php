@@ -76,6 +76,8 @@ class Plugin extends ShopgatePlugin
      */
     public function addOrder(ShopgateOrder $order): array
     {
+        $this->forwarder->getLogger()->debug('Incoming Add Order');
+        $this->forwarder->getLogger()->debug(print_r($order->toArray(), true));
         return $this->forwarder->getImportService()->addOrder($order);
     }
 
@@ -91,9 +93,14 @@ class Plugin extends ShopgatePlugin
      */
     public function checkCart(ShopgateCart $cart): array
     {
+        $this->forwarder->getLogger()->debug('Incoming Check Cart');
+        $this->forwarder->getLogger()->debug(print_r($cart->toArray(), true));
         $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
 
-        return $this->forwarder->getExportService()->checkCart($newCart);
+        $result = $this->forwarder->getExportService()->checkCart($newCart);
+        $this->forwarder->getLogger()->debug('Check Cart Response');
+        $this->forwarder->getLogger()->debug((print_r($result, true)));
+        return $result;
     }
 
     public function checkStock(ShopgateCart $cart)

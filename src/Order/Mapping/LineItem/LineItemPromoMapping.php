@@ -10,6 +10,12 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 class LineItemPromoMapping
 {
     /**
+     * Identifier placed inside the coupon internal field to identify
+     * cart rules from actual coupons
+     */
+    public const RULE_ID = 'cartRule';
+
+    /**
      * @param ShopgateExternalCoupon[] $promos
      * @return array
      */
@@ -17,6 +23,10 @@ class LineItemPromoMapping
     {
         $lineItems = [];
         foreach ($promos as $coupon) {
+            // skip adding line item as cart rules are applied automatically
+            if ($coupon->getInternalInfo() === self::RULE_ID) {
+                continue;
+            }
             $lineItems[] = [
                 'referencedId' => $coupon->getCode(),
                 'type' => LineItem::PROMOTION_LINE_ITEM_TYPE

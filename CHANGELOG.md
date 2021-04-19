@@ -1,6 +1,8 @@
 # 0.0.11
 - added shopgate free shipping method for 0 priced imports
 - added detailed trace SDK debug logs for addOrder issues
+- added detailed debug logs for check_cart calls
+- fixed issue with creating and order for promotions without a coupon code
 
 # 0.0.10
 - added better error logging for item export
