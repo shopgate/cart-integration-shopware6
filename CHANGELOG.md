@@ -2,6 +2,8 @@
 - added shopgate free shipping method for 0 priced imports
 - added detailed trace SDK debug logs for addOrder issues
 - added detailed debug logs for check_cart calls
+- added availability text to product export. e.g. (Available, delivery time 2 days)
+- added base price string to product export, e.g. ($100 / 1 kg)
 - fixed issue with creating and order for promotions without a coupon code
 
 # 0.0.10

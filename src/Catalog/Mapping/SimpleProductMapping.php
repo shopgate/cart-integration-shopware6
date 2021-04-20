@@ -21,12 +21,13 @@ use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
 class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
     use MapTrait;
 
-    /** @var ProductEntity */
+    /** @var SalesChannelProductEntity */
     protected $item;
     /** @var ContextManager */
     protected $contextManager;
@@ -137,6 +138,17 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $this->tierPriceMapping->mapTierPrices($this->item->getPrices(), $highestPrice)
         );
 
+        /**
+         * Base Price
+         */
+        if ($purchaseUnit = $this->item->getPurchaseUnit()) {
+            $text = $this->translation->translate('listing.boxUnitLabel', []);
+            $shopgatePrice->setBasePrice("$text $purchaseUnit {$this->item->getTranslation('name')}"); // Content: 50 Candy
+        }
+        // if 'basic unit' is not missing
+        if ($refPrice = $this->item->getCalculatedPrice()->getReferencePrice()) {
+            $shopgatePrice->setBasePrice("{$refPrice->getPrice()} / {$refPrice->getReferenceUnit()} {$refPrice->getUnitName()}"); // $10 / 100 ml
+        }
         parent::setPrice($shopgatePrice);
     }
 
