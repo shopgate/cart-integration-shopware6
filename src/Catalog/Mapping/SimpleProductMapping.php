@@ -7,6 +7,7 @@ use Psr\Cache\InvalidArgumentException;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Translation;
 use Shopgate_Model_Catalog_CategoryPath;
 use Shopgate_Model_Catalog_Identifier;
 use Shopgate_Model_Catalog_Manufacturer;
@@ -33,17 +34,25 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected $sortTree;
     /** @var TierPriceMapping */
     protected $tierPriceMapping;
+    /** @var Translation */
+    protected $translation;
 
     /**
      * @param ContextManager $contextManager
      * @param SortTree $sortTree
      * @param TierPriceMapping $tierPriceMapping
+     * @param Translation $translator
      */
-    public function __construct(ContextManager $contextManager, SortTree $sortTree, TierPriceMapping $tierPriceMapping)
-    {
+    public function __construct(
+        ContextManager $contextManager,
+        SortTree $sortTree,
+        TierPriceMapping $tierPriceMapping,
+        Translation $translator
+    ) {
         $this->contextManager = $contextManager;
         $this->sortTree = $sortTree;
         $this->tierPriceMapping = $tierPriceMapping;
+        $this->translation = $translator;
         parent::__construct();
     }
 
@@ -148,7 +157,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $image->setUrl($media->getUrl());
             $image->setSortOrder(100 - $productMedia->getPosition());
             $image->setIsCover(
-                (int) $this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
+                (int)$this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
             );
             $images[] = $image;
         }
@@ -239,6 +248,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         parent::setProperties($properties);
     }
 
+    /**
+     * @throws MissingContextException
+     */
     public function setStock(): void
     {
         $stock = new Shopgate_Model_Catalog_Stock();
@@ -249,6 +261,24 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         $stock->setMinimumOrderQuantity($this->item->getMinPurchase());
         $stock->setMaximumOrderQuantity($this->item->getMaxPurchase());
         $stock->setBackorders($allowBackorders);
+        // availability text
+        $text = null;
+        $deliveryTime = $this->item->getDeliveryTime();
+        if ($deliveryTime && $this->item->getAvailableStock() >= $this->item->getMinPurchase()) {
+            //e.g. Available, delivery time 2-5 days
+            $text = $this->translation->translate('detail.deliveryTimeAvailable',
+                ['%name%' => $deliveryTime->getTranslation('name')]);
+        } elseif ($deliveryTime
+            && ($restockTime = $this->item->getRestockTime())
+            && $this->item->getAvailableStock() < $this->item->getMinPurchase()) {
+            // e.g. Available in 3 days, delivery time 2-5 days
+            $text = $this->translation->translate('detail.deliveryTimeRestock', [
+                '%count%' => $restockTime,
+                '%restockTime%' => $restockTime,
+                '%name%' => $deliveryTime->getTranslation('name')
+            ]);
+        }
+        $stock->setAvailabilityText($text);
         parent::setStock($stock);
     }
 
