@@ -5,6 +5,7 @@
 - added availability text to product export. e.g. (Available, delivery time 2 days)
 - added base price string to product export, e.g. ($100 / 1 kg)
 - fixed issue with creating and order for promotions without a coupon code
+- fixed image sort order for product export
 
 # 0.0.10
 - added better error logging for item export

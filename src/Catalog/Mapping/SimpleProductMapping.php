@@ -167,7 +167,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $image->setAlt($media->getAlt());
             $image->setTitle($media->getTitle());
             $image->setUrl($media->getUrl());
-            $image->setSortOrder(100 - $productMedia->getPosition());
+            $image->setSortOrder($productMedia->getPosition());
             $image->setIsCover(
                 (int)$this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
             );
