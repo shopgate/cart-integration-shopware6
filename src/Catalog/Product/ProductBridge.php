@@ -78,6 +78,7 @@ class ProductBridge
                 'children.media',
                 'children.options',
                 'children.seoUrls',
+                'children.unit',
                 'prices',
                 'prices.rule'
             ])
