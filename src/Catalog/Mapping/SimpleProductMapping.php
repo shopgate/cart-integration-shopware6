@@ -7,7 +7,7 @@ use Psr\Cache\InvalidArgumentException;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\Translation;
+use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_CategoryPath;
 use Shopgate_Model_Catalog_Identifier;
 use Shopgate_Model_Catalog_Manufacturer;
@@ -35,25 +35,25 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected $sortTree;
     /** @var TierPriceMapping */
     protected $tierPriceMapping;
-    /** @var Translation */
-    protected $translation;
+    /** @var Formatter */
+    protected $formatter;
 
     /**
      * @param ContextManager $contextManager
      * @param SortTree $sortTree
      * @param TierPriceMapping $tierPriceMapping
-     * @param Translation $translator
+     * @param Formatter $formatter
      */
     public function __construct(
         ContextManager $contextManager,
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
-        Translation $translator
+        Formatter $formatter
     ) {
         $this->contextManager = $contextManager;
         $this->sortTree = $sortTree;
         $this->tierPriceMapping = $tierPriceMapping;
-        $this->translation = $translator;
+        $this->formatter = $formatter;
         parent::__construct();
     }
 
@@ -141,14 +141,18 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         /**
          * Base Price
          */
-        if ($purchaseUnit = $this->item->getPurchaseUnit()) {
-            $text = $this->translation->translate('listing.boxUnitLabel', []);
-            $shopgatePrice->setBasePrice("$text $purchaseUnit {$this->item->getTranslation('name')}"); // Content: 50 Candy
+        $basePrice = null;
+        if ($unitValue = $this->item->getPurchaseUnit()) {
+            $label = $this->formatter->translate('listing.boxUnitLabel', []);
+            $unitName = $this->item->getUnit() ? $this->item->getUnit()->getTranslation('name') : '';
+            $basePrice .= "$label $unitValue $unitName "; // Content: 50 ml
         }
         // if 'basic unit' is not missing
         if ($refPrice = $this->item->getCalculatedPrice()->getReferencePrice()) {
-            $shopgatePrice->setBasePrice("{$refPrice->getPrice()} / {$refPrice->getReferenceUnit()} {$refPrice->getUnitName()}"); // $10 / 100 ml
+            $formatted = $this->formatter->formatCurrency($refPrice->getPrice());
+            $basePrice .= "($formatted / {$refPrice->getReferenceUnit()} {$refPrice->getUnitName()})"; // ($10 / 100 ml)
         }
+        $shopgatePrice->setBasePrice($basePrice);
         parent::setPrice($shopgatePrice);
     }
 
@@ -278,13 +282,13 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         $deliveryTime = $this->item->getDeliveryTime();
         if ($deliveryTime && $this->item->getAvailableStock() >= $this->item->getMinPurchase()) {
             //e.g. Available, delivery time 2-5 days
-            $text = $this->translation->translate('detail.deliveryTimeAvailable',
+            $text = $this->formatter->translate('detail.deliveryTimeAvailable',
                 ['%name%' => $deliveryTime->getTranslation('name')]);
         } elseif ($deliveryTime
             && ($restockTime = $this->item->getRestockTime())
             && $this->item->getAvailableStock() < $this->item->getMinPurchase()) {
             // e.g. Available in 3 days, delivery time 2-5 days
-            $text = $this->translation->translate('detail.deliveryTimeRestock', [
+            $text = $this->formatter->translate('detail.deliveryTimeRestock', [
                 '%count%' => $restockTime,
                 '%restockTime%' => $restockTime,
                 '%name%' => $deliveryTime->getTranslation('name')

@@ -6,7 +6,7 @@ use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\Translation;
+use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
 
@@ -25,7 +25,7 @@ class ConfigProductMapping extends SimpleProductMapping
      * @param ContextManager $contextManager
      * @param SortTree $sortTree
      * @param TierPriceMapping $tierPriceMapping
-     * @param Translation $translation
+     * @param Formatter $translation
      * @param PropertyBridge $productProperties
      * @param ChildProductMapping $childProductMapping
      */
@@ -33,7 +33,7 @@ class ConfigProductMapping extends SimpleProductMapping
         ContextManager $contextManager,
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
-        Translation $translation,
+        Formatter $translation,
         PropertyBridge $productProperties,
         ChildProductMapping $childProductMapping
     ) {

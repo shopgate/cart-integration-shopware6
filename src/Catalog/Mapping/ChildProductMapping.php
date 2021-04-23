@@ -4,7 +4,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\Translation;
+use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_Attribute;
 
 class ChildProductMapping extends SimpleProductMapping
@@ -14,13 +14,13 @@ class ChildProductMapping extends SimpleProductMapping
      * @param ContextManager $contextManager
      * @param SortTree $sortTree
      * @param TierPriceMapping $tierPriceMapping
-     * @param Translation $translation
+     * @param Formatter $translation
      */
     public function __construct(
         ContextManager $contextManager,
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
-        Translation $translation
+        Formatter $translation
     ) {
         parent::__construct($contextManager, $sortTree, $tierPriceMapping, $translation);
         $this->fireMethods[] = 'setAttributes';

@@ -8,12 +8,13 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\Adapter\Translation\Translator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Language\SalesChannel\LanguageRoute;
 use Symfony\Component\HttpFoundation\Request;
 
-class Translation
+class Formatter
 {
     /** @var ContextManager */
     private $contextManager;
@@ -23,17 +24,25 @@ class Translation
     private $languageRoute;
     /** @var LanguageCollection|null */
     private $languageCollection;
+    /** @var CurrencyFormatter */
+    private $currencyFormatter;
 
     /**
      * @param ContextManager $contextManager
      * @param Translator $translator
      * @param LanguageRoute $languageRoute
+     * @param CurrencyFormatter $currencyFormatter
      */
-    public function __construct(ContextManager $contextManager, Translator $translator, LanguageRoute $languageRoute)
-    {
+    public function __construct(
+        ContextManager $contextManager,
+        Translator $translator,
+        LanguageRoute $languageRoute,
+        CurrencyFormatter $currencyFormatter
+    ) {
         $this->contextManager = $contextManager;
         $this->translator = $translator;
         $this->languageRoute = $languageRoute;
+        $this->currencyFormatter = $currencyFormatter;
     }
 
     /**
@@ -58,7 +67,7 @@ class Translation
         $entity = $this->getLanguageCollection()
             ->filterByProperty('id', $this->contextManager->getSalesContext()->getSalesChannel()->getLanguageId())
             ->first();
-        $localeEntity = $entity ? $entity->getTranslationCode(): null;
+        $localeEntity = $entity ? $entity->getTranslationCode() : null;
 
         return $localeEntity ? $localeEntity->getCode() : null;
     }
@@ -78,5 +87,20 @@ class Translation
         }
 
         return $this->languageCollection;
+    }
+
+    /**
+     * @param float $price
+     * @return string
+     * @throws MissingContextException
+     * @see \Shopware\Core\Framework\Adapter\Twig\Filter\CurrencyFilter::formatCurrency()
+     */
+    public function formatCurrency(float $price): string
+    {
+        $channel = $this->contextManager->getSalesContext()->getSalesChannel();
+        $context = $this->contextManager->getSalesContext()->getContext();
+        $currency = $channel->getCurrency() ? $channel->getCurrency()->getIsoCode() : 'EUR';
+
+        return $this->currencyFormatter->formatCurrencyByLanguage($price, $currency, $context->getLanguageId(), $context);
     }
 }
