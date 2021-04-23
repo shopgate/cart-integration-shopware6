@@ -10,6 +10,7 @@ use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
+use Throwable;
 
 class QuoteErrorMapping
 {
@@ -59,6 +60,7 @@ class QuoteErrorMapping
      */
     private function toJson(array $data)
     {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         return extension_loaded('json') ? json_encode($data) : print_r($data, true);
     }
 
@@ -88,6 +90,24 @@ class QuoteErrorMapping
         return new ShopgateLibraryException(
             ShopgateLibraryException::UNKNOWN_ERROR_CODE,
             $error->getMessage(),
+            true
+        );
+    }
+
+    /**
+     * @param Throwable $throwable
+     * @return ShopgateLibraryException
+     */
+    public function mapThrowable(Throwable $throwable): ShopgateLibraryException
+    {
+        $error = "Message: {$throwable->getMessage()},
+                    Location: {$throwable->getFile()}:{$throwable->getLine()}";
+        $this->logger->error($error);
+        $this->logger->debug($error . "\n" . $throwable->getTraceAsString());
+
+        return new ShopgateLibraryException(
+            ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+            $throwable->getMessage(),
             true
         );
     }

@@ -161,6 +161,28 @@ class OrderComposer
     }
 
     /**
+     * @param ShopgateCartBase $cart
+     * @return bool
+     */
+    private function isShippingFree(ShopgateCartBase $cart): bool
+    {
+        return $this->getShippingCost($cart) === 0.0;
+    }
+
+    /**
+     * @param ShopgateCartBase $cart
+     * @return float
+     */
+    private function getShippingCost(ShopgateCartBase $cart): float
+    {
+        $cost = 0.0;
+        if ($cart->getAmountShipping() || ($cart->getShippingInfos() instanceof ShopgateShippingInfo)) {
+            $cost = (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet());
+        }
+        return $cost;
+    }
+
+    /**
      * @param ShopgateOrder $order
      * @return array
      * @throws MissingContextException
@@ -204,12 +226,9 @@ class OrderComposer
                     new RequestDataBag(array_merge($dataBag, $addressBag))
                 );
             }
-        } catch (ConstraintViolationException $exception) {
-            throw $this->errorMapping->mapConstraintError($exception);
-        }
-
-        try {
+            // build cart & order
             $swCart = $this->checkoutBuilder($newContext, $order);
+            // some errors are just success notifications, remove them
             $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
                 return $error->isPersistent() === false;
             }));
@@ -221,11 +240,7 @@ class OrderComposer
         } catch (ShopwareHttpException $error) {
             throw $this->errorMapping->mapGenericHttpException($error);
         } catch (Throwable $error) {
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                $error->getMessage(),
-                true
-            );
+            throw $this->errorMapping->mapThrowable($error);
         }
         $this->shopgateOrderBridge->saveEntity(
             (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $newContext->getSalesChannel()->getId(), $order),
@@ -293,27 +308,5 @@ class OrderComposer
                 $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
             }
         }
-    }
-
-    /**
-     * @param ShopgateCartBase $cart
-     * @return bool
-     */
-    private function isShippingFree(ShopgateCartBase $cart): bool
-    {
-        return $this->getShippingCost($cart) === 0.0;
-    }
-
-    /**
-     * @param ShopgateCartBase $cart
-     * @return float
-     */
-    private function getShippingCost(ShopgateCartBase $cart): float
-    {
-        $cost = 0.0;
-        if ($cart->getAmountShipping() || ($cart->getShippingInfos() instanceof ShopgateShippingInfo)) {
-            $cost = (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet());
-        }
-        return $cost;
     }
 }
