@@ -11,6 +11,11 @@ class ShippingMethodInstaller extends EntityChannelInstaller
 {
     use EntityActivateTrait;
 
+    /**
+     * Make sure to also exclude shipping methods from check_cart
+     * @see \Shopgate\Shopware\Order\Mapping\ShippingMapping::mapShippingMethods()
+     * @var string[]
+     */
     protected $entityInstallList = [GenericShippingMethod::class, FreeShippingMethod::class];
     protected $entityName = 'shipping_method';
 }

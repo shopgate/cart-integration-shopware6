@@ -1,3 +1,6 @@
+# 0.0.12
+- added exclusion of shopgate free shipping method from check_cart
+
 # 0.0.11
 - added shopgate free shipping method for 0 priced imports
 - added detailed trace SDK debug logs for addOrder issues

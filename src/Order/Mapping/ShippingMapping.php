@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Mapping;
 
+use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use ShopgateDeliveryNote;
 use ShopgateShippingMethod;
@@ -19,7 +20,8 @@ class ShippingMapping
     {
         $list = [];
         foreach ($deliveries->getElements() as $delivery) {
-            if ($delivery->getShippingMethod()->getId() === GenericShippingMethod::UUID) {
+            if (in_array($delivery->getShippingMethod()->getId(),
+                [GenericShippingMethod::UUID, FreeShippingMethod::UUID], true)) {
                 continue;
             }
             $method = $delivery->getShippingMethod();
