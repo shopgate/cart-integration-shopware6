@@ -10,6 +10,7 @@ use Shopgate\Shopware\Order\Mapping\CustomerMapping;
 use Shopgate\Shopware\Order\Mapping\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Mapping\ShippingMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -21,8 +22,6 @@ use ShopgateDeliveryNote;
 use ShopgateLibraryException;
 use ShopgateMerchantApi;
 use ShopgateMerchantApiException;
-use ShopgateOrder;
-use ShopgateShippingInfo;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Error\Error;
@@ -101,11 +100,16 @@ class OrderComposer
      * @param ExtendedCart $sgCart
      * @return array
      * @throws MissingContextException
+     * @throws ShopgateLibraryException
      */
     public function checkCart(ExtendedCart $sgCart): array
     {
-        $context = $this->getContextByCustomer($sgCart->getExternalCustomerId() ?? '');
-        $swCart = $this->checkoutBuilder($context, $sgCart);
+        $customerId = $sgCart->getExternalCustomerId();
+        $context = $this->getContextByCustomer($customerId ?? '');
+        if (!empty($customerId)) {
+            $this->addCustomerAddressToContext($sgCart, $context);
+        }
+        $swCart = $this->buildCart($context, $sgCart);
         $items = $this->lineItemComposer->mapOutgoingLineItems($swCart, $sgCart);
         $deliveries = $this->shippingBridge->getCalculatedDeliveries($context);
         $result = [
@@ -135,15 +139,50 @@ class OrderComposer
     }
 
     /**
+     * Will not do anything if cart is missing customer external ID
+     *
+     * @param ShopgateCartBase $base
+     * @param SalesChannelContext $channel
+     * @return SalesChannelContext
+     * @throws MissingContextException
+     * @throws ShopgateLibraryException
+     */
+    private function addCustomerAddressToContext(
+        ShopgateCartBase $base,
+        SalesChannelContext $channel
+    ): SalesChannelContext {
+        $addressBag = $this->addressComposer->createAddressSwitchData($base, $channel);
+        try {
+            // making sure that 2 address ID's are different from each other
+            if (count(array_unique($addressBag)) === 2) {
+                // dirty hack because of some validation bug that causes to keep billing address ID in search criteria
+                $this->contextManager->switchContext(new RequestDataBag([SalesChannelContextService::BILLING_ADDRESS_ID => $addressBag[SalesChannelContextService::BILLING_ADDRESS_ID]]));
+                $newContext = $this->contextManager->switchContext(
+                    new RequestDataBag(
+                        [SalesChannelContextService::SHIPPING_ADDRESS_ID => $addressBag[SalesChannelContextService::SHIPPING_ADDRESS_ID]]
+                    ));
+            } else {
+                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag));
+            }
+        } catch (ConstraintViolationException $exception) {
+            throw $this->errorMapping->mapConstraintError($exception);
+        }
+
+        return $newContext;
+    }
+
+    /**
      * @param SalesChannelContext $context
-     * @param ShopgateCartBase $cart
+     * @param ExtendedOrder|ExtendedCart $cart
      * @return Cart
      */
-    protected function checkoutBuilder(SalesChannelContext $context, ShopgateCartBase $cart): Cart
+    protected function buildCart(SalesChannelContext $context, $cart): Cart
     {
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
-        if (!$this->isShippingFree($cart)) {
-            $shippingCost = $this->getShippingCost($cart);
+
+        // overwrite shipping cost when creating an order
+        if ($cart instanceof ExtendedOrder && !$cart->isShippingFree()) {
+            $shippingCost = $cart->getShippingCost();
             $price = new CalculatedPrice(
                 $shippingCost,
                 $shippingCost,
@@ -153,6 +192,7 @@ class OrderComposer
             $shopwareCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
         }
 
+        // add line items
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($cart);
         $request = new Request();
         $request->request->set('items', $lineItems);
@@ -161,34 +201,12 @@ class OrderComposer
     }
 
     /**
-     * @param ShopgateCartBase $cart
-     * @return bool
-     */
-    private function isShippingFree(ShopgateCartBase $cart): bool
-    {
-        return $this->getShippingCost($cart) === 0.0;
-    }
-
-    /**
-     * @param ShopgateCartBase $cart
-     * @return float
-     */
-    private function getShippingCost(ShopgateCartBase $cart): float
-    {
-        $cost = 0.0;
-        if ($cart->getAmountShipping() || ($cart->getShippingInfos() instanceof ShopgateShippingInfo)) {
-            $cost = (float)($cart->getAmountShipping() ?? $cart->getShippingInfos()->getAmountNet());
-        }
-        return $cost;
-    }
-
-    /**
-     * @param ShopgateOrder $order
+     * @param ExtendedOrder $order
      * @return array
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function addOrder(ShopgateOrder $order): array
+    public function addOrder(ExtendedOrder $order): array
     {
         $customerId = $order->getExternalCustomerId();
         // if is guest
@@ -205,29 +223,16 @@ class OrderComposer
             );
         }
 
-        $addressBag = $this->addressComposer->createAddressSwitchData($order, $channel);
+        $this->addCustomerAddressToContext($order, $channel);
         $dataBag = [
             SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
             SalesChannelContextService::SHIPPING_METHOD_ID =>
-                $this->isShippingFree($order) ? FreeShippingMethod::UUID : GenericShippingMethod::UUID
+                $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID
         ];
-
         try {
-            // making sure that 2 address ID's are different from each other
-            if (count(array_unique($addressBag)) === 2) {
-                // dirty hack because of some validation bug that causes to keep billing address ID in search criteria
-                $dataBag[SalesChannelContextService::BILLING_ADDRESS_ID] = array_pop($addressBag);
-                $this->contextManager->switchContext(new RequestDataBag($dataBag));
-                $dataBag[SalesChannelContextService::SHIPPING_ADDRESS_ID] = array_pop($addressBag);
-                unset($dataBag[SalesChannelContextService::BILLING_ADDRESS_ID]);
-                $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag));
-            } else {
-                $newContext = $this->contextManager->switchContext(
-                    new RequestDataBag(array_merge($dataBag, $addressBag))
-                );
-            }
+            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag));
             // build cart & order
-            $swCart = $this->checkoutBuilder($newContext, $order);
+            $swCart = $this->buildCart($newContext, $order);
             // some errors are just success notifications, remove them
             $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
                 return $error->isPersistent() === false;

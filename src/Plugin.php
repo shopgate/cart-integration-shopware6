@@ -6,6 +6,7 @@ namespace Shopgate\Shopware;
 
 use Shopgate\Shopware\Exceptions\DiException;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\System\Di\Forwarder;
 use Shopgate_Model_Catalog_Product;
@@ -78,7 +79,8 @@ class Plugin extends ShopgatePlugin
     {
         $this->forwarder->getLogger()->debug('Incoming Add Order');
         $this->forwarder->getLogger()->debug(print_r($order->toArray(), true));
-        return $this->forwarder->getImportService()->addOrder($order);
+        $newOrder = (new ExtendedOrder())->loadFromShopgateOrder($order);
+        return $this->forwarder->getImportService()->addOrder($newOrder);
     }
 
     public function updateOrder(ShopgateOrder $order)
@@ -90,6 +92,7 @@ class Plugin extends ShopgatePlugin
      * @param ShopgateCart $cart
      * @return array
      * @throws Exceptions\MissingContextException
+     * @throws ShopgateLibraryException
      */
     public function checkCart(ShopgateCart $cart): array
     {

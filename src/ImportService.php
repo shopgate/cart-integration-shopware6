@@ -7,9 +7,9 @@ namespace Shopgate\Shopware;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\OrderComposer;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use ShopgateCustomer;
 use ShopgateLibraryException;
-use ShopgateOrder;
 
 class ImportService
 {
@@ -42,12 +42,12 @@ class ImportService
     }
 
     /**
-     * @param ShopgateOrder $order
+     * @param ExtendedOrder $order
      * @return array
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function addOrder(ShopgateOrder $order):array
+    public function addOrder(ExtendedOrder $order): array
     {
         return $this->orderComposer->addOrder($order);
     }

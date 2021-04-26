@@ -149,6 +149,7 @@ class ExportService
      * @param ExtendedCart $cart
      * @return array
      * @throws MissingContextException
+     * @throws ShopgateLibraryException
      */
     public function checkCart(ExtendedCart $cart): array
     {

@@ -9,8 +9,8 @@ use Shopgate\Shopware\Customer\CustomerBridge;
 use Shopgate\Shopware\Customer\Mapping\AddressMapping;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use ShopgateAddress;
+use ShopgateCartBase;
 use ShopgateLibraryException;
-use ShopgateOrder;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -39,17 +39,15 @@ class AddressComposer
     }
 
     /**
-     * Logged in customer, map incoming data to existing addresses or create new ones.
-     * In case we cannot find or create shopware order creation will use default shopware
-     * customer addresses. This is why we throw.
+     * Only for existing customers, map incoming data to existing addresses or create new ones.
      *
-     * @param ShopgateOrder $order
+     * @param ShopgateCartBase $order
      * @param SalesChannelContext $context
      * @return array
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function createAddressSwitchData(ShopgateOrder $order, SalesChannelContext $context): array
+    public function createAddressSwitchData(ShopgateCartBase $order, SalesChannelContext $context): array
     {
         $addressBag = [];
         if ($order->getExternalCustomerId() && $context->getCustomer()) {
@@ -64,7 +62,9 @@ class AddressComposer
     }
 
     /**
-     * Checks existing customer addresses & creates one if necessary
+     * Checks existing customer addresses & creates one if necessary.
+     * In case we cannot find or create address, shopware order creation will use
+     * the default shopware customer addresses. This is why we throw.
      *
      * @param ShopgateAddress $address
      * @param SalesChannelContext $context

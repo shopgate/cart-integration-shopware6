@@ -1,6 +1,7 @@
 # 0.0.12
 - added exclusion of shopgate free shipping method from check_cart
 - fixed base_price currency formatting & adjusted overall presentation
+- added customer shipping/billing addresses to check_cart for rule calculations
 
 # 0.0.11
 - added shopgate free shipping method for 0 priced imports

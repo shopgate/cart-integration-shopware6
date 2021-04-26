@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
+use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
@@ -48,12 +53,15 @@ class ShippingMethodBridge
         $list = [];
         $shippingMethods = $this->shippingMethodRoute->load(
             new Request(['onlyAvailable' => true]),
-            $initContext
+            $initContext,
+            (new Criteria())->addFilter(
+                new NotFilter(NotFilter::CONNECTION_OR,
+                    [new EqualsAnyFilter('id', [GenericShippingMethod::UUID, FreeShippingMethod::UUID])]
+                )
+            )
         )->getShippingMethods();
         foreach ($shippingMethods->getElements() as $shipMethod) {
-            $dataBag = new RequestDataBag(
-                [SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]
-            );
+            $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
             $context = $this->contextManager->switchContext($dataBag);
             $cart = $this->cartPageLoader->load(new Request(), $context)->getCart();
             foreach ($cart->getDeliveries()->getElements() as $delivery) {
