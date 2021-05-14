@@ -74,13 +74,16 @@ class ProductBridge
                 'categories',
                 'visibilities',
                 'variation',
+                'prices',
+                'prices.rule',
+
                 'children',
                 'children.media',
+                'children.properties',
+                'children.properties.group',
                 'children.options',
                 'children.seoUrls',
-                'children.unit',
-                'prices',
-                'prices.rule'
+                'children.unit'
             ])
             ->addSorting(...$this->productSorting->getDefaultSorting());
 
