@@ -1,5 +1,5 @@
 # 0.0.13
-- added variant (child) property export
+- added variant (child) manufacturer, price & property export
 - fixed issue with missing payment/shipping method notifications showing for customer after a mobile order is made
 
 # 0.0.12
