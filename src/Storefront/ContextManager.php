@@ -7,6 +7,7 @@ namespace Shopgate\Shopware\Storefront;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -75,6 +76,25 @@ class ContextManager
         $context = $this->contextRestorer->restore($customerId, $this->salesContext);
 
         return $this->salesContext = $context;
+    }
+
+    /**
+     * Resetting is necessary as our transactions use hidden methods.
+     * Without resetting the new objects created will use the last
+     * context as base.
+     */
+    public function resetContext(): void
+    {
+        $payment = $this->salesContext->getCustomer() && $this->salesContext->getCustomer()->getDefaultPaymentMethod()
+            ? $this->salesContext->getCustomer()->getDefaultPaymentMethod()->getId()
+            : $this->salesContext->getSalesChannel()->getPaymentMethodId();
+        $shipping = $this->salesContext->getSalesChannel()->getShippingMethodId();
+        $this->switchContext(
+            new RequestDataBag([
+                SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
+                SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
+            ])
+        );
     }
 
     /**
