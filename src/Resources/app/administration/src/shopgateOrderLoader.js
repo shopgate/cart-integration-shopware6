@@ -1,3 +1,4 @@
+/* global Shopware */
 const {Criteria} = Shopware.Data;
 
 export default {
@@ -7,13 +8,13 @@ export default {
     data() {
         return {
             shopgateOrder: null
-        }
+        };
     },
     props: {
         currentOrder: {
             type: Object,
             required: true
-        },
+        }
     },
     computed: {
         shopgateOrderRepo() {
@@ -21,19 +22,19 @@ export default {
         },
         getPaymentName() {
             if (this.shopgateOrder) {
-                return this.shopgateOrder.receivedData.payment_infos.shopgate_payment_name
+                return this.shopgateOrder.receivedData.payment_infos.shopgate_payment_name;
             }
-            return null
+            return null;
         },
         getShippingName() {
             if (this.shopgateOrder) {
-                return this.shopgateOrder.receivedData.shipping_infos.display_name
+                return this.shopgateOrder.receivedData.shipping_infos.display_name;
             }
-            return null
-        },
+            return null;
+        }
     },
     created() {
-        this.reload()
+        this.reload();
     },
     methods: {
 
@@ -41,27 +42,25 @@ export default {
             this.shopgateOrderRepo
                 .search(this.orderCriteria(), Shopware.Context.api)
                 .then((response) => {
-                    const result = response.first()
+                    const result = response.first();
                     if (!result) {
                         return;
                     }
                     this.shopgateOrder = result;
-                })
+                });
         },
 
         orderCriteria() {
-            const criteria = new Criteria()
-            criteria.setLimit(1)
+            const criteria = new Criteria();
+            criteria.setLimit(1);
             criteria.addFilter(
                 Criteria.equals('shopwareOrderId', this.getOrderId())
             );
-            return criteria
+            return criteria;
         },
 
         getOrderId() {
-            return this.currentOrder
-                ? this.currentOrder.id
-                : this.order ? this.order.id : ''
+            return this.currentOrder ? this.currentOrder.id : this.order ? this.order.id : '';
         }
     }
-}
+};

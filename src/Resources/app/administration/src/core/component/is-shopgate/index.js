@@ -1,5 +1,5 @@
 import template from './is-shopgate.html.twig';
-
+/* global Shopware */
 Shopware.Component.extend('is-shopgate', 'sw-condition-base', {
     template,
     computed: {
@@ -19,7 +19,7 @@ Shopware.Component.extend('is-shopgate', 'sw-condition-base', {
             get() {
                 this.ensureValueExist();
 
-                if (this.condition.value.isShopgate == null) {
+                if (this.condition.value.isShopgate === null) {
                     this.condition.value.isShopgate = false;
                 }
 

@@ -1,6 +1,6 @@
 import template from './sw-order-delivery-metadata.html.twig';
-import loader from '../../../../shopgateOrderLoader'
-
+import loader from '../../../../shopgateOrderLoader';
+/* global Shopware */
 Shopware.Component.override('sw-order-delivery-metadata', {
     template,
     ...loader,
@@ -13,4 +13,4 @@ Shopware.Component.override('sw-order-delivery-metadata', {
             }
         }
     }
-})
+});
