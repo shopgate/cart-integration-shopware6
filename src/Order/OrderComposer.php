@@ -120,6 +120,7 @@ class OrderComposer
             ] + $items;
 
         $this->quoteBridge->deleteCart($context);
+        $this->contextManager->resetContext();
 
         return $result;
     }
@@ -251,6 +252,7 @@ class OrderComposer
             (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $newContext->getSalesChannel()->getId(), $order),
             $newContext
         );
+        $this->contextManager->resetContext();
 
         return [
             'external_order_id' => $swOrder->getId(),
