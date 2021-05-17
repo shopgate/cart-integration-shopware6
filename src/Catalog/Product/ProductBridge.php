@@ -65,22 +65,29 @@ class ProductBridge
             ->addFilter(new ProductAvailableFilter($context->getSalesChannel()->getId()))
             ->addFilter(new EqualsFilter('product.parentId', null))
             ->addAssociations([
+                'categories',
+                'manufacturer',
                 'media',
+                'options',
+                'prices',
+                'prices.rule',
                 'properties',
                 'properties.group',
-                'manufacturer',
-                'options',
                 'seoUrls',
-                'categories',
                 'visibilities',
                 'variation',
+
                 'children',
+                'children.categories',
+                'children.manufacturer',
                 'children.media',
                 'children.options',
+                'children.prices',
+                'children.prices.rule',
+                'children.properties',
+                'children.properties.group',
                 'children.seoUrls',
-                'children.unit',
-                'prices',
-                'prices.rule'
+                'children.unit'
             ])
             ->addSorting(...$this->productSorting->getDefaultSorting());
 
