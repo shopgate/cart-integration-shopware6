@@ -39,11 +39,11 @@
                             <ul class="sg-list">
                                 <!--suppress XmlUnboundNsPrefix -->
                                 <li
-                                        is="sg-key-value"
-                                        v-for="(value, key) in sgOrder.receivedData.payment_infos"
-                                        v-bind:key="key"
-                                        v-bind:label="key"
-                                        v-bind:value="value"
+                                    is="sg-key-value"
+                                    v-for="(value, key) in sgOrder.receivedData.payment_infos"
+                                    v-bind:key="key"
+                                    v-bind:label="key"
+                                    v-bind:content="value"
                                 ></li>
                             </ul>
                         </sg-title-content>

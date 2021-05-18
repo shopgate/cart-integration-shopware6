@@ -1,10 +1,10 @@
 {% block sw_order_detail_base_leave_page_modal %}
-    <sg-order-details v-if="!isEditing && acl.can('order.editor') && order.extensions.shopgateOrder"
-                      :sgOrder="order.extensions.shopgateOrder"
-                      class="sg-order"
-    />
     {% parent %}
 {% endblock %}
 {% block sw_order_detail_base_custom_fields %}
     {% parent %}
+    <sg-order-details v-if="!isEditing && acl.can('order.editor') && order.extensions.shopgateOrder"
+                      :sgOrder="order.extensions.shopgateOrder"
+                      class="sg-order"
+    ></sg-order-details>
 {% endblock %}

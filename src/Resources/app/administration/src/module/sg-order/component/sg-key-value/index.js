@@ -1,43 +1,34 @@
+import './sg-key-value.scss';
+
 /* global Shopware */
-const { Component } = Shopware;
+const { Component, Mixin } = Shopware;
 
 Component.register('sg-key-value', {
-    template: '<li><strong>{{ normalizeKey }}</strong>: {{ normalizeValue }}</li>',
+    mixins: [
+        Mixin.getByName('sg-order-key-value')
+    ],
+    template: '<li v-if="!isEmpty"><span class="emphasize">{{ normalizeLabel }}</span>: {{ normalizeContent }}</li>',
     props: {
         label: {
             type: String,
             required: true
         },
-        value: {
+        content: {
             type: [String, Number, Boolean, Array],
             required: true
         }
     },
-    methods: {
-        capitalize: (s) => {
-            if (typeof s !== 'string') {
-                return '';
-            }
-            return s.charAt(0).toUpperCase() + s.slice(1);
-        },
-    },
     computed: {
-        normalizeKey: function () {
+        normalizeLabel: function () {
             const key = this.label;
-            return key.split('_').map(el => this.capitalize(el)).join(' ');
+            return this.normalizeKey(key);
         },
-        normalizeValue: function () {
-            switch (this.value) {
-                case 0:
-                case '0':
-                case false:
-                    return this.$tc('sg-base.no');
-                case 1:
-                case '1':
-                case true:
-                    return this.$tc('sg-base.yes');
-            }
-            return this.value;
+        normalizeContent: function () {
+            const content = this.content;
+            return this.normalizeValue(content);
+        },
+        isEmpty: function () {
+            return this.isDataEmpty(this.content);
         }
     }
 });
