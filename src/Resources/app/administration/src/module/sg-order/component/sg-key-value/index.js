@@ -1,19 +1,16 @@
-import template from './sg-key-calue.html.twig';
-
 /* global Shopware */
 const { Component } = Shopware;
 
 Component.register('sg-key-value', {
-    inheritAttrs: false,
-    template,
+    template: '<li><strong>{{ normalizeKey }}</strong>: {{ normalizeValue }}</li>',
     props: {
-        title: {
+        label: {
             type: String,
             required: true
         },
-        content: {
-            type: [String, Number, Boolean],
-            required: false
+        value: {
+            type: [String, Number, Boolean, Array],
+            required: true
         }
     },
     methods: {
@@ -22,15 +19,15 @@ Component.register('sg-key-value', {
                 return '';
             }
             return s.charAt(0).toUpperCase() + s.slice(1);
-        }
+        },
     },
     computed: {
-        normalizeTitle: function () {
-            const key = this.title;
+        normalizeKey: function () {
+            const key = this.label;
             return key.split('_').map(el => this.capitalize(el)).join(' ');
         },
-        normalizeContent: function () {
-            switch (this.content) {
+        normalizeValue: function () {
+            switch (this.value) {
                 case 0:
                 case '0':
                 case false:
@@ -40,10 +37,7 @@ Component.register('sg-key-value', {
                 case true:
                     return this.$tc('sg-base.yes');
             }
-            return this.content;
-        },
-        isEmpty: function () {
-            return this.content === 'undefined' || this.content === '' || this.content === null;
+            return this.value;
         }
     }
 });

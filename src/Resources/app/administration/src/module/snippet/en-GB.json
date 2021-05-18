@@ -5,11 +5,12 @@
     "no": "No"
   },
   "sg-order": {
-    "title": "Order",
+    "title": "Shopgate Order",
     "number": "Order Number",
     "payment": {
       "title": "Payment",
       "method": "Payment Method",
+      "info": "Payment Information",
       "transactionNumber": "Transaction Number",
       "isSent": "Payment Sent To Shopgate"
     },

@@ -1,4 +1,5 @@
 import template from './sg-order-details.html.twig';
+import './sg-order-details.scss';
 
 /* global Shopware */
 const {Component} = Shopware;

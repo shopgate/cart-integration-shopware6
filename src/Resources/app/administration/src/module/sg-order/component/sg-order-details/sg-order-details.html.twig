@@ -1,49 +1,54 @@
 {% block sg_order_detail_sections %}
-    <sw-card :title="$tc('sg-base.owner')" class="sw-order-delivery-metadata">
-        <sw-card-section divider="bottom">
-            <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
-                <h4>{{ $tc('sg-order.title') }}</h4>
-            </sw-container>
-            <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
+    <sw-card :title="$tc('sg-order.title')" class="sw-order-delivery-metadata">
+        <sw-card-section>
+            <sw-container columns="repeat(auto-fit, minmax(200px, 1fr))" gap="0 15px">
                 <sw-description-list>
                     {% block sg_order_details_order_number %}
-                        <sg-key-value :title="$tc('sg-order.number')"
+                        <sg-title-content :title="$tc('sg-order.number')"
                                       :content="sgOrder.shopgateOrderNumber">
-                        </sg-key-value>
+                        </sg-title-content>
                     {% endblock %}
                     {% block sg_order_details_shipping_sent %}
-                        <sg-key-value :title="$tc('sg-order.shipping.isSent')"
+                        <sg-title-content :title="$tc('sg-order.shipping.isSent')"
                                       :content="sgOrder.receivedData.is_shipping_completed">
-                        </sg-key-value>
+                        </sg-title-content>
                     {% endblock %}
                     {% block sg_order_details_shipping_blocked %}
-                        <sg-key-value :title="$tc('sg-order.shipping.isBlocked')"
+                        <sg-title-content :title="$tc('sg-order.shipping.isBlocked')"
                                       :content="sgOrder.receivedData.is_shipping_blocked">
-                        </sg-key-value>
+                        </sg-title-content>
+                    {% endblock %}
+                    {% block sg_order_details_payment_method %}
+                        <sg-title-content :title="$tc('sg-order.payment.method')"
+                                          :content="sgOrder.receivedData.payment_method">
+                        </sg-title-content>
+                    {% endblock %}
+                    {% block sg_order_details_payment_transaction_number %}
+                        <sg-title-content :title="$tc('sg-order.payment.transactionNumber')"
+                                          :content="sgOrder.receivedData.payment_transaction_number">
+                        </sg-title-content>
+                    {% endblock %}
+                    {% block sg_order_details_payment_sent %}
+                        <sg-title-content :title="$tc('sg-order.payment.isSent')" :content="sgOrder.isPaid">
+                        </sg-title-content>
                     {% endblock %}
                 </sw-description-list>
                 <sw-description-list>
-                    {% block sg_order_details_payment_method %}
-                        <sg-key-value :title="$tc('sg-order.payment.method')"
-                                      :content="sgOrder.receivedData.payment_method">
-                        </sg-key-value>
-                    {% endblock %}
-                    {% block sg_order_details_payment_transaction_number %}
-                        <sg-key-value :title="$tc('sg-order.payment.transactionNumber')"
-                                      :content="sgOrder.receivedData.payment_transaction_number">
-                        </sg-key-value>
-                    {% endblock %}
-                    {% block sg_order_details_payment_sent %}
-                        <sg-key-value :title="$tc('sg-order.payment.isSent')"
-                                      :content="sgOrder.isPaid">
-                        </sg-key-value>
+                    {% block sg_order_details_payment_infos %}
+                        <sg-title-content :title="$tc('sg-order.payment.info')">
+                            <ul class="sg-list">
+                                <!--suppress XmlUnboundNsPrefix -->
+                                <li
+                                        is="sg-key-value"
+                                        v-for="(value, key) in sgOrder.receivedData.payment_infos"
+                                        v-bind:key="key"
+                                        v-bind:label="key"
+                                        v-bind:value="value"
+                                ></li>
+                            </ul>
+                        </sg-title-content>
                     {% endblock %}
                 </sw-description-list>
-            </sw-container>
-        </sw-card-section>
-        <sw-card-section divider="bottom" secondary>
-            <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
-                <h4>{{ $tc('sg-order.payment.title') }}</h4>
             </sw-container>
         </sw-card-section>
     </sw-card>
