@@ -5,37 +5,51 @@ const {Criteria} = Shopware.Data;
 /* global Shopware */
 Shopware.Component.override('sw-order-detail-base', {
     template,
+    inject: [
+        'repositoryFactory'
+    ],
     computed: {
-        orderCriteria() {
-            const criteria = new Criteria(this.page, this.limit);
+        shopgateOrderRepo() {
+            return this.repositoryFactory.create('shopgate_order');
+        },
+    },
+    created() {
+        this.$on('loading-change', this.reload);
+    },
 
-            criteria
-                .addAssociation('lineItems')
-                .addAssociation('currency')
-                .addAssociation('orderCustomer')
-                .addAssociation('language');
+    destroyed() {
+        this.$off('loading-change');
+    },
 
-            criteria
-                .getAssociation('deliveries')
-                .addSorting(Criteria.sort('shippingCosts.unitPrice', 'DESC'));
+    methods: {
 
-            criteria
-                .getAssociation('salesChannel')
-                .getAssociation('mailTemplates')
-                .addAssociation('mailTemplateType');
+        reload() {
+            this.shopgateOrderRepo
+                .search(this.getOrderCriteria(), Shopware.Context.api)
+                .then((response) => {
+                    const result = response.first();
+                    if (!result) {
+                        return;
+                    }
+                    const shopgateOrder = result;
+                    if (this.order.hasOwnProperty('extensions')) {
+                        this.order.extensions = {
+                            ...this.order.extensions,
+                            shopgateOrder
+                        };
+                    }
+                    this.order.extensions = {shopgateOrder};
+                });
+        },
 
-            criteria
-                .addAssociation('addresses.country')
-                .addAssociation('addresses.countryState')
-                .addAssociation('deliveries.shippingMethod')
-                .addAssociation('deliveries.shippingOrderAddress')
-                .addAssociation('transactions.paymentMethod')
-                .addAssociation('documents.documentType')
-                .addAssociation('tags');
-            criteria.addAssociation('shopgateOrder');
-
-            criteria.getAssociation('transactions').addSorting(Criteria.sort('createdAt'));
+        getOrderCriteria() {
+            const criteria = new Criteria();
+            criteria.setLimit(1);
+            criteria.addFilter(
+                Criteria.equals('shopwareOrderId', this.orderId)
+            );
             return criteria;
-        }
+        },
+
     }
 });
