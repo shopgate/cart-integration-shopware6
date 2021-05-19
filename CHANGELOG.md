@@ -1,3 +1,6 @@
+# 0.1.0
+- added shopgate order details on admin shopware order detail page
+
 # 0.0.13
 - added variant (child) manufacturer, price & property export
 - fixed issue with missing payment/shipping method notifications showing for customer after a mobile order is made

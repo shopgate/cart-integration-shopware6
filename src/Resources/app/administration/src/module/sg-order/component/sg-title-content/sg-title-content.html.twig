@@ -1,0 +1,7 @@
+{% block sg_order_title_content %}
+    <div v-if="!isEmpty">
+        <dt>{{ normalizeTitle }}</dt>
+        <dd>{{ normalizeContent }}<slot></slot></dd>
+    </div>
+{% endblock %}
+

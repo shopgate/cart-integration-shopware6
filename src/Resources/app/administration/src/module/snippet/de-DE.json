@@ -1,0 +1,22 @@
+{
+  "sg-base": {
+    "owner": "Shopgate",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "sg-order": {
+    "title": "Shopgate Bestellung",
+    "number": "Bestellnummer",
+    "payment": {
+      "title": "Zahlung",
+      "method": "Zahlungsart",
+      "info": "Zahlungsinformationen",
+      "transactionNumber": "Transaktionsnummer",
+      "isSent": "Ist bezahlt"
+    },
+    "shipping": {
+      "isBlocked": "Versand blockiert",
+      "isSent": "Versand an Shopgate übermittel"
+    }
+  }
+}
