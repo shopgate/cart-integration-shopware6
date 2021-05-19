@@ -12,7 +12,7 @@
       "method": "Zahlungsart",
       "info": "Zahlungsinformationen",
       "transactionNumber": "Transaktionsnummer",
-      "isSent": "Ist Bezahlt"
+      "isSent": "Ist bezahlt"
     },
     "shipping": {
       "isBlocked": "Versand blockiert",
