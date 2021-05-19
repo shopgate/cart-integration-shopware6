@@ -1,3 +1,6 @@
+# 0.1.1
+- added more support for FinSearch subscribers
+
 # 0.1.0
 - added shopgate order details on admin shopware order detail page
 

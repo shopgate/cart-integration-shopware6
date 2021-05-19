@@ -15,6 +15,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class SortTree
 {
@@ -84,6 +85,7 @@ class SortTree
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
         foreach ($categories as $category) {
             $request = new Request();
+            $request->setSession(new Session()); // 3rd party subscriber support
 
             if ($orderKey = $this->getSortOrderKey($category)) {
                 $request->request->set('order', $orderKey);
