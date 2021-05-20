@@ -26,6 +26,8 @@ class Formatter
     private $languageCollection;
     /** @var CurrencyFormatter */
     private $currencyFormatter;
+    /** @var string|false|null */
+    private $locale = false;
 
     /**
      * @param ContextManager $contextManager
@@ -61,15 +63,18 @@ class Formatter
      * @return string|null
      * @throws MissingContextException
      */
-    private function getLocaleCode(): ?string
+    public function getLocaleCode(): ?string
     {
-        /** @var LanguageEntity|null $entity */
-        $entity = $this->getLanguageCollection()
-            ->filterByProperty('id', $this->contextManager->getSalesContext()->getSalesChannel()->getLanguageId())
-            ->first();
-        $localeEntity = $entity ? $entity->getTranslationCode() : null;
+        if (false === $this->locale) {
+            /** @var LanguageEntity|null $entity */
+            $entity = $this->getLanguageCollection()
+                ->filterByProperty('id', $this->contextManager->getSalesContext()->getSalesChannel()->getLanguageId())
+                ->first();
+            $localeEntity = $entity ? $entity->getTranslationCode() : null;
+            $this->locale = $localeEntity ? $localeEntity->getCode() : null;
+        }
 
-        return $localeEntity ? $localeEntity->getCode() : null;
+        return $this->locale;
     }
 
     /**
