@@ -18,6 +18,7 @@ use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class ShippingMethodBridge
 {
@@ -60,10 +61,12 @@ class ShippingMethodBridge
                 )
             )
         )->getShippingMethods();
+        $request = new Request();
+        $request->setSession(new Session()); // support for 3rd party plugins that do not check session existence
         foreach ($shippingMethods->getElements() as $shipMethod) {
             $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
             $context = $this->contextManager->switchContext($dataBag);
-            $cart = $this->cartPageLoader->load(new Request(), $context)->getCart();
+            $cart = $this->cartPageLoader->load($request, $context)->getCart();
             foreach ($cart->getDeliveries()->getElements() as $delivery) {
                 $list[$delivery->getShippingMethod()->getId()] = $delivery;
             }
