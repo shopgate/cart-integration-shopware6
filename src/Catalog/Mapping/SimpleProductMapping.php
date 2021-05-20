@@ -259,15 +259,19 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         if ($shopwareProps = $this->item->getProperties()) {
             // different properties per group, e.g. 3 'width' props with different values, 5mm, 10mm, 12mm
             foreach ($shopwareProps as $shopwareProp) {
-                $property = new Shopgate_Model_Catalog_Property();
-                $property->setUid($shopwareProp->getId());
-                $property->setValue($shopwareProp->getTranslation('name') ?: $shopwareProp->getName());
-                if ($shopwareProp->getGroup()) {
-                    $property->setLabel(
-                        $shopwareProp->getGroup()->getTranslation('name') ?: $shopwareProp->getGroup()->getName()
-                    );
+                $uid = $shopwareProp->getGroup() ? $shopwareProp->getGroup()->getId() : $shopwareProp->getId();
+                $value = $shopwareProp->getTranslation('name') ?: $shopwareProp->getName();
+                if (isset($properties[$uid])) {
+                    $value = $properties[$uid]->getValue() . ', ' . $value;
                 }
-                $properties[] = $property;
+                $property = new Shopgate_Model_Catalog_Property();
+                $property->setUid($uid);
+                $property->setValue($value);
+                $label = $shopwareProp->getGroup()
+                    ? $shopwareProp->getGroup()->getTranslation('name')
+                    : $shopwareProp->getGroup()->getName();
+                $property->setLabel($label ?: $uid);
+                $properties[$uid] = $property;
             }
         }
 
