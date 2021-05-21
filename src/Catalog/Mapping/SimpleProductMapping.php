@@ -4,6 +4,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Exception;
 use Psr\Cache\InvalidArgumentException;
+use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -37,20 +38,25 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected $tierPriceMapping;
     /** @var Formatter */
     protected $formatter;
+    /** @var CustomFieldBridge */
+    private $customFieldSetBridge;
 
     /**
      * @param ContextManager $contextManager
+     * @param CustomFieldBridge $customFieldSetBridge
      * @param SortTree $sortTree
      * @param TierPriceMapping $tierPriceMapping
      * @param Formatter $formatter
      */
     public function __construct(
         ContextManager $contextManager,
+        CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
         Formatter $formatter
     ) {
         $this->contextManager = $contextManager;
+        $this->customFieldSetBridge = $customFieldSetBridge;
         $this->sortTree = $sortTree;
         $this->tierPriceMapping = $tierPriceMapping;
         $this->formatter = $formatter;
@@ -244,21 +250,51 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         parent::setManufacturer($manufacturer);
     }
 
+    /**
+     * @throws MissingContextException
+     */
     public function setProperties(): void
     {
-        if (!$shopwareProps = $this->item->getProperties()) {
-            return;
-        }
         $properties = [];
-        // different properties per group, e.g. 3 'width' props with different values, 5mm, 10mm, 12mm
-        foreach ($shopwareProps as $shopwareProp) {
-            $property = new Shopgate_Model_Catalog_Property();
-            $property->setUid($shopwareProp->getId());
-            $property->setValue($shopwareProp->getName());
-            if ($shopwareProp->getGroup()) {
-                $property->setLabel($shopwareProp->getGroup()->getName());
+        if ($shopwareProps = $this->item->getProperties()) {
+            // different properties per group, e.g. 3 'width' props with different values, 5mm, 10mm, 12mm
+            foreach ($shopwareProps as $shopwareProp) {
+                $uid = $shopwareProp->getGroup() ? $shopwareProp->getGroup()->getId() : $shopwareProp->getId();
+                $value = $shopwareProp->getTranslation('name') ?: $shopwareProp->getName();
+                if (isset($properties[$uid])) {
+                    $value = $properties[$uid]->getValue() . ', ' . $value;
+                }
+                $property = new Shopgate_Model_Catalog_Property();
+                $property->setUid($uid);
+                $property->setValue($value);
+                $label = $shopwareProp->getGroup()
+                    ? $shopwareProp->getGroup()->getTranslation('name')
+                    : $shopwareProp->getGroup()->getName();
+                $property->setLabel($label ?: $uid);
+                $properties[$uid] = $property;
             }
-            $properties[] = $property;
+        }
+
+        if ($fields = $this->item->getCustomFields()) {
+            $locale = $this->formatter->getLocaleCode() ?: 'en-GB';
+            $allFields = $this->customFieldSetBridge->getAllProductFieldSets();
+            foreach ($fields as $key => $value) {
+                $entity = $allFields->filterByProperty('name', $key)->first();
+                if (!$entity) {
+                    continue;
+                }
+                $customField = new Shopgate_Model_Catalog_Property();
+                $customField->setUid($entity->getId());
+                $customField->setValue($value);
+                // Use language label, fallback "my_key" -> "My Key"
+                $label = $entity->getConfig()['label'][$locale]
+                    ?? $entity->getConfig()['label']['en-GB']
+                    ?? implode(' ', array_map(static function ($item) {
+                        return ucfirst($item);
+                    }, explode('_', $key)));
+                $customField->setLabel($label);
+                $properties[] = $customField;
+            }
         }
 
         parent::setProperties($properties);

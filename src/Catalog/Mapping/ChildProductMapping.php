@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
@@ -12,17 +13,19 @@ class ChildProductMapping extends SimpleProductMapping
 
     /**
      * @param ContextManager $contextManager
+     * @param CustomFieldBridge $customFieldSetBridge
      * @param SortTree $sortTree
      * @param TierPriceMapping $tierPriceMapping
      * @param Formatter $translation
      */
     public function __construct(
         ContextManager $contextManager,
+        CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
         Formatter $translation
     ) {
-        parent::__construct($contextManager, $sortTree, $tierPriceMapping, $translation);
+        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation);
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';
     }
