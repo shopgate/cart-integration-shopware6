@@ -1,5 +1,6 @@
 # 0.1.2
 - added product custom fields to product export
+- fixed coupon error handling for ineligible rules
 - fixed property values to be concatenated with a comma instead of being separate values
 
 # 0.1.1

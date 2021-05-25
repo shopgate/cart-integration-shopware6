@@ -46,6 +46,21 @@ trait CartUtilityTrait
     }
 
     /**
+     * @param string $name
+     * @return ShopgateExternalCoupon|null
+     */
+    public function findExternalCouponByName(string $name): ?ShopgateExternalCoupon
+    {
+        $foundItems = array_filter(
+            $this->external_coupons,
+            static function (ShopgateExternalCoupon $coupon) use ($name) {
+                return $coupon->getName() === $name;
+            }
+        );
+        return $foundItems ? array_pop($foundItems) : null;
+    }
+
+    /**
      * @return bool
      */
     public function isShippingFree(): bool
