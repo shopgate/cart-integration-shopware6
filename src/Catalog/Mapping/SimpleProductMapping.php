@@ -266,7 +266,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 }
                 $property = new Shopgate_Model_Catalog_Property();
                 $property->setUid($uid);
-                $property->setValue($value);
+                $property->setValue($this->translateEntityValue($value));
                 $label = $shopwareProp->getGroup()
                     ? $shopwareProp->getGroup()->getTranslation('name')
                     : $shopwareProp->getGroup()->getName();
@@ -285,7 +285,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 }
                 $customField = new Shopgate_Model_Catalog_Property();
                 $customField->setUid($entity->getId());
-                $customField->setValue($value);
+                $customField->setValue($this->translateEntityValue($value));
                 // Use language label, fallback "my_key" -> "My Key"
                 $label = $entity->getConfig()['label'][$locale]
                     ?? $entity->getConfig()['label']['en-GB']
@@ -298,6 +298,17 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         }
 
         parent::setProperties($properties);
+    }
+
+    /**
+     * Translates FALSE value field to string
+     *
+     * @param mixed $value
+     * @return string
+     */
+    private function translateEntityValue($value): string
+    {
+        return $value === false ? '0' : (string) $value;
     }
 
     /**
