@@ -5,39 +5,33 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartItemAddRoute;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute;
+use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
 class QuoteBridge
 {
-    /** @var CartOrderRoute */
-    private $cartOrderRoute;
-    /** @var CartLoadRoute */
-    private $cartLoadRoute;
-    /** @var CartItemAddRoute */
-    private $cartItemAddRoute;
-    /** @var CartDeleteRoute */
-    private $cartDeleteRoute;
+    private AbstractCartOrderRoute $cartOrderRoute;
+    private AbstractCartLoadRoute $cartLoadRoute;
+    private AbstractCartItemAddRoute $cartItemAddRoute;
+    private AbstractCartDeleteRoute $cartDeleteRoute;
 
     /**
-     * @param EntityRepositoryInterface $orderRepository
-     * @param CartOrderRoute $cartOrderRoute
-     * @param CartLoadRoute $cartLoadRoute
-     * @param CartItemAddRoute $cartItemAddRoute
-     * @param CartDeleteRoute $cartDeleteRoute
+     * @param AbstractCartOrderRoute $cartOrderRoute
+     * @param AbstractCartLoadRoute $cartLoadRoute
+     * @param AbstractCartItemAddRoute $cartItemAddRoute
+     * @param AbstractCartDeleteRoute $cartDeleteRoute
      */
     public function __construct(
-        CartOrderRoute $cartOrderRoute,
-        CartLoadRoute $cartLoadRoute,
-        CartItemAddRoute $cartItemAddRoute,
-        CartDeleteRoute $cartDeleteRoute
+        AbstractCartOrderRoute $cartOrderRoute,
+        AbstractCartLoadRoute $cartLoadRoute,
+        AbstractCartItemAddRoute $cartItemAddRoute,
+        AbstractCartDeleteRoute $cartDeleteRoute
     ) {
         $this->cartOrderRoute = $cartOrderRoute;
         $this->cartLoadRoute = $cartLoadRoute;
@@ -73,7 +67,7 @@ class QuoteBridge
      */
     public function createOrder(Cart $cart, SalesChannelContext $context, ?RequestDataBag $data = null): OrderEntity
     {
-        return $this->cartOrderRoute->order($cart, $context, $data)->getOrder();
+        return $this->cartOrderRoute->order($cart, $context, $data ?: new RequestDataBag())->getOrder();
     }
 
     /**

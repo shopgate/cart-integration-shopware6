@@ -16,15 +16,15 @@ class ShopgateOrderEntity extends Entity
     /**
      * Keep public as assigner does not use methods, e.g. $this->$key = value
      */
-    public $shopwareOrderId;
-    public $salesChannelId;
-    public $shopgateOrderNumber;
-    public $isSent;
-    public $isCancelled;
-    public $isPaid;
-    public $isTest;
+    public string $shopwareOrderId;
+    public string $salesChannelId;
+    public string $shopgateOrderNumber;
+    public bool $isSent;
+    public bool $isCancelled;
+    public bool $isPaid;
+    public bool $isTest;
     public $receivedData;
-    public $order;
+    public ?OrderEntity $order;
 
     /**
      * @return string

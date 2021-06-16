@@ -10,7 +10,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
-use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
+use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -21,17 +21,17 @@ class ContextManager
     private SalesChannelContextServiceInterface $contextService;
     private SalesChannelContextRestorer $contextRestorer;
     private ?SalesChannelContext $salesContext;
-    private ContextSwitchRoute $contextSwitchRoute;
+    private AbstractContextSwitchRoute $contextSwitchRoute;
 
     /**
      * @param SalesChannelContextServiceInterface $contextService
      * @param SalesChannelContextRestorer $contextRestorer
-     * @param ContextSwitchRoute $contextSwitchRoute
+     * @param AbstractContextSwitchRoute $contextSwitchRoute
      */
     public function __construct(
         SalesChannelContextServiceInterface $contextService,
         SalesChannelContextRestorer $contextRestorer,
-        ContextSwitchRoute $contextSwitchRoute
+        AbstractContextSwitchRoute $contextSwitchRoute
     ) {
         $this->contextService = $contextService;
         $this->contextRestorer = $contextRestorer;

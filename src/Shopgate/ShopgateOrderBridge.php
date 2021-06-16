@@ -13,8 +13,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ShopgateOrderBridge
 {
-    /** @var EntityRepositoryInterface */
-    private $shopgateOrderRepository;
+    private EntityRepositoryInterface $shopgateOrderRepository;
 
     /**
      * @param EntityRepositoryInterface $shopgateOrderRepository
