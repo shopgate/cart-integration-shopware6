@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product;
 
-use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
 use Shopgate\Shopware\Catalog\Product\Sort\SortBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
-use Shopgate\Shopware\System\Log\LoggerInterface;
+use Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\Product\SalesChannel\ProductListListRoute;
 use Shopware\Core\Content\Product\SalesChannel\ProductListResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -20,25 +18,19 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class ProductBridge
 {
-    /** @var ProductListListRoute */
-    private $productListRoute;
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var SortBridge */
-    private $productSorting;
-    /** @var ConfigBridge */
-    private $configReader;
+    private AbstractProductListRoute $productListRoute;
+    private ContextManager $contextManager;
+    private SortBridge $productSorting;
+    private ConfigBridge $configReader;
 
     /**
-     * @param LoggerInterface $logger
-     * @param ProductListListRoute $productListRoute
+     * @param AbstractProductListRoute $productListRoute
      * @param ContextManager $contextManager
      * @param SortBridge $productSorting
-     * @param ProductMapFactory $productMapFactory
      * @param ConfigBridge $configReader
      */
     public function __construct(
-        ProductListListRoute $productListRoute,
+        AbstractProductListRoute $productListRoute,
         ContextManager $contextManager,
         SortBridge $productSorting,
         ConfigBridge $configReader

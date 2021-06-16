@@ -24,12 +24,7 @@
         <service id="Shopgate\Shopware\Catalog\Product\ProductComposer"/>
         <service id="Shopgate\Shopware\Customer\CustomerComposer"/>
         <service id="Shopgate\Shopware\Customer\AddressBridge"/>
-        <service id="Shopgate\Shopware\Customer\CustomerBridge">
-            <argument type="service" id="customer_group.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
-            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute"/>
-            <argument type="service" id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
-        </service>
+        <service id="Shopgate\Shopware\Customer\CustomerBridge"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory"/>
@@ -127,6 +122,25 @@
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <!-- Interfaces -->
         <service id="Shopgate\Shopware\System\Log\LoggerInterface" alias="Shopgate\Shopware\System\Log\Logger"/>
-        <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute" alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute" />
+        <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute"
+                 alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"/>
+        <service id="Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute"
+                 alias="Shopware\Core\Content\Product\SalesChannel\ProductListRoute"/>
+        <service id="Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory"
+                 alias="Shopware\Core\System\SalesChannel\Context\CachedSalesChannelContextFactory"/>
+        <service id="Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute"
+                 alias="Shopware\Core\System\Language\SalesChannel\CachedLanguageRoute"/>
+        <service id="Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute"
+                 alias="Shopware\Core\Checkout\Shipping\SalesChannel\CachedShippingMethodRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractCustomerRoute"
+                 alias="Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute"
+                 alias="Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute"
+                 alias="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractUpsertAddressRoute"
+                 alias="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
+        <service id="Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute"
+                 alias="Shopware\Core\Content\Category\SalesChannel\CategoryListRoute"/>
     </services>
 </container>

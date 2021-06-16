@@ -8,13 +8,12 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
-use Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute;
+use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,22 +21,18 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class ShippingMethodBridge
 {
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var ShippingMethodRoute */
-    private $shippingMethodRoute;
-    /** @var CheckoutCartPageLoader */
-    private $cartPageLoader;
+    private ContextManager $contextManager;
+    private AbstractShippingMethodRoute $shippingMethodRoute;
+    private CheckoutCartPageLoader $cartPageLoader;
 
     /**
-     * @param ContextSwitchRoute $contextSwitchRoute
      * @param ContextManager $contextManager
-     * @param ShippingMethodRoute $shippingMethodRoute
+     * @param AbstractShippingMethodRoute $shippingMethodRoute
      * @param CheckoutCartPageLoader $cartPageLoader
      */
     public function __construct(
         ContextManager $contextManager,
-        ShippingMethodRoute $shippingMethodRoute,
+        AbstractShippingMethodRoute $shippingMethodRoute,
         CheckoutCartPageLoader $cartPageLoader
     ) {
         $this->contextManager = $contextManager;
@@ -56,7 +51,8 @@ class ShippingMethodBridge
             new Request(['onlyAvailable' => true]),
             $initContext,
             (new Criteria())->addFilter(
-                new NotFilter(NotFilter::CONNECTION_OR,
+                new NotFilter(
+                    NotFilter::CONNECTION_OR,
                     [new EqualsAnyFilter('id', [GenericShippingMethod::UUID, FreeShippingMethod::UUID])]
                 )
             )

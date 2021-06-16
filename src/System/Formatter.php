@@ -11,34 +11,29 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
-use Shopware\Core\System\Language\SalesChannel\LanguageRoute;
+use Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute;
 use Symfony\Component\HttpFoundation\Request;
 
 class Formatter
 {
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var Translator */
-    private $translator;
-    /** @var LanguageRoute */
-    private $languageRoute;
-    /** @var LanguageCollection|null */
-    private $languageCollection;
-    /** @var CurrencyFormatter */
-    private $currencyFormatter;
+    private ContextManager $contextManager;
+    private Translator $translator;
+    private AbstractLanguageRoute $languageRoute;
+    private ?LanguageCollection $languageCollection;
+    private CurrencyFormatter $currencyFormatter;
     /** @var string|false|null */
     private $locale = false;
 
     /**
      * @param ContextManager $contextManager
      * @param Translator $translator
-     * @param LanguageRoute $languageRoute
+     * @param AbstractLanguageRoute $languageRoute
      * @param CurrencyFormatter $currencyFormatter
      */
     public function __construct(
         ContextManager $contextManager,
         Translator $translator,
-        LanguageRoute $languageRoute,
+        AbstractLanguageRoute $languageRoute,
         CurrencyFormatter $currencyFormatter
     ) {
         $this->contextManager = $contextManager;
@@ -106,6 +101,11 @@ class Formatter
         $context = $this->contextManager->getSalesContext()->getContext();
         $currency = $channel->getCurrency() ? $channel->getCurrency()->getIsoCode() : 'EUR';
 
-        return $this->currencyFormatter->formatCurrencyByLanguage($price, $currency, $context->getLanguageId(), $context);
+        return $this->currencyFormatter->formatCurrencyByLanguage(
+            $price,
+            $currency,
+            $context->getLanguageId(),
+            $context
+        );
     }
 }

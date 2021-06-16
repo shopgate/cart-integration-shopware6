@@ -157,11 +157,16 @@ class OrderComposer
             // making sure that 2 address ID's are different from each other
             if (count(array_unique($addressBag)) === 2) {
                 // dirty hack because of some validation bug that causes to keep billing address ID in search criteria
-                $this->contextManager->switchContext(new RequestDataBag([SalesChannelContextService::BILLING_ADDRESS_ID => $addressBag[SalesChannelContextService::BILLING_ADDRESS_ID]]));
+                $this->contextManager->switchContext(
+                    new RequestDataBag(
+                        [SalesChannelContextService::BILLING_ADDRESS_ID => $addressBag[SalesChannelContextService::BILLING_ADDRESS_ID]]
+                    )
+                );
                 $newContext = $this->contextManager->switchContext(
                     new RequestDataBag(
                         [SalesChannelContextService::SHIPPING_ADDRESS_ID => $addressBag[SalesChannelContextService::SHIPPING_ADDRESS_ID]]
-                    ));
+                    )
+                );
             } else {
                 $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag));
             }
