@@ -15,16 +15,14 @@ use Shopgate\Shopware\System\Log\LoggerInterface;
  */
 class Forwarder
 {
-    /** @var ExportService */
-    private $exportService;
-    /** @var ImportService */
-    private $importService;
-    /** @var LoggerInterface */
-    private $logger;
+    private ExportService $exportService;
+    private ImportService $importService;
+    private LoggerInterface $logger;
 
     /**
      * @param ExportService $exportService
      * @param ImportService $importService
+     * @param LoggerInterface $logger
      */
     public function __construct(ExportService $exportService, ImportService $importService, LoggerInterface $logger)
     {

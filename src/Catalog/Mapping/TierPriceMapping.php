@@ -23,10 +23,8 @@ use Shopware\Core\Framework\Rule\Rule;
 
 class TierPriceMapping
 {
-    /** @var CustomerBridge */
-    private $customerBridge;
-    /** @var ContextManager */
-    private $contextManager;
+    private CustomerBridge $customerBridge;
+    private ContextManager $contextManager;
 
     /**
      * @param ContextManager $contextManager
@@ -80,7 +78,6 @@ class TierPriceMapping
     private function getValidTiers(ProductPriceCollection $priceCollection): array
     {
         $validRules = [];
-        /** @var ProductPriceEntity $swTier */
         foreach ($priceCollection as $swTier) {
             $rule = $swTier->getRule();
             if ($rule && $this->validateRule($rule)) {
@@ -208,7 +205,7 @@ class TierPriceMapping
     public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice): Price
     {
         $currencyId = $this->contextManager->getSalesContext()->getSalesChannel()->getCurrencyId();
-        $reduced = array_reduce(
+        return array_reduce(
             $this->getValidTiers($priceCollection),
             static function (Price $carry, ProductPriceEntity $entity) use ($currencyId) {
                 $curPrice = $entity->getPrice()->getCurrencyPrice($currencyId);
@@ -216,7 +213,5 @@ class TierPriceMapping
             },
             $basePrice
         );
-
-        return $reduced;
     }
 }

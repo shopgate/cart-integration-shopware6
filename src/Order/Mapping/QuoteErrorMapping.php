@@ -14,8 +14,7 @@ use Throwable;
 
 class QuoteErrorMapping
 {
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @param LoggerInterface $logger
@@ -60,8 +59,7 @@ class QuoteErrorMapping
      */
     private function toJson(array $data)
     {
-        /** @noinspection PhpComposerExtensionStubsInspection */
-        return extension_loaded('json') ? json_encode($data) : print_r($data, true);
+        return extension_loaded('json') ? json_encode($data, JSON_PRETTY_PRINT) : print_r($data, true);
     }
 
     /**
