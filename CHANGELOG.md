@@ -1,5 +1,6 @@
 # 0.1.3
 - fixed issue when exporting properties with false (checkbox) value
+- fixed issue with shopgate order getting deleted on order edit
 
 # 0.1.2
 - added product custom fields to product export

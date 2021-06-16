@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ObjectField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\System\NumberRange\DataAbstractionLayer\NumberRangeField;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
@@ -42,6 +43,7 @@ class ShopgateOrderDefinition extends EntityDefinition
         return new FieldCollection([
                 (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
                 (new FkField('sw_order_id', 'shopwareOrderId', OrderDefinition::class))->addFlags(new Required()),
+                (new ReferenceVersionField(OrderDefinition::class, 'sw_order_version_id'))->addFlags(new Required()),
                 new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class),
                 new NumberRangeField('shopgate_order_number', 'shopgateOrderNumber'),
                 new BoolField('is_sent', 'isSent'),
