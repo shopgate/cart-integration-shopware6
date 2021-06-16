@@ -3,3 +3,5 @@ vendor
 composer.lock
 .php-cs.cache
 .DS_Store
+
+src/Resources/public/administration
