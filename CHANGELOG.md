@@ -1,3 +1,7 @@
+# 1.0.0
+- added support for Shopware 6.4 & min version PHP 7.4
+- removed support for Shopware below 6.4
+
 # 0.1.3
 - fixed issue when exporting properties with false (checkbox) value
 - fixed issue with shopgate order getting deleted on order edit

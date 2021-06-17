@@ -10,8 +10,8 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\InactiveCustomerException;
-use Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute;
-use Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute;
+use Shopware\Core\Checkout\Customer\SalesChannel\AbstractCustomerRoute;
+use Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -24,30 +24,25 @@ use Throwable;
 
 class CustomerBridge
 {
-    /** @var EntityRepositoryInterface */
-    private $customerGroupRepository;
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var LoginRoute */
-    private $loginRoute;
-    /** @var RequestDataBag */
-    private $dataBag;
-    /** @var CustomerRoute */
-    private $customerRoute;
+    private EntityRepositoryInterface $customerGroupRepository;
+    private ContextManager $contextManager;
+    private AbstractLoginRoute $loginRoute;
+    private RequestDataBag $dataBag;
+    private AbstractCustomerRoute $customerRoute;
 
     /**
      * @param EntityRepositoryInterface $customerGroupRepository
      * @param ContextManager $contextManager
-     * @param LoginRoute $loginRoute
+     * @param AbstractLoginRoute $loginRoute
      * @param RequestDataBag $dataBag
-     * @param CustomerRoute $customerRoute
+     * @param AbstractCustomerRoute $customerRoute
      */
     public function __construct(
         EntityRepositoryInterface $customerGroupRepository,
         ContextManager $contextManager,
-        LoginRoute $loginRoute,
+        AbstractLoginRoute $loginRoute,
         RequestDataBag $dataBag,
-        CustomerRoute $customerRoute
+        AbstractCustomerRoute $customerRoute
     ) {
         $this->customerGroupRepository = $customerGroupRepository;
         $this->contextManager = $contextManager;
@@ -110,6 +105,8 @@ class CustomerBridge
      */
     public function getDetailedContextCustomer(SalesChannelContext $context): CustomerEntity
     {
+        $customer = new CustomerEntity();
+        $customer->setId($context->getCustomer() ? $context->getCustomer()->getId() : null);
         return $this->customerRoute->load(
             new Request(),
             $context,
@@ -119,7 +116,8 @@ class CustomerBridge
                 ->addAssociation('addresses')
                 ->addAssociation('addresses.country')
                 ->addAssociation('addresses.countryState')
-                ->addAssociation('addresses.salutation')
+                ->addAssociation('addresses.salutation'),
+            $customer
         )->getCustomer();
     }
 }

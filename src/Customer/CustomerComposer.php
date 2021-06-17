@@ -11,33 +11,28 @@ use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use ShopgateCustomer;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
+use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Throwable;
 
 class CustomerComposer
 {
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var RegisterRoute */
-    private $registerRoute;
-    /** @var CustomerBridge */
-    private $customerBridge;
-    /** @var CustomerMapping */
-    private $customerMapping;
-    /** @var ConfigBridge */
-    private $configBridge;
+    private ContextManager $contextManager;
+    private AbstractRegisterRoute $registerRoute;
+    private CustomerBridge $customerBridge;
+    private CustomerMapping $customerMapping;
+    private ConfigBridge $configBridge;
 
     /**
      * @param ContextManager $contextManager
-     * @param RegisterRoute $registerRoute
+     * @param AbstractRegisterRoute $registerRoute
      * @param CustomerBridge $customerBridge
      * @param CustomerMapping $customerMapping
      * @param ConfigBridge $configBridge
      */
     public function __construct(
         ContextManager $contextManager,
-        RegisterRoute $registerRoute,
+        AbstractRegisterRoute $registerRoute,
         CustomerBridge $customerBridge,
         CustomerMapping $customerMapping,
         ConfigBridge $configBridge
@@ -85,7 +80,9 @@ class CustomerComposer
             $this->configBridge->getCustomerOptInConfirmUrl($this->contextManager->getSalesContext())
         );
         try {
-            return $this->registerRoute->register($dataBag, $this->contextManager->getSalesContext(), false)->getCustomer();
+            return $this->registerRoute
+                ->register($dataBag, $this->contextManager->getSalesContext(), false)
+                ->getCustomer();
         } catch (ConstraintViolationException $e) {
             $errorMessages = [];
             foreach ($e->getViolations() as $violation) {

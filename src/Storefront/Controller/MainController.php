@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
-use Shopgate\Shopware\System\Configuration\ConfigBridge;
-use Shopgate\Shopware\System\Mapping\ConfigMapping;
-use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\Plugin;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
+use Shopgate\Shopware\System\Di\Facade;
+use Shopgate\Shopware\System\Mapping\ConfigMapping;
 use ShopgateBuilder;
 use ShopgateLibraryException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,24 +23,21 @@ use Symfony\Component\Routing\Annotation\Route;
 class MainController extends StorefrontController
 {
     public const IS_SHOPGATE = 'IS_SHOPGATE_CALL';
-    /** @var ConfigBridge */
-    private $systemConfigService;
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var SalesChannelContextFactory */
-    private $channelContextFactory;
+    private ConfigBridge $systemConfigService;
+    private ContextManager $contextManager;
+    private AbstractSalesChannelContextFactory $channelContextFactory;
 
     /**
      * @param ConfigBridge $systemConfigService
      * @param ContainerInterface $container
      * @param ContextManager $context
-     * @param SalesChannelContextFactory $channelContextFactory
+     * @param AbstractSalesChannelContextFactory $channelContextFactory
      */
     public function __construct(
         ConfigBridge $systemConfigService,
         ContainerInterface $container,
         ContextManager $context,
-        SalesChannelContextFactory $channelContextFactory
+        AbstractSalesChannelContextFactory $channelContextFactory
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->contextManager = $context;

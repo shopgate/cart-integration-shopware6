@@ -13,12 +13,9 @@ use Shopware\Core\Content\Category\CategoryEntity;
 
 class CategoryComposer
 {
-    /** @var LoggerInterface */
-    private $log;
-    /** @var CategoryBridge */
-    private $categoryBridge;
-    /** @var ContextManager */
-    private $contextManager;
+    private LoggerInterface $log;
+    private CategoryBridge $categoryBridge;
+    private ContextManager $contextManager;
 
     /**
      * @param LoggerInterface $logger

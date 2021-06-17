@@ -25,20 +25,13 @@ class ConfigBridge
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 
-    /** @var string */
-    private $shopwareVersion;
-    /** @var EntityRepositoryInterface */
-    private $pluginRepository;
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var SystemConfigService */
-    private $systemConfigService;
-    /** @var EntityRepositoryInterface */
-    private $systemConfigRepo;
-    /** @var array */
-    private $config;
-    /** @var DomainBridge */
-    private $domainBridge;
+    private string $shopwareVersion;
+    private EntityRepositoryInterface $pluginRepository;
+    private ContextManager $contextManager;
+    private SystemConfigService $systemConfigService;
+    private EntityRepositoryInterface $systemConfigRepo;
+    private array $config;
+    private DomainBridge $domainBridge;
 
     /**
      * @param EntityRepositoryInterface $pluginRepository

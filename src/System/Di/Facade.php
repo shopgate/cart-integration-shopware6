@@ -10,12 +10,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class Facade
 {
     /**
-     * self|null
+     * @var self|null
      */
     private static $instance;
 
     /**
-     * ContainerInterface
+     * @var ContainerInterface
      */
     private static $myContainer;
 

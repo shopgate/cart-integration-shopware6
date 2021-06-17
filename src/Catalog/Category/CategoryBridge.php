@@ -8,24 +8,22 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Category\SalesChannel\CategoryListRoute;
+use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class CategoryBridge
 {
-    /** @var CategoryListRoute */
-    private $categoryListRoute;
-    /** @var ContextManager */
-    private $contextManager;
+    private AbstractCategoryListRoute $categoryListRoute;
+    private ContextManager $contextManager;
 
     /**
-     * @param CategoryListRoute $categoryListRoute
+     * @param AbstractCategoryListRoute $categoryListRoute
      * @param ContextManager $contextManager
      */
     public function __construct(
-        CategoryListRoute $categoryListRoute,
+        AbstractCategoryListRoute $categoryListRoute,
         ContextManager $contextManager
     ) {
         $this->categoryListRoute = $categoryListRoute;

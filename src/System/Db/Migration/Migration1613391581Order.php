@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\System\Db\Migration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1613391581Order extends MigrationStep
@@ -20,7 +20,7 @@ class Migration1613391581Order extends MigrationStep
 
     /**
      * @param Connection $connection
-     * @throws DBALException
+     * @throws Exception
      */
     public function update(Connection $connection): void
     {
@@ -45,7 +45,7 @@ class Migration1613391581Order extends MigrationStep
           CONSTRAINT `SHOPGATE_ORDER_STORE_ID_STORE_STORE_ID` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Shopgate Orders' COLLATE=utf8mb4_unicode_ci;
 SQL;
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

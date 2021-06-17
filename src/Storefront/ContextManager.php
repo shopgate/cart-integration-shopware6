@@ -9,7 +9,8 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
-use Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
+use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
@@ -17,26 +18,20 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class ContextManager
 {
-    /** @var SalesChannelContextServiceInterface */
-    private $contextService;
-    /** @var SalesChannelContextRestorer */
-    private $contextRestorer;
-    /** @var SalesChannelContext|null */
-    private $salesContext;
-    /**
-     * @var ContextSwitchRoute
-     */
-    private $contextSwitchRoute;
+    private SalesChannelContextServiceInterface $contextService;
+    private SalesChannelContextRestorer $contextRestorer;
+    private ?SalesChannelContext $salesContext;
+    private AbstractContextSwitchRoute $contextSwitchRoute;
 
     /**
      * @param SalesChannelContextServiceInterface $contextService
      * @param SalesChannelContextRestorer $contextRestorer
-     * @param ContextSwitchRoute $contextSwitchRoute
+     * @param AbstractContextSwitchRoute $contextSwitchRoute
      */
     public function __construct(
         SalesChannelContextServiceInterface $contextService,
         SalesChannelContextRestorer $contextRestorer,
-        ContextSwitchRoute $contextSwitchRoute
+        AbstractContextSwitchRoute $contextSwitchRoute
     ) {
         $this->contextService = $contextService;
         $this->contextRestorer = $contextRestorer;
@@ -115,13 +110,12 @@ class ContextManager
      */
     public function loadByCustomerToken(string $token): SalesChannelContext
     {
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $context = $this->contextService->get(
+        $context = $this->contextService->get(new SalesChannelContextServiceParameters(
             $this->salesContext->getSalesChannel()->getId(),
             $token,
             $this->salesContext->getSalesChannel()->getLanguageId(),
             $this->salesContext->getSalesChannel()->getCurrencyId()
-        );
+        ));
 
         return $this->salesContext = $context;
     }
