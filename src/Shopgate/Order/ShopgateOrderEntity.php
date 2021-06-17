@@ -24,7 +24,7 @@ class ShopgateOrderEntity extends Entity
     public bool $isPaid;
     public bool $isTest;
     public $receivedData;
-    public ?OrderEntity $order;
+    public ?OrderEntity $order = null;
 
     /**
      * @return string

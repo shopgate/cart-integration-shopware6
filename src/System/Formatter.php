@@ -19,7 +19,7 @@ class Formatter
     private ContextManager $contextManager;
     private Translator $translator;
     private AbstractLanguageRoute $languageRoute;
-    private ?LanguageCollection $languageCollection;
+    private ?LanguageCollection $languageCollection = null;
     private CurrencyFormatter $currencyFormatter;
     /** @var string|false|null */
     private $locale = false;

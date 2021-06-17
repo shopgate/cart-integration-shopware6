@@ -1,3 +1,6 @@
+# 1.0.1
+- fixed issues with uninitialized php7.4 properties
+
 # 1.0.0
 - added support for Shopware 6.4 & min version PHP 7.4
 - removed support for Shopware below 6.4
