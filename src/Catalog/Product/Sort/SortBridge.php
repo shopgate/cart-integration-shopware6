@@ -15,12 +15,9 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class SortBridge
 {
-    /** @var SystemConfigService */
-    private $systemConfigService;
-    /** @var EntityRepositoryInterface */
-    private $productSortingRepository;
-    /** @var ContextManager */
-    private $contextManager;
+    private SystemConfigService $systemConfigService;
+    private EntityRepositoryInterface $productSortingRepository;
+    private ContextManager $contextManager;
 
     /**
      * @param EntityRepositoryInterface $productSortingRepository

@@ -13,8 +13,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class DomainBridge
 {
-    /** @var EntityRepositoryInterface */
-    private $domainRepository;
+    private EntityRepositoryInterface $domainRepository;
 
     /**
      * @param EntityRepositoryInterface $domainRepository

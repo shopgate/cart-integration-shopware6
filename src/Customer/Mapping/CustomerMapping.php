@@ -12,12 +12,9 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
 class CustomerMapping
 {
-    /** @var GroupMapping */
-    private $groupMapping;
-    /** @var AddressMapping */
-    private $addressMapping;
-    /** @var SalutationMapping */
-    private $salutationMapping;
+    private GroupMapping $groupMapping;
+    private AddressMapping $addressMapping;
+    private SalutationMapping $salutationMapping;
 
     /**
      * @param GroupMapping $groupMapping

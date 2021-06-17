@@ -13,12 +13,9 @@ use Shopware\Core\System\Country\CountryEntity;
 
 class LocationMapping
 {
-    /** @var EntityRepositoryInterface */
-    private $countryRepository;
-    /** @var EntityRepositoryInterface */
-    private $stateRepository;
-    /** @var ContextManager */
-    private $contextManager;
+    private EntityRepositoryInterface $countryRepository;
+    private EntityRepositoryInterface $stateRepository;
+    private ContextManager $contextManager;
 
     /**
      * @param EntityRepositoryInterface $countryRepository

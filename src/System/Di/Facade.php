@@ -9,15 +9,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Facade
 {
-    /**
-     * @var self|null
-     */
-    private static $instance;
-
-    /**
-     * @var ContainerInterface
-     */
-    private static $myContainer;
+    private static ?self $instance = null;
+    private static ContainerInterface $myContainer;
 
     /**
      * @param ContainerInterface $container

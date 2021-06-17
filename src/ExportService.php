@@ -22,22 +22,13 @@ use ShopgatePluginApi;
 
 class ExportService
 {
-    /** @var LoggerInterface */
-    private $log;
-    /** @var CategoryComposer */
-    private $categoryComposer;
-    /** @var ConfigBridge */
-    private $configBridge;
-    /** @var TaxComposer */
-    private $taxComposer;
-    /** @var CustomerComposer */
-    private $customerComposer;
-    /** @var ProductComposer */
-    private $productComposer;
-    /**
-     * @var OrderComposer
-     */
-    private $orderComposer;
+    private LoggerInterface $log;
+    private CategoryComposer $categoryComposer;
+    private ConfigBridge $configBridge;
+    private TaxComposer $taxComposer;
+    private CustomerComposer $customerComposer;
+    private ProductComposer $productComposer;
+    private OrderComposer $orderComposer;
 
     /**
      * @param LoggerInterface $logger

@@ -20,16 +20,11 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class SortTree
 {
     public const CACHE_KEY = 'shopgate.sort.tree';
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var CategoryBridge */
-    private $categoryBridge;
-    /** @var AbstractProductListingRoute */
-    private $listingRoute;
-    /** @var FileCache */
-    private $cache;
-    /** @var LoggerInterface */
-    private $logger;
+    private ContextManager $contextManager;
+    private CategoryBridge $categoryBridge;
+    private AbstractProductListingRoute $listingRoute;
+    private FileCache $cache;
+    private LoggerInterface $logger;
 
     /**
      * @param FileCache $cacheObject
@@ -90,7 +85,6 @@ class SortTree
             if ($orderKey = $this->getSortOrderKey($category)) {
                 $request->request->set('order', $orderKey);
             }
-            /** @noinspection PhpMethodParametersCountMismatchInspection */
             $result = $this->listingRoute
                 ->load($category->getId(), $request, $this->contextManager->getSalesContext(), new Criteria())
                 ->getResult();

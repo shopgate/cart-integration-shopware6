@@ -14,8 +14,7 @@ use Throwable;
 
 class ProductUpdateSubscriber implements EventSubscriberInterface
 {
-    /** @var FileCache */
-    private $fileCache;
+    private FileCache $fileCache;
 
     /**
      * @param FileCache $fileCache

@@ -14,10 +14,8 @@ use Shopware\Core\System\Salutation\SalutationEntity;
 
 class SalutationMapping
 {
-    /** @var EntityRepositoryInterface */
-    private $salutationRepository;
-    /** @var ContextManager */
-    private $contextManager;
+    private EntityRepositoryInterface $salutationRepository;
+    private ContextManager $contextManager;
 
     public function __construct(EntityRepositoryInterface $salutationRepository, ContextManager $contextManager)
     {

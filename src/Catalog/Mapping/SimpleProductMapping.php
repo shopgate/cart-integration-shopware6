@@ -30,16 +30,11 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     /** @var SalesChannelProductEntity */
     protected $item;
-    /** @var ContextManager */
-    protected $contextManager;
-    /** @var SortTree */
-    protected $sortTree;
-    /** @var TierPriceMapping */
-    protected $tierPriceMapping;
-    /** @var Formatter */
-    protected $formatter;
-    /** @var CustomFieldBridge */
-    private $customFieldSetBridge;
+    protected ContextManager $contextManager;
+    protected SortTree $sortTree;
+    protected TierPriceMapping $tierPriceMapping;
+    protected Formatter $formatter;
+    private CustomFieldBridge $customFieldSetBridge;
 
     /**
      * @param ContextManager $contextManager

@@ -15,10 +15,8 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
 class AddressMapping
 {
-    /** @var LocationMapping */
-    private $locationMapping;
-    /** @var SalutationMapping */
-    private $salutationMapping;
+    private LocationMapping $locationMapping;
+    private SalutationMapping $salutationMapping;
 
     /**
      * @param LocationMapping $locationMapping

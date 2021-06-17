@@ -14,9 +14,9 @@ use Shopgate_Model_Catalog_Product;
 class ConfigProductMapping extends SimpleProductMapping
 {
     /** @var ContextManager */
-    protected $contextManager;
+    protected ContextManager $contextManager;
     /** @var SortTree */
-    protected $sortTree;
+    protected SortTree $sortTree;
     /** @var PropertyBridge */
     private $productProperties;
     /** @var ChildProductMapping */

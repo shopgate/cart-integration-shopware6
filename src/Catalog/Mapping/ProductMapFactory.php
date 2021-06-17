@@ -8,10 +8,8 @@ use Shopware\Core\Content\Product\ProductEntity;
 
 class ProductMapFactory
 {
-    /** @var SimpleProductMapping */
-    private $simpleProductMapping;
-    /** @var ConfigProductMapping */
-    private $configProductMapping;
+    private SimpleProductMapping $simpleProductMapping;
+    private ConfigProductMapping $configProductMapping;
 
     /**
      * @param SimpleProductMapping $simpleProductMapping

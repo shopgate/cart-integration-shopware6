@@ -13,12 +13,9 @@ use Throwable;
 
 class ProductComposer
 {
-    /** @var LoggerInterface */
-    private $logger;
-    /** @var ProductMapFactory */
-    private $productMapFactory;
-    /** @var ProductBridge */
-    private $productBridge;
+    private LoggerInterface $logger;
+    private ProductMapFactory $productMapFactory;
+    private ProductBridge $productBridge;
 
     /**
      * @param LoggerInterface $logger

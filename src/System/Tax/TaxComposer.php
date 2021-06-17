@@ -11,10 +11,8 @@ use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as Indiv
 
 class TaxComposer
 {
-    /** @var LocationMapping */
-    private $locationMapping;
-    /** @var TaxBridge */
-    private $taxBridge;
+    private LocationMapping $locationMapping;
+    private TaxBridge $taxBridge;
 
     /**
      * @param LocationMapping $locationMapping

@@ -20,7 +20,7 @@ class ContextManager
 {
     private SalesChannelContextServiceInterface $contextService;
     private SalesChannelContextRestorer $contextRestorer;
-    private ?SalesChannelContext $salesContext;
+    private ?SalesChannelContext $salesContext = null;
     private AbstractContextSwitchRoute $contextSwitchRoute;
 
     /**
