@@ -19,12 +19,9 @@ use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
 
 class LineItemComposer
 {
-    /** @var LineItemProductMapping */
-    private $productMapping;
-    /** @var LineItemPromoMapping */
-    private $promoMapping;
-    /** @var LoggerInterface */
-    private $logger;
+    private LineItemProductMapping $productMapping;
+    private LineItemPromoMapping $promoMapping;
+    private LoggerInterface $logger;
 
     /**
      * @param LineItemProductMapping $productMapping

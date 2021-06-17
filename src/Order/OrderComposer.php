@@ -39,26 +39,16 @@ class OrderComposer
 {
     protected const statusesShipped = ['shipped', 'completed'];
     protected const statusesCancelled = ['refunded', 'cancelled'];
-    /** @var ContextManager */
-    private $contextManager;
-    /** @var LineItemComposer */
-    private $lineItemComposer;
-    /** @var ShippingMapping */
-    private $shippingMapping;
-    /** @var ShippingMethodBridge */
-    private $shippingBridge;
-    /** @var CustomerMapping */
-    private $customerMapping;
-    /** @var ShopgateOrderBridge */
-    private $shopgateOrderBridge;
-    /** @var QuoteBridge */
-    private $quoteBridge;
-    /** @var CustomerComposer */
-    private $customerComposer;
-    /** @var AddressComposer */
-    private $addressComposer;
-    /** @var QuoteErrorMapping */
-    private $errorMapping;
+    private ContextManager $contextManager;
+    private LineItemComposer $lineItemComposer;
+    private ShippingMapping $shippingMapping;
+    private ShippingMethodBridge $shippingBridge;
+    private CustomerMapping $customerMapping;
+    private ShopgateOrderBridge $shopgateOrderBridge;
+    private QuoteBridge $quoteBridge;
+    private CustomerComposer $customerComposer;
+    private AddressComposer $addressComposer;
+    private QuoteErrorMapping $errorMapping;
 
     /**
      * @param ContextManager $contextManager

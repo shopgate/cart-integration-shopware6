@@ -13,10 +13,8 @@ use ShopgateLibraryException;
 
 class ImportService
 {
-    /** @var CustomerComposer */
-    private $customerComposer;
-    /** @var OrderComposer */
-    private $orderComposer;
+    private CustomerComposer $customerComposer;
+    private OrderComposer $orderComposer;
 
     /**
      * @param CustomerComposer $customerImport

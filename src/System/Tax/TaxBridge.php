@@ -14,14 +14,10 @@ use Shopware\Core\System\Tax\TaxEntity;
 
 class TaxBridge
 {
-    /** @var EntityRepositoryInterface */
-    private $taxRepository;
-    /** @var EntityRepositoryInterface */
-    private $taxRuleRepository;
-    /** @var EntityRepositoryInterface */
-    private $taxRuleTypeRepository;
-    /** @var ContextManager */
-    private $contextManager;
+    private EntityRepositoryInterface $taxRepository;
+    private EntityRepositoryInterface $taxRuleRepository;
+    private EntityRepositoryInterface $taxRuleTypeRepository;
+    private ContextManager $contextManager;
 
     /**
      * @param EntityRepositoryInterface $taxRepository

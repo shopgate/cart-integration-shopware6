@@ -14,10 +14,8 @@ use Shopware\Core\System\CustomField\CustomFieldCollection;
 
 class CustomFieldBridge
 {
-    /** @var EntityRepositoryInterface */
-    private $customFieldRepository;
-    /** @var ContextManager */
-    private $contextManager;
+    private EntityRepositoryInterface $customFieldRepository;
+    private ContextManager $contextManager;
 
     /**
      * @param EntityRepositoryInterface $customFieldRepository

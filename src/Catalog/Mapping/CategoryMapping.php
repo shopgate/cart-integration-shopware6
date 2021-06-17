@@ -14,10 +14,9 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     /** @var CategoryEntity */
     protected $item;
-    /** @var null */
-    private $parentId;
+    private ?string $parentId = null;
     /** @var ContextManager */
-    private $contextManager;
+    private ContextManager $contextManager;
 
     /**
      * @param ContextManager $contextManager
@@ -68,6 +67,7 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     /**
      * Set parent category id
+     * @throws MissingContextException
      */
     public function setParentUid(): void
     {

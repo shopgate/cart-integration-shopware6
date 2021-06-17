@@ -19,7 +19,7 @@ use ShopgatePlugin;
 
 class Plugin extends ShopgatePlugin
 {
-    /** @var Forwarder $forwarder */
+    /** @var null|Forwarder $forwarder */
     protected $forwarder;
 
     /**
