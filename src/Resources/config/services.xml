@@ -61,6 +61,7 @@
         <service id="Shopgate\Shopware\Order\Subscriber\AddSgOrderToCriteriaSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Shopgate\Shopware\Order\CartComposer"/>
         <service id="Shopgate\Shopware\Order\LineItemComposer"/>
         <service id="Shopgate\Shopware\Order\Mapping\CustomerMapping"/>
         <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping"/>
