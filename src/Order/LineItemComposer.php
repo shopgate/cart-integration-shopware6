@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
+use Shopgate\Shopware\Order\Events\AfterLineItemMappingEvent;
+use Shopgate\Shopware\Order\Events\BeforeLineItemMappingEvent;
 use Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping;
 use Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
@@ -16,26 +18,32 @@ use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotEligibleError;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
+use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LineItemComposer
 {
     private LineItemProductMapping $productMapping;
     private LineItemPromoMapping $promoMapping;
     private LoggerInterface $logger;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * @param LineItemProductMapping $productMapping
      * @param LineItemPromoMapping $promoMapping
      * @param LoggerInterface $logger
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         LineItemProductMapping $productMapping,
         LineItemPromoMapping $promoMapping,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->productMapping = $productMapping;
         $this->promoMapping = $promoMapping;
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -59,6 +67,7 @@ class LineItemComposer
     {
         $lineItems = [];
         $externalCoupons = [];
+        $this->eventDispatcher->dispatch(new BeforeLineItemMappingEvent($cart, $sgCart));
         /**
          * Handle line items that are still in cart after all validations
          */
@@ -134,10 +143,14 @@ class LineItemComposer
             }
         }
 
-        return [
+        $dataBag = new DataBag([
             'items' => $lineItems,
             'external_coupons' => $externalCoupons
-        ];
+        ]);
+
+        $this->eventDispatcher->dispatch(new AfterLineItemMappingEvent($dataBag));
+
+        return $dataBag->all();
     }
 
     /**
