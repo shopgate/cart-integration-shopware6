@@ -19,6 +19,7 @@ class CartComposer
     private ShippingComposer $shippingComposer;
 
     /**
+     * @param ShippingComposer $shippingComposer
      * @param ShippingMethodBridge $shippingBridge
      * @param ShippingMapping $shippingMapping
      * @param CustomerMapping $customerMapping
@@ -63,8 +64,10 @@ class CartComposer
         if (!empty($customerId)) {
             $this->addCustomerAddressToContext($sgCart, $context);
         }
-        $swCart = $this->buildCart($context, $sgCart);
-        $items = $this->lineItemComposer->mapOutgoingLineItems($swCart, $sgCart);
+        $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
+        $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
+        $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);
+        $items = $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
         $deliveries = $this->shippingComposer->getCalculatedDeliveries($context);
         $result = [
                 'currency' => $context->getCurrency()->getIsoCode(),

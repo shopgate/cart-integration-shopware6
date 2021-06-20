@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -54,5 +58,27 @@ class ShippingComposer
         }
 
         return new DeliveryCollection($list);
+    }
+
+    /**
+     * Adds manual shipping fee.
+     * Make sure it's not 0.0 value. There is an issue with setting the
+     * manual shipping cost to 0. Hence why we need to use our custom
+     * Free Shipping method in this case.
+     *
+     * @param ExtendedOrder $sgOrder
+     * @param Cart $swCart
+     */
+    public function addShippingFee(ExtendedOrder $sgOrder, Cart $swCart): void
+    {
+        // overwrite shipping cost when creating an order
+        $shippingCost = $sgOrder->getShippingCost();
+        $price = new CalculatedPrice(
+            $shippingCost,
+            $shippingCost,
+            $swCart->getShippingCosts()->getCalculatedTaxes(),
+            $swCart->getShippingCosts()->getTaxRules()
+        );
+        $swCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
     }
 }

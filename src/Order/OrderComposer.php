@@ -33,16 +33,18 @@ class OrderComposer
 
     protected const statusesShipped = ['shipped', 'completed'];
     protected const statusesCancelled = ['refunded', 'cancelled'];
+    private ShippingComposer $shippingComposer;
 
     /**
      * @param ContextManager $contextManager
      * @param LineItemComposer $lineItemComposer
      * @param CustomerMapping $customerMapping
-     * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param QuoteBridge $quoteBridge
-     * @param CustomerComposer $customerComposer
      * @param AddressComposer $addressComposer
      * @param QuoteErrorMapping $errorMapping
+     * @param ShopgateOrderBridge $shopgateOrderBridge
+     * @param CustomerComposer $customerComposer
+     * @param ShippingComposer $shippingComposer
      */
     public function __construct(
         ContextManager $contextManager,
@@ -52,7 +54,8 @@ class OrderComposer
         AddressComposer $addressComposer,
         QuoteErrorMapping $errorMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
-        CustomerComposer $customerComposer
+        CustomerComposer $customerComposer,
+        ShippingComposer $shippingComposer
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -62,6 +65,7 @@ class OrderComposer
         $this->customerComposer = $customerComposer;
         $this->addressComposer = $addressComposer;
         $this->errorMapping = $errorMapping;
+        $this->shippingComposer = $shippingComposer;
     }
 
     /**
@@ -96,7 +100,12 @@ class OrderComposer
         try {
             $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag));
             // build cart & order
-            $swCart = $this->buildCart($newContext, $order);
+            $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
+            if (!$order->isShippingFree()) {
+                $this->shippingComposer->addShippingFee($order, $shopwareCart);
+            }
+            $lineItems = $this->lineItemComposer->mapIncomingLineItems($order);
+            $swCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $newContext, $lineItems);
             // some errors are just success notifications, remove them
             $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
                 return $error->isPersistent() === false;

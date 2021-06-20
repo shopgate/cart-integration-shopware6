@@ -19,6 +19,8 @@ use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LineItemComposer
@@ -27,23 +29,27 @@ class LineItemComposer
     private LineItemPromoMapping $promoMapping;
     private LoggerInterface $logger;
     private EventDispatcherInterface $eventDispatcher;
+    private QuoteBridge $quoteBridge;
 
     /**
      * @param LineItemProductMapping $productMapping
      * @param LineItemPromoMapping $promoMapping
      * @param LoggerInterface $logger
      * @param EventDispatcherInterface $eventDispatcher
+     * @param QuoteBridge $quoteBridge
      */
     public function __construct(
         LineItemProductMapping $productMapping,
         LineItemPromoMapping $promoMapping,
         LoggerInterface $logger,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        QuoteBridge $quoteBridge
     ) {
         $this->productMapping = $productMapping;
         $this->promoMapping = $promoMapping;
         $this->logger = $logger;
         $this->eventDispatcher = $eventDispatcher;
+        $this->quoteBridge = $quoteBridge;
     }
 
     /**
@@ -162,5 +168,19 @@ class LineItemComposer
     private function isValidUuid(string $uuid): bool
     {
         return ctype_xdigit($uuid);
+    }
+
+    /**
+     * @param Cart $shopwareCart
+     * @param SalesChannelContext $context
+     * @param array $lineItems
+     * @return Cart
+     */
+    public function addLineItemsToCart(Cart $shopwareCart, SalesChannelContext $context, array $lineItems): Cart
+    {
+        $request = new Request();
+        $request->request->set('items', $lineItems);
+
+        return $this->quoteBridge->addLineItemToQuote($request, $shopwareCart, $context);
     }
 }
