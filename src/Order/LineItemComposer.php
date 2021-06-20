@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
-use Shopgate\Shopware\Order\Events\AfterLineItemMappingEvent;
-use Shopgate\Shopware\Order\Events\BeforeLineItemMappingEvent;
+use Shopgate\Shopware\Order\Events\LineItem\AfterOutLineItemMappingEvent;
+use Shopgate\Shopware\Order\Events\LineItem\BeforeIncLineItemMappingEvent;
+use Shopgate\Shopware\Order\Events\LineItem\BeforeOutLineItemMappingEvent;
 use Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping;
 use Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
@@ -58,6 +59,7 @@ class LineItemComposer
      */
     public function mapIncomingLineItems(ShopgateCartBase $cart): array
     {
+        $this->eventDispatcher->dispatch(new BeforeIncLineItemMappingEvent($cart));
         return array_merge(
             $this->productMapping->mapIncomingProducts($cart->getItems()),
             $this->promoMapping->mapIncomingPromos($cart->getExternalCoupons())
@@ -73,7 +75,7 @@ class LineItemComposer
     {
         $lineItems = [];
         $externalCoupons = [];
-        $this->eventDispatcher->dispatch(new BeforeLineItemMappingEvent($cart, $sgCart));
+        $this->eventDispatcher->dispatch(new BeforeOutLineItemMappingEvent($cart, $sgCart));
         /**
          * Handle line items that are still in cart after all validations
          */
@@ -154,7 +156,7 @@ class LineItemComposer
             'external_coupons' => $externalCoupons
         ]);
 
-        $this->eventDispatcher->dispatch(new AfterLineItemMappingEvent($dataBag));
+        $this->eventDispatcher->dispatch(new AfterOutLineItemMappingEvent($dataBag));
 
         return $dataBag->all();
     }

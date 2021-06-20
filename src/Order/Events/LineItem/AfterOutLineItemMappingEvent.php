@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Events;
+namespace Shopgate\Shopware\Order\Events\LineItem;
 
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class AfterLineItemMappingEvent extends Event
+class AfterOutLineItemMappingEvent extends Event
 {
     private DataBag $dataBag;
 

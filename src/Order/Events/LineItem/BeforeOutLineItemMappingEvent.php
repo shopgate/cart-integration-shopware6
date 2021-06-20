@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Events;
+namespace Shopgate\Shopware\Order\Events\LineItem;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use ShopgateCartBase;
@@ -10,7 +10,7 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class BeforeLineItemMappingEvent extends Event
+class BeforeOutLineItemMappingEvent extends Event
 {
     private Cart $cart;
     private ExtendedCart $shopgateCart;
