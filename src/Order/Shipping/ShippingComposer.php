@@ -100,8 +100,8 @@ class ShippingComposer
         foreach ($shippingMethods->getElements() as $shipMethod) {
             $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
             $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
-            $context = $this->contextManager->switchContext($dataBag);
-            $cart = $this->cartPageLoader->load($request, $context)->getCart();
+            $resultContext = $this->contextManager->switchContext($dataBag, $context);
+            $cart = $this->cartPageLoader->load($request, $resultContext)->getCart();
             foreach ($cart->getDeliveries()->getElements() as $delivery) {
                 $list[$delivery->getShippingMethod()->getId()] = $delivery;
             }

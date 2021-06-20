@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Mapping;
+namespace Shopgate\Shopware\Order\Quote;
 
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateLibraryException;

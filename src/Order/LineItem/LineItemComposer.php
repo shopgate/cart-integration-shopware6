@@ -7,7 +7,7 @@ namespace Shopgate\Shopware\Order\LineItem;
 use Shopgate\Shopware\Order\LineItem\Events\AfterOutLineItemMappingEvent;
 use Shopgate\Shopware\Order\LineItem\Events\BeforeIncLineItemMappingEvent;
 use Shopgate\Shopware\Order\LineItem\Events\BeforeOutLineItemMappingEvent;
-use Shopgate\Shopware\Order\QuoteBridge;
+use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;

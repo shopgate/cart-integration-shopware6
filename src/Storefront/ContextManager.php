@@ -94,11 +94,12 @@ class ContextManager
 
     /**
      * @param RequestDataBag $dataBag
+     * @param SalesChannelContext|null $context
      * @return SalesChannelContext
      */
-    public function switchContext(RequestDataBag $dataBag): SalesChannelContext
+    public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
     {
-        $token = $this->contextSwitchRoute->switchContext($dataBag, $this->salesContext)->getToken();
+        $token = $this->contextSwitchRoute->switchContext($dataBag, $context ?: $this->salesContext)->getToken();
         $context = $this->loadByCustomerToken($token);
 
         return $this->salesContext = $context;

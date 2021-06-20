@@ -6,7 +6,7 @@ namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Customer\AddressComposer;
-use Shopgate\Shopware\Order\Mapping\QuoteErrorMapping;
+use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCartBase;
 use ShopgateLibraryException;
@@ -70,15 +70,17 @@ class ContextComposer
                 $this->contextManager->switchContext(
                     new RequestDataBag(
                         [SalesChannelContextService::BILLING_ADDRESS_ID => $addressBag[SalesChannelContextService::BILLING_ADDRESS_ID]]
-                    )
+                    ),
+                    $channel
                 );
                 $newContext = $this->contextManager->switchContext(
                     new RequestDataBag(
                         [SalesChannelContextService::SHIPPING_ADDRESS_ID => $addressBag[SalesChannelContextService::SHIPPING_ADDRESS_ID]]
-                    )
+                    ),
+                    $channel
                 );
             } else {
-                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag));
+                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag), $channel);
             }
         } catch (ConstraintViolationException $exception) {
             throw $this->errorMapping->mapConstraintError($exception);
@@ -89,12 +91,13 @@ class ContextComposer
 
     /**
      * @param string $uid
+     * @param SalesChannelContext $context
      * @return SalesChannelContext
      */
-    public function addActivePayment(string $uid): SalesChannelContext
+    public function addActivePayment(string $uid, SalesChannelContext $context): SalesChannelContext
     {
         $dataBag = [SalesChannelContextService::PAYMENT_METHOD_ID => $uid];
 
-        return $this->contextManager->switchContext(new RequestDataBag($dataBag));
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
     }
 }

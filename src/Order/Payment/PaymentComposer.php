@@ -39,6 +39,6 @@ class PaymentComposer
         $methods = $this->paymentBridge->getAvailableMethods($context);
         $paymentUid = $this->paymentMapping->mapPayment($sgCart, $methods);
 
-        return $this->contextComposer->addActivePayment($paymentUid);
+        return $this->contextComposer->addActivePayment($paymentUid, $context);
     }
 }
