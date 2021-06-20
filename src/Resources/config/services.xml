@@ -64,9 +64,9 @@
         <service id="Shopgate\Shopware\Order\CartComposer"/>
         <service id="Shopgate\Shopware\Order\Customer\CustomerMapping"/>
         <service id="Shopgate\Shopware\Order\ContextComposer"/>
-        <service id="Shopgate\Shopware\Order\LineItemComposer"/>
-        <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping"/>
-        <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping"/>
+        <service id="Shopgate\Shopware\Order\LineItem\LineItemComposer"/>
+        <service id="Shopgate\Shopware\Order\LineItem\LineItemProductMapping"/>
+        <service id="Shopgate\Shopware\Order\LineItem\LineItemPromoMapping"/>
         <service id="Shopgate\Shopware\Order\Mapping\QuoteErrorMapping"/>
         <service id="Shopgate\Shopware\Order\OrderComposer"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentBridge"/>

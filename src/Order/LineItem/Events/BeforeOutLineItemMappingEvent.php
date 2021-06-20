@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Events\LineItem;
+namespace Shopgate\Shopware\Order\LineItem\Events;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
-use ShopgateCartBase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -17,7 +16,7 @@ class BeforeOutLineItemMappingEvent extends Event
 
     /**
      * @param Cart $cart
-     * @param ShopgateCartBase $shopgateCart
+     * @param ExtendedCart $shopgateCart
      */
     public function __construct(Cart $cart, ExtendedCart $shopgateCart)
     {

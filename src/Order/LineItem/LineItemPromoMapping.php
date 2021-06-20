@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Mapping\LineItem;
+namespace Shopgate\Shopware\Order\LineItem;
 
 use ShopgateExternalCoupon;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;

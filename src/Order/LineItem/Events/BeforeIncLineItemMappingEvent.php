@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Events\LineItem;
+namespace Shopgate\Shopware\Order\LineItem\Events;
 
 use ShopgateCartBase;
 use Symfony\Contracts\EventDispatcher\Event;

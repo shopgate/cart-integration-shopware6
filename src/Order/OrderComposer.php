@@ -7,6 +7,7 @@ namespace Shopgate\Shopware\Order;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Customer\CustomerMapping;
+use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Mapping\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Order\Shipping\ShippingComposer;

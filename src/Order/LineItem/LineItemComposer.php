@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order;
+namespace Shopgate\Shopware\Order\LineItem;
 
-use Shopgate\Shopware\Order\Events\LineItem\AfterOutLineItemMappingEvent;
-use Shopgate\Shopware\Order\Events\LineItem\BeforeIncLineItemMappingEvent;
-use Shopgate\Shopware\Order\Events\LineItem\BeforeOutLineItemMappingEvent;
-use Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping;
-use Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping;
+use Shopgate\Shopware\Order\LineItem\Events\AfterOutLineItemMappingEvent;
+use Shopgate\Shopware\Order\LineItem\Events\BeforeIncLineItemMappingEvent;
+use Shopgate\Shopware\Order\LineItem\Events\BeforeOutLineItemMappingEvent;
+use Shopgate\Shopware\Order\QuoteBridge;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;

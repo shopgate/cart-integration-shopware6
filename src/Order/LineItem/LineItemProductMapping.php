@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Mapping\LineItem;
+namespace Shopgate\Shopware\Order\LineItem;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
 use ShopgateLibraryException;
