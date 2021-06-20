@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping;
 
-use Shopgate\Shopware\Order\Events\Shipping\AfterShippingMethodMappingEvent;
-use Shopgate\Shopware\Order\Events\Shipping\BeforeDeliveryContextSwitchEvent;
-use Shopgate\Shopware\Order\Events\Shipping\BeforeShippingMethodMappingEvent;
+use Shopgate\Shopware\Order\Shipping\Events\AfterShippingMethodMappingEvent;
+use Shopgate\Shopware\Order\Shipping\Events\BeforeDeliveryContextSwitchEvent;
+use Shopgate\Shopware\Order\Shipping\Events\BeforeShippingMethodMappingEvent;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateShippingMethod;
