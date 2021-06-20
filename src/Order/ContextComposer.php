@@ -59,10 +59,8 @@ class ContextComposer
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function addCustomerAddress(
-        ShopgateCartBase $base,
-        SalesChannelContext $channel
-    ): SalesChannelContext {
+    public function addCustomerAddress(ShopgateCartBase $base, SalesChannelContext $channel): SalesChannelContext
+    {
         $addressBag = $this->addressComposer->createAddressSwitchData($base, $channel);
         try {
             // making sure that 2 address ID's are different from each other
@@ -86,5 +84,16 @@ class ContextComposer
         }
 
         return $newContext;
+    }
+
+    /**
+     * @param string $uid
+     * @return SalesChannelContext
+     */
+    public function addActivePayment(string $uid): SalesChannelContext
+    {
+        $dataBag = [SalesChannelContextService::PAYMENT_METHOD_ID => $uid];
+
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag));
     }
 }

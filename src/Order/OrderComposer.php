@@ -8,11 +8,11 @@ use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Mapping\CustomerMapping;
 use Shopgate\Shopware\Order\Mapping\QuoteErrorMapping;
+use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use ShopgateDeliveryNote;
@@ -41,6 +41,7 @@ class OrderComposer
     private QuoteErrorMapping $errorMapping;
     private ShippingComposer $shippingComposer;
     private ShopgateOrderBridge $shopgateOrderBridge;
+    private PaymentComposer $paymentComposer;
 
     /**
      * @param ContextManager $contextManager
@@ -62,7 +63,8 @@ class OrderComposer
         QuoteErrorMapping $errorMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
         CustomerComposer $customerComposer,
-        ShippingComposer $shippingComposer
+        ShippingComposer $shippingComposer,
+        PaymentComposer $paymentComposer
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -73,6 +75,7 @@ class OrderComposer
         $this->errorMapping = $errorMapping;
         $this->shippingComposer = $shippingComposer;
         $this->contextComposer = $contextComposer;
+        $this->paymentComposer = $paymentComposer;
     }
 
     /**
@@ -100,16 +103,16 @@ class OrderComposer
 
         $this->contextComposer->addCustomerAddress($order, $channel);
         $dataBag = [
-            SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
             SalesChannelContextService::SHIPPING_METHOD_ID =>
                 $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID
         ];
         try {
+            $this->paymentComposer->mapIncomingPayment($order, $channel);
             $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag));
             // build cart & order
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$order->isShippingFree()) {
-                $this->shippingComposer->addShippingFee($order, $shopwareCart);
+                $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
             }
             $lineItems = $this->lineItemComposer->mapIncomingLineItems($order);
             $swCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $newContext, $lineItems);

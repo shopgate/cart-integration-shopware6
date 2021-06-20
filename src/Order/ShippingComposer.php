@@ -62,7 +62,7 @@ class ShippingComposer
      * @param ExtendedOrder $sgOrder
      * @param Cart $swCart
      */
-    public function addShippingFee(ExtendedOrder $sgOrder, Cart $swCart): void
+    public function addShippingFeeToCart(ExtendedOrder $sgOrder, Cart $swCart): void
     {
         // overwrite shipping cost when creating an order
         $shippingCost = $sgOrder->getShippingCost();

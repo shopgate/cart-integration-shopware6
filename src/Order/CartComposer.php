@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Mapping\CustomerMapping;
+use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
@@ -18,6 +19,7 @@ class CartComposer
     private LineItemComposer $lineItemComposer;
     private QuoteBridge $quoteBridge;
     private CustomerMapping $customerMapping;
+    private PaymentComposer $paymentComposer;
 
     /**
      * @param ShippingComposer $shippingComposer
@@ -33,7 +35,8 @@ class CartComposer
         ContextManager $contextManager,
         ContextComposer $contextComposer,
         LineItemComposer $lineItemComposer,
-        QuoteBridge $quoteBridge
+        QuoteBridge $quoteBridge,
+        PaymentComposer $paymentComposer
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -41,6 +44,7 @@ class CartComposer
         $this->quoteBridge = $quoteBridge;
         $this->shippingComposer = $shippingComposer;
         $this->contextComposer = $contextComposer;
+        $this->paymentComposer = $paymentComposer;
     }
 
     /**
@@ -52,10 +56,11 @@ class CartComposer
     public function checkCart(ExtendedCart $sgCart): array
     {
         $customerId = $sgCart->getExternalCustomerId();
-        $context = $this->contextComposer->getContextByCustomerId($customerId ?? '');
+        $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
         if (!empty($customerId)) {
-            $this->contextComposer->addCustomerAddress($sgCart, $context);
+            $this->contextComposer->addCustomerAddress($sgCart, $initContext);
         }
+        $context = $this->paymentComposer->mapIncomingPayment($sgCart, $initContext);
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
         $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);
