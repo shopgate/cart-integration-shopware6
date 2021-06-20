@@ -16,10 +16,10 @@ class PaymentMethodInstaller extends EntityChannelInstaller
 {
     use EntityActivateTrait;
 
-    protected $entityInstallList = [
+    protected array $entityInstallList = [
         GenericPayment::class
     ];
-    protected $entityName = 'payment_method';
+    protected string $entityName = 'payment_method';
     /** @var PluginIdProvider */
     private $pluginIdProvider;
 

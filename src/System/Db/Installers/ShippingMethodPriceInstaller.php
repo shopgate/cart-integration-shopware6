@@ -8,6 +8,6 @@ use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethodPrice;
 
 class ShippingMethodPriceInstaller extends EntityInstaller
 {
-    protected $entityInstallList = [FreeShippingMethodPrice::class];
-    protected $entityName = 'shipping_method_price';
+    protected array $entityInstallList = [FreeShippingMethodPrice::class];
+    protected string $entityName = 'shipping_method_price';
 }
