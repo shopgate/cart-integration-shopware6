@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
-use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Order\Mapping\CustomerMapping;
 use Shopgate\Shopware\Order\Mapping\QuoteErrorMapping;
-use Shopgate\Shopware\Order\Mapping\ShippingMapping;
-use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCartBase;
 use ShopgateLibraryException;
@@ -19,31 +15,36 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 
-trait QuoteTrait
+class ContextComposer
 {
-    // used in this class
-    private AddressComposer $addressComposer;
     private ContextManager $contextManager;
-    private LineItemComposer $lineItemComposer;
+    private AddressComposer $addressComposer;
     private QuoteErrorMapping $errorMapping;
-    private QuoteBridge $quoteBridge;
-
-    private CustomerMapping $customerMapping;
-    private ShippingMapping $shippingMapping;
-    private ShippingMethodBridge $shippingBridge;
-
-    private ShopgateOrderBridge $shopgateOrderBridge;
-    private CustomerComposer $customerComposer;
 
     /**
-     * @param string $customerNumber
+     * @param ContextManager $contextManager
+     * @param AddressComposer $addressComposer
+     * @param QuoteErrorMapping $errorMapping
+     */
+    public function __construct(
+        ContextManager $contextManager,
+        AddressComposer $addressComposer,
+        QuoteErrorMapping $errorMapping
+    ) {
+        $this->contextManager = $contextManager;
+        $this->addressComposer = $addressComposer;
+        $this->errorMapping = $errorMapping;
+    }
+
+    /**
+     * @param string $customerId
      * @return SalesChannelContext
      * @throws MissingContextException
      */
-    private function getContextByCustomer(string $customerNumber): SalesChannelContext
+    public function getContextByCustomerId(string $customerId): SalesChannelContext
     {
         try {
-            return $this->contextManager->loadByCustomerId($customerNumber);
+            return $this->contextManager->loadByCustomerId($customerId);
         } catch (Throwable $e) {
             return $this->contextManager->getSalesContext();
         }
@@ -58,7 +59,7 @@ trait QuoteTrait
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    private function addCustomerAddressToContext(
+    public function addCustomerAddress(
         ShopgateCartBase $base,
         SalesChannelContext $channel
     ): SalesChannelContext {

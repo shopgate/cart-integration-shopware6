@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
+use Shopgate\Shopware\Order\Mapping\ShippingMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
+use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
@@ -22,20 +24,24 @@ class ShippingComposer
     private ShippingMethodBridge $shippingBridge;
     private CheckoutCartPageLoader $cartPageLoader;
     private ContextManager $contextManager;
+    private ShippingMapping $shippingMapping;
 
     /**
      * @param ShippingMethodBridge $shippingBridge
+     * @param ShippingMapping $shippingMapping
      * @param CheckoutCartPageLoader $cartPageLoader
      * @param ContextManager $contextManager
      */
     public function __construct(
         ShippingMethodBridge $shippingBridge,
+        ShippingMapping $shippingMapping,
         CheckoutCartPageLoader $cartPageLoader,
         ContextManager $contextManager
     ) {
         $this->shippingBridge = $shippingBridge;
         $this->cartPageLoader = $cartPageLoader;
         $this->contextManager = $contextManager;
+        $this->shippingMapping = $shippingMapping;
     }
 
     /**
@@ -80,5 +86,15 @@ class ShippingComposer
             $swCart->getShippingCosts()->getTaxRules()
         );
         $swCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
+    }
+
+    /**
+     * @param DeliveryCollection $deliveries
+     * @return ShopgateShippingMethod[]
+     */
+    public function outgoingShippingMethods(DeliveryCollection $deliveries): array
+    {
+        $result = $this->shippingMapping->mapShippingMethods($deliveries);
+        return $result;
     }
 }

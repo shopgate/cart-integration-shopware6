@@ -29,18 +29,25 @@ use Throwable;
 
 class OrderComposer
 {
-    use QuoteTrait;
-
     protected const statusesShipped = ['shipped', 'completed'];
     protected const statusesCancelled = ['refunded', 'cancelled'];
+
+    private ContextComposer $contextComposer;
+    private ContextManager $contextManager;
+    private CustomerComposer $customerComposer;
+    private CustomerMapping $customerMapping;
+    private LineItemComposer $lineItemComposer;
+    private QuoteBridge $quoteBridge;
+    private QuoteErrorMapping $errorMapping;
     private ShippingComposer $shippingComposer;
+    private ShopgateOrderBridge $shopgateOrderBridge;
 
     /**
      * @param ContextManager $contextManager
+     * @param ContextComposer $contextComposer
      * @param LineItemComposer $lineItemComposer
      * @param CustomerMapping $customerMapping
      * @param QuoteBridge $quoteBridge
-     * @param AddressComposer $addressComposer
      * @param QuoteErrorMapping $errorMapping
      * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param CustomerComposer $customerComposer
@@ -48,10 +55,10 @@ class OrderComposer
      */
     public function __construct(
         ContextManager $contextManager,
+        ContextComposer $contextComposer,
         LineItemComposer $lineItemComposer,
         CustomerMapping $customerMapping,
         QuoteBridge $quoteBridge,
-        AddressComposer $addressComposer,
         QuoteErrorMapping $errorMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
         CustomerComposer $customerComposer,
@@ -63,9 +70,9 @@ class OrderComposer
         $this->shopgateOrderBridge = $shopgateOrderBridge;
         $this->quoteBridge = $quoteBridge;
         $this->customerComposer = $customerComposer;
-        $this->addressComposer = $addressComposer;
         $this->errorMapping = $errorMapping;
         $this->shippingComposer = $shippingComposer;
+        $this->contextComposer = $contextComposer;
     }
 
     /**
@@ -82,7 +89,7 @@ class OrderComposer
             $detailCustomer = $this->customerMapping->orderToShopgateCustomer($order);
             $customerId = $this->customerComposer->registerCustomer(null, $detailCustomer)->getId();
         }
-        $channel = $this->getContextByCustomer($customerId ?? '');
+        $channel = $this->contextComposer->getContextByCustomerId($customerId ?? '');
         if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(), $channel)) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
@@ -91,7 +98,7 @@ class OrderComposer
             );
         }
 
-        $this->addCustomerAddressToContext($order, $channel);
+        $this->contextComposer->addCustomerAddress($order, $channel);
         $dataBag = [
             SalesChannelContextService::PAYMENT_METHOD_ID => GenericPayment::UUID,
             SalesChannelContextService::SHIPPING_METHOD_ID =>
