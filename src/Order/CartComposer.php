@@ -7,6 +7,7 @@ namespace Shopgate\Shopware\Order;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Mapping\CustomerMapping;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
+use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
@@ -28,6 +29,7 @@ class CartComposer
      * @param ContextComposer $contextComposer
      * @param LineItemComposer $lineItemComposer
      * @param QuoteBridge $quoteBridge
+     * @param PaymentComposer $paymentComposer
      */
     public function __construct(
         ShippingComposer $shippingComposer,

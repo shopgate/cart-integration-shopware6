@@ -9,6 +9,7 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Mapping\CustomerMapping;
 use Shopgate\Shopware\Order\Mapping\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
+use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
@@ -53,6 +54,7 @@ class OrderComposer
      * @param ShopgateOrderBridge $shopgateOrderBridge
      * @param CustomerComposer $customerComposer
      * @param ShippingComposer $shippingComposer
+     * @param PaymentComposer $paymentComposer
      */
     public function __construct(
         ContextManager $contextManager,

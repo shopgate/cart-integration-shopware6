@@ -67,14 +67,14 @@
         <service id="Shopgate\Shopware\Order\Mapping\CustomerMapping"/>
         <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping"/>
         <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping"/>
-        <service id="Shopgate\Shopware\Order\Mapping\ShippingMapping"/>
         <service id="Shopgate\Shopware\Order\Mapping\QuoteErrorMapping"/>
         <service id="Shopgate\Shopware\Order\OrderComposer"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentBridge"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentComposer"/>
         <service id="Shopgate\Shopware\Order\Mapping\PaymentMapping"/>
-        <service id="Shopgate\Shopware\Order\ShippingComposer"/>
-        <service id="Shopgate\Shopware\Order\ShippingMethodBridge"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
         <service id="Shopgate\Shopware\Order\QuoteBridge"/>
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
