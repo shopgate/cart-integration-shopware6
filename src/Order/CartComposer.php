@@ -16,6 +16,8 @@ class CartComposer
 {
     use QuoteTrait;
 
+    private ShippingComposer $shippingComposer;
+
     /**
      * @param ShippingMethodBridge $shippingBridge
      * @param ShippingMapping $shippingMapping
@@ -27,6 +29,7 @@ class CartComposer
      * @param QuoteErrorMapping $errorMapping
      */
     public function __construct(
+        ShippingComposer $shippingComposer,
         ShippingMethodBridge $shippingBridge,
         ShippingMapping $shippingMapping,
         CustomerMapping $customerMapping,
@@ -44,6 +47,7 @@ class CartComposer
         $this->quoteBridge = $quoteBridge;
         $this->addressComposer = $addressComposer;
         $this->errorMapping = $errorMapping;
+        $this->shippingComposer = $shippingComposer;
     }
 
     /**
@@ -61,7 +65,7 @@ class CartComposer
         }
         $swCart = $this->buildCart($context, $sgCart);
         $items = $this->lineItemComposer->mapOutgoingLineItems($swCart, $sgCart);
-        $deliveries = $this->shippingBridge->getCalculatedDeliveries($context);
+        $deliveries = $this->shippingComposer->getCalculatedDeliveries($context);
         $result = [
                 'currency' => $context->getCurrency()->getIsoCode(),
                 'shipping_methods' => $this->shippingMapping->mapShippingMethods($deliveries),
