@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Order\Mapping\CustomerMapping;
+use Shopgate\Shopware\Order\Customer\CustomerMapping;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
