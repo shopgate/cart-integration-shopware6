@@ -1,11 +1,21 @@
+# 1.1.0
+
+- changed order class locations
+- added line item & shipping events
+- added current payment mapping
+- added mapping for selected Cash on Delivery (COD) payment in `check_cart` and `add_order`
+
 # 1.0.1
+
 - fixed issues with uninitialized php7.4 properties
 
 # 1.0.0
+
 - added support for Shopware 6.4 & min version PHP 7.4
 - removed support for Shopware below 6.4
 
 # 0.1.3
+
 - fixed issue when exporting properties with false (checkbox) value
 - fixed issue with shopgate order getting deleted on order edit
 
