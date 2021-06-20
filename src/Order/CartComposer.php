@@ -59,15 +59,14 @@ class CartComposer
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
         $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);
-        $items = $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
-        $deliveries = $this->shippingComposer->getCalculatedDeliveries($context);
+
         $result = [
                 'currency' => $context->getCurrency()->getIsoCode(),
-                'shipping_methods' => $this->shippingComposer->outgoingShippingMethods($deliveries),
+                'shipping_methods' => $this->shippingComposer->mapShippingMethods($context),
                 'payment_methods' => [],
                 'customer' => $this->customerMapping->mapCartCustomer($context),
             ]
-            + $items;
+            + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
 
         $this->quoteBridge->deleteCart($context);
         $this->contextManager->resetContext();
