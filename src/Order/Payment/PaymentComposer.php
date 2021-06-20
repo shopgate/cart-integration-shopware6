@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order\Payment;
 
 use Shopgate\Shopware\Order\ContextComposer;
-use Shopgate\Shopware\Order\Mapping\PaymentMapping;
 use ShopgateCartBase;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 

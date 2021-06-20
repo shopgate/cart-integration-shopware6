@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order\Mapping;
+namespace Shopgate\Shopware\Order\Payment;
 
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
 use Shopgate\Shopware\System\PaymentHandler\GenericHandler;
