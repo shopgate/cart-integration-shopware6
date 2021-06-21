@@ -84,6 +84,7 @@ class ShippingComposer
         $this->eventDispatcher->dispatch(new BeforeShippingMethodMappingEvent($deliveries));
         $result = new DataBag($this->shippingMapping->mapShippingMethods($deliveries));
         $this->eventDispatcher->dispatch(new AfterShippingMethodMappingEvent($result));
+
         return $result->all();
     }
 

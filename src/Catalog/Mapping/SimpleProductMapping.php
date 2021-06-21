@@ -4,6 +4,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Exception;
 use Psr\Cache\InvalidArgumentException;
+use Shopgate\Shopware\Catalog\Product\ProductExportExtension;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
@@ -70,7 +71,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setTaxClass(): void
     {
-        parent::setTaxClass('tax_' . $this->item->getTaxId());
+        if ($this->item->getTaxId()) {
+            parent::setTaxClass('tax_' . $this->item->getTaxId());
+        }
     }
 
     /**
@@ -387,5 +390,12 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $relationProducts[] = $relationProduct;
         }
         parent::setRelations($relationProducts);
+    }
+
+    public function setInternalOrderInfo(): void
+    {
+        if ($extension = $this->item->getExtension(ProductExportExtension::GENERIC_NAME)) {
+            parent::setInternalOrderInfo((string)$extension);
+        }
     }
 }
