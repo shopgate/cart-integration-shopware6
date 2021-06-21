@@ -57,19 +57,25 @@
         </service>
         <service id="Shopgate\Shopware\ExportService"/>
         <service id="Shopgate\Shopware\ImportService"/>
-        <service id="Shopgate\Shopware\Order\AddressComposer"/>
+        <service id="Shopgate\Shopware\Order\Customer\AddressComposer"/>
         <service id="Shopgate\Shopware\Order\Subscriber\AddSgOrderToCriteriaSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Shopgate\Shopware\Order\LineItemComposer"/>
-        <service id="Shopgate\Shopware\Order\Mapping\CustomerMapping"/>
-        <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping"/>
-        <service id="Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping"/>
-        <service id="Shopgate\Shopware\Order\Mapping\ShippingMapping"/>
-        <service id="Shopgate\Shopware\Order\Mapping\QuoteErrorMapping"/>
+        <service id="Shopgate\Shopware\Order\CartComposer"/>
+        <service id="Shopgate\Shopware\Order\Customer\CustomerMapping"/>
+        <service id="Shopgate\Shopware\Order\ContextComposer"/>
+        <service id="Shopgate\Shopware\Order\LineItem\LineItemComposer"/>
+        <service id="Shopgate\Shopware\Order\LineItem\LineItemProductMapping"/>
+        <service id="Shopgate\Shopware\Order\LineItem\LineItemPromoMapping"/>
+        <service id="Shopgate\Shopware\Order\Quote\QuoteErrorMapping"/>
         <service id="Shopgate\Shopware\Order\OrderComposer"/>
-        <service id="Shopgate\Shopware\Order\ShippingMethodBridge"/>
-        <service id="Shopgate\Shopware\Order\QuoteBridge"/>
+        <service id="Shopgate\Shopware\Order\Payment\PaymentBridge"/>
+        <service id="Shopgate\Shopware\Order\Payment\PaymentComposer"/>
+        <service id="Shopgate\Shopware\Order\Payment\PaymentMapping"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
+        <service id="Shopgate\Shopware\Order\Quote\QuoteBridge"/>
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
         </service>
@@ -153,5 +159,7 @@
                  alias="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
         <service id="Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute"
                  alias="Shopware\Core\Content\Category\SalesChannel\CategoryListRoute"/>
+        <service id="Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute"
+                 alias="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"/>
     </services>
 </container>

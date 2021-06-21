@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product;
 
+use Shopgate\Shopware\Catalog\Product\Events\AfterProductLoadEvent;
+use Shopgate\Shopware\Catalog\Product\Events\BeforeProductLoadEvent;
 use Shopgate\Shopware\Catalog\Product\Sort\SortBridge;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
-use Shopware\Core\Content\Product\SalesChannel\ProductListResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ProductBridge
 {
@@ -22,33 +25,37 @@ class ProductBridge
     private ContextManager $contextManager;
     private SortBridge $productSorting;
     private ConfigBridge $configReader;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * @param AbstractProductListRoute $productListRoute
      * @param ContextManager $contextManager
      * @param SortBridge $productSorting
      * @param ConfigBridge $configReader
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         AbstractProductListRoute $productListRoute,
         ContextManager $contextManager,
         SortBridge $productSorting,
-        ConfigBridge $configReader
+        ConfigBridge $configReader,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->productListRoute = $productListRoute;
         $this->contextManager = $contextManager;
         $this->productSorting = $productSorting;
         $this->configReader = $configReader;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
      * @param int|null $limit
      * @param int|null $offset
      * @param array $uids
-     * @return ProductListResponse
+     * @return ProductCollection
      * @throws MissingContextException
      */
-    public function getProductList(?int $limit, ?int $offset, array $uids = []): ProductListResponse
+    public function getProductList(?int $limit, ?int $offset, array $uids = []): ProductCollection
     {
         $context = $this->contextManager->getSalesContext();
         $criteria = (new Criteria($uids))
@@ -96,6 +103,12 @@ class ProductBridge
             $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_OR, $filter));
         }
 
-        return $this->productListRoute->load($criteria, $context);
+        $this->eventDispatcher->dispatch(new BeforeProductLoadEvent($criteria, $context));
+
+        $result = $this->productListRoute->load($criteria, $context)->getProducts();
+
+        $this->eventDispatcher->dispatch(new AfterProductLoadEvent($result, $criteria, $context));
+
+        return $result;
     }
 }

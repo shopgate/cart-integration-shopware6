@@ -3,9 +3,12 @@
   "description": "Shopgate Module for Shopware 6",
   "license": "Apache-2.0",
   "type": "shopware-platform-plugin",
-  "version": "1.0.1",
-  "keywords": ["mobile", "app"],
-  "authors":[
+  "version": "1.1.0",
+  "keywords": [
+    "mobile",
+    "app"
+  ],
+  "authors": [
     {
       "name": "Apite GmbH",
       "email": "mail@apite.io"

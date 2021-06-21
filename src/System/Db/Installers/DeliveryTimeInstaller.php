@@ -8,6 +8,6 @@ use Shopgate\Shopware\System\Db\Shipping\GenericDeliveryTime;
 
 class DeliveryTimeInstaller extends EntityInstaller
 {
-    protected $entityInstallList = [GenericDeliveryTime::class];
-    protected $entityName = 'delivery_time';
+    protected array $entityInstallList = [GenericDeliveryTime::class];
+    protected string $entityName = 'delivery_time';
 }

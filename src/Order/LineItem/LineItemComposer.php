@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order;
+namespace Shopgate\Shopware\Order\LineItem;
 
-use Shopgate\Shopware\Order\Mapping\LineItem\LineItemProductMapping;
-use Shopgate\Shopware\Order\Mapping\LineItem\LineItemPromoMapping;
+use Shopgate\Shopware\Order\LineItem\Events\AfterOutLineItemMappingEvent;
+use Shopgate\Shopware\Order\LineItem\Events\BeforeIncLineItemMappingEvent;
+use Shopgate\Shopware\Order\LineItem\Events\BeforeOutLineItemMappingEvent;
+use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;
@@ -16,26 +18,38 @@ use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotEligibleError;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
+use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LineItemComposer
 {
     private LineItemProductMapping $productMapping;
     private LineItemPromoMapping $promoMapping;
     private LoggerInterface $logger;
+    private EventDispatcherInterface $eventDispatcher;
+    private QuoteBridge $quoteBridge;
 
     /**
      * @param LineItemProductMapping $productMapping
      * @param LineItemPromoMapping $promoMapping
      * @param LoggerInterface $logger
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param QuoteBridge $quoteBridge
      */
     public function __construct(
         LineItemProductMapping $productMapping,
         LineItemPromoMapping $promoMapping,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EventDispatcherInterface $eventDispatcher,
+        QuoteBridge $quoteBridge
     ) {
         $this->productMapping = $productMapping;
         $this->promoMapping = $promoMapping;
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->quoteBridge = $quoteBridge;
     }
 
     /**
@@ -44,6 +58,7 @@ class LineItemComposer
      */
     public function mapIncomingLineItems(ShopgateCartBase $cart): array
     {
+        $this->eventDispatcher->dispatch(new BeforeIncLineItemMappingEvent($cart));
         return array_merge(
             $this->productMapping->mapIncomingProducts($cart->getItems()),
             $this->promoMapping->mapIncomingPromos($cart->getExternalCoupons())
@@ -59,6 +74,7 @@ class LineItemComposer
     {
         $lineItems = [];
         $externalCoupons = [];
+        $this->eventDispatcher->dispatch(new BeforeOutLineItemMappingEvent($cart, $sgCart));
         /**
          * Handle line items that are still in cart after all validations
          */
@@ -134,10 +150,14 @@ class LineItemComposer
             }
         }
 
-        return [
+        $dataBag = new DataBag([
             'items' => $lineItems,
             'external_coupons' => $externalCoupons
-        ];
+        ]);
+
+        $this->eventDispatcher->dispatch(new AfterOutLineItemMappingEvent($dataBag));
+
+        return $dataBag->all();
     }
 
     /**
@@ -149,5 +169,19 @@ class LineItemComposer
     private function isValidUuid(string $uuid): bool
     {
         return ctype_xdigit($uuid);
+    }
+
+    /**
+     * @param Cart $shopwareCart
+     * @param SalesChannelContext $context
+     * @param array $lineItems
+     * @return Cart
+     */
+    public function addLineItemsToCart(Cart $shopwareCart, SalesChannelContext $context, array $lineItems): Cart
+    {
+        $request = new Request();
+        $request->request->set('items', $lineItems);
+
+        return $this->quoteBridge->addLineItemToQuote($request, $shopwareCart, $context);
     }
 }

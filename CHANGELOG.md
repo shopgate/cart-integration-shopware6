@@ -1,3 +1,10 @@
+# 1.1.0
+- changed order class locations
+- added line item & shipping events
+- added current payment mapping
+- added mapping for selected Cash on Delivery (COD) payment in `check_cart` and `add_order`
+- added product export events to support extra product injection
+
 # 1.0.1
 - fixed issues with uninitialized php7.4 properties
 

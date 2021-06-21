@@ -8,6 +8,7 @@ use Shopgate\Shopware\Catalog\Category\CategoryComposer;
 use Shopgate\Shopware\Catalog\Product\ProductComposer;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\Order\CartComposer;
 use Shopgate\Shopware\Order\OrderComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
@@ -29,6 +30,7 @@ class ExportService
     private CustomerComposer $customerComposer;
     private ProductComposer $productComposer;
     private OrderComposer $orderComposer;
+    private CartComposer $cartComposer;
 
     /**
      * @param LoggerInterface $logger
@@ -46,7 +48,8 @@ class ExportService
         TaxComposer $taxComposer,
         CustomerComposer $customerHelper,
         ProductComposer $productComposer,
-        OrderComposer $orderComposer
+        OrderComposer $orderComposer,
+        CartComposer $cartComposer
     ) {
         $this->log = $logger;
         $this->categoryComposer = $categoryComposer;
@@ -55,6 +58,7 @@ class ExportService
         $this->customerComposer = $customerHelper;
         $this->productComposer = $productComposer;
         $this->orderComposer = $orderComposer;
+        $this->cartComposer = $cartComposer;
     }
 
     /**
@@ -144,7 +148,7 @@ class ExportService
      */
     public function checkCart(ExtendedCart $cart): array
     {
-        return $this->orderComposer->checkCart($cart);
+        return $this->cartComposer->checkCart($cart);
     }
 
     /**

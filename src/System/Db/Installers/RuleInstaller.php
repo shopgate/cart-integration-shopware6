@@ -8,6 +8,6 @@ use Shopgate\Shopware\System\Db\Rule\IsShopgateRuleGroup;
 
 class RuleInstaller extends EntityInstaller
 {
-    protected $entityInstallList = [IsShopgateRuleGroup::class];
-    protected $entityName = 'rule';
+    protected array $entityInstallList = [IsShopgateRuleGroup::class];
+    protected string $entityName = 'rule';
 }

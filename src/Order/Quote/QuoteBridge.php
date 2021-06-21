@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Order;
+namespace Shopgate\Shopware\Order\Quote;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;

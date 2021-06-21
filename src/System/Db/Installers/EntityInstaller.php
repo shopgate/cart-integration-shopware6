@@ -13,10 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class EntityInstaller
 {
-    /** @var ClassCastInterface[] */
-    protected $entityInstallList = [];
-    /** @var string */
-    protected $entityName;
+    protected array $entityInstallList = [];
+    protected string $entityName;
     /** @var EntityRepositoryInterface */
     protected $entityRepo;
 
