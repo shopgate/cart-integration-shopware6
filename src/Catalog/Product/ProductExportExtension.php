@@ -8,7 +8,7 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class ProductExportExtension extends Struct
 {
-    public const GENERIC_NAME = 'shopgate_internal_info';
+    public const EXT_KEY = 'shopgate_internal_info';
 
     protected array $data;
 

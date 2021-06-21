@@ -394,7 +394,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setInternalOrderInfo(): void
     {
-        if ($extension = $this->item->getExtension(ProductExportExtension::GENERIC_NAME)) {
+        if ($extension = $this->item->getExtension(ProductExportExtension::EXT_KEY)) {
             parent::setInternalOrderInfo((string)$extension);
         }
     }
