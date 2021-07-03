@@ -36,11 +36,23 @@ php bin/console plugin:install ShopgateModule
 php bin/console plugin:activate ShopgateModule
 php bin/console cache:clear
 ```
+
 You may install and activate via the Shopware administration panel instead, if you prefer.
 
 ## Compile frontend
+
 This shopware 6 command will compile the JavaScript of frontend and backend:
+
 ```shell
 cd [shopware6 root folder]
 ./bin/build-js.sh
 ```
+
+# Known errors
+
+* `No SaleChannel domain exists corresponding to the SaleChannel default language` - indicates an issue when there is a
+  default language set for a domain, but no domain URL exists that has that language. In short:
+    1. go to `SalesChannels`
+    1. select SaleChannel that is being queried by Shopgate API
+    1. Check `General Settings` default language (e.g., English)
+    1. Check `Domains` list, see that there is no domain URL with default language (e.g., English)

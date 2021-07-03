@@ -9,6 +9,7 @@ use Shopgate\Shopware\Order\Shipping\Events\BeforeDeliveryContextSwitchEvent;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeShippingMethodMappingEvent;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
+use ShopgateLibraryException;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
@@ -22,6 +23,7 @@ use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Throwable;
 
 class ShippingComposer
 {
@@ -77,6 +79,7 @@ class ShippingComposer
     /**
      * @param SalesChannelContext $context
      * @return ShopgateShippingMethod[]
+     * @throws ShopgateLibraryException
      */
     public function mapShippingMethods(SalesChannelContext $context): array
     {
@@ -91,6 +94,7 @@ class ShippingComposer
     /**
      * @param SalesChannelContext $context
      * @return DeliveryCollection
+     * @throws ShopgateLibraryException
      */
     public function getCalculatedDeliveries(SalesChannelContext $context): DeliveryCollection
     {
@@ -98,14 +102,22 @@ class ShippingComposer
         $list = [];
         $request = new Request();
         $request->setSession(new Session()); // support for 3rd party plugins that do not check session existence
-        foreach ($shippingMethods->getElements() as $shipMethod) {
-            $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
-            $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
-            $resultContext = $this->contextManager->switchContext($dataBag, $context);
-            $cart = $this->cartPageLoader->load($request, $resultContext)->getCart();
-            foreach ($cart->getDeliveries()->getElements() as $delivery) {
-                $list[$delivery->getShippingMethod()->getId()] = $delivery;
+        try {
+            foreach ($shippingMethods->getElements() as $shipMethod) {
+                $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
+                $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
+                $resultContext = $this->contextManager->switchContext($dataBag, $context);
+                $cart = $this->cartPageLoader->load($request, $resultContext)->getCart();
+                foreach ($cart->getDeliveries()->getElements() as $delivery) {
+                    $list[$delivery->getShippingMethod()->getId()] = $delivery;
+                }
             }
+        } catch (Throwable $throwable) {
+            if (strpos($throwable->getMessage(), 'LanguageEntity')) {
+                throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                    'No SaleChannel domain exists corresponding to the SaleChannel default language');
+            }
+            throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, $throwable->getMessage());
         }
 
         return new DeliveryCollection($list);
