@@ -17,6 +17,8 @@ class AfterProductLoadEvent extends Event
 
     /**
      * @param ProductCollection $productCollection
+     * @param Criteria $criteria
+     * @param SalesChannelContext $context
      */
     public function __construct(ProductCollection $productCollection, Criteria $criteria, SalesChannelContext $context)
     {

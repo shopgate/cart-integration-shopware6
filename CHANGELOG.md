@@ -1,4 +1,9 @@
+# 1.1.1
+
+- added clarity to errors when mapping `check_cart` shipping methods
+
 # 1.1.0
+
 - changed order class locations
 - added line item & shipping events
 - added current payment mapping
@@ -6,6 +11,7 @@
 - added product export events to support extra product injection
 
 # 1.0.1
+
 - fixed issues with uninitialized php7.4 properties
 
 # 1.0.0
