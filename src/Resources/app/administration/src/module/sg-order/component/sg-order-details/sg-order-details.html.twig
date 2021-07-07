@@ -5,17 +5,17 @@
                 <sw-description-list>
                     {% block sg_order_details_order_number %}
                         <sg-title-content :title="$tc('sg-order.number')"
-                                      :content="sgOrder.shopgateOrderNumber">
+                                          :content="sgOrder.shopgateOrderNumber">
                         </sg-title-content>
                     {% endblock %}
                     {% block sg_order_details_shipping_sent %}
                         <sg-title-content :title="$tc('sg-order.shipping.isSent')"
-                                      :content="sgOrder.receivedData.is_shipping_completed">
+                                          :content="sgOrder.receivedData.is_shipping_completed">
                         </sg-title-content>
                     {% endblock %}
                     {% block sg_order_details_shipping_blocked %}
                         <sg-title-content :title="$tc('sg-order.shipping.isBlocked')"
-                                      :content="sgOrder.receivedData.is_shipping_blocked">
+                                          :content="sgOrder.receivedData.is_shipping_blocked">
                         </sg-title-content>
                     {% endblock %}
                     {% block sg_order_details_payment_method %}
@@ -38,12 +38,24 @@
                         <sg-title-content :title="$tc('sg-order.payment.info')">
                             <ul class="sg-list">
                                 <!--suppress XmlUnboundNsPrefix -->
-                                <li
-                                    is="sg-key-value"
+                                <li is="sg-key-value"
                                     v-for="(value, key) in sgOrder.receivedData.payment_infos"
                                     v-bind:key="key"
                                     v-bind:label="key"
                                     v-bind:content="value"
+                                ></li>
+                            </ul>
+                        </sg-title-content>
+                    {% endblock %}
+                    {% block sg_order_details_custom_fields %}
+                        <sg-title-content :title="$tc('sg-order.customFields.title')">
+                            <ul class="sg-list">
+                                <!--suppress XmlUnboundNsPrefix -->
+                                <li is="sg-key-value"
+                                    v-for="(customField) in sgOrder.receivedData.custom_fields"
+                                    v-bind:key="customField.internal_field_name"
+                                    v-bind:label="customField.label"
+                                    v-bind:content="customField.value"
                                 ></li>
                             </ul>
                         </sg-title-content>

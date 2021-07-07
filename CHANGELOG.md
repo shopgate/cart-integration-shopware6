@@ -1,3 +1,7 @@
+# 1.2.0
+
+- added order `custom_fields` to order view page
+
 # 1.1.1
 
 - added clarity to errors when mapping `check_cart` shipping methods
