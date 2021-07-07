@@ -17,6 +17,9 @@
     "shipping": {
       "isBlocked": "Versand blockiert",
       "isSent": "Versand an Shopgate übermittel"
+    },
+    "customFields": {
+      "title": "Zusatzinfos zur Bestellung"
     }
   }
 }

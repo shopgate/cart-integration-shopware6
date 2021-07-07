@@ -2,11 +2,17 @@
   .sg-list {
     list-style-type: none;
     margin-top: 10px;
+
     li {
       margin-top: 3px;
     }
   }
+
   .sw-description-list dd {
     padding: 0 0 10px 0;
+  }
+
+  .sg-hidden {
+    display: none;
   }
 }

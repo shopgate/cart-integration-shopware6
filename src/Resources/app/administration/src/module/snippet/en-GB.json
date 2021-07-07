@@ -17,6 +17,9 @@
     "shipping": {
       "isBlocked": "Shipment Blocked",
       "isSent": "Shipment Sent To Shopgate"
+    },
+    "customFields": {
+      "title": "Custom Order Fields"
     }
   }
 }
