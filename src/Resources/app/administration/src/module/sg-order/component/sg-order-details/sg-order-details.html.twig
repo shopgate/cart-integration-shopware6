@@ -1,7 +1,7 @@
 {% block sg_order_detail_sections %}
     <sw-card :title="$tc('sg-order.title')" class="sw-order-delivery-metadata">
         <sw-card-section>
-            <sw-container columns="repeat(auto-fit, minmax(200px, 1fr))" gap="0 15px">
+            <sw-container columns="repeat(auto-fit, minmax(180px, 1fr))" gap="0 25px">
                 <sw-description-list>
                     {% block sg_order_details_order_number %}
                         <sg-title-content :title="$tc('sg-order.number')"
@@ -47,6 +47,9 @@
                             </ul>
                         </sg-title-content>
                     {% endblock %}
+                </sw-description-list>
+                <sw-description-list v-if="sgOrder.receivedData.custom_fields"
+                                     v-bind:class="{ 'sg-hidden': sgOrder.receivedData.custom_fields.length === 0 }">
                     {% block sg_order_details_custom_fields %}
                         <sg-title-content :title="$tc('sg-order.customFields.title')">
                             <ul class="sg-list">
