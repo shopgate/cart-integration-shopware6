@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Order\Customer\CustomerMapping;
+use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Order\Quote\QuoteBridge;
@@ -21,34 +21,25 @@ class CartComposer
     private ContextManager $contextManager;
     private LineItemComposer $lineItemComposer;
     private QuoteBridge $quoteBridge;
-    private CustomerMapping $customerMapping;
     private PaymentComposer $paymentComposer;
+    private OrderCustomerComposer $orderCustomerComposer;
 
-    /**
-     * @param ShippingComposer $shippingComposer
-     * @param CustomerMapping $customerMapping
-     * @param ContextManager $contextManager
-     * @param ContextComposer $contextComposer
-     * @param LineItemComposer $lineItemComposer
-     * @param QuoteBridge $quoteBridge
-     * @param PaymentComposer $paymentComposer
-     */
     public function __construct(
         ShippingComposer $shippingComposer,
-        CustomerMapping $customerMapping,
         ContextManager $contextManager,
         ContextComposer $contextComposer,
         LineItemComposer $lineItemComposer,
         QuoteBridge $quoteBridge,
-        PaymentComposer $paymentComposer
+        PaymentComposer $paymentComposer,
+        OrderCustomerComposer $orderCustomerComposer
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
-        $this->customerMapping = $customerMapping;
         $this->quoteBridge = $quoteBridge;
         $this->shippingComposer = $shippingComposer;
         $this->contextComposer = $contextComposer;
         $this->paymentComposer = $paymentComposer;
+        $this->orderCustomerComposer = $orderCustomerComposer;
     }
 
     /**
@@ -60,10 +51,14 @@ class CartComposer
     public function checkCart(ExtendedCart $sgCart): array
     {
         $customerId = $sgCart->getExternalCustomerId();
-        $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        if (!empty($customerId)) {
-            $this->contextComposer->addCustomerAddress($sgCart, $initContext);
+        if ($sgCart->isGuest()) {
+            $customerId = $this->orderCustomerComposer->getOrCreateGuestCustomer(
+                $sgCart,
+                $this->contextManager->getSalesContext()
+            )->getId();
         }
+        $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
+        $this->contextComposer->addCustomerAddress($sgCart, $initContext);
         $context = $this->paymentComposer->mapIncomingPayment($sgCart, $initContext);
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
@@ -73,8 +68,8 @@ class CartComposer
                 'currency' => $context->getCurrency()->getIsoCode(),
                 'shipping_methods' => $this->shippingComposer->mapShippingMethods($context),
                 'payment_methods' => [],
-                'customer' => $this->customerMapping->mapCartCustomer($context),
             ]
+            + $this->orderCustomerComposer->mapOutgoingCartCustomer($context)
             + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
 
         $this->quoteBridge->deleteCart($context);

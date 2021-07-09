@@ -15,6 +15,9 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Throwable;
 
+/**
+ * Customer endpoint specific composer
+ */
 class CustomerComposer
 {
     private ContextManager $contextManager;
@@ -23,13 +26,6 @@ class CustomerComposer
     private CustomerMapping $customerMapping;
     private ConfigBridge $configBridge;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param AbstractRegisterRoute $registerRoute
-     * @param CustomerBridge $customerBridge
-     * @param CustomerMapping $customerMapping
-     * @param ConfigBridge $configBridge
-     */
     public function __construct(
         ContextManager $contextManager,
         AbstractRegisterRoute $registerRoute,

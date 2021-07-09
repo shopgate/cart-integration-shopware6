@@ -79,4 +79,13 @@ trait CartUtilityTrait
         }
         return $cost;
     }
+
+    /**
+     * Checks if order/cart is created by a guest
+     * @return bool
+     */
+    public function isGuest(): bool
+    {
+        return empty($this->getExternalCustomerId());
+    }
 }

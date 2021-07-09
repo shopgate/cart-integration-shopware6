@@ -33,6 +33,7 @@ class PaymentComposer
      * @param ShopgateCartBase $sgCart
      * @param SalesChannelContext $context
      * @return SalesChannelContext
+     * //todo: return string instead
      */
     public function mapIncomingPayment(ShopgateCartBase $sgCart, SalesChannelContext $context): SalesChannelContext
     {

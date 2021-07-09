@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -25,26 +26,22 @@ use Throwable;
 class CustomerBridge
 {
     private EntityRepositoryInterface $customerGroupRepository;
+    private EntityRepositoryInterface $customerRepository;
     private ContextManager $contextManager;
     private AbstractLoginRoute $loginRoute;
     private RequestDataBag $dataBag;
     private AbstractCustomerRoute $customerRoute;
 
-    /**
-     * @param EntityRepositoryInterface $customerGroupRepository
-     * @param ContextManager $contextManager
-     * @param AbstractLoginRoute $loginRoute
-     * @param RequestDataBag $dataBag
-     * @param AbstractCustomerRoute $customerRoute
-     */
     public function __construct(
         EntityRepositoryInterface $customerGroupRepository,
+        EntityRepositoryInterface $customerRepository,
         ContextManager $contextManager,
         AbstractLoginRoute $loginRoute,
         RequestDataBag $dataBag,
         AbstractCustomerRoute $customerRoute
     ) {
         $this->customerGroupRepository = $customerGroupRepository;
+        $this->customerRepository = $customerRepository;
         $this->contextManager = $contextManager;
         $this->loginRoute = $loginRoute;
         $this->dataBag = $dataBag;
@@ -119,5 +116,20 @@ class CustomerBridge
                 ->addAssociation('addresses.salutation'),
             $customer
         )->getCustomer();
+    }
+
+    /**
+     * @param string $email
+     * @param SalesChannelContext $context
+     * @return CustomerEntity|null
+     */
+    public function getGuestByEmail(string $email, SalesChannelContext $context): ?CustomerEntity
+    {
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('email', $email))
+            ->addFilter(new EqualsFilter('guest', 1));
+        $results = $this->customerRepository->search($criteria, $context->getContext());
+
+        return $results->getEntities()->first();
     }
 }

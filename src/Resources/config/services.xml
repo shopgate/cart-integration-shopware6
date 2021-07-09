@@ -63,6 +63,7 @@
         </service>
         <service id="Shopgate\Shopware\Order\CartComposer"/>
         <service id="Shopgate\Shopware\Order\Customer\CustomerMapping"/>
+        <service id="Shopgate\Shopware\Order\Customer\OrderCustomerComposer"/>
         <service id="Shopgate\Shopware\Order\ContextComposer"/>
         <service id="Shopgate\Shopware\Order\LineItem\LineItemComposer"/>
         <service id="Shopgate\Shopware\Order\LineItem\LineItemProductMapping"/>
