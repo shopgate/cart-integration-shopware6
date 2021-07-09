@@ -91,13 +91,14 @@ class OrderComposer
         }
 
         $this->contextComposer->addCustomerAddress($order, $initContext);
+        $paymentId = $this->paymentComposer->mapIncomingPayment($order, $initContext);
         $dataBag = [
             SalesChannelContextService::SHIPPING_METHOD_ID =>
-                $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID
+                $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID,
+            SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
         ];
         try {
-            $middleContext = $this->paymentComposer->mapIncomingPayment($order, $initContext);
-            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $middleContext);
+            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $initContext);
             // build cart & order
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$order->isShippingFree()) {

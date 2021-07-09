@@ -59,7 +59,8 @@ class CartComposer
         }
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
         $this->contextComposer->addCustomerAddress($sgCart, $initContext);
-        $context = $this->paymentComposer->mapIncomingPayment($sgCart, $initContext);
+        $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $initContext);
+        $context = $this->contextComposer->addActivePayment($paymentId, $initContext);
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
         $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);
