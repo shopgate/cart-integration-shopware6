@@ -1,3 +1,7 @@
+# 1.3.0
+
+- added support for **guest** billing address when checking out
+
 # 1.2.0
 
 - added order `custom_fields` to order view page

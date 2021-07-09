@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
-use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Order\Customer\CustomerMapping;
+use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Order\Quote\QuoteBridge;
@@ -37,49 +36,34 @@ class OrderComposer
 
     private ContextComposer $contextComposer;
     private ContextManager $contextManager;
-    private CustomerComposer $customerComposer;
-    private CustomerMapping $customerMapping;
     private LineItemComposer $lineItemComposer;
     private QuoteBridge $quoteBridge;
     private QuoteErrorMapping $errorMapping;
     private ShippingComposer $shippingComposer;
     private ShopgateOrderBridge $shopgateOrderBridge;
     private PaymentComposer $paymentComposer;
+    private OrderCustomerComposer $orderCustomerComposer;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param ContextComposer $contextComposer
-     * @param LineItemComposer $lineItemComposer
-     * @param CustomerMapping $customerMapping
-     * @param QuoteBridge $quoteBridge
-     * @param QuoteErrorMapping $errorMapping
-     * @param ShopgateOrderBridge $shopgateOrderBridge
-     * @param CustomerComposer $customerComposer
-     * @param ShippingComposer $shippingComposer
-     * @param PaymentComposer $paymentComposer
-     */
     public function __construct(
         ContextManager $contextManager,
         ContextComposer $contextComposer,
         LineItemComposer $lineItemComposer,
-        CustomerMapping $customerMapping,
         QuoteBridge $quoteBridge,
         QuoteErrorMapping $errorMapping,
         ShopgateOrderBridge $shopgateOrderBridge,
-        CustomerComposer $customerComposer,
         ShippingComposer $shippingComposer,
-        PaymentComposer $paymentComposer
+        PaymentComposer $paymentComposer,
+        OrderCustomerComposer $orderCustomerComposer
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
-        $this->customerMapping = $customerMapping;
         $this->shopgateOrderBridge = $shopgateOrderBridge;
         $this->quoteBridge = $quoteBridge;
-        $this->customerComposer = $customerComposer;
         $this->errorMapping = $errorMapping;
         $this->shippingComposer = $shippingComposer;
         $this->contextComposer = $contextComposer;
         $this->paymentComposer = $paymentComposer;
+        $this->orderCustomerComposer = $orderCustomerComposer;
     }
 
     /**
@@ -91,10 +75,11 @@ class OrderComposer
     public function addOrder(ExtendedOrder $order): array
     {
         $customerId = $order->getExternalCustomerId();
-        // if is guest
-        if (empty($customerId)) {
-            $detailCustomer = $this->customerMapping->orderToShopgateCustomer($order);
-            $customerId = $this->customerComposer->registerCustomer(null, $detailCustomer)->getId();
+        if ($order->isGuest()) {
+            $customerId = $this->orderCustomerComposer->getOrCreateGuestCustomer(
+                $order,
+                $this->contextManager->getSalesContext()
+            )->getId();
         }
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
         if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(), $initContext)) {
@@ -106,13 +91,14 @@ class OrderComposer
         }
 
         $this->contextComposer->addCustomerAddress($order, $initContext);
+        $paymentId = $this->paymentComposer->mapIncomingPayment($order, $initContext);
         $dataBag = [
             SalesChannelContextService::SHIPPING_METHOD_ID =>
-                $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID
+                $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID,
+            SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
         ];
         try {
-            $middleContext = $this->paymentComposer->mapIncomingPayment($order, $initContext);
-            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $middleContext);
+            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $initContext);
             // build cart & order
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$order->isShippingFree()) {

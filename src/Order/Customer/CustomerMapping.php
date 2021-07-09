@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Customer;
 
+use ShopgateCartBase;
 use ShopgateCartCustomer;
 use ShopgateCartCustomerGroup;
 use ShopgateCustomer;
-use ShopgateOrder;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CustomerMapping
@@ -30,10 +30,10 @@ class CustomerMapping
     }
 
     /**
-     * @param ShopgateOrder $order
+     * @param ShopgateCartBase $order
      * @return ShopgateCustomer
      */
-    public function orderToShopgateCustomer(ShopgateOrder $order): ShopgateCustomer
+    public function orderToShopgateCustomer(ShopgateCartBase $order): ShopgateCustomer
     {
         $customer = new ShopgateCustomer();
         $customer->setMail($order->getMail());

@@ -47,7 +47,7 @@ class AddressComposer
     public function createAddressSwitchData(ShopgateCartBase $order, SalesChannelContext $context): array
     {
         $addressBag = [];
-        if ($order->getExternalCustomerId() && $context->getCustomer()) {
+        if ($context->getCustomer()) {
             $deliveryId = $this->getOrCreateAddress($order->getDeliveryAddress(), $context);
             $invoiceId = $this->getOrCreateAddress($order->getInvoiceAddress(), $context);
             $addressBag = [
