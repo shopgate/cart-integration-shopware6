@@ -1,6 +1,6 @@
 # 1.4.0
 
-- added package dimensions (length, height, width) to product export
+- added package dimensions (length, height, width) & pack units to product export
 
 # 1.3.0
 
