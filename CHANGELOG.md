@@ -1,3 +1,7 @@
+# 1.4.0
+
+- added package dimensions (length, height, width) & pack units to product export
+
 # 1.3.0
 
 - added support for **guest** billing address when checking out

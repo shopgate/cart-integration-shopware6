@@ -51,7 +51,9 @@ class Formatter
      */
     public function translate(string $key, array $parameters, string $domain = 'storefront'): string
     {
-        return $this->translator->trans($key, $parameters, $domain, $this->getLocaleCode());
+        $result = $this->translator->trans($key, $parameters, $domain, $this->getLocaleCode());
+
+        return $result === $key ? '' : $result;
     }
 
     /**
@@ -107,5 +109,16 @@ class Formatter
             $context->getLanguageId(),
             $context
         );
+    }
+
+    /**
+     * Converts 'packUnit' to 'Pack Unit'
+     *
+     * @param string $property
+     * @return null|string
+     */
+    public function camelCaseToSpaced(string $property): ?string
+    {
+        return preg_replace('/(?<!^)([A-Z])/', ' \\1', ucfirst($property));
     }
 }

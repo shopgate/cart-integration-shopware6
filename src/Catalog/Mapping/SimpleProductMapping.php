@@ -295,6 +295,21 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             }
         }
 
+        /**
+         * Any other fields that are not part of the Properties or Custom lists.
+         * Please note that it uses very specific translation key domain, and
+         * a fallback when trans. is not available
+         */
+        $additionalFields = ['width', 'height', 'length', 'packUnit', 'packUnitPlural'];
+        foreach ($additionalFields as $field) {
+            $label = $this->formatter->translate('component.product.feature.label.' . $field, []);
+            $property = new Shopgate_Model_Catalog_Property();
+            $property->setUid($field);
+            $property->setLabel($label ? rtrim($label, ':') : $this->formatter->camelCaseToSpaced($field));
+            $property->setValue($this->item->get($field));
+            $properties[$field] = $property;
+        }
+
         parent::setProperties($properties);
     }
 
@@ -306,7 +321,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
      */
     private function translateEntityValue($value): string
     {
-        return $value === false ? '0' : (string) $value;
+        return $value === false ? '0' : (string)$value;
     }
 
     /**
