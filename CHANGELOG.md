@@ -1,3 +1,8 @@
+# 1.4.1
+
+- fixed issue with cart rules not removing from App cart when invalidated
+- changed incoming `external_coupons` to be invalidated and used as outgoing coupons
+
 # 1.4.0
 
 - added package dimensions (length, height, width) & pack units to product export

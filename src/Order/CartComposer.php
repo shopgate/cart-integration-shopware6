@@ -50,6 +50,7 @@ class CartComposer
      */
     public function checkCart(ExtendedCart $sgCart): array
     {
+        $sgCart->invalidateCoupons();
         $customerId = $sgCart->getExternalCustomerId();
         if ($sgCart->isGuest()) {
             $customerId = $this->orderCustomerComposer->getOrCreateGuestCustomer(
