@@ -11,7 +11,6 @@ use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;
-use ShopgateExternalCoupon;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotEligibleError;
@@ -73,7 +72,7 @@ class LineItemComposer
     public function mapOutgoingLineItems(Cart $cart, ExtendedCart $sgCart): array
     {
         $lineItems = [];
-        $externalCoupons = [];
+        $externalCoupons = $sgCart->getExternalCoupons();
         $this->eventDispatcher->dispatch(new BeforeOutLineItemMappingEvent($cart, $sgCart));
         /**
          * Handle line items that are still in cart after all validations
@@ -97,12 +96,7 @@ class LineItemComposer
                     );
                     break;
                 case LineItem::PROMOTION_LINE_ITEM_TYPE:
-                    $refId = $lineItem->getReferencedId();
-                    $sgPromoItem = $sgCart->findExternalCoupon($refId) ?? new ShopgateExternalCoupon();
-                    $sgPromoItem->setCode(empty($refId) ? $id : $refId); // for cart_rule
-                    $sgPromoItem->setInternalInfo(empty($refId) ? LineItemPromoMapping::RULE_ID : '');
-                    $sgPromoItem->setCurrency($sgCart->getCurrency());
-                    $externalCoupons[$id] = $this->promoMapping->mapValidCoupon($lineItem, $sgPromoItem);
+                    $this->promoMapping->mapValidCoupon($lineItem, $sgCart);
                     break;
                 default:
                     $this->logger->debug('Cannot map item type: ' . $lineItem->getType());
@@ -131,18 +125,14 @@ class LineItemComposer
                         $this->logger->debug('Issue locating coupon by code: ' . $error->getParameters()['code']);
                         break;
                     }
-                    $missingCoupon->setIsValid(false);
                     $missingCoupon->setNotValidMessage($error->getMessage());
-                    $externalCoupons[$error->getParameters()['code']] = $missingCoupon;
                     break;
                 case PromotionNotEligibleError::class:
                     if (!$ineligibleCoupon = $sgCart->findExternalCouponByName($error->getParameters()['name'])) {
                         $this->logger->debug('Issue locating coupon by name: ' . $error->getParameters()['name']);
                         break;
                     }
-                    $ineligibleCoupon->setIsValid(false);
                     $ineligibleCoupon->setNotValidMessage($error->getMessage());
-                    $externalCoupons[] = $ineligibleCoupon;
                     break;
                 default:
                     $this->logger->debug('Unmapped cart errors & notifications');
