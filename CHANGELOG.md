@@ -1,3 +1,7 @@
+# 1.4.2
+
+- fixing package dimensions & pack units to not export if value is empty
+
 # 1.4.1
 
 - fixed issue with cart rules not removing from App cart when invalidated
