@@ -302,11 +302,15 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
          */
         $additionalFields = ['width', 'height', 'length', 'packUnit', 'packUnitPlural'];
         foreach ($additionalFields as $field) {
+            $value = $this->item->get($field);
+            if (empty($value)) {
+                continue;
+            }
             $label = $this->formatter->translate('component.product.feature.label.' . $field, []);
             $property = new Shopgate_Model_Catalog_Property();
             $property->setUid($field);
             $property->setLabel($label ? rtrim($label, ':') : $this->formatter->camelCaseToSpaced($field));
-            $property->setValue($this->item->get($field));
+            $property->setValue($value);
             $properties[$field] = $property;
         }
 
