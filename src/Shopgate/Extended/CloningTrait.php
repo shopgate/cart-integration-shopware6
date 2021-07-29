@@ -14,7 +14,7 @@ trait CloningTrait
     protected function dataToEntity(array $data): self
     {
         foreach ($data as $key => $value) {
-            $method = 'set' . $this->snakeToCamel($key);
+            $method = 'set' . ucfirst($this->snakeToCamel($key));
             if (method_exists($this, $method)) {
                 $this->{$method}($value);
             }
