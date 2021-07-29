@@ -2,6 +2,7 @@
 
 - fixing package dimensions & pack units to not export if value is empty
 - fixing `check_cart` without email or external_customer_id fatal error
+- removed strict SDK version constraint, should auto-update
 
 # 1.4.1
 
