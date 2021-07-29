@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order\LineItem;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
-use ShopgateExternalCoupon;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 
 class LineItemPromoMapping
 {
-    /**
-     * Identifier placed inside the coupon internal field to identify
-     * cart rules from actual coupons
-     */
-    public const RULE_ID = 'cartRule';
 
     /**
-     * @param ShopgateExternalCoupon[] $promos
+     * @param ExtendedExternalCoupon[] $promos
      * @return array
      */
     public function mapIncomingPromos(array $promos): array
@@ -25,7 +20,7 @@ class LineItemPromoMapping
         $lineItems = [];
         foreach ($promos as $coupon) {
             // skip adding line item as cart rules are applied automatically
-            if ($coupon->getInternalInfo() === self::RULE_ID) {
+            if ($coupon->getType() === ExtendedExternalCoupon::TYPE_CART_RULE) {
                 continue;
             }
             $lineItems[] = [
@@ -39,16 +34,17 @@ class LineItemPromoMapping
 
     /**
      * @param LineItem $lineItem
-     * @param ShopgateExternalCoupon $coupon
-     * @return ShopgateExternalCoupon
+     * @param ExtendedCart $sgCart
+     * @return ExtendedExternalCoupon
      */
-    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ShopgateExternalCoupon
+    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ExtendedExternalCoupon
     {
         $refId = $lineItem->getReferencedId(); // empty string when automatic cart_rule
         $code = empty($refId) ? $lineItem->getId() : $refId;
-        $coupon = $sgCart->findExternalCoupon($code) ?? new ShopgateExternalCoupon();
+        $coupon = $sgCart->findExternalCoupon($code) ?? (new ExtendedExternalCoupon())->setIsNew(true);
         $coupon->setCode($code);
-        $coupon->setInternalInfo(empty($refId) ? self::RULE_ID : '');
+        $coupon->setType(empty($refId) ? ExtendedExternalCoupon::TYPE_CART_RULE : ExtendedExternalCoupon::TYPE_COUPON);
+        $coupon->addDecodedInfo(['id' => $lineItem->getId()]);
         $coupon->setCurrency($sgCart->getCurrency());
         $coupon->setIsValid(true);
         $coupon->setName($lineItem->getLabel());

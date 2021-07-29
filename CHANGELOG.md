@@ -1,3 +1,12 @@
+# 1.4.2
+
+- added first unit test
+- added json helper trait
+- fixed package dimensions & pack units to not export if value is empty
+- fixed `check_cart` without email or external_customer_id fatal error
+- fixed new coupons not longer being added to cart
+- removed strict SDK version constraint, should auto-update
+
 # 1.4.1
 
 - fixed issue with cart rules not removing from App cart when invalidated

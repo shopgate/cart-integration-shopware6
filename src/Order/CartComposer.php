@@ -52,8 +52,9 @@ class CartComposer
     {
         $sgCart->invalidateCoupons();
         $customerId = $sgCart->getExternalCustomerId();
-        if ($sgCart->isGuest()) {
-            $customerId = $this->orderCustomerComposer->getOrCreateGuestCustomer(
+        if ($sgCart->isGuest() && $sgCart->getMail()) {
+            $customerId = $this->orderCustomerComposer->getOrCreateGuestCustomerByEmail(
+                $sgCart->getMail(),
                 $sgCart,
                 $this->contextManager->getSalesContext()
             )->getId();

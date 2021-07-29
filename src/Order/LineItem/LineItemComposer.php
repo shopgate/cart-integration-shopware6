@@ -9,6 +9,7 @@ use Shopgate\Shopware\Order\LineItem\Events\BeforeIncLineItemMappingEvent;
 use Shopgate\Shopware\Order\LineItem\Events\BeforeOutLineItemMappingEvent;
 use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -52,7 +53,7 @@ class LineItemComposer
     }
 
     /**
-     * @param ShopgateCartBase $cart
+     * @param ExtendedCart|ExtendedOrder $cart
      * @return array
      */
     public function mapIncomingLineItems(ShopgateCartBase $cart): array
@@ -96,7 +97,11 @@ class LineItemComposer
                     );
                     break;
                 case LineItem::PROMOTION_LINE_ITEM_TYPE:
-                    $this->promoMapping->mapValidCoupon($lineItem, $sgCart);
+                    $coupon = $this->promoMapping->mapValidCoupon($lineItem, $sgCart);
+                    if ($coupon->isNew()) {
+                        // otherwise it is updated by reference instead
+                        $externalCoupons[$id] = $coupon;
+                    }
                     break;
                 default:
                     $this->logger->debug('Cannot map item type: ' . $lineItem->getType());
