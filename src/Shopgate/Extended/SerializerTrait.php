@@ -31,10 +31,7 @@ trait SerializerTrait
      */
     public function getUtilityInternalInfo(): ?string
     {
-        // get internal_*_info key/value so that we can decode
-        $result = array_filter(parent::toArray(), static function ($key) {
-            return strpos($key, 'internal') !== false && strpos($key, 'info') !== false;
-        }, ARRAY_FILTER_USE_KEY);
+        $result = $this->findInternalInfo();
 
         return array_pop($result);
     }
@@ -88,15 +85,23 @@ trait SerializerTrait
      */
     public function setUtilityInternalInfo(string $data): self
     {
-        // get internal_*_info key/value so that we can decode
-        $result = array_filter(parent::toArray(), static function ($key) {
-            return strpos($key, 'internal') !== false && strpos($key, 'info') !== false;
-        }, ARRAY_FILTER_USE_KEY);
-
+        $result = $this->findInternalInfo();
         if ($key = key($result)) {
             $this->{$key} = $data;
         }
 
         return $this;
+    }
+
+    /**
+     * Get internal_*_info key/value so that we can decode
+     *
+     * @return array|null
+     */
+    private function findInternalInfo(): ?array
+    {
+        return array_filter(parent::toArray(), static function ($key) {
+            return strpos($key, 'internal') !== false && strpos($key, 'info') !== false;
+        }, ARRAY_FILTER_USE_KEY);
     }
 }

@@ -35,34 +35,4 @@ class ExtendedCart extends ShopgateCart
 
         return $this;
     }
-
-    /**
-     * Rewriting to use custom external coupon class
-     *
-     * @param ShopgateExternalCoupon[]|array $value
-     */
-    public function setExternalCoupons($value): void
-    {
-        if (!is_array($value)) {
-            $this->external_coupons = null;
-
-            return;
-        }
-
-        foreach ($value as $index => &$element) {
-            if ((!is_object($element) || !($element instanceof ShopgateExternalCoupon)) && !is_array($element)) {
-                unset($value[$index]);
-                continue;
-            }
-
-            if (is_array($element)) {
-                $element = new ExtendedExternalCoupon($element);
-            }
-        }
-
-        // safety
-        unset($element);
-
-        $this->external_coupons = $value;
-    }
 }
