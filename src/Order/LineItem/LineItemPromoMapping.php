@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order\LineItem;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
 use ShopgateExternalCoupon;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 
@@ -39,14 +40,14 @@ class LineItemPromoMapping
 
     /**
      * @param LineItem $lineItem
-     * @param ShopgateExternalCoupon $coupon
-     * @return ShopgateExternalCoupon
+     * @param ExtendedCart $sgCart
+     * @return ExtendedExternalCoupon
      */
-    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ShopgateExternalCoupon
+    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ExtendedExternalCoupon
     {
         $refId = $lineItem->getReferencedId(); // empty string when automatic cart_rule
         $code = empty($refId) ? $lineItem->getId() : $refId;
-        $coupon = $sgCart->findExternalCoupon($code) ?? new ShopgateExternalCoupon();
+        $coupon = $sgCart->findExternalCoupon($code) ?? (new ExtendedExternalCoupon())->setIsNew(true);
         $coupon->setCode($code);
         $coupon->setInternalInfo(empty($refId) ? self::RULE_ID : '');
         $coupon->setCurrency($sgCart->getCurrency());

@@ -96,7 +96,11 @@ class LineItemComposer
                     );
                     break;
                 case LineItem::PROMOTION_LINE_ITEM_TYPE:
-                    $this->promoMapping->mapValidCoupon($lineItem, $sgCart);
+                    $coupon = $this->promoMapping->mapValidCoupon($lineItem, $sgCart);
+                    if ($coupon->isNew()) {
+                        // otherwise it is updated by reference instead
+                        $externalCoupons[$id] = $coupon;
+                    }
                     break;
                 default:
                     $this->logger->debug('Cannot map item type: ' . $lineItem->getType());
