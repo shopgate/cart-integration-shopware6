@@ -41,7 +41,7 @@ trait SerializerTrait
 
     /**
      * @param array $info
-     * @return $this
+     * @return self
      */
     public function addDecodedInfo(array $info): self
     {
@@ -60,7 +60,7 @@ trait SerializerTrait
 
     /**
      * @param array $decodedInfo
-     * @return ExtendedExternalCoupon
+     * @return self
      */
     public function setDecodedInfo(array $decodedInfo): self
     {
@@ -77,8 +77,26 @@ trait SerializerTrait
         $internalInfo = $this->jsonHelper->jsonDecode($this->getUtilityInternalInfo(), true);
         $encode = array_merge($this->decodedInfo, is_array($internalInfo) ? $internalInfo : []);
         $encoded = $this->jsonHelper->jsonEncode($encode);
-        $this->setInternalInfo($encoded);
+        $this->setUtilityInternalInfo($encoded);
 
         return parent::toArray();
+    }
+
+    /**
+     * @param string $data
+     * @return self
+     */
+    public function setUtilityInternalInfo(string $data): self
+    {
+        // get internal_*_info key/value so that we can decode
+        $result = array_filter(parent::toArray(), static function ($key) {
+            return strpos($key, 'internal') !== false && strpos($key, 'info') !== false;
+        }, ARRAY_FILTER_USE_KEY);
+
+        if ($key = key($result)) {
+            $this->{$key} = $data;
+        }
+
+        return $this;
     }
 }

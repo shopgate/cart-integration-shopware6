@@ -8,6 +8,7 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
 use Shopgate\Shopware\Shopgate\Extended\SerializerTrait;
 use ShopgateCart;
 use ShopgateExternalCoupon;
+use ShopgateOrder;
 use ShopgateOrderItem;
 
 class SerializerTraitTest extends TestCase
@@ -68,6 +69,20 @@ class SerializerTraitTest extends TestCase
         $coupon2->addDecodedInfo(['itemType' => 'cartRule']);
         $result2 = $coupon2->toArray();
         $this->assertJsonStringEqualsJsonString('{"itemType": "cartRule"}', $result2['internal_info']);
+
+        $infoItem = new class (['internal_order_info' => 'test3']) extends ShopgateOrderItem {
+            use SerializerTrait;
+        };
+        $infoItem->addDecodedInfo(['itemType' => 'cartRule']);
+        $result3 = $infoItem->toArray();
+        $this->assertJsonStringEqualsJsonString('{"itemType": "cartRule"}', $result3['internal_order_info']);
+
+        // should not throw exception
+        $noInternalInfo = new class () extends ShopgateOrder {
+            use SerializerTrait;
+        };
+        $noInternalInfo->addDecodedInfo(['itemType' => 'cartRule']);
+        $noInternalInfo->toArray();
     }
 
     /**

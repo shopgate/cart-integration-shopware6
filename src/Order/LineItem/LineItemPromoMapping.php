@@ -44,6 +44,7 @@ class LineItemPromoMapping
         $coupon = $sgCart->findExternalCoupon($code) ?? (new ExtendedExternalCoupon())->setIsNew(true);
         $coupon->setCode($code);
         $coupon->setType(empty($refId) ? ExtendedExternalCoupon::TYPE_CART_RULE : ExtendedExternalCoupon::TYPE_COUPON);
+        $coupon->addDecodedInfo(['id' => $lineItem->getId()]);
         $coupon->setCurrency($sgCart->getCurrency());
         $coupon->setIsValid(true);
         $coupon->setName($lineItem->getLabel());
