@@ -75,8 +75,9 @@ class OrderComposer
     public function addOrder(ExtendedOrder $order): array
     {
         $customerId = $order->getExternalCustomerId();
-        if ($order->isGuest()) {
-            $customerId = $this->orderCustomerComposer->getOrCreateGuestCustomer(
+        if ($order->isGuest() && $order->getMail()) {
+            $customerId = $this->orderCustomerComposer->getOrCreateGuestCustomerByEmail(
+                $order->getMail(),
                 $order,
                 $this->contextManager->getSalesContext()
             )->getId();

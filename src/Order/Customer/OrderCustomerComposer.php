@@ -43,17 +43,19 @@ class OrderCustomerComposer
     }
 
     /**
+     * @param string $email
      * @param ShopgateCartBase $cart
      * @param SalesChannelContext $salesChannelContext
      * @return CustomerEntity
-     * @throws ShopgateLibraryException
      * @throws MissingContextException
+     * @throws ShopgateLibraryException
      */
-    public function getOrCreateGuestCustomer(
+    public function getOrCreateGuestCustomerByEmail(
+        string $email,
         ShopgateCartBase $cart,
         SalesChannelContext $salesChannelContext
     ): CustomerEntity {
-        $guest = $this->customerBridge->getGuestByEmail($cart->getMail(), $salesChannelContext);
+        $guest = $this->customerBridge->getGuestByEmail($email, $salesChannelContext);
         if (null === $guest) {
             $detailCustomer = $this->customerMapping->orderToShopgateCustomer($cart);
             $guest = $this->customerComposer->registerCustomer(null, $detailCustomer);
