@@ -83,6 +83,7 @@
         <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_order"/>
         </service>
+        <service id="Shopgate\Shopware\Shopgate\RequestPersist" shared="true"/>
         <service id="Shopgate\Shopware\Shopgate\ShopgateOrderBridge">
             <argument type="service" id="shopgate_order.repository"/>
         </service>

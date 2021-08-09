@@ -12,7 +12,6 @@ use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
-use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
@@ -121,10 +120,6 @@ class OrderComposer
         } catch (Throwable $error) {
             throw $this->errorMapping->mapThrowable($error);
         }
-        $this->shopgateOrderBridge->saveEntity(
-            (new ShopgateOrderEntity())->mapQuote($swOrder->getId(), $newContext->getSalesChannel()->getId(), $order),
-            $newContext
-        );
         $this->contextManager->resetContext();
 
         return [

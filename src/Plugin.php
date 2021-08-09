@@ -80,6 +80,8 @@ class Plugin extends ShopgatePlugin
         $this->forwarder->getLogger()->debug('Incoming Add Order');
         $this->forwarder->getLogger()->debug(print_r($order->toArray(), true));
         $newOrder = (new ExtendedOrder())->loadFromShopgateOrder($order);
+        $this->forwarder->getRequestPersist()->setIncomingOrder($newOrder);
+
         return $this->forwarder->getImportService()->addOrder($newOrder);
     }
 
