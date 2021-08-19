@@ -18,7 +18,7 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class ShopgateModule extends Plugin
+class SgateShopgatePluginSW6 extends Plugin
 {
 
     public function install(InstallContext $installContext): void
