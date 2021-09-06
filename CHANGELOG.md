@@ -1,3 +1,7 @@
+# 1.5.0
+
+- added order email template variables (dependent on [PR#2010](https://github.com/shopware/platform/pull/2010))
+
 # 1.4.2
 
 - added first unit test
