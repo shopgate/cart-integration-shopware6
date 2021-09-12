@@ -79,7 +79,7 @@ class ContextManager
      * Without resetting the new objects created will use the last
      * context as base.
      */
-    public function resetContext(): void
+    public function resetContext(?SalesChannelContext $context = null): void
     {
         $payment = $this->salesContext->getCustomer() && $this->salesContext->getCustomer()->getDefaultPaymentMethod()
             ? $this->salesContext->getCustomer()->getDefaultPaymentMethod()->getId()
@@ -89,8 +89,7 @@ class ContextManager
             new RequestDataBag([
                 SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
                 SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
-            ])
-        );
+            ]), $context);
     }
 
     /**

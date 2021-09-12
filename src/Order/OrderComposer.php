@@ -120,6 +120,8 @@ class OrderComposer
             throw $this->errorMapping->mapGenericHttpException($error);
         } catch (Throwable $error) {
             throw $this->errorMapping->mapThrowable($error);
+        } finally {
+            $this->contextManager->resetContext($initContext);
         }
 
         return [
