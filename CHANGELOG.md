@@ -1,6 +1,11 @@
+# 1.5.1
+
+- removed re-use of existing customer cart when adding an order
+
 # 1.5.0
 
-- added order email template variables (dependent on [PR#2010](https://github.com/shopware/platform/pull/2010))
+- added order email template variables (dependent
+  on [SW 6.4.4.0](https://github.com/shopware/platform/releases/tag/v6.4.4.0))
 
 # 1.4.2
 

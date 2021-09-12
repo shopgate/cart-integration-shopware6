@@ -82,7 +82,8 @@ class OrderComposer
             )->getId();
         }
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(), $initContext)) {
+        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext);
+        if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(), $cleanCartContext)) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
                 $order->getOrderNumber(),
@@ -90,15 +91,15 @@ class OrderComposer
             );
         }
 
-        $this->contextComposer->addCustomerAddress($order, $initContext);
-        $paymentId = $this->paymentComposer->mapIncomingPayment($order, $initContext);
+        $this->contextComposer->addCustomerAddress($order, $cleanCartContext);
+        $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
         $dataBag = [
             SalesChannelContextService::SHIPPING_METHOD_ID =>
                 $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID,
             SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
         ];
         try {
-            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $initContext);
+            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $cleanCartContext);
             // build cart & order
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$order->isShippingFree()) {
@@ -120,7 +121,6 @@ class OrderComposer
         } catch (Throwable $error) {
             throw $this->errorMapping->mapThrowable($error);
         }
-        $this->contextManager->resetContext();
 
         return [
             'external_order_id' => $swOrder->getId(),
