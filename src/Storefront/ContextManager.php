@@ -150,7 +150,7 @@ class ContextManager
      * @param array $options
      * @return SalesChannelContext
      */
-    private function createNewContext(string $token, string $salesChannelId, array $options = []): SalesChannelContext
+    public function createNewContext(string $token, string $salesChannelId, array $options = []): SalesChannelContext
     {
         return $this->channelContextFactory->create($token, $salesChannelId, $options);
     }
