@@ -11,6 +11,7 @@ use ShopgateShippingInfo;
 /**
  * Common functions for both cart and order objects
  * @method ExtendedExternalCoupon[] getExternalCoupons
+ * @method ExtendedOrderItem[] getItems
  */
 trait CartUtilityTrait
 {
@@ -118,5 +119,31 @@ trait CartUtilityTrait
         unset($element);
 
         $this->external_coupons = $value;
+    }
+
+    /**
+     * @param ExtendedOrderItem[]|null $value
+     */
+    public function setItems($value): void
+    {
+        if (!is_array($value)) {
+            $this->items = null;
+
+            return;
+        }
+
+        foreach ($value as $index => &$element) {
+            if ((!is_object($element) || !($element instanceof ShopgateOrderItem)) && !is_array($element)) {
+                unset($value[$index]);
+                continue;
+            }
+
+            if (is_array($element)) {
+                $element = new ExtendedOrderItem($element);
+            }
+        }
+        unset($element);
+
+        $this->items = $value;
     }
 }

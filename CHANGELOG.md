@@ -1,5 +1,6 @@
 # 1.5.1
 
+- added an automatic deserializer for order item internal fields
 - removed re-use of existing customer cart when adding an order
 
 # 1.5.0
