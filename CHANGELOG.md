@@ -1,7 +1,10 @@
-# 1.5.1
+# 1.6.0
 
 - added an automatic deserializer for order item internal fields
 - removed re-use of existing customer cart when adding an order
+- removed deleting existing customer cart when adding an order
+- removed re-use of existing customer cart on app check cart calls
+- removed deleting existing customer cart on app check cart calls
 
 # 1.5.0
 
@@ -14,7 +17,7 @@
 - added json helper trait
 - fixed package dimensions & pack units to not export if value is empty
 - fixed `check_cart` without email or external_customer_id fatal error
-- fixed new coupons not longer being added to cart
+- fixed new coupons no longer being added to cart
 - removed strict SDK version constraint, should auto-update
 
 # 1.4.1

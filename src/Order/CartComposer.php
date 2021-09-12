@@ -60,9 +60,10 @@ class CartComposer
             )->getId();
         }
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        $this->contextComposer->addCustomerAddress($sgCart, $initContext);
-        $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $initContext);
-        $context = $this->contextComposer->addActivePayment($paymentId, $initContext);
+        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext);
+        $this->contextComposer->addCustomerAddress($sgCart, $cleanCartContext);
+        $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $cleanCartContext);
+        $context = $this->contextComposer->addActivePayment($paymentId, $cleanCartContext);
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
         $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);
@@ -76,7 +77,7 @@ class CartComposer
             + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
 
         $this->quoteBridge->deleteCart($context);
-        $this->contextManager->resetContext();
+        $this->contextManager->resetContext($initContext);
 
         return $result;
     }
