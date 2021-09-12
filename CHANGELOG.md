@@ -8,8 +8,7 @@
 
 # 1.5.0
 
-- added order email template variables (dependent
-  on [SW 6.4.4.0](https://github.com/shopware/platform/releases/tag/v6.4.4.0))
+- added order email template variables (dependent on [SW 6.4.4.0])
 
 # 1.4.2
 
@@ -129,9 +128,12 @@
 - fixed installation routines
 
 # 0.0.4
+
 - Added authentication configuration
 - Added category export - get_categories
 - Added product export (simple/variant) - get_items
 - get_settings
 - get_customer
 - ping
+
+[SW 6.4.4.0]: (https://github.com/shopware/platform/releases/tag/v6.4.4.0)
