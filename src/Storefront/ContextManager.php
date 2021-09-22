@@ -78,6 +78,8 @@ class ContextManager
      * Resetting is necessary as our transactions use hidden methods.
      * Without resetting the new objects created will use the last
      * context as base.
+     *
+     * @param SalesChannelContext|null $context
      */
     public function resetContext(?SalesChannelContext $context = null): void
     {
