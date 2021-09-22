@@ -1,6 +1,14 @@
+# 1.6.0
+
+- added an automatic deserializer for order item internal fields
+- removed re-use of existing customer cart when adding an order
+- removed deleting existing customer cart when adding an order
+- removed re-use of existing customer cart on app check cart calls
+- removed deleting existing customer cart on app check cart calls
+
 # 1.5.0
 
-- added order email template variables (dependent on [PR#2010](https://github.com/shopware/platform/pull/2010))
+- added order email template variables (dependent on [SW 6.4.4.0])
 
 # 1.4.2
 
@@ -8,7 +16,7 @@
 - added json helper trait
 - fixed package dimensions & pack units to not export if value is empty
 - fixed `check_cart` without email or external_customer_id fatal error
-- fixed new coupons not longer being added to cart
+- fixed new coupons no longer being added to cart
 - removed strict SDK version constraint, should auto-update
 
 # 1.4.1
@@ -120,9 +128,12 @@
 - fixed installation routines
 
 # 0.0.4
+
 - Added authentication configuration
 - Added category export - get_categories
 - Added product export (simple/variant) - get_items
 - get_settings
 - get_customer
 - ping
+
+[SW 6.4.4.0]: (https://github.com/shopware/platform/releases/tag/v6.4.4.0)

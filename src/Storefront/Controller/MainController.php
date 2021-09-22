@@ -12,8 +12,7 @@ use Shopgate\Shopware\System\Mapping\ConfigMapping;
 use ShopgateBuilder;
 use ShopgateLibraryException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\Framework\Util\Random;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,23 +24,14 @@ class MainController extends StorefrontController
     public const IS_SHOPGATE = 'IS_SHOPGATE_CALL';
     private ConfigBridge $systemConfigService;
     private ContextManager $contextManager;
-    private AbstractSalesChannelContextFactory $channelContextFactory;
 
-    /**
-     * @param ConfigBridge $systemConfigService
-     * @param ContainerInterface $container
-     * @param ContextManager $context
-     * @param AbstractSalesChannelContextFactory $channelContextFactory
-     */
     public function __construct(
         ConfigBridge $systemConfigService,
         ContainerInterface $container,
-        ContextManager $context,
-        AbstractSalesChannelContextFactory $channelContextFactory
+        ContextManager $context
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->contextManager = $context;
-        $this->channelContextFactory = $channelContextFactory;
         Facade::init($container);
     }
 
@@ -72,10 +62,10 @@ class MainController extends StorefrontController
                 'error_text' => 'Plugin is not active in Shopware config'
             ]);
         }
-        $salesChannelContext = $this->channelContextFactory->create(Uuid::randomHex(), $salesChannelId);
-        $this->contextManager->setSalesChannelContext($salesChannelContext);
+        $context = $this->contextManager->createNewContext(Random::getAlphanumericString(32), $salesChannelId);
+        $this->contextManager->setSalesChannelContext($context);
 
-        if ($salesChannelContext->getSalesChannel()->isMaintenance()) {
+        if ($context->getSalesChannel()->isMaintenance()) {
             return new JsonResponse([
                 'error' => ShopgateLibraryException::UNKNOWN_ERROR_CODE,
                 'error_text' => 'site in maintenance mode'

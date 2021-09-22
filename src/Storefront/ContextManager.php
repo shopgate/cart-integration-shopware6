@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Storefront;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
@@ -19,16 +21,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 class ContextManager
 {
     private SalesChannelContextServiceInterface $contextService;
-    private SalesChannelContextRestorer $contextRestorer;
     private ?SalesChannelContext $salesContext = null;
+    private AbstractSalesChannelContextFactory $channelContextFactory;
+    private SalesChannelContextRestorer $contextRestorer;
     private AbstractContextSwitchRoute $contextSwitchRoute;
 
-    /**
-     * @param SalesChannelContextServiceInterface $contextService
-     * @param SalesChannelContextRestorer $contextRestorer
-     * @param AbstractContextSwitchRoute $contextSwitchRoute
-     */
     public function __construct(
+        AbstractSalesChannelContextFactory $channelContextFactory,
         SalesChannelContextServiceInterface $contextService,
         SalesChannelContextRestorer $contextRestorer,
         AbstractContextSwitchRoute $contextSwitchRoute
@@ -36,6 +35,7 @@ class ContextManager
         $this->contextService = $contextService;
         $this->contextRestorer = $contextRestorer;
         $this->contextSwitchRoute = $contextSwitchRoute;
+        $this->channelContextFactory = $channelContextFactory;
     }
 
     /**
@@ -64,6 +64,7 @@ class ContextManager
 
     /**
      * @param string $customerId
+     * @param SalesChannelContext|null $currentContext
      * @return SalesChannelContext
      */
     public function loadByCustomerId(string $customerId): SalesChannelContext
@@ -77,8 +78,10 @@ class ContextManager
      * Resetting is necessary as our transactions use hidden methods.
      * Without resetting the new objects created will use the last
      * context as base.
+     *
+     * @param SalesChannelContext|null $context
      */
-    public function resetContext(): void
+    public function resetContext(?SalesChannelContext $context = null): void
     {
         $payment = $this->salesContext->getCustomer() && $this->salesContext->getCustomer()->getDefaultPaymentMethod()
             ? $this->salesContext->getCustomer()->getDefaultPaymentMethod()->getId()
@@ -88,8 +91,7 @@ class ContextManager
             new RequestDataBag([
                 SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
                 SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
-            ])
-        );
+            ]), $context);
     }
 
     /**
@@ -119,5 +121,38 @@ class ContextManager
         ));
 
         return $this->salesContext = $context;
+    }
+
+    /**
+     * Creates a duplicate of current context with a new token.
+     * We can then manipulate the context & cart without fear
+     * of messing with the desktop context & cart.
+     *
+     * @param SalesChannelContext $context
+     * @return SalesChannelContext
+     */
+    public function duplicateContextWithNewToken(SalesChannelContext $context): SalesChannelContext
+    {
+        $options = array_merge([
+            SalesChannelContextService::LANGUAGE_ID => $context->getSalesChannel()->getLanguageId(),
+            SalesChannelContextService::CURRENCY_ID => $context->getSalesChannel()->getCurrencyId(),
+            SalesChannelContextService::PERMISSIONS => $context->getPermissions()
+        ],
+            $context->getCustomer()
+                ? [SalesChannelContextService::CUSTOMER_ID => $context->getCustomer()->getId()]
+                : []);
+
+        return $this->createNewContext(Random::getAlphanumericString(32), $context->getSalesChannelId(), $options);
+    }
+
+    /**
+     * @param string $token
+     * @param string $salesChannelId
+     * @param array $options
+     * @return SalesChannelContext
+     */
+    public function createNewContext(string $token, string $salesChannelId, array $options = []): SalesChannelContext
+    {
+        return $this->channelContextFactory->create($token, $salesChannelId, $options);
     }
 }
