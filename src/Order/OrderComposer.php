@@ -83,7 +83,8 @@ class OrderComposer
         }
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
         $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext);
-        if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(), $cleanCartContext)) {
+        if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(),
+            $cleanCartContext->getContext())) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
                 $order->getOrderNumber(),
@@ -138,13 +139,14 @@ class OrderComposer
      */
     public function setShippingCompleted(ShopgateMerchantApi $merchantApi): void
     {
-        $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
+        $context = $this->contextManager->getSalesContext()->getContext();
+        $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($context);
         foreach ($shopgateOrders as $shopgateOrder) {
             $swOrder = $shopgateOrder->getOrder();
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
                 $shopgateOrder->setIsSent(true);
-                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $context);
                 continue;
             }
             $stateName = $swOrder->getStateMachineState() ? $swOrder->getStateMachineState()->getTechnicalName() : '';
@@ -156,7 +158,7 @@ class OrderComposer
                     true
                 );
                 $shopgateOrder->setIsSent(true);
-                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $context);
             }
         }
     }
@@ -169,20 +171,21 @@ class OrderComposer
      */
     public function cancelOrders(ShopgateMerchantApi $merchantApi): void
     {
-        $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($this->contextManager->getSalesContext());
+        $context = $this->contextManager->getSalesContext()->getContext();
+        $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($context);
         foreach ($shopgateOrders as $shopgateOrder) {
             $swOrder = $shopgateOrder->getOrder();
             if ($swOrder === null) {
                 // should not happen, but in this case the order shouldn't be handled again
                 $shopgateOrder->setIsCancelled(true);
-                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $context);
                 continue;
             }
             $stateName = $swOrder->getStateMachineState() ? $swOrder->getStateMachineState()->getTechnicalName() : '';
             if (in_array($stateName, self::statusesCancelled)) {
                 $merchantApi->cancelOrder($shopgateOrder->getShopgateOrderNumber());
                 $shopgateOrder->setIsCancelled(true);
-                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $this->contextManager->getSalesContext());
+                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $context);
             }
         }
     }
