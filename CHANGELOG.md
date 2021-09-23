@@ -1,3 +1,8 @@
+# 1.6.1
+
+- added compatibility for SW versions lower than 6.4.4.0 introduced in release 1.5.0
+- fixed issues with payment/shipping labels not loading on frontend
+
 # 1.6.0
 
 - added an automatic deserializer for order item internal fields
