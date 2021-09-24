@@ -129,18 +129,17 @@ class ContextManager
      * of messing with the desktop context & cart.
      *
      * @param SalesChannelContext $context
+     * @param string $customerId
      * @return SalesChannelContext
      */
-    public function duplicateContextWithNewToken(SalesChannelContext $context): SalesChannelContext
+    public function duplicateContextWithNewToken(SalesChannelContext $context, string $customerId): SalesChannelContext
     {
-        $options = array_merge([
+        $options = [
             SalesChannelContextService::LANGUAGE_ID => $context->getSalesChannel()->getLanguageId(),
             SalesChannelContextService::CURRENCY_ID => $context->getSalesChannel()->getCurrencyId(),
-            SalesChannelContextService::PERMISSIONS => $context->getPermissions()
-        ],
-            $context->getCustomer()
-                ? [SalesChannelContextService::CUSTOMER_ID => $context->getCustomer()->getId()]
-                : []);
+            SalesChannelContextService::PERMISSIONS => $context->getPermissions(),
+            SalesChannelContextService::CUSTOMER_ID => $customerId
+        ];
 
         return $this->createNewContext(Random::getAlphanumericString(32), $context->getSalesChannelId(), $options);
     }

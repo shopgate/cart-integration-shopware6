@@ -81,8 +81,9 @@ class OrderComposer
                 $this->contextManager->getSalesContext()
             )->getId();
         }
+        // load desktop cart, duplicate its context, add info to context & create new cart based on it
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext);
+        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId);
         if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(),
             $cleanCartContext->getContext())) {
             throw new ShopgateLibraryException(
@@ -101,14 +102,13 @@ class OrderComposer
         ];
         try {
             $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $cleanCartContext);
-            // build cart & order
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$order->isShippingFree()) {
                 $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
             }
             $lineItems = $this->lineItemComposer->mapIncomingLineItems($order);
             $swCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $newContext, $lineItems);
-            // some errors are just success notifications, remove them
+            // some errors are just success notifications, so we have to remove them
             $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
                 return $error->isPersistent() === false;
             }));
@@ -122,7 +122,7 @@ class OrderComposer
         } catch (Throwable $error) {
             throw $this->errorMapping->mapThrowable($error);
         } finally {
-            $this->contextManager->resetContext($initContext);
+            $this->contextManager->resetContext($initContext); // load original desktop cart
         }
 
         return [
