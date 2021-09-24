@@ -18,10 +18,10 @@ In case Shopgate module is not publicly available via packagist, it can be insta
 You can now add the requirement of the Shopgate plugin by running the composer command in the root directory:
 ```shell
 cd [shopware6 root folder]
-composer require shopgate/cart-integration-shopware6:1.4.0
+composer require shopgate/cart-integration-shopware6:1.6.2
 ```
 
-With this method, make sure to use the exact version (e.g. `1.4.0`) that is provided in the composer.json of the
+With this method, make sure to use the exact version (e.g. `1.6.2`) that is provided in the composer.json of the
 ShopgateModule.
 
 #### Composer folder (untested)
@@ -60,7 +60,7 @@ cd [shopware6 root folder]
 
 # Configuration
 
-### Email template variable usage
+### Email template variable usage (supported as of Shopware 6.4.4.0)
 
 For create order emails:
 

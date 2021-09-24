@@ -1,3 +1,7 @@
+# 1.6.2
+
+- fixed issues with addOrder & checkCart not logging in customer/guests properly
+
 # 1.6.1
 
 - added compatibility for SW versions lower than 6.4.4.0 introduced in release 1.5.0

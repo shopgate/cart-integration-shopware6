@@ -59,8 +59,9 @@ class CartComposer
                 $this->contextManager->getSalesContext()
             )->getId();
         }
+        // load desktop cart, duplicate its context, add info to context & create new cart based on it
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext);
+        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId);
         $this->contextComposer->addCustomerAddress($sgCart, $cleanCartContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $cleanCartContext);
         $context = $this->contextComposer->addActivePayment($paymentId, $cleanCartContext);
@@ -76,8 +77,8 @@ class CartComposer
             + $this->orderCustomerComposer->mapOutgoingCartCustomer($context)
             + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
 
-        $this->quoteBridge->deleteCart($context);
-        $this->contextManager->resetContext($initContext);
+        $this->quoteBridge->deleteCart($context); // delete newly created cart
+        $this->contextManager->resetContext($initContext); // revert back to desktop cart
 
         return $result;
     }
