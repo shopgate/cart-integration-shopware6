@@ -1,3 +1,7 @@
+# 1.6.3
+
+- fixed issues with plugin renaming & installation error
+
 # 1.6.2
 
 - fixed issues with addOrder & checkCart not logging in customer/guests properly

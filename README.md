@@ -3,38 +3,49 @@
 ## Install
 
 ### Packagist (public) install
-If the package is available on packagist.org, simply add the composer package to the shopware's root composer:
+If this plugin is available on `packagist.org`, simply add the composer package to the shopware's root composer:
 ```shell
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-shopware6
 ```
 
-### Folder install
+### Folder install (Recommended)
 
-In case Shopgate module is not publicly available via packagist, it can be installed manually by copying the
-`ShopgateModule` folder to `custom/static-plugins` folder.
+In case Shopgate module is not publicly available via `packagist.org`, it can be installed manually by copying the
+plugin folder to `custom/static-plugins` folder.
 
 #### Composer symlink
-You can now add the requirement of the Shopgate plugin by running the composer command in the root directory:
+
+After placing it in the `static-plugins` folder you can now link it to composer by running this command in the root
+directory:
+
 ```shell
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-shopware6:1.6.2
 ```
 
-With this method, make sure to use the exact version (e.g. `1.6.2`) that is provided in the composer.json of the
-ShopgateModule.
+With this method, make sure to use the exact version (e.g. `1.6.2`) that is provided in the composer.json of this
+plugin.
 
-#### Composer folder (untested)
-Supposedly you can place the `ShopgateModule` folder in the `custom/plguins`. 
-Make sure the run the `composer update` inside the ShopgateModule folder so that the Shopgate SDK is installed.
+#### Composer folder (Untested)
+
+Alternatively you could place the `SgateShopgatePluginSW6` folder in the `custom/plguins`. Afterwards make sure the run
+the `composer update` inside this plugin's folder so that the Shopgate SDK is installed.
+
+```shell
+cd custom/plugins/SgateShopgatePluginSW6
+composer update
+```
 
 ## Enable & Activate
+
 Install and activate the module:
+
 ```shell
 cd [shopware6 root folder]
 php bin/console plugin:refresh
-php bin/console plugin:install ShopgateModule
-php bin/console plugin:activate ShopgateModule
+php bin/console plugin:install SgateShopgatePluginSW6
+php bin/console plugin:activate SgateShopgatePluginSW6
 php bin/console cache:clear
 ```
 
