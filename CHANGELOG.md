@@ -1,6 +1,7 @@
 # 1.6.3
 
 - fixed issues with plugin renaming & installation error
+- fixed catching error properly when no `shop_number` is sent in API call
 
 # 1.6.2
 

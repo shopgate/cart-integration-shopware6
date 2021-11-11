@@ -45,7 +45,7 @@ class MainController extends StorefrontController
     {
         define(self::IS_SHOPGATE, true);
         $salesChannelId = $this->systemConfigService->getSalesChannelId(
-            $request->request->get('shop_number')
+            (string) $request->request->get('shop_number')
         );
         if (null === $salesChannelId) {
             return new JsonResponse(
