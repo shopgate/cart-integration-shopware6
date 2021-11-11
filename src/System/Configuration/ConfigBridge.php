@@ -20,7 +20,8 @@ use Throwable;
 
 class ConfigBridge
 {
-    public const SYSTEM_CONFIG_DOMAIN = 'ShopgateModule.config.';
+    public const PLUGIN_NAMESPACE = 'SgateShopgatePluginSW6';
+    public const SYSTEM_CONFIG_DOMAIN = self::PLUGIN_NAMESPACE . '.config.';
     public const SYSTEM_CONFIG_PROD_EXPORT = self::SYSTEM_CONFIG_DOMAIN . 'productTypesToExport';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
@@ -72,7 +73,7 @@ class ConfigBridge
     {
         try {
             $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('name', 'ShopgateModule'));
+            $criteria->addFilter(new EqualsFilter('name', self::PLUGIN_NAMESPACE));
             $result = $this->pluginRepository->search(
                 $criteria,
                 $this->contextManager->getSalesContext()->getContext()

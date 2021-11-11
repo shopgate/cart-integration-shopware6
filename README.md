@@ -2,39 +2,55 @@
 
 ## Install
 
-### Packagist (public) install
-If the package is available on packagist.org, simply add the composer package to the shopware's root composer:
+### Packagist install (recommended)
+This plugin is available on `packagist.org`. To install simply add the composer package to the shopware's root composer:
 ```shell
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-shopware6
 ```
+Afterwards just increment the plugin version root/composer.json, and run `composer update` to get the latest version.
 
 ### Folder install
 
-In case Shopgate module is not publicly available via packagist, it can be installed manually by copying the
-`ShopgateModule` folder to `custom/static-plugins` folder.
+It can be installed manually by copying the plugin folder to `custom/plugins` folder.
 
-#### Composer symlink
-You can now add the requirement of the Shopgate plugin by running the composer command in the root directory:
+#### Composer symlink (development)
+
+After placing it in the `plugins` folder you can now link it to composer by running this command in the root
+directory:
+
 ```shell
 cd [shopware6 root folder]
+
+# this step is required only in case you do not already have this in the root composer.json specified
+composer config repositories.sym '{"type": "path", "url": "custom/plugins/*", "options": {"symlink": true}}'
+
+# make sure to use the exact version (e.g. `1.6.2`) that is provided in the composer.json of this plugin.
 composer require shopgate/cart-integration-shopware6:1.6.2
 ```
 
-With this method, make sure to use the exact version (e.g. `1.6.2`) that is provided in the composer.json of the
-ShopgateModule.
+#### Update SDK separately
 
-#### Composer folder (untested)
-Supposedly you can place the `ShopgateModule` folder in the `custom/plguins`. 
-Make sure the run the `composer update` inside the ShopgateModule folder so that the Shopgate SDK is installed.
+Alternatively you could place this plugin's folder in the `custom/plguins`. Afterwards make sure the run
+the `composer update` inside this plugin's folder so that the Shopgate SDK is installed. Not recommended as it will also download the shopware core package.
+```shell
+composer update --no-dev -d custom/plugins/SgateShopgatePluginSW6 
+```
+**Or** you can install SDK separately in the root composer. Not recommended as you will have to manually update SDK version & keep track of it.
+```shell
+cd [shopware6 root folder]
+composer require shopgate/cart-integration-sdk:^2.9.81
+```
 
 ## Enable & Activate
+
 Install and activate the module:
+
 ```shell
 cd [shopware6 root folder]
 php bin/console plugin:refresh
-php bin/console plugin:install ShopgateModule
-php bin/console plugin:activate ShopgateModule
+php bin/console plugin:install SgateShopgatePluginSW6
+php bin/console plugin:activate SgateShopgatePluginSW6
 php bin/console cache:clear
 ```
 

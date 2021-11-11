@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
-use Shopgate\Shopware\ShopgateModule;
+use Shopgate\Shopware\SgateShopgatePluginSW6;
 use Shopgate\Shopware\System\Db\ClassCastInterface;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -41,7 +41,7 @@ class PaymentMethodInstaller extends EntityChannelInstaller
     protected function upsertEntity(ClassCastInterface $entity, Context $context): void
     {
         $data = array_merge($entity->toArray(), [
-            'pluginId' => $this->pluginIdProvider->getPluginIdByBaseClass(ShopgateModule::class, $context),
+            'pluginId' => $this->pluginIdProvider->getPluginIdByBaseClass(SgateShopgatePluginSW6::class, $context),
         ]);
 
         // Find existing payment method by ID for update / install decision
