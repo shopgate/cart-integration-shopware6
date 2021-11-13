@@ -1,0 +1,352 @@
+{
+  "info": {
+    "_postman_id": "de41bff7-ab7d-43d3-b387-4eac3e580002",
+    "name": "SW6 CI Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Init",
+      "item": [
+        {
+          "name": "get sales channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Get values\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Storefront');\r",
+                  "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Storefront\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/sales-channel",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "sales-channel"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search shopgate plugin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Get values\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.environment.set(\"gen_plugin_version\", jsonData.data[0].attributes.version);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"composerName\",\r\n          \"value\": \"shopgate/cart-integration-shopware6\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/plugin",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "plugin"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "General Errors",
+      "item": [
+        {
+          "name": "incorrect login error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Your test name\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error_text).to.eq('authentication failed');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{sgHeaderAuthUser}}",
+                "disabled": true
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{sgHeaderAuthToken}}",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ping",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const jsonData = pm.response.json();",
+              "pm.test(\"Ping Pong\", function () {",
+              "    pm.expect(jsonData.pong).to.eql('OK');",
+              "});",
+              "",
+              "pm.test('Plugin Versions', function () {",
+              "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+              "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+              "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Shopgate-Auth-User",
+            "value": "{{sgHeaderAuthUser}}"
+          },
+          {
+            "key": "X-Shopgate-Auth-Token",
+            "value": "{{sgHeaderAuthToken}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "shop_number",
+              "value": "{{shop_number}}",
+              "type": "text"
+            },
+            {
+              "key": "action",
+              "value": "{{framework_action_ping}}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{domain}}",
+          "host": [
+            "{{domain}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "var tstamp = Math.floor(Date.now() / 1000);",
+          "",
+          "// Use the CryptoJS",
+          "var authUser = pm.environment.get('customer_number') + \"-\" + tstamp;",
+          "var tokenData = \"SPA-\" + pm.environment.get('customer_number') + \"-\" + tstamp + \"-\" + pm.environment.get('api_key');",
+          "",
+          "var authToken = CryptoJS.SHA1(tokenData).toString();",
+          "",
+          "// Set the new header values",
+          "pm.environment.set(\"sgHeaderAuthUser\", authUser);",
+          "pm.environment.set(\"sgHeaderAuthToken\", authToken);",
+          "",
+          "const createRequest = {",
+          "            \"client_id\": pm.environment.get(\"sw_client_id\"),",
+          "            \"grant_type\": \"password\",",
+          "            \"scopes\": \"write\",",
+          "            \"username\": pm.environment.get(\"sw_admin\"),",
+          "            \"password\": pm.environment.get(\"sw_pass\")",
+          "        };",
+          "const refreshRequest = {",
+          "    \"grant_type\": \"refresh_token\",",
+          "    \"client_id\": pm.environment.get(\"sw_client_id\"),",
+          "    \"refresh_token\": pm.environment.get(\"gen_refresh_token\")",
+          "};",
+          "// SW Auth",
+          "const authRequest = {",
+          "  url: pm.environment.replaceIn(pm.globals.get(\"sw_endpoint_auth\")),",
+          "  method: 'POST',",
+          "  header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
+          "  body: {",
+          "    mode: 'application/json'",
+          "  }",
+          "};",
+          "",
+          "",
+          "var getToken = true;",
+          "",
+          "if (!pm.environment.get('gen_token_expires') || ",
+          "    !pm.environment.get('gen_access_token')) {",
+          "    console.log('Token or expiry date are missing')",
+          "} else if (pm.environment.get('gen_token_expires') <= (new Date()).getTime()) {",
+          "    console.log('Token is expired')",
+          "} else {",
+          "    getToken = false;",
+          "    console.log('Token and expiry date are all good');",
+          "}",
+          "",
+          "if (getToken === true) {",
+          "    // set body depending on type of request needed",
+          "    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
+          "    pm.sendRequest(authRequest, function (err, res) {",
+          "    console.log(err ? err : res.json());",
+          "        if (err === null) {",
+          "            console.log('Saving the token and expiry date')",
+          "            var responseJson = res.json();",
+          "            pm.environment.set('gen_access_token', responseJson.access_token)",
+          "           ",
+          "            var expiryDate = new Date();",
+          "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+          "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
+          "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+          "        }",
+          "    });",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
