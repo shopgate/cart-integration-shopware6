@@ -1,0 +1,142 @@
+# this is a CI/CD template for shopware plugins
+# - SwagPluginTemplate: https://gitlab.shopware.com/shopware/6/templates/swagplugintemplate/-/blob/trunk/.gitlab-ci.yml
+# - gitlab docs: https://docs.gitlab.com/ee/ci/yaml/#include
+
+stages:
+  - build
+  - test
+  #- deploy
+
+variables:
+  PROJECT_ROOT: ${CI_PROJECT_DIR}
+  WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/public
+  LOG_STDOUT: $CI_PROJECT_DIR/var/log/stdout.log
+  MYSQL_DATABASE: root
+  MYSQL_ROOT_PASSWORD: root
+  GIT_STRATEGY: clone
+  # things plugins might want to override
+  DEV_IMAGE: shopware/development:7.4-composer-2
+  MYSQL_IMAGE: mysql:5.7
+  MYSQL_CMD: mysqld
+  MYSQL8_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
+  PLATFORM_BRANCH: '6.4.6.0'
+  PLUGIN_NAME: ${CI_PROJECT_TITLE}
+  PLUGIN_SOURCE_DIR: src/
+  PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
+  PLUGIN_CONFIG_APIKEY: '111111111111111111111111'
+  PLUGIN_CONFIG_SHOPNUMBER: '123456'
+  PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
+#  APP_URL: http://host.docker.internal
+#  APP_URL: http://localhost
+  SW_ADMIN_USER: myadmin
+  SW_ADMIN_PASS: test.123
+  NEWMAN_VERBOSE: '--verbose'
+
+cache:
+  paths:
+    - .composer
+    - .npm
+
+workflow:
+  rules:
+    # do not run on push
+    -   if: '$CI_PIPELINE_SOURCE == "push"'
+        when: always
+    -   when: never
+
+default:
+  image: $DEV_IMAGE
+  services:
+      - name: $MYSQL_IMAGE
+        alias: database
+        entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
+  before_script:
+    #    - curl --location --request POST http://host.docker.internal:8888/ --fail -w "%{http_code}" || true;
+    - export APP_URL="http://$HOSTNAME"
+    - apt update > /dev/null
+    - npm install -g newman@^5.3.0 > /dev/null
+    - apt-get install -y jq > /dev/null
+    - PLUGIN_COMPOSER_NAME=$(jq -r ".name" composer.json)
+    - PLUGIN_COMPOSER_VERSION=$(jq -r ".version" composer.json)
+    - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
+    - echo "$PLUGIN_COMPOSER_SDK_VERSION"
+    - echo "$PLUGIN_COMPOSER_NAME"
+    - echo "$PLUGIN_COMPOSER_VERSION"
+    - export PLUGIN_NAME="${PLUGIN_NAME:-${CI_PROJECT_TITLE}}"
+    - echo "$PLUGIN_NAME"
+    - zip -rq plugin.zip .
+    - mv plugin.zip /tmp/plugin.zip
+    - rm -Rf .* * || true
+    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
+    - mkdir -p custom/plugins || true
+    - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
+    - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
+    #    - composer require "$PLUGIN_COMPOSER_NAME":"PLUGIN_COMPOSER_VERSION" --no-update
+    #    - >
+    #      composer config repositories.sym '{"type": "path", "url": "custom/plugins/*", "options": {"symlink": true}}'
+    - composer install --quiet
+    - mkdir -p config/jwt || true
+    - bin/console system:generate-jwt || true
+    - bin/console system:install --drop-database --basic-setup --force >/dev/null
+    - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
+    - chown -R 1000:1000 .
+    - bin/console plugin:refresh
+    - bin/console plugin:install --activate $PLUGIN_NAME
+    - >
+      if bin/console debug:container --parameter kernel.plugin_infos --format json | grep -q "$PLUGIN_NAME";
+        then echo "$PLUGIN_NAME is active";
+        else echo "$PLUGIN_NAME is not active"; exit 1;
+      fi
+    - bin/console bundle:dump
+    - bin/console assets:install
+    - >
+      mysql -h database -u root -proot root -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at) VALUES (UNHEX(REPLACE(UUID(),'-','')),'SgateShopgatePluginSW6.config.isActive', '{\"_value\": true}', UNHEX('$SalesChannel'), NOW());"
+    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_SHOPNUMBER;
+    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
+    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
+    - mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
+    - /entrypoint supervisord > /dev/null 2>&1 &
+
+newman:
+  stage: test
+  script:
+    - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
+#    - curl --location --request POST $APP_URL/shopgate/plugin --form 'shop_number="123456"' --form 'action="ping"';
+#    - mysql -h database -u root -proot root -e "SELECT HEX(sales_channel_id), url FROM sales_channel_domain;"
+    - SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
+#    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.isActive true;
+    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli --color on --insecure --no-insecure-file-read --suppress-exit-code
+      --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
+      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE};
+#    - tail -F /dev/null
+
+.install-dev-tools: &install-dev-tools
+  - >
+    composer config repo.platform-packages --json '{"type": "path", "url": "../../../src/*", "canonical": true}';
+  - composer require 'shopware/core:6.4.*@dev' 'shopware/storefront:6.4.*@dev' 'shopware/administration:6.4.*@dev' 'shopware/elasticsearch:6.4.*@dev'
+
+phpunit:
+  stage: test
+  image: $DEV_IMAGE
+  needs: []
+  rules:
+    - exists:
+        - phpunit.xml*
+  before_script:
+    - composer require phpunit/phpunit:~9.5.2 --dev
+  script:
+#    - *install-dev-tools
+    - php
+      -d pcov.enabled=1 -d pcov.directory=$PWD/src -d pcov.exclude='~(vendor|tests|node_modules)~'
+      vendor/bin/phpunit
+        --configuration phpunit.xml.dist
+        --log-junit ${CI_PROJECT_DIR}/phpunit.junit.xml
+        --colors=never
+        --coverage-cobertura ${CI_PROJECT_DIR}/cobertura.xml
+        --coverage-text | sed -E -n '1,/^\s*Lines:\s*([0-9]+(\.[0-9]+)?)%/ p' # do not output covered files lines
+  coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
+  artifacts:
+    when: always
+    reports:
+      junit: phpunit.junit.xml
+      cobertura: cobertura.xml
