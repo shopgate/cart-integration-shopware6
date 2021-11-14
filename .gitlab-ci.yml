@@ -17,7 +17,7 @@ variables:
   MYSQL_CMD: mysqld
   MYSQL8_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
   PLATFORM_BRANCH: '6.4.6.0'
-  PLUGIN_NAME: ${CI_PROJECT_TITLE}
+  PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
   PLUGIN_CONFIG_APIKEY: '111111111111111111111111'
@@ -53,11 +53,6 @@ default:
     - PLUGIN_COMPOSER_NAME=$(jq -r ".name" composer.json)
     - PLUGIN_COMPOSER_VERSION=$(jq -r ".version" composer.json)
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
-    - echo "$PLUGIN_COMPOSER_SDK_VERSION"
-    - echo "$PLUGIN_COMPOSER_NAME"
-    - echo "$PLUGIN_COMPOSER_VERSION"
-    - export PLUGIN_NAME="${PLUGIN_NAME:-${CI_PROJECT_TITLE}}"
-    - echo "$PLUGIN_NAME"
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
