@@ -169,6 +169,7 @@ class AddressMapping
         $shopgateAddress->setFirstName($shopwareAddress->getFirstName());
         $shopgateAddress->setLastName($shopwareAddress->getLastName());
         $shopgateAddress->setPhone($shopwareAddress->getPhoneNumber());
+        $shopgateAddress->setCompany($shopwareAddress->getCompany());
         $shopgateAddress->setStreet1($shopwareAddress->getStreet());
         $street2 = $shopwareAddress->getAdditionalAddressLine1();
         if ($shopwareAddress->getAdditionalAddressLine2()) {
