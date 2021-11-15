@@ -25,7 +25,7 @@ variables:
   PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
   SW_ADMIN_USER: myadmin
   SW_ADMIN_PASS: test.123
-  NEWMAN_VERBOSE: '--verbose'
+  NEWMAN_VERBOSE: ''
 
 cache:
   paths:

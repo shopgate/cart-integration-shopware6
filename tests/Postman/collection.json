@@ -9,7 +9,7 @@
       "name": "Init",
       "item": [
         {
-          "name": "get sales channel",
+          "name": "SW: get sales channel",
           "event": [
             {
               "listen": "test",
@@ -76,7 +76,7 @@
           "response": []
         },
         {
-          "name": "search shopgate plugin",
+          "name": "SW: get shopgate plugin",
           "event": [
             {
               "listen": "test",
@@ -141,13 +141,84 @@
           },
           "response": []
         }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const createRequest = {",
+              "            \"client_id\": pm.environment.get(\"sw_client_id\"),",
+              "            \"grant_type\": \"password\",",
+              "            \"scopes\": \"write\",",
+              "            \"username\": pm.environment.get(\"sw_admin\"),",
+              "            \"password\": pm.environment.get(\"sw_pass\")",
+              "        };",
+              "const refreshRequest = {",
+              "    \"grant_type\": \"refresh_token\",",
+              "    \"client_id\": pm.environment.get(\"sw_client_id\"),",
+              "    \"refresh_token\": pm.environment.get(\"gen_refresh_token\")",
+              "};",
+              "// SW Auth",
+              "const authRequest = {",
+              "  url: pm.environment.replaceIn(pm.globals.get(\"sw_endpoint_auth\")),",
+              "  method: 'POST',",
+              "  header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
+              "  body: {",
+              "    mode: 'application/json'",
+              "  }",
+              "};",
+              "",
+              "",
+              "var getToken = true;",
+              "",
+              "if (!pm.environment.get('gen_token_expires') || ",
+              "    !pm.environment.get('gen_access_token')) {",
+              "    console.log('Token or expiry date are missing')",
+              "} else if (pm.environment.get('gen_token_expires') <= (new Date()).getTime()) {",
+              "    console.log('Token is expired')",
+              "} else {",
+              "    getToken = false;",
+              "    console.log('Token and expiry date are all good');",
+              "}",
+              "",
+              "if (getToken === true) {",
+              "    // set body depending on type of request needed",
+              "    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
+              "    pm.sendRequest(authRequest, function (err, res) {",
+              "    console.log(err ? err : res.json());",
+              "        if (err === null) {",
+              "            console.log('Saving the token and expiry date')",
+              "            var responseJson = res.json();",
+              "            pm.environment.set('gen_access_token', responseJson.access_token)",
+              "           ",
+              "            var expiryDate = new Date();",
+              "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+              "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
+              "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+              "        }",
+              "    });",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              ""
+            ]
+          }
+        }
       ]
     },
     {
       "name": "General Errors",
       "item": [
         {
-          "name": "incorrect login error",
+          "name": "SG: incorrect login error",
           "event": [
             {
               "listen": "test",
@@ -208,62 +279,333 @@
       ]
     },
     {
-      "name": "ping",
-      "event": [
+      "name": "Export",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const jsonData = pm.response.json();",
-              "pm.test(\"Ping Pong\", function () {",
-              "    pm.expect(jsonData.pong).to.eql('OK');",
-              "});",
-              "",
-              "pm.test('Plugin Versions', function () {",
-              "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
-              "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
-              "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{sgHeaderAuthUser}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{sgHeaderAuthToken}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
+          "name": "SG: ping",
+          "event": [
             {
-              "key": "shop_number",
-              "value": "{{shop_number}}",
-              "type": "text"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{sgHeaderAuthUser}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{sgHeaderAuthToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Import",
+      "item": [
+        {
+          "name": "SG: register_customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check customer data\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const firstName = pm.environment.get('temp-first-name');",
+                  "    const lastName = pm.environment.get('temp-last-name');",
+                  "    console.log(firstName);",
+                  "    console.log(lastName);",
+                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
+                  "    pm.expect(jsonData.user_data.gender).to.eql('f');",
+                  "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
+                  "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
+                  "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
+                  "    ",
+                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
+                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
+                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
+                  "    pm.expect(billing.country).to.eql('DE');",
+                  "    pm.expect(billing.zipcode).to.eql('54321');",
+                  "    pm.expect(billing.state).to.eql('DE-SH');",
+                  "    pm.expect(billing.first_name).to.eql(firstName);",
+                  "    pm.expect(billing.last_name).to.eql(lastName);",
+                  "    pm.expect(billing.company).to.eql('My Company');",
+                  "    pm.expect(billing.street_2).to.eql('Street2');",
+                  "    pm.expect(billing.phone).to.eql('12345');",
+                  "    pm.expect(billing.gender).to.eql('f');",
+                  "",
+                  "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
+                  "    pm.expect(shipping.country).to.eql('DE');",
+                  "    pm.expect(shipping.zipcode).to.eql('12340');",
+                  "    pm.expect(shipping.state).to.be.null;",
+                  "    pm.expect(shipping.first_name).to.not.eql(firstName);",
+                  "    pm.expect(shipping.last_name).to.not.eql(lastName);",
+                  "    pm.expect(shipping.gender).to.eql('m');",
+                  "});",
+                  "",
+                  "// unset temp variables",
+                  "pm.environment.unset(\"temp-email\");",
+                  "pm.environment.unset(\"temp-first-name\");",
+                  "pm.environment.unset(\"temp-last-name\");"
+                ],
+                "type": "text/javascript"
+              }
             },
             {
-              "key": "action",
-              "value": "{{framework_action_ping}}",
-              "type": "text"
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
+                ],
+                "type": "text/javascript"
+              }
             }
-          ]
-        },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{sgHeaderAuthUser}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{sgHeaderAuthToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_register_customer}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "pass",
+                  "value": "{{userPass}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[registration_date]",
+                  "value": "2021-01-27T13:07:38+0000",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[first_name]",
+                  "value": "{{temp-first-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[last_name]",
+                  "value": "{{temp-last-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[gender]",
+                  "value": "f",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[mail]",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[birthday]",
+                  "value": "1987-05-19",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_invoice_address]",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_delivery_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][first_name]",
+                  "value": "{{$randomFirstName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][last_name]",
+                  "value": "{{$randomLastName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][gender]",
+                  "value": "m",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][zipcode]",
+                  "value": "12340",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_invoice_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_delivery_address]",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][first_name]",
+                  "value": "rewriten_first_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][last_name]",
+                  "value": "rewriten_last_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][gender]",
+                  "value": "m",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][zipcode]",
+                  "value": "54321",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][state]",
+                  "value": "DE-SH",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][company]",
+                  "value": "My Company",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_2]",
+                  "value": "Street2",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][phone]",
+                  "value": "12345",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ],
+              "query": [
+                {
+                  "key": "{{DebugKey}}",
+                  "value": "{{DebugValue}}",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     }
   ],
   "event": [
@@ -282,60 +624,7 @@
           "",
           "// Set the new header values",
           "pm.environment.set(\"sgHeaderAuthUser\", authUser);",
-          "pm.environment.set(\"sgHeaderAuthToken\", authToken);",
-          "",
-          "const createRequest = {",
-          "            \"client_id\": pm.environment.get(\"sw_client_id\"),",
-          "            \"grant_type\": \"password\",",
-          "            \"scopes\": \"write\",",
-          "            \"username\": pm.environment.get(\"sw_admin\"),",
-          "            \"password\": pm.environment.get(\"sw_pass\")",
-          "        };",
-          "const refreshRequest = {",
-          "    \"grant_type\": \"refresh_token\",",
-          "    \"client_id\": pm.environment.get(\"sw_client_id\"),",
-          "    \"refresh_token\": pm.environment.get(\"gen_refresh_token\")",
-          "};",
-          "// SW Auth",
-          "const authRequest = {",
-          "  url: pm.environment.replaceIn(pm.globals.get(\"sw_endpoint_auth\")),",
-          "  method: 'POST',",
-          "  header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
-          "  body: {",
-          "    mode: 'application/json'",
-          "  }",
-          "};",
-          "",
-          "",
-          "var getToken = true;",
-          "",
-          "if (!pm.environment.get('gen_token_expires') || ",
-          "    !pm.environment.get('gen_access_token')) {",
-          "    console.log('Token or expiry date are missing')",
-          "} else if (pm.environment.get('gen_token_expires') <= (new Date()).getTime()) {",
-          "    console.log('Token is expired')",
-          "} else {",
-          "    getToken = false;",
-          "    console.log('Token and expiry date are all good');",
-          "}",
-          "",
-          "if (getToken === true) {",
-          "    // set body depending on type of request needed",
-          "    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
-          "    pm.sendRequest(authRequest, function (err, res) {",
-          "    console.log(err ? err : res.json());",
-          "        if (err === null) {",
-          "            console.log('Saving the token and expiry date')",
-          "            var responseJson = res.json();",
-          "            pm.environment.set('gen_access_token', responseJson.access_token)",
-          "           ",
-          "            var expiryDate = new Date();",
-          "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
-          "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
-          "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
-          "        }",
-          "    });",
-          "}"
+          "pm.environment.set(\"sgHeaderAuthToken\", authToken);"
         ]
       }
     },
