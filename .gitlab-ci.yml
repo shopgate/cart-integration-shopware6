@@ -65,6 +65,7 @@ default:
     - bin/console system:generate-jwt || true
     - bin/console system:install --drop-database --basic-setup --force >/dev/null
     - APP_ENV=prod bin/console framework:demodata -p 100 -c 20 --users 10 --quiet
+    - bin/console dal:refresh:index -n --use-queue
     - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
     - chown -R 1000:1000 .
     - bin/console plugin:refresh
@@ -89,7 +90,7 @@ newman:
   stage: test
   script:
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ./postman-report.html --color on --insecure --no-insecure-file-read
+    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
       --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE}
       --global-var "verbose=$NEWMAN_VERBOSE";
@@ -97,7 +98,7 @@ newman:
     when: on_failure
     expire_in: 30 days
     paths:
-      - ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman/postman-report.html
+      - ./postman-report.html
 
 
 phpunit:
