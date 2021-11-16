@@ -25,7 +25,7 @@ variables:
   PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
   SW_ADMIN_USER: myadmin
   SW_ADMIN_PASS: test.123
-  NEWMAN_VERBOSE: ''
+  NEWMAN_VERBOSE: '--verbose'
 
 cache:
   paths:
@@ -88,7 +88,7 @@ newman:
   stage: test
   script:
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli --color on --insecure --no-insecure-file-read --suppress-exit-code
+    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
       --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE};
 
