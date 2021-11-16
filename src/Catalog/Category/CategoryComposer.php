@@ -43,15 +43,11 @@ class CategoryComposer
         $this->log->debug('Build Tree with Parent-ID: ' . $parentId);
         $allCategories = $this->categoryBridge->getChildCategories($parentId);
 
-        if (empty($ids)) {
-            $sliced = array_slice($allCategories->getElements(), $sliceOffset, $limit);
-            return $this->mapCategories($sliced);
+        if (!empty($ids)) {
+            $allCategories->sortByIdArray($ids);
         }
+        $sliced = array_slice($allCategories->getElements(), $sliceOffset, $limit);
 
-        $filteredById = $allCategories->filter(function (CategoryEntity $item) use ($ids) {
-            return in_array($item->getId(), $ids, true);
-        });
-        $sliced = array_slice($filteredById->getElements(), $sliceOffset, $limit);
         return $this->mapCategories($sliced);
     }
 
