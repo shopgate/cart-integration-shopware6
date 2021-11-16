@@ -91,7 +91,8 @@ newman:
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ./postman-report.html --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
-      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE};
+      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE}
+      --global-var "verbose=$NEWMAN_VERBOSE";
   artifacts:
     when: on_failure
     expire_in: 30 days
