@@ -29,8 +29,8 @@ variables:
 
 cache:
   paths:
-    - .composer
-    - .npm
+    - ${COMPOSER_HOME}
+    - ${NPM_CONFIG_CACHE}
 
 workflow:
   rules:
