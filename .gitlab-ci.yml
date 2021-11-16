@@ -25,7 +25,7 @@ variables:
   PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
   SW_ADMIN_USER: myadmin
   SW_ADMIN_PASS: test.123
-  NEWMAN_VERBOSE: ''
+  NEWMAN_VERBOSE: '--verbose'
 
 cache:
   paths:
@@ -35,9 +35,9 @@ cache:
 workflow:
   rules:
     # do not run on push
-    -   if: '$CI_PIPELINE_SOURCE == "push"'
-        when: always
-    -   when: never
+    - if: '$CI_PIPELINE_SOURCE == "tag"'
+      when: never
+    - when: always
 
 default:
   image: $DEV_IMAGE
