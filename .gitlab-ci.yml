@@ -64,11 +64,12 @@ default:
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
     - bin/console system:install --drop-database --basic-setup --force >/dev/null
-    - APP_ENV=prod bin/console framework:demodata -p 100 -c 20 --users 10 --quiet
+    - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console dal:refresh:index -n --use-queue
     - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
     - chown -R 1000:1000 .
     - bin/console plugin:refresh
+    - bin/console plugin:install --activate SwagPlatformDemoData
     - bin/console plugin:install --activate $PLUGIN_NAME
     - >
       if bin/console debug:container --parameter kernel.plugin_infos --format json | grep -q "$PLUGIN_NAME";

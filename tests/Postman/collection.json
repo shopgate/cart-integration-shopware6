@@ -153,14 +153,16 @@
                   "});\r",
                   "\r",
                   "const jsonData = pm.response.json();\r",
-                  "pm.environment.set(\"gen_category_count\", jsonData.meta.total);\r",
-                  "const homeCategory = jsonData.data.find(el => el.attributes.name === pm.environment.get('category_main_name'));\r",
-                  "pm.environment.set(\"gen_category_home_id\", homeCategory.id);\r",
-                  "pm.environment.set(\"gen_category_home_child_count\", homeCategory.attributes.childCount);\r",
+                  "pm.environment.set(\"gen_category_count\", jsonData.total);\r",
                   "\r",
-                  "jsonData.data.slice(-7).forEach(function(category, index) {\r",
-                  "    pm.environment.set(`gen_category_uid_${index}`, category.id);\r",
-                  "});"
+                  "pm.test(\"Test finding home category by name: \" + pm.environment.get('category_main_name'), function () {\r",
+                  "    pm.expect(jsonData.total).to.eq(8);\r",
+                  "    jsonData.data.forEach(function(category, index) {\r",
+                  "           pm.environment.set(`gen_category_uid_${index}`, category);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  ""
                 ],
                 "type": "text/javascript"
               }
@@ -177,15 +179,25 @@
                 }
               ]
             },
-            "method": "GET",
+            "method": "POST",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"{{category_main_name}}\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{host}}/api/category",
+              "raw": "{{host}}/api/search-ids/category",
               "host": [
                 "{{host}}"
               ],
               "path": [
                 "api",
+                "search-ids",
                 "category"
               ]
             }
@@ -407,16 +419,12 @@
                   "        console.log(jsonObject);",
                   "    }",
                   "    pm.expect(jsonObject.categories.category).to.have.property('$');",
-                  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/);",
-                  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
+                  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_0\"));",
+                  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
+                  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('0');",
                   "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
                   "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.not.empty;",
-                  "    //pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonObject.categories.category.image, 'Image URL not set').to.have.property('url').to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonObject.categories.category.image, 'Image title not set').to.have.property('title').to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonObject.categories.category.image.$, 'Image UID is missing').to.have.property('uid').to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonObject.categories.category.image.$).to.have.property('sort_order').to.be.a('string').to.match(/^\\d+$/);",
+                  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.empty;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -455,6 +463,81 @@
                 {
                   "key": "uids[0]",
                   "value": "{{gen_category_uid_0}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: get specific category 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "",
+                  "pm.test(\"Have proper category data\", function () {",
+                  "    const jsonObject = xml2Json(responseBody);",
+                  "    if (pm.globals.get('verbose')){",
+                  "        console.log(jsonObject);",
+                  "    }",
+                  "    pm.expect(jsonObject.categories.category).to.have.property('$');",
+                  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_1\"));",
+                  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
+                  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
+                  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
+                  "    pm.expect(jsonObject.categories.category.$.parent_uid).to.be.eq('77b959cf66de4c1590c7f9b7da3982f3');",
+                  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.eq('Bakery products');",
+                  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.eq(pm.environment.get(\"host\") + '/Food/Bakery-products/');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_categories}}",
+                  "type": "text"
+                },
+                {
+                  "key": "uids[0]",
+                  "value": "{{gen_category_uid_1}}",
                   "type": "text"
                 }
               ]
@@ -738,7 +821,7 @@
                   "        console.log(jsonObject.categories.category[0]);",
                   "    }",
                   "",
-                  "    pm.expect(jsonObject.categories.category).length(pm.environment.get('gen_category_count') - 1, 'Should be one less because root category is not exported in SG');",
+                  "    pm.expect(jsonObject.categories.category).length(pm.environment.get('gen_category_count'), 'Should be one less because root category is not exported in SG');",
                   "});"
                 ],
                 "type": "text/javascript"
