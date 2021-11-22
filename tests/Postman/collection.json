@@ -344,527 +344,673 @@
     {
       "name": "Export",
       "item": [
-        {
-          "name": "SG: ping",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonData = pm.response.json();",
-                  "pm.test(\"Ping Pong\", function () {",
-                  "    pm.expect(jsonData.pong).to.eql('OK');",
-                  "});",
-                  "",
-                  "pm.test('Plugin Versions', function () {",
-                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
-                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_ping}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: get specific category",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Not an error\", function () {",
-                  "    pm.response.to.not.have.jsonBody('error');",
-                  "});",
-                  "",
-                  "pm.test(\"Have proper category data\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "    pm.expect(jsonObject.categories.category).to.have.property('$');",
-                  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_0\"));",
-                  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
-                  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('0');",
-                  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
-                  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.empty;",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_categories}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[0]",
-                  "value": "{{gen_category_uid_0}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: get specific category 2",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Not an error\", function () {",
-                  "    pm.response.to.not.have.jsonBody('error');",
-                  "});",
-                  "",
-                  "pm.test(\"Have proper category data\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "    pm.expect(jsonObject.categories.category).to.have.property('$');",
-                  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_1\"));",
-                  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
-                  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
-                  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
-                  "    pm.expect(jsonObject.categories.category.$.parent_uid).to.be.eq('77b959cf66de4c1590c7f9b7da3982f3');",
-                  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.eq('Bakery products');",
-                  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.eq(pm.environment.get(\"host\") + '/Food/Bakery-products/');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_categories}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[0]",
-                  "value": "{{gen_category_uid_1}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: get first 5 categories",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Not an error\", function () {",
-                  "    pm.response.to.not.have.jsonBody('error');",
-                  "});",
-                  "",
-                  "pm.test(\"have categories\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')) {",
-                  "        console.log(jsonObject.categories.category[0]);",
-                  "    }",
-                  "",
-                  "    pm.expect(jsonObject.categories.category).length(5);",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_0\")), 'Missing 0').to.be.not.undefined;",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_1\")), 'Missing 1').to.be.not.undefined;",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_2\")), 'Missing 2').to.be.not.undefined;",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_3\")), 'Missing 3').to.be.not.undefined;",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_4\")), 'Missing 4').to.be.not.undefined;",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_5\")), 'Have 5?').to.be.undefined;",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_6\")), 'Have 6?').to.be.undefined;",
-                  "});",
-                  "",
-                  "/**",
-                  " * @param {array} list",
-                  " * @param {string} id",
-                  " */",
-                  "function findById(list, id) {",
-                  "    return list.find(element => element.$.uid === id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_categories}}",
-                  "type": "text"
-                },
-                {
-                  "key": "limit",
-                  "value": "5",
-                  "type": "text"
-                },
-                {
-                  "key": "offset",
-                  "value": "1",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[0]",
-                  "value": "{{gen_category_uid_0}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[1]",
-                  "value": "{{gen_category_uid_1}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[2]",
-                  "value": "{{gen_category_uid_2}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[3]",
-                  "value": "{{gen_category_uid_3}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[4]",
-                  "value": "{{gen_category_uid_4}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[5]",
-                  "value": "{{gen_category_uid_5}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[6]",
-                  "value": "{{gen_category_uid_6}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: get last 5 categories",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Not an error\", function () {",
-                  "    pm.response.to.not.have.jsonBody('error');",
-                  "});",
-                  "",
-                  "pm.test(\"have categories\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "",
-                  "    if (pm.globals.get('verbose')) {",
-                  "        console.log(jsonObject.categories.category[0]);",
-                  "    }",
-                  "    pm.expect(jsonObject.categories.category).length(2);",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_5\")), '5 should be undefined').to.be.not.undefined;",
-                  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_6\")), '6 should be undefined').to.be.not.undefined;",
-                  "});",
-                  "",
-                  "/**",
-                  " * @param {array} list",
-                  " * @param {string} id",
-                  " */",
-                  "function findById(list, id) {",
-                  "    return list.find(element => element.$.uid === id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_categories}}",
-                  "type": "text"
-                },
-                {
-                  "key": "limit",
-                  "value": "5",
-                  "type": "text"
-                },
-                {
-                  "key": "offset",
-                  "value": "2",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[0]",
-                  "value": "{{gen_category_uid_0}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[1]",
-                  "value": "{{gen_category_uid_1}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[2]",
-                  "value": "{{gen_category_uid_2}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[3]",
-                  "value": "{{gen_category_uid_3}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[4]",
-                  "value": "{{gen_category_uid_4}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[5]",
-                  "value": "{{gen_category_uid_5}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[6]",
-                  "value": "{{gen_category_uid_6}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: unlimited categories",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Not an error\", function () {",
-                  "    pm.response.to.not.have.jsonBody('error');",
-                  "});",
-                  "",
-                  "pm.test(\"Check list of categories\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "",
-                  "    if (pm.globals.get('verbose')) {",
-                  "        console.log(jsonObject.categories.category[0]);",
-                  "    }",
-                  "",
-                  "    pm.expect(jsonObject.categories.category).length(pm.environment.get('gen_category_count'), 'Should be one less because root category is not exported in SG');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_categories}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
+		  {
+			  "name": "Category",
+			  "item": [
+				  {
+					  "name": "SG: get specific",
+					  "event": [
+						  {
+							  "listen": "test",
+							  "script": {
+								  "exec": [
+									  "pm.test(\"Not an error\", function () {",
+									  "    pm.response.to.not.have.jsonBody('error');",
+									  "});",
+									  "",
+									  "pm.test(\"Have proper category data\", function () {",
+									  "    const jsonObject = xml2Json(responseBody);",
+									  "    if (pm.globals.get('verbose')){",
+									  "        console.log(jsonObject);",
+									  "    }",
+									  "    pm.expect(jsonObject.categories.category).to.have.property('$');",
+									  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_0\"));",
+									  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
+									  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('0');",
+									  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
+									  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.not.empty;",
+									  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.empty;",
+									  "});"
+								  ],
+								  "type": "text/javascript"
+							  }
+						  }
+					  ],
+					  "request": {
+						  "method": "POST",
+						  "header": [
+							  {
+								  "key": "Accept",
+								  "value": "*/*"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-User",
+								  "value": "{{gen_sg_header_auth_user}}"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-Token",
+								  "value": "{{gen_sg_header_auth_token}}"
+							  }
+						  ],
+						  "body": {
+							  "mode": "formdata",
+							  "formdata": [
+								  {
+									  "key": "shop_number",
+									  "value": "{{shop_number}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "action",
+									  "value": "{{framework_action_get_categories}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[0]",
+									  "value": "{{gen_category_uid_0}}",
+									  "type": "text"
+								  }
+							  ]
+						  },
+						  "url": {
+							  "raw": "{{domain}}",
+							  "host": [
+								  "{{domain}}"
+							  ]
+						  }
+					  },
+					  "response": []
+				  },
+				  {
+					  "name": "SG: get specific  2",
+					  "event": [
+						  {
+							  "listen": "test",
+							  "script": {
+								  "exec": [
+									  "pm.test(\"Not an error\", function () {",
+									  "    pm.response.to.not.have.jsonBody('error');",
+									  "});",
+									  "",
+									  "pm.test(\"Have proper category data\", function () {",
+									  "    const jsonObject = xml2Json(responseBody);",
+									  "    if (pm.globals.get('verbose')){",
+									  "        console.log(jsonObject);",
+									  "    }",
+									  "    pm.expect(jsonObject.categories.category).to.have.property('$');",
+									  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_1\"));",
+									  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
+									  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
+									  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
+									  "    pm.expect(jsonObject.categories.category.$.parent_uid).to.be.eq('77b959cf66de4c1590c7f9b7da3982f3');",
+									  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.eq('Bakery products');",
+									  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.eq(pm.environment.get(\"host\") + '/Food/Bakery-products/');",
+									  "});"
+								  ],
+								  "type": "text/javascript"
+							  }
+						  }
+					  ],
+					  "request": {
+						  "method": "POST",
+						  "header": [
+							  {
+								  "key": "Accept",
+								  "value": "*/*"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-User",
+								  "value": "{{gen_sg_header_auth_user}}"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-Token",
+								  "value": "{{gen_sg_header_auth_token}}"
+							  }
+						  ],
+						  "body": {
+							  "mode": "formdata",
+							  "formdata": [
+								  {
+									  "key": "shop_number",
+									  "value": "{{shop_number}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "action",
+									  "value": "{{framework_action_get_categories}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[0]",
+									  "value": "{{gen_category_uid_1}}",
+									  "type": "text"
+								  }
+							  ]
+						  },
+						  "url": {
+							  "raw": "{{domain}}",
+							  "host": [
+								  "{{domain}}"
+							  ]
+						  }
+					  },
+					  "response": []
+				  },
+				  {
+					  "name": "SG: get first 5",
+					  "event": [
+						  {
+							  "listen": "test",
+							  "script": {
+								  "exec": [
+									  "pm.test(\"Not an error\", function () {",
+									  "    pm.response.to.not.have.jsonBody('error');",
+									  "});",
+									  "",
+									  "pm.test(\"have categories\", function () {",
+									  "    const jsonObject = xml2Json(responseBody);",
+									  "    if (pm.globals.get('verbose')) {",
+									  "        console.log(jsonObject.categories.category[0]);",
+									  "    }",
+									  "",
+									  "    pm.expect(jsonObject.categories.category).length(5);",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_0\")), 'Missing 0').to.be.not.undefined;",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_1\")), 'Missing 1').to.be.not.undefined;",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_2\")), 'Missing 2').to.be.not.undefined;",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_3\")), 'Missing 3').to.be.not.undefined;",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_4\")), 'Missing 4').to.be.not.undefined;",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_5\")), 'Have 5?').to.be.undefined;",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_6\")), 'Have 6?').to.be.undefined;",
+									  "});",
+									  "",
+									  "/**",
+									  " * @param {array} list",
+									  " * @param {string} id",
+									  " */",
+									  "function findById(list, id) {",
+									  "    return list.find(element => element.$.uid === id);",
+									  "}"
+								  ],
+								  "type": "text/javascript"
+							  }
+						  },
+						  {
+							  "listen": "prerequest",
+							  "script": {
+								  "exec": [
+									  ""
+								  ],
+								  "type": "text/javascript"
+							  }
+						  }
+					  ],
+					  "request": {
+						  "method": "POST",
+						  "header": [
+							  {
+								  "key": "Accept",
+								  "value": "*/*"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-User",
+								  "value": "{{gen_sg_header_auth_user}}"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-Token",
+								  "value": "{{gen_sg_header_auth_token}}"
+							  }
+						  ],
+						  "body": {
+							  "mode": "formdata",
+							  "formdata": [
+								  {
+									  "key": "shop_number",
+									  "value": "{{shop_number}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "action",
+									  "value": "{{framework_action_get_categories}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "limit",
+									  "value": "5",
+									  "type": "text"
+								  },
+								  {
+									  "key": "offset",
+									  "value": "1",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[0]",
+									  "value": "{{gen_category_uid_0}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[1]",
+									  "value": "{{gen_category_uid_1}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[2]",
+									  "value": "{{gen_category_uid_2}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[3]",
+									  "value": "{{gen_category_uid_3}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[4]",
+									  "value": "{{gen_category_uid_4}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[5]",
+									  "value": "{{gen_category_uid_5}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[6]",
+									  "value": "{{gen_category_uid_6}}",
+									  "type": "text"
+								  }
+							  ]
+						  },
+						  "url": {
+							  "raw": "{{domain}}",
+							  "host": [
+								  "{{domain}}"
+							  ]
+						  }
+					  },
+					  "response": []
+				  },
+				  {
+					  "name": "SG: get last 5",
+					  "event": [
+						  {
+							  "listen": "test",
+							  "script": {
+								  "exec": [
+									  "pm.test(\"Not an error\", function () {",
+									  "    pm.response.to.not.have.jsonBody('error');",
+									  "});",
+									  "",
+									  "pm.test(\"have categories\", function () {",
+									  "    const jsonObject = xml2Json(responseBody);",
+									  "",
+									  "    if (pm.globals.get('verbose')) {",
+									  "        console.log(jsonObject.categories.category[0]);",
+									  "    }",
+									  "    pm.expect(jsonObject.categories.category).length(2);",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_5\")), '5 should be undefined').to.be.not.undefined;",
+									  "    pm.expect(findById(jsonObject.categories.category, pm.environment.get(\"gen_category_uid_6\")), '6 should be undefined').to.be.not.undefined;",
+									  "});",
+									  "",
+									  "/**",
+									  " * @param {array} list",
+									  " * @param {string} id",
+									  " */",
+									  "function findById(list, id) {",
+									  "    return list.find(element => element.$.uid === id);",
+									  "}"
+								  ],
+								  "type": "text/javascript"
+							  }
+						  }
+					  ],
+					  "request": {
+						  "method": "POST",
+						  "header": [
+							  {
+								  "key": "Accept",
+								  "value": "*/*"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-User",
+								  "value": "{{gen_sg_header_auth_user}}"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-Token",
+								  "value": "{{gen_sg_header_auth_token}}"
+							  }
+						  ],
+						  "body": {
+							  "mode": "formdata",
+							  "formdata": [
+								  {
+									  "key": "shop_number",
+									  "value": "{{shop_number}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "action",
+									  "value": "{{framework_action_get_categories}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "limit",
+									  "value": "5",
+									  "type": "text"
+								  },
+								  {
+									  "key": "offset",
+									  "value": "2",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[0]",
+									  "value": "{{gen_category_uid_0}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[1]",
+									  "value": "{{gen_category_uid_1}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[2]",
+									  "value": "{{gen_category_uid_2}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[3]",
+									  "value": "{{gen_category_uid_3}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[4]",
+									  "value": "{{gen_category_uid_4}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[5]",
+									  "value": "{{gen_category_uid_5}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "uids[6]",
+									  "value": "{{gen_category_uid_6}}",
+									  "type": "text"
+								  }
+							  ]
+						  },
+						  "url": {
+							  "raw": "{{domain}}",
+							  "host": [
+								  "{{domain}}"
+							  ]
+						  }
+					  },
+					  "response": []
+				  },
+				  {
+					  "name": "SG: unlimited",
+					  "event": [
+						  {
+							  "listen": "test",
+							  "script": {
+								  "exec": [
+									  "pm.test(\"Not an error\", function () {",
+									  "    pm.response.to.not.have.jsonBody('error');",
+									  "});",
+									  "",
+									  "pm.test(\"Check list of categories\", function () {",
+									  "    const jsonObject = xml2Json(responseBody);",
+									  "",
+									  "    if (pm.globals.get('verbose')) {",
+									  "        console.log(jsonObject.categories.category[0]);",
+									  "    }",
+									  "",
+									  "    pm.expect(jsonObject.categories.category).length(pm.environment.get('gen_category_count'), 'Should be one less because root category is not exported in SG');",
+									  "});"
+								  ],
+								  "type": "text/javascript"
+							  }
+						  }
+					  ],
+					  "request": {
+						  "method": "POST",
+						  "header": [
+							  {
+								  "key": "Accept",
+								  "value": "*/*"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-User",
+								  "value": "{{gen_sg_header_auth_user}}"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-Token",
+								  "value": "{{gen_sg_header_auth_token}}"
+							  }
+						  ],
+						  "body": {
+							  "mode": "formdata",
+							  "formdata": [
+								  {
+									  "key": "shop_number",
+									  "value": "{{shop_number}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "action",
+									  "value": "{{framework_action_get_categories}}",
+									  "type": "text"
+								  }
+							  ]
+						  },
+						  "url": {
+							  "raw": "{{domain}}",
+							  "host": [
+								  "{{domain}}"
+							  ]
+						  }
+					  },
+					  "response": []
+				  }
+			  ]
+		  },
+		  {
+			  "name": "Product",
+			  "item": [
+				  {
+					  "name": "SG: get all products",
+					  "event": [
+						  {
+							  "listen": "test",
+							  "script": {
+								  "exec": [
+									  "pm.test(\"Not an error\", function () {",
+									  "    pm.response.to.not.have.jsonBody('error');",
+									  "});",
+									  "",
+									  "pm.test(\"Has All items\", function () {",
+									  "    var jsonObject = xml2Json(responseBody);",
+									  "    pm.expect(Object.keys(jsonObject.items.item).length).to.eq(5);",
+									  "});"
+								  ],
+								  "type": "text/javascript"
+							  }
+						  }
+					  ],
+					  "request": {
+						  "method": "POST",
+						  "header": [
+							  {
+								  "key": "Accept",
+								  "value": "*/*"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-User",
+								  "value": "{{gen_sg_header_auth_user}}"
+							  },
+							  {
+								  "key": "X-Shopgate-Auth-Token",
+								  "value": "{{gen_sg_header_auth_token}}"
+							  }
+						  ],
+						  "body": {
+							  "mode": "formdata",
+							  "formdata": [
+								  {
+									  "key": "shop_number",
+									  "value": "{{shop_number}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "action",
+									  "value": "{{framework_action_get_items}}",
+									  "type": "text"
+								  },
+								  {
+									  "key": "limit",
+									  "value": "100",
+									  "description": "\n",
+									  "type": "text"
+								  },
+								  {
+									  "key": "offset",
+									  "value": "0",
+									  "type": "text"
+								  }
+							  ]
+						  },
+						  "url": {
+							  "raw": "{{domain}}",
+							  "host": [
+								  "{{domain}}"
+							  ]
+						  }
+					  },
+					  "response": []
+				  }
+			  ]
+		  },
+		  {
+			  "name": "SG: ping",
+			  "event": [
+				  {
+					  "listen": "test",
+					  "script": {
+						  "exec": [
+							  "const jsonData = pm.response.json();",
+							  "pm.test(\"Ping Pong\", function () {",
+							  "    pm.expect(jsonData.pong).to.eql('OK');",
+							  "});",
+							  "",
+							  "pm.test('Plugin Versions', function () {",
+							  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+							  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+							  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+							  "});"
+						  ],
+						  "type": "text/javascript"
+					  }
+				  }
+			  ],
+			  "request": {
+				  "method": "POST",
+				  "header": [
+					  {
+						  "key": "X-Shopgate-Auth-User",
+						  "value": "{{gen_sg_header_auth_user}}"
+					  },
+					  {
+						  "key": "X-Shopgate-Auth-Token",
+						  "value": "{{gen_sg_header_auth_token}}"
+					  }
+				  ],
+				  "body": {
+					  "mode": "formdata",
+					  "formdata": [
+						  {
+							  "key": "shop_number",
+							  "value": "{{shop_number}}",
+							  "type": "text"
+						  },
+						  {
+							  "key": "action",
+							  "value": "{{framework_action_ping}}",
+							  "type": "text"
+						  }
+					  ]
+				  },
+				  "url": {
+					  "raw": "{{domain}}",
+					  "host": [
+						  "{{domain}}"
+					  ]
+				  }
+			  },
+			  "response": []
+		  },
+		  {
+			  "name": "SG: get_settings",
+			  "event": [
+				  {
+					  "listen": "test",
+					  "script": {
+						  "exec": [
+							  "pm.test(\"Status code is 200\", function () {",
+							  "    pm.response.to.have.status(200);",
+							  "});",
+							  "",
+							  "const jsonData = pm.response.json();",
+							  "pm.test(\"No error\", function () {",
+							  "    pm.expect(jsonData.error).to.eql(0);",
+							  "});",
+							  "",
+							  "pm.test(\"Value checks\", function () {",
+							  "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.not.empty;",
+							  "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('name').to.eq('Standard customer group');",
+							  "});"
+						  ],
+						  "type": "text/javascript"
+					  }
+				  }
+			  ],
+			  "request": {
+				  "method": "POST",
+				  "header": [
+					  {
+						  "key": "Accept",
+						  "value": "*/*"
+					  },
+					  {
+						  "key": "X-Shopgate-Auth-User",
+						  "value": "{{gen_sg_header_auth_user}}"
+					  },
+					  {
+						  "key": "X-Shopgate-Auth-Token",
+						  "value": "{{gen_sg_header_auth_token}}"
+					  }
+				  ],
+				  "body": {
+					  "mode": "formdata",
+					  "formdata": [
+						  {
+							  "key": "shop_number",
+							  "value": "{{shop_number}}",
+							  "type": "text"
+						  },
+						  {
+							  "key": "action",
+							  "value": "{{framework_action_get_settings}}",
+							  "type": "text"
+						  }
+					  ]
+				  },
+				  "url": {
+					  "raw": "{{domain}}",
+					  "host": [
+						  "{{domain}}"
+					  ]
+				  }
           },
           "response": []
         }

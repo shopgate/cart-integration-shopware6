@@ -1,5 +1,3 @@
-# - gitlab docs: https://docs.gitlab.com/ee/ci/yaml/#include
-
 stages:
   - build
   - test
@@ -25,12 +23,7 @@ variables:
   PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
   SW_ADMIN_USER: myadmin
   SW_ADMIN_PASS: test.123
-  NEWMAN_VERBOSE: '--verbose'
-
-cache:
-  paths:
-    - ${COMPOSER_HOME}
-    - ${NPM_CONFIG_CACHE}
+  VERBOSE: '--verbose'
 
 workflow:
   rules:
@@ -42,9 +35,9 @@ workflow:
 default:
   image: $DEV_IMAGE
   services:
-      - name: $MYSQL_IMAGE
-        alias: database
-        entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
+    - name: $MYSQL_IMAGE
+      alias: database
+      entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
   before_script:
     - export APP_URL="http://$HOSTNAME"
     - apt update > /dev/null
@@ -84,7 +77,10 @@ default:
     - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_SHOPNUMBER;
     - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
     - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
-    - mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
+    - |-
+      if [[ $VERBOSE != "" ]]; then
+          mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
+      fi
     - /entrypoint supervisord > /dev/null 2>&1 &
 
 newman:
@@ -94,7 +90,7 @@ newman:
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
       --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE}
-      --global-var "verbose=$NEWMAN_VERBOSE";
+      --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
     expire_in: 30 days
