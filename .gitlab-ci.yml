@@ -28,7 +28,7 @@ variables:
 workflow:
   rules:
     # do not run on push
-    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "tag"'
       when: never
     - when: always
 
@@ -58,7 +58,6 @@ default:
     - bin/console system:generate-jwt || true
     - bin/console system:install --drop-database --basic-setup --force --quiet
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
-    - bin/console dal:refresh:index -n --use-queue --quiet
     - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
     - chown -R 1000:1000 .
     - bin/console plugin:refresh --quiet
