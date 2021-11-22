@@ -28,7 +28,7 @@ variables:
 workflow:
   rules:
     # do not run on push
-    - if: '$CI_PIPELINE_SOURCE == "tag"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
       when: never
     - when: always
 

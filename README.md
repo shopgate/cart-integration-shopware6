@@ -25,8 +25,8 @@ cd [shopware6 root folder]
 # this step is required only in case you do not already have this in the root composer.json specified
 composer config repositories.sym '{"type": "path", "url": "custom/plugins/*", "options": {"symlink": true}}'
 
-# make sure to use the exact version (e.g. `1.6.2`) that is provided in the composer.json of this plugin.
-composer require shopgate/cart-integration-shopware6:1.6.2
+# make sure to use the exact version (e.g. `1.6.4`) that is provided in the composer.json of this plugin.
+composer require shopgate/cart-integration-shopware6:1.6.4
 ```
 
 #### Update SDK separately
