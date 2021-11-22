@@ -89,7 +89,7 @@ class CustomerMapping
             $customer->getGender()
                 ? ['salutationId' => $this->salutationMapping->getSalutationIdByGender($customer->getGender())] : [],
             $customer->getFirstName() ? ['firstName' => $customer->getFirstName()] : [],
-            $customer->getLastName() ? ['lastName' => $customer->getFirstName()] : [],
+            $customer->getLastName() ? ['lastName' => $customer->getLastName()] : [],
             count($bd) === 3 ? ['birthdayYear' => $bd[0], 'birthdayMonth' => $bd[1], 'birthdayDay' => $bd[2]] : [],
             $shopgateBillingAddress
                 ? ['billingAddress' => $this->addressMapping->mapToShopwareAddress($shopgateBillingAddress)] : [],

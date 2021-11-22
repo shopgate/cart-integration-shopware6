@@ -1,3 +1,9 @@
+# 16.4
+
+- added postman tests
+- fixed customer `last_name` mapping
+- fixed address `company` mapping
+
 # 1.6.3
 
 - fixed issues with plugin renaming & installation error
