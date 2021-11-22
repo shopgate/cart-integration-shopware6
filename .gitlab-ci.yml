@@ -23,12 +23,12 @@ variables:
   PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
   SW_ADMIN_USER: myadmin
   SW_ADMIN_PASS: test.123
-  VERBOSE: '--verbose'
+  VERBOSE: ''
 
 workflow:
   rules:
     # do not run on push
-    - if: '$CI_PIPELINE_SOURCE == "tag"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
       when: never
     - when: always
 
@@ -56,12 +56,12 @@ default:
     - composer install --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
-    - bin/console system:install --drop-database --basic-setup --force >/dev/null
+    - bin/console system:install --drop-database --basic-setup --force --quiet
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
-    - bin/console dal:refresh:index -n --use-queue
+    - bin/console dal:refresh:index -n --use-queue --quiet
     - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
     - chown -R 1000:1000 .
-    - bin/console plugin:refresh
+    - bin/console plugin:refresh --quiet
     - bin/console plugin:install --activate SwagPlatformDemoData
     - bin/console plugin:install --activate $PLUGIN_NAME
     - >
@@ -70,7 +70,7 @@ default:
         else echo "$PLUGIN_NAME is not active"; exit 1;
       fi
     - bin/console bundle:dump
-    - bin/console assets:install
+    - bin/console assets:install --quiet
     - export SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
     - >
       mysql -h database -u root -proot root -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at) VALUES (UNHEX(REPLACE(UUID(),'-','')),'SgateShopgatePluginSW6.config.isActive', '{\"_value\": true}', UNHEX('$SalesChannel'), NOW());"
