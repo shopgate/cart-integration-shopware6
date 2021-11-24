@@ -449,6 +449,56 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "get address country",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Get country ISO\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.data).be.an('array').to.be.not.empty\r",
+                  "    pm.expect(jsonData.data[0]).to.haveOwnProperty('attributes').to.haveOwnProperty('iso');\r",
+                  "    pm.environment.set(\"gen_customer_default_country_iso\", jsonData.data[0].attributes.iso);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}/api/customer-address/{{customer_default_address_id}}/country",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "customer-address",
+                "{{customer_default_address_id}}",
+                "country"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "event": [
@@ -1153,7 +1203,10 @@
                       "",
                       "const jsonData = pm.response.json();",
                       "pm.test(\"No error\", function () {",
-                      "    pm.expect(jsonData.error).to.eql(0);",
+                      "    if (jsonData.error > 0) {",
+                      "        console.log(jsonData.error_text);",
+                      "    }",
+                      "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
                       "});",
                       "",
                       "pm.test(\"Value checks\", function () {",
@@ -1565,7 +1618,7 @@
                     },
                     {
                       "key": "cart[invoice_address][country]",
-                      "value": "{{customer_default_country}}",
+                      "value": "{{gen_customer_default_country_iso}}",
                       "type": "text"
                     },
                     {
@@ -1600,7 +1653,7 @@
                     },
                     {
                       "key": "cart[delivery_address][country]",
-                      "value": "{{customer_default_country}}",
+                      "value": "{{gen_customer_default_country_iso}}",
                       "type": "text"
                     }
                   ]
@@ -1703,7 +1756,7 @@
                   "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
                   "    pm.expect(billing.is_invoice_address).to.eql(1);",
                   "    pm.expect(billing.is_delivery_address).to.eql(1);",
-                  "    pm.expect(billing.country).to.eql(pm.environment.get('customer_default_country'));",
+                  "    pm.expect(billing.country).to.eql(pm.environment.get('gen_customer_default_country_iso'));",
                   "    pm.expect(billing.city).to.eql(pm.environment.get('customer_default_city'));",
                   "    pm.expect(billing.zipcode).to.eql(pm.environment.get('customer_default_zip'));",
                   "    pm.expect(billing.state).to.eql(null);",
