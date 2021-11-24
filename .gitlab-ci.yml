@@ -77,8 +77,8 @@ default:
       mysql -h database -u root -proot root -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at) VALUES (UNHEX(REPLACE(UUID(),'-','')),'SgateShopgatePluginSW6.config.isActive', '{\"_value\": true}', null, NOW());";
     - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_SHOPNUMBER;
     - bin/console system:config:set -s $HeadlessSalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_HEADLESS_SHOPNUMBER;
-    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
-    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
+    - bin/console system:config:set SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
+    - bin/console system:config:set SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
     - |-
       if [[ $VERBOSE != "" ]]; then
           mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
