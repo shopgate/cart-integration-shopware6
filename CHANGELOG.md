@@ -1,3 +1,7 @@
+# Pre-version
+
+- fixed customer address type mapping in case billing and shipping address are the same
+
 # 1.6.4
 
 - added postman tests

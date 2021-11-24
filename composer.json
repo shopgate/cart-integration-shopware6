@@ -43,5 +43,10 @@
     "psr-4": {
       "Shopgate\\Shopware\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Shopgate\\Shopware\\Tests\\": "tests/"
+    }
   }
 }
