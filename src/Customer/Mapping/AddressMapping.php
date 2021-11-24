@@ -146,11 +146,16 @@ class AddressMapping
      */
     public function mapAddressType(CustomerEntity $customerEntity, CustomerAddressEntity $addressEntity): int
     {
+        $isBoth = false;
+        if ($customerEntity->getDefaultBillingAddressId() === $customerEntity->getDefaultShippingAddressId()) {
+            $isBoth = ShopgateAddress::BOTH;
+        }
+
         switch ($addressEntity->getId()) {
             case $customerEntity->getDefaultBillingAddressId():
-                return ShopgateAddress::INVOICE;
+                return $isBoth ?: ShopgateAddress::INVOICE;
             case $customerEntity->getDefaultShippingAddressId():
-                return ShopgateAddress::DELIVERY;
+                return $isBoth ?: ShopgateAddress::DELIVERY;
             default:
                 return ShopgateAddress::BOTH;
         }
