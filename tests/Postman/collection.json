@@ -1157,10 +1157,13 @@
                       "});",
                       "",
                       "pm.test(\"Value checks\", function () {",
-                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
-                      "    const nonDefaultGroup = jsonData.customer_groups.find(group => { return group.name === 'A custom group'});",
-                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.not.eq(pm.environment.get('gen_customer_group_main_id'));",
-                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                      "     if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(1);",
+                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('name').to.eq('Standard customer group');",
+                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('is_default').to.eq('1');",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1224,6 +1227,9 @@
                       "});",
                       "",
                       "pm.test(\"Value checks\", function () {",
+                      "     if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
                       "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(1);",
                       "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
                       "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('name').to.eq('Standard-Kundengruppe');",
@@ -1325,7 +1331,7 @@
               "response": []
             },
             {
-              "name": "SG: check 2 grps",
+              "name": "SG: get_settings (2 grps)",
               "event": [
                 {
                   "listen": "test",
@@ -1341,10 +1347,14 @@
                       "});",
                       "",
                       "pm.test(\"Value checks\", function () {",
-                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(1);",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('name').to.eq('Standard customer group');",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('is_default').to.eq('1');",
+                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData.customer_groups);",
+                      "    }",
+                      "    const nonDefaultGroup = jsonData.customer_groups.find(group => { return group.name === 'A custom group'});",
+                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.not.eq(pm.environment.get('gen_customer_group_main_id'));",
+                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                      "    pm.environment.set('gen_customer_group_secondary_id', nonDefaultGroup.id);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1378,6 +1388,219 @@
                     {
                       "key": "action",
                       "value": "{{framework_action_get_settings}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: change customer grp",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully changed customer group\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"groupId\": \"{{gen_customer_group_secondary_id}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/customer/{{customer_default_id}}",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "customer",
+                    "{{customer_default_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cart",
+          "item": [
+            {
+              "name": "SG: cart customer grp",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    ",
+                      "     if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_secondary_id'));",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "{{customer_default_country}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "{{customer_default_country}}",
                       "type": "text"
                     }
                   ]
@@ -1438,6 +1661,112 @@
                 {
                   "key": "action",
                   "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: get_customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Check customer data\", function () {",
+                  "    if (pm.globals.get('verbose')) {",
+                  "        console.log(jsonData);",
+                  "    }",
+                  "",
+                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('userEmail'));",
+                  "    pm.expect(jsonData.user_data.gender).to.eql('m');",
+                  "    pm.expect(jsonData.user_data.first_name).to.eql('Max');",
+                  "    pm.expect(jsonData.user_data.last_name).to.eql('Mustermann');",
+                  "    pm.expect(jsonData.user_data.customer_number).to.eql('SWDEMO10000');",
+                  "    pm.expect(jsonData.user_data.birthday).to.eql('1996-06-06');",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.not.be.empty;",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_secondary_id'));",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('A custom group');",
+                  "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check billing address data\", function () {",
+                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
+                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
+                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
+                  "    pm.expect(billing.country).to.eql(pm.environment.get('customer_default_country'));",
+                  "    pm.expect(billing.city).to.eql(pm.environment.get('customer_default_city'));",
+                  "    pm.expect(billing.zipcode).to.eql(pm.environment.get('customer_default_zip'));",
+                  "    pm.expect(billing.state).to.eql(null);",
+                  "    pm.expect(billing.first_name).to.eql(pm.environment.get('customer_default_firstName'));",
+                  "    pm.expect(billing.last_name).to.eql(pm.environment.get('customer_default_lastName'));",
+                  "    pm.expect(billing.company).to.eql(null);",
+                  "    pm.expect(billing.street_2).to.eql(null);",
+                  "    pm.expect(billing.phone).to.eql(null);",
+                  "    pm.expect(billing.gender).to.eql(pm.environment.get('customer_default_gender'));",
+                  "    pm.expect(billing.custom_fields).to.be.an('array').to.be.empty;",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_customer}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user",
+                  "value": "{{userEmail}}",
+                  "type": "text"
+                },
+                {
+                  "key": "pass",
+                  "value": "{{userPass}}",
                   "type": "text"
                 }
               ]
@@ -1698,112 +2027,6 @@
                 {
                   "key": "user_data[addresses][1][phone]",
                   "value": "12345",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: get_customer",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonData = pm.response.json();",
-                  "pm.test(\"Check customer data\", function () {",
-                  "    if (pm.globals.get('verbose')) {",
-                  "        console.log(jsonData);",
-                  "    }",
-                  "",
-                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('userEmail'));",
-                  "    pm.expect(jsonData.user_data.gender).to.eql('m');",
-                  "    pm.expect(jsonData.user_data.first_name).to.eql('Max');",
-                  "    pm.expect(jsonData.user_data.last_name).to.eql('Mustermann');",
-                  "    pm.expect(jsonData.user_data.customer_number).to.eql('SWDEMO10000');",
-                  "    pm.expect(jsonData.user_data.birthday).to.eql('1996-06-06');",
-                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.not.be.empty;",
-                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
-                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('Standard customer group');",
-                  "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
-                  "});",
-                  "",
-                  "pm.test(\"Check billing address data\", function () {",
-                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
-                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
-                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
-                  "    pm.expect(billing.country).to.eql('EH');",
-                  "    pm.expect(billing.city).to.eql('Musterstadt');",
-                  "    pm.expect(billing.zipcode).to.eql('12345');",
-                  "    pm.expect(billing.state).to.eql(null);",
-                  "    pm.expect(billing.first_name).to.eql('Max');",
-                  "    pm.expect(billing.last_name).to.eql('Mustermann');",
-                  "    pm.expect(billing.company).to.eql(null);",
-                  "    pm.expect(billing.street_2).to.eql(null);",
-                  "    pm.expect(billing.phone).to.eql(null);",
-                  "    pm.expect(billing.gender).to.eql('m');",
-                  "    pm.expect(billing.custom_fields).to.be.an('array').to.be.empty;",
-                  "});",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_customer}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user",
-                  "value": "{{userEmail}}",
-                  "type": "text"
-                },
-                {
-                  "key": "pass",
-                  "value": "{{userPass}}",
                   "type": "text"
                 }
               ]
