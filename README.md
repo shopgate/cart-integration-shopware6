@@ -95,3 +95,10 @@ Payment Type:
 {{ shopgateOrder.receivedData.payment_infos.shopgate_payment_name }}
 {% endif %}
 ```
+
+### Set settings API
+
+- **shop_is_active** - `0` or `1` (NB! once you disable, you will not be able to call this shop anymore)
+- **server** - `live`, `pg` or `custom`
+- **api_url** - `http://my.url.com`
+- **product_types_to_export** - `simple,variant` (a comma separated list)
