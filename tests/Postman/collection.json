@@ -1685,6 +1685,10 @@
                   "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
                   "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
                   "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "",
+                  "    pm.expect(jsonData.configuration.server).to.be.eq('live');",
+                  "    pm.expect(jsonData.configuration.api_url).to.be.eq('https://api.shopgate.com/merchant/');",
+                  "    pm.expect(jsonData.configuration.enable_set_settings).to.be.eq(1);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -2080,6 +2084,174 @@
                 {
                   "key": "user_data[addresses][1][phone]",
                   "value": "12345",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: set_settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Has settings changed\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shopgate_settings).to.be.a('array').to.be.not.empty;",
+                  "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('server');",
+                  "    pm.expect(jsonData.shopgate_settings[0].old).to.eq('live');",
+                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('custom');",
+                  "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('api_url');",
+                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq('https://api.shopgate.com/merchant/');",
+                  "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('http://some.url');",
+                  "    pm.expect(jsonData.shopgate_settings[2].name).to.eq('product_types_to_export');",
+                  "    pm.expect(jsonData.shopgate_settings[2].old).to.be.an('array').length(2);",
+                  "    pm.expect(jsonData.shopgate_settings[2].new).to.eq('simple');",
+                  "    pm.expect(jsonData.shopgate_settings[3].name).to.eq('shop_is_active');",
+                  "    pm.expect(jsonData.shopgate_settings[3].old).to.eq(1);",
+                  "    pm.expect(jsonData.shopgate_settings[3].new).to.eq('1');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_set_settings}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][name]",
+                  "value": "server",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][value]",
+                  "value": "custom",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[1][name]",
+                  "value": "api_url",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[1][value]",
+                  "value": "http://some.url",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[2][name]",
+                  "value": "product_types_to_export",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[2][value]",
+                  "value": "simple",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[3][name]",
+                  "value": "shop_is_active",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[3][value]",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: ping check change",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "",
+                  "    pm.expect(jsonData.configuration.shop_is_active).to.be.eq(1);",
+                  "    pm.expect(jsonData.configuration.server).to.be.eq('custom');",
+                  "    pm.expect(jsonData.configuration.api_url).to.be.eq('http://some.url');",
+                  "    pm.expect(jsonData.configuration.product_types_to_export).to.be.a('array').length(1);",
+                  "    pm.expect(jsonData.configuration.product_types_to_export[0]).to.eq('simple');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
                   "type": "text"
                 }
               ]

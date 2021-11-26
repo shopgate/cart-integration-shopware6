@@ -7,6 +7,7 @@
     <parameters>
         <parameter key="shopgate.action.whitelist" type="collection">
             <parameter key="enable_get_settings">true</parameter>
+            <parameter key="enable_set_settings">true</parameter>
             <parameter key="enable_get_categories">true</parameter>
             <parameter key="enable_get_customer">true</parameter>
             <parameter key="enable_get_items">true</parameter>

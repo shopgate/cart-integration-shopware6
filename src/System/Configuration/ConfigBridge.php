@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Configuration;
 
+use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\DomainBridge;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
@@ -12,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
@@ -107,7 +109,7 @@ class ConfigBridge
                     $shopNumber
                 ))
                 ->addFilter(new NotFilter(
-                    NotFilter::CONNECTION_AND,
+                    MultiFilter::CONNECTION_AND,
                     [new EqualsFilter('salesChannelId', null)]
                 )),
             new Context(new SalesChannelApiSource(''))
@@ -150,7 +152,7 @@ class ConfigBridge
      * Get configuration by key as defined in config.xml
      *
      * @param string $key
-     * @param string $fallback
+     * @param array|bool|float|int|string $fallback
      * @return array|bool|float|int|string
      */
     public function get(string $key, $fallback = '')
@@ -164,6 +166,20 @@ class ConfigBridge
         }
 
         return $this->config[$key];
+    }
+
+    /**
+     * @param array|bool|float|int|string|null $value
+     * @throws MissingContextException
+     */
+    public function set(string $key, $value, SalesChannelContext $salesChannelContext = null): void
+    {
+        $this->systemConfigService->set(
+            self::SYSTEM_CONFIG_DOMAIN . $key,
+            $value,
+            $salesChannelContext
+                ? $salesChannelContext->getSalesChannelId()
+                : $this->contextManager->getSalesContext()->getSalesChannelId());
     }
 
     /**
