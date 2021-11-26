@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Customer\Mapping;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\System\CustomField\CustomFieldComposer;
 use ShopgateCustomer;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CustomerMapping
 {
     private GroupMapping $groupMapping;
     private AddressMapping $addressMapping;
     private SalutationMapping $salutationMapping;
+    private CustomFieldComposer $customFieldComposer;
 
     /**
      * @param GroupMapping $groupMapping
@@ -24,20 +27,29 @@ class CustomerMapping
     public function __construct(
         GroupMapping $groupMapping,
         AddressMapping $addressMapping,
-        SalutationMapping $salutationMapping
+        SalutationMapping $salutationMapping,
+        CustomFieldComposer $customFieldComposer
     ) {
         $this->groupMapping = $groupMapping;
         $this->addressMapping = $addressMapping;
         $this->salutationMapping = $salutationMapping;
+        $this->customFieldComposer = $customFieldComposer;
     }
 
-    public function mapToShopgateEntity(CustomerEntity $detailedCustomer): ShopgateCustomer
-    {
+    /**
+     * @throws MissingContextException
+     */
+    public function mapToShopgateEntity(
+        CustomerEntity $detailedCustomer,
+        SalesChannelContext $salesChannelContext
+    ): ShopgateCustomer {
         $shopgateCustomer = new ShopgateCustomer();
         $shopgateCustomer->setRegistrationDate(
             $detailedCustomer->getCreatedAt() ? $detailedCustomer->getCreatedAt()->format('Y-m-d') : null
         );
-        $shopgateCustomer->setNewsletterSubscription((int)$detailedCustomer->getNewsletter());
+        if (method_exists($detailedCustomer, 'getNewsletter')) {
+            $shopgateCustomer->setNewsletterSubscription((int)$detailedCustomer->getNewsletter());
+        }
         $shopgateCustomer->setCustomerId($detailedCustomer->getId());
         $shopgateCustomer->setCustomerNumber($detailedCustomer->getCustomerNumber());
         $shopgateCustomer->setMail($detailedCustomer->getEmail());
@@ -59,10 +71,16 @@ class CustomerMapping
         if ($group = $detailedCustomer->getGroup()) {
             $shopgateCustomer->setCustomerGroups([$this->groupMapping->toShopgateGroup($group)]);
         }
+
+        if ($detailedCustomer->getCustomFields()) {
+            $list = $this->customFieldComposer->toShopgate('customer', $detailedCustomer, $salesChannelContext);
+            $shopgateCustomer->setCustomFields($list);
+        }
         // Addresses
         $shopgateCustomer->setAddresses($this->addressMapping->mapFromShopware($detailedCustomer));
         $shopgateCustomer->setTaxClassId('1');
         $shopgateCustomer->setTaxClassKey('default');
+
         return $shopgateCustomer;
     }
 
