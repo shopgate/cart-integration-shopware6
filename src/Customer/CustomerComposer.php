@@ -58,7 +58,7 @@ class CustomerComposer
         }
         $detailedCustomer = $this->customerBridge->getDetailedContextCustomer($this->contextManager->getSalesContext());
 
-        return $this->customerMapping->mapToShopgateEntity($detailedCustomer, $this->contextManager->getSalesContext());
+        return $this->customerMapping->mapToShopgateEntity($detailedCustomer);
     }
 
     /**

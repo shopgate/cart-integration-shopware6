@@ -91,11 +91,6 @@
         <service id="Shopgate\Shopware\System\DomainBridge">
             <argument type="service" id="sales_channel_domain.repository"/>
         </service>
-        <service id="Shopgate\Shopware\System\CustomField\CustomFieldComposer"/>
-        <service id="Shopgate\Shopware\System\CustomField\CustomFieldBridge">
-            <argument type="service" id="custom_field.repository"/>
-        </service>
-        <service id="Shopgate\Shopware\System\CustomField\CustomFieldMapping"/>
         <service id="Shopgate\Shopware\System\Configuration\ConfigBridge">
             <argument type="service" id="plugin.repository"/>
             <argument type="string">%kernel.shopware_version%</argument>
