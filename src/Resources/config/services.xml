@@ -20,8 +20,7 @@
             <parameter key="title">string</parameter>
             <parameter key="affiliateCode">string</parameter>
             <parameter key="campaignCode">string</parameter>
-            <parameter key="vatIds">array
-            </parameter><!-- Requires accountType=business & billingAddress->company set -->
+            <parameter key="vatIds">array</parameter><!-- Req. accountType=business & billingAddress->company -->
             <parameter key="accountType">string</parameter> <!-- see constants at Shopware\Core\Checkout\Customer -->
         </parameter>
         <parameter key="shopgate.customer.address.custom_field.whitelist" type="collection">

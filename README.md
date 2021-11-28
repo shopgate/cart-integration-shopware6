@@ -102,3 +102,20 @@ Payment Type:
 - **server** - `live`, `pg` or `custom`
 - **api_url** - `http://my.url.com`
 - **product_types_to_export** - `simple,variant` (a comma separated list)
+
+### Custom fields
+
+This is provided inside Shopgate amin panel to pass to Shopware. This has nothing to do with mapping to Shopware custom
+fields.
+
+#### Customer
+
+- title - customer title
+- affiliateCode
+- campaignCode
+- vatIds - provide a single VAT ID, `accountType` must be business for this to be set
+- accountType - `business` or `private`
+
+#### Customer Address
+
+- department - department of a company
