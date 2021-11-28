@@ -16,6 +16,17 @@
             <parameter key="enable_add_order">true</parameter>
             <parameter key="enable_cron">true</parameter>
         </parameter>
+        <parameter key="shopgate.customer.custom_field.whitelist" type="collection">
+            <parameter key="title">string</parameter>
+            <parameter key="affiliateCode">string</parameter>
+            <parameter key="campaignCode">string</parameter>
+            <parameter key="vatIds">array
+            </parameter><!-- Requires accountType=business & billingAddress->company set -->
+            <parameter key="accountType">string</parameter> <!-- see constants at Shopware\Core\Checkout\Customer -->
+        </parameter>
+        <parameter key="shopgate.customer.address.custom_field.whitelist" type="collection">
+            <parameter key="department">string</parameter>
+        </parameter>
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
@@ -48,8 +59,12 @@
             <argument type="service" id="salutation.repository"/>
             <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
-        <service id="Shopgate\Shopware\Customer\Mapping\AddressMapping"/>
-        <service id="Shopgate\Shopware\Customer\Mapping\CustomerMapping"/>
+        <service id="Shopgate\Shopware\Customer\Mapping\AddressMapping">
+            <argument key="$customFieldMapping" type="service" id="sg.customer.address.custom_field.whitelist"/>
+        </service>
+        <service id="Shopgate\Shopware\Customer\Mapping\CustomerMapping">
+            <argument key="$customFieldMapping" type="service" id="sg.customer.custom_field.whitelist"/>
+        </service>
         <service id="Shopgate\Shopware\Customer\Mapping\GroupMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\LocationMapping">
             <argument type="service" id="country.repository"/>
@@ -98,6 +113,16 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="system_config.repository"/>
         </service>
+        <service id="sg.customer.custom_field.whitelist"
+                 class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
+            <argument key="$whitelist">%shopgate.customer.custom_field.whitelist%</argument>
+        </service>
+        <service id="sg.customer.address.custom_field.whitelist"
+                 class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
+            <argument key="$whitelist">%shopgate.customer.address.custom_field.whitelist%</argument>
+        </service>
+        <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"
+                 alias="sg.customer.custom_field.whitelist"/>
         <service id="Shopgate\Shopware\System\FileCache">
             <argument>shopgate</argument>
             <argument>86400</argument>
