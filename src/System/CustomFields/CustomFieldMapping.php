@@ -38,6 +38,9 @@ class CustomFieldMapping
     }
 
     /**
+     * Note that whitelist does not filter incoming data, just
+     * used as reference to `type` of field
+     *
      * @param ShopgateCustomer|ShopgateAddress $entity
      * @return array<string, string|array>
      */
@@ -47,8 +50,8 @@ class CustomFieldMapping
         foreach ($entity->getCustomFields() as $customField) {
             $type = $this->whitelist[$customField->getInternalFieldName()] ?? null;
             $value = $customField->getValue();
-            if ($type && !empty($value)) {
-                $data[$customField->getInternalFieldName()] = $type === 'array' ? [$value] : $customField->getValue();
+            if (!empty($value)) {
+                $data[$customField->getInternalFieldName()] = $type === 'array' ? [$value] : $value;
             }
         }
 
