@@ -1861,6 +1861,13 @@
                   "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
                   "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
                   "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
+                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
                   "    ",
                   "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
                   "    pm.expect(billing.is_invoice_address).to.eql(1);",
@@ -1874,6 +1881,9 @@
                   "    pm.expect(billing.street_2).to.eql('Street2');",
                   "    pm.expect(billing.phone).to.eql('12345');",
                   "    pm.expect(billing.gender).to.eql('f');",
+                  "    pm.expect(billing.custom_fields).length(1, 'Billinbg 1 custom field')",
+                  "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
+                  "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
                   "",
                   "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
                   "    pm.expect(shipping.country).to.eql('DE');",
@@ -1882,6 +1892,7 @@
                   "    pm.expect(shipping.first_name).to.not.eql(firstName);",
                   "    pm.expect(shipping.last_name).to.not.eql(lastName);",
                   "    pm.expect(shipping.gender).to.eql('m');",
+                  "    pm.expect(shipping.custom_fields).length(0, 'no custom fields');",
                   "});",
                   "",
                   "// unset temp variables",
@@ -2084,6 +2095,101 @@
                 {
                   "key": "user_data[addresses][1][phone]",
                   "value": "12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][name]",
+                  "value": "VAT IDs",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][internal_field_name]",
+                  "value": "vatIds",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][value]",
+                  "value": "1234,12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][internal_field_name]",
+                  "value": "affiliateCode",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][value]",
+                  "value": "AFFILIATE_CODE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][value]",
+                  "value": "Big Boss",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][internal_field_name]",
+                  "value": "accountType",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][value]",
+                  "value": "business",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][internal_field_name]",
+                  "value": "cannotMap",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][value]",
+                  "value": "not mapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][value]",
+                  "value": "Mr.",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
+                  "value": "notMapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][value]",
+                  "value": "not mapped either",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
+                  "value": "department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][value]",
+                  "value": "Some department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][value]",
+                  "value": "Mrs.",
                   "type": "text"
                 }
               ]

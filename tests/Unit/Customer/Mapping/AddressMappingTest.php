@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Shopgate\Shopware\Customer\Mapping\AddressMapping;
 use Shopgate\Shopware\Customer\Mapping\LocationMapping;
 use Shopgate\Shopware\Customer\Mapping\SalutationMapping;
+use Shopgate\Shopware\System\CustomFields\CustomFieldMapping;
 use ShopgateAddress;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
@@ -27,7 +28,8 @@ class AddressMappingTest extends TestCase
         string $defaultBilling,
         string $defaultShipping,
         string $addressId
-    ): void {
+    ): void
+    {
         $customer = new CustomerEntity();
         $customer->setDefaultBillingAddressId($defaultBilling);
         $customer->setDefaultShippingAddressId($defaultShipping);
@@ -37,7 +39,8 @@ class AddressMappingTest extends TestCase
 
         $location = $this->createMock(LocationMapping::class);
         $salute = $this->createMock(SalutationMapping::class);
-        $mapping = new AddressMapping($location, $salute);
+        $cField = $this->createMock(CustomFieldMapping::class);
+        $mapping = new AddressMapping($location, $salute, $cField);
 
         $result = $mapping->mapAddressType($customer, $address);
         $this->assertEquals($expected, $result);

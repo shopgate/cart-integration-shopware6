@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Customer\Mapping;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\System\CustomFields\CustomFieldMapping;
 use ShopgateAddress;
 use ShopgateCustomer;
 use ShopgateLibraryException;
@@ -17,15 +18,16 @@ class AddressMapping
 {
     private LocationMapping $locationMapping;
     private SalutationMapping $salutationMapping;
+    private CustomFieldMapping $customFieldMapping;
 
-    /**
-     * @param LocationMapping $locationMapping
-     * @param SalutationMapping $salutationMapping
-     */
-    public function __construct(LocationMapping $locationMapping, SalutationMapping $salutationMapping)
-    {
+    public function __construct(
+        LocationMapping $locationMapping,
+        SalutationMapping $salutationMapping,
+        CustomFieldMapping $customFieldMapping
+    ) {
         $this->locationMapping = $locationMapping;
         $this->salutationMapping = $salutationMapping;
+        $this->customFieldMapping = $customFieldMapping;
     }
 
     /**
@@ -46,6 +48,7 @@ class AddressMapping
         $address['countryStateId'] = $this->locationMapping->getStateIdByIso($shopgateAddress->getState());
         $address = array_merge(
             $address,
+            $this->customFieldMapping->mapToShopwareCustomFields($shopgateAddress),
             $shopgateAddress->getCompany() ? ['company' => $shopgateAddress->getCompany()] : [],
             $shopgateAddress->getStreet2() ? ['additionalAddressLine1' => $shopgateAddress->getStreet2()] : [],
             $shopgateAddress->getPhone() ? ['phoneNumber' => $shopgateAddress->getPhone()] : [],
@@ -196,6 +199,8 @@ class AddressMapping
         if ($shopwareAddress->getSalutation()) {
             $shopgateAddress->setGender($this->salutationMapping->toShopgateGender($shopwareAddress->getSalutation()));
         }
+        $customFields = $this->customFieldMapping->mapToShopgateCustomFields($shopwareAddress);
+        $shopgateAddress->setCustomFields($customFields);
 
         return $shopgateAddress;
     }
