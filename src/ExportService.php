@@ -6,6 +6,8 @@ namespace Shopgate\Shopware;
 
 use Shopgate\Shopware\Catalog\Category\CategoryComposer;
 use Shopgate\Shopware\Catalog\Product\ProductComposer;
+use Shopgate\Shopware\Catalog\Review\ReviewComposer;
+use Shopgate\Shopware\Catalog\Review\ReviewMapping;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\CartComposer;
@@ -31,16 +33,8 @@ class ExportService
     private ProductComposer $productComposer;
     private OrderComposer $orderComposer;
     private CartComposer $cartComposer;
+    private ReviewComposer $reviewComposer;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param CategoryComposer $categoryComposer
-     * @param ConfigBridge $configBridge
-     * @param TaxComposer $taxComposer
-     * @param CustomerComposer $customerHelper
-     * @param ProductComposer $productComposer
-     * @param OrderComposer $orderComposer
-     */
     public function __construct(
         LoggerInterface $logger,
         CategoryComposer $categoryComposer,
@@ -49,7 +43,8 @@ class ExportService
         CustomerComposer $customerHelper,
         ProductComposer $productComposer,
         OrderComposer $orderComposer,
-        CartComposer $cartComposer
+        CartComposer $cartComposer,
+        ReviewComposer $reviewComposer
     ) {
         $this->log = $logger;
         $this->categoryComposer = $categoryComposer;
@@ -59,6 +54,7 @@ class ExportService
         $this->productComposer = $productComposer;
         $this->orderComposer = $orderComposer;
         $this->cartComposer = $cartComposer;
+        $this->reviewComposer = $reviewComposer;
     }
 
     /**
@@ -174,5 +170,17 @@ class ExportService
                 $this->log->debug('Cronjob name could not be mapped');
                 throw new ShopgateLibraryException(ShopgateLibraryException::PLUGIN_CRON_UNSUPPORTED_JOB);
         }
+    }
+
+    /**
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param string[] $uids
+     * @return ReviewMapping[]
+     * @throws MissingContextException
+     */
+    public function getReviews(?int $limit, ?int $offset, array $uids): array
+    {
+        return $this->reviewComposer->getReviews($limit, $offset, $uids);
     }
 }
