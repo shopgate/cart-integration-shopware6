@@ -191,8 +191,22 @@ class Plugin extends ShopgatePlugin
         return $categories;
     }
 
-    protected function createReviews($limit = null, $offset = null, array $uids = array())
+    /**
+     * @inerhitDoc
+     * @throws Exceptions\MissingContextException
+     */
+    protected function createReviews($limit = null, $offset = null, array $uids = array()): array
     {
-        // TODO: Implement createReviews() method.
+        if ($this->splittedExport) {
+            $limit = is_null($limit) ? $this->exportLimit : $limit;
+            $offset = is_null($offset) ? $this->exportOffset : $offset;
+        }
+
+        $reviews = $this->forwarder->getExportService()->getReviews($limit, $offset, $uids);
+        foreach ($reviews as $review) {
+            $this->addReviewModel($review);
+        }
+
+        return $reviews;
     }
 }

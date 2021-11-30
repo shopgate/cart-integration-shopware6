@@ -1,6 +1,7 @@
 # Pre-version
 
 - added `set_settings`
+- added `get_reviews`
 - added Shopgate `custom_fields` support to customer & customer addresses (see Readme)
 - fixed customer address type mapping in case billing and shipping address are the same
 

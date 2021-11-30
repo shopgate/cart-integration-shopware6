@@ -101,9 +101,64 @@
       "key": "customer_default_address_id",
       "value": "d8f0dff7ef3947979a83c42f6509f22c",
       "enabled": true
+    },
+    {
+      "key": "catalog_product_disabled",
+      "value": "1901dc5e888f4b1ea4168c2c5f005540",
+      "enabled": true
+    },
+    {
+      "key": "catalog_product_props",
+      "value": "c7bca22753c84d08b6178a50052b4146",
+      "enabled": true
+    },
+    {
+      "key": "catalog_product_freeShip",
+      "value": "3ac014f329884b57a2cce5a29f34779c",
+      "enabled": true
+    },
+    {
+      "key": "catalog_product_variant",
+      "value": "43a23e0c03bf4ceabc6055a2185faa87",
+      "enabled": true
+    },
+    {
+      "key": "product_review_disabled_id",
+      "value": "efc3860674f0a32b13293983fd03d26b",
+      "enabled": true
+    },
+    {
+      "key": "product_review_props_id",
+      "value": "7bdc212ae9d2bece80d82b7914b50a21",
+      "enabled": true
+    },
+    {
+      "key": "product_review_props_customer_id",
+      "value": "08fdbf9b2e103878c719fb0f8c4888a9",
+      "enabled": true
+    },
+    {
+      "key": "product_review_freeShip_id",
+      "value": "43b1cc72c40b03e1c5757c210920bb7a",
+      "enabled": true
+    },
+    {
+      "key": "product_review_freeShip_disabled_id",
+      "value": "1b49514500d220615bb67bf5394f437c",
+      "enabled": true
+    },
+    {
+      "key": "product_review_child_id",
+      "value": "56e5f02f7b6e0cd775f84a4157de7c8a",
+      "enabled": true
+    },
+    {
+      "key": "system_default_language",
+      "value": "2fbb5fe2e29a4d70aa5854ce7ce3e20b",
+      "enabled": true
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2021-11-24T14:16:33.205Z",
+  "_postman_exported_at": "2021-11-30T09:26:32.800Z",
   "_postman_exported_using": "Postman/9.2.0"
 }
