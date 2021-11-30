@@ -19,8 +19,7 @@ use ShopgatePlugin;
 
 class Plugin extends ShopgatePlugin
 {
-    /** @var null|Forwarder $forwarder */
-    protected $forwarder;
+    protected ?Forwarder $forwarder;
 
     /**
      * @throws DiException

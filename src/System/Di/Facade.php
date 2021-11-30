@@ -21,9 +21,10 @@ class Facade
     }
 
     /**
-     * @param string $serviceId
+     * @template Service
+     * @param class-string<Service> $serviceId
      *
-     * @return object
+     * @return Service
      * @throws DiException
      */
     public static function create(string $serviceId): object
