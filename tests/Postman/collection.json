@@ -1220,257 +1220,46 @@
                         }
                       ]
                     },
-					  "url": {
-						  "raw": "{{domain}}",
-						  "host": [
-							  "{{domain}}"
-						  ]
-					  }
-				  },
-					"response": []
-				}
-			  ]
-			}
-		  ]
-		},
-		  {
-			  "name": "Product",
-			  "item": [
-				  {
-					  "name": "Manual Category Sort",
-					  "item": [
-						  {
-							  "name": "SW: create manual cat",
-							  "event": [
-								  {
-									  "listen": "test",
-									  "script": {
-										  "exec": [
-											  "pm.test(\"Created single entity\", function () {\r",
-											  "    pm.response.to.have.status(204);\r",
-											  "});"
-										  ],
-										  "type": "text/javascript"
-									  }
-								  }
-							  ],
-							  "protocolProfileBehavior": {
-								  "disabledSystemHeaders": {}
-							  },
-							  "request": {
-								  "auth": {
-									  "type": "bearer",
-									  "bearer": [
-										  {
-											  "key": "token",
-											  "value": "{{gen_access_token}}",
-											  "type": "string"
-										  }
-									  ]
-								  },
-								  "method": "POST",
-								  "header": [],
-								  "body": {
-									  "mode": "raw",
-									  "raw": "{\r\n    \"id\": \"{{created_category_manual_id}}\",\r\n    \"displayNestedProducts\": true,\r\n    \"parentId\": \"{{category_freeTime_id}}\",\r\n    \"afterCategoryId\": \"{{created_category_noFreeShip_id}}\",\r\n    \"type\": \"page\",\r\n    \"productAssignmentType\": \"product\",\r\n    \"name\": \"Manual products category\",\r\n    \"cmsPageId\": \"{{gen_cms_page_default_id}}\"\r\n}",
-									  "options": {
-										  "raw": {
-											  "language": "json"
-										  }
-									  }
-								  },
-								  "url": {
-									  "raw": "{{host}}/api/category",
-									  "host": [
-										  "{{host}}"
-									  ],
-									  "path": [
-										  "api",
-										  "category"
-									  ]
-								  }
-							  },
-							  "response": []
-						  },
-						  {
-							  "name": "SW: create prod map",
-							  "event": [
-								  {
-									  "listen": "test",
-									  "script": {
-										  "exec": [
-											  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
-											  "    pm.response.to.have.status(200);\r",
-											  "});"
-										  ],
-										  "type": "text/javascript"
-									  }
-								  }
-							  ],
-							  "protocolProfileBehavior": {
-								  "disabledSystemHeaders": {
-									  "accept": true
-								  }
-							  },
-                  "request": {
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{gen_access_token}}",
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json",
-                        "type": "text"
-                      }
-                    ],
-                    "body": {
-						"mode": "raw",
-						"raw": "{\r\n    \"write-product-category\": {\r\n        \"entity\": \"product_category\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_disabled}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_variant}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
-						"options": {
-							"raw": {
-								"language": "json"
-							}
-						}
-					},
                     "url": {
-						"raw": "{{host}}/api/_action/sync",
-						"host": [
-							"{{host}}"
-						],
-						"path": [
-							"api",
-							"_action",
-							"sync"
-						]
-					}
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
                   },
                   "response": []
-                },
-						  {
-							  "name": "SG: get all products",
-							  "event": [
-								  {
-									  "listen": "test",
-									  "script": {
-										  "exec": [
-											  "pm.test(\"Not an error\", function () {",
-											  "    pm.response.to.not.have.jsonBody('error');",
-											  "});",
-											  "",
-											  "const jsonObject = xml2Json(responseBody);",
-											  "if (pm.globals.get('verbose')) {",
-											  "    console.log(jsonObject);",
-											  "}",
-											  "pm.test(\"Check product sort\", function () {",
-											  "    checkManualCategoryExistence(pm.environment.get('catalog_product_advPrices_id'), '4');",
-											  "    checkManualCategoryExistence(pm.environment.get('catalog_product_freeShip'), '2');",
-											  "    checkManualCategoryExistence(pm.environment.get('catalog_product_variant'), '1');",
-											  "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '3');",
-											  "});",
-											  "",
-											  "function checkManualCategoryExistence(productId, positionNumber) {",
-											  "    const product = getObjectById(productId, jsonObject.items.item);",
-											  "    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
-											  "    const category = getObjectById(pm.environment.get('created_category_manual_id'), product.categories.category);",
-											  "    if (pm.globals.get('verbose')) {",
-											  "        console.log(productId, category.$.sort_order);",
-											  "    }",
-											  "    pm.expect(category, 'Could not locate manual category for prod id: ' + productId).to.haveOwnProperty('$').to.haveOwnProperty('sort_order').to.eq(positionNumber);",
-											  "}",
-											  "",
-											  "function getObjectById(id, object) {",
-											  "    return object.find(item => item.$.uid === id);",
-											  "}"
-										  ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "*/*"
-                      },
-                      {
-                        "key": "X-Shopgate-Auth-User",
-                        "value": "{{gen_sg_header_auth_user}}"
-                      },
-                      {
-                        "key": "X-Shopgate-Auth-Token",
-                        "value": "{{gen_sg_header_auth_token}}"
-                      }
-                    ],
-                    "body": {
-                      "mode": "formdata",
-                      "formdata": [
-						  {
-							  "key": "shop_number",
-							  "value": "{{shop_number}}",
-							  "type": "text"
-						  },
-						  {
-							  "key": "action",
-							  "value": "{{framework_action_get_items}}",
-							  "type": "text"
-						  },
-						  {
-							  "key": "limit",
-							  "value": "100",
-							  "description": "\n",
-							  "type": "text"
-						  },
-						  {
-							  "key": "offset",
-							  "value": "0",
-							  "type": "text"
-						  }
-					  ]
-					},
-					  "url": {
-						  "raw": "{{domain}}",
-						  "host": [
-							  "{{domain}}"
-						  ]
-					  }
-				  },
-							  "response": []
-						  }
-					  ]
-				  },
-				  {
-					  "name": "Dynamic",
-					  "item": [
-						  {
-							  "name": "SG: check before",
-							  "event": [
-								  {
-									  "listen": "test",
-									  "script": {
-										  "exec": [
-											  "pm.test(\"Not an error\", function () {",
-											  "    pm.response.to.not.have.jsonBody('error');",
-											  "});",
-											  "",
-											  "pm.test(\"Product has only one category\", function () {",
-											  "    const jsonObject = xml2Json(responseBody);",
-											  "    if (pm.globals.get('verbose')){",
-											  "        console.log(jsonObject);",
-											  "    }",
-											  "",
-											  "    pm.expect(jsonObject.items.item.categories.category.$.uid).to.be.eq(pm.environment.get('category_freeTime_id'));",
-											  "    pm.expect(jsonObject.items.item.categories.category.$.sort_order).to.be.eq('2');",
-											  "});"
-										  ],
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Product",
+          "item": [
+            {
+              "name": "Dynamic",
+              "item": [
+                {
+                  "name": "SG: check before",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "pm.test(\"Product has only one category\", function () {",
+                          "    const jsonObject = xml2Json(responseBody);",
+                          "    if (pm.globals.get('verbose')){",
+                          "        console.log(jsonObject);",
+                          "    }",
+                          "",
+                          "    pm.expect(jsonObject.items.item.categories.category.$.uid).to.be.eq(pm.environment.get('category_freeTime_id'));",
+                          "    pm.expect(jsonObject.items.item.categories.category.$.sort_order).to.be.eq('2');",
+                          "});"
+                        ],
                         "type": "text/javascript"
                       }
                     }
@@ -1520,66 +1309,66 @@
                           "value": "{{catalog_product_main_id}}",
                           "type": "text"
                         }
-					  ]
-					},
-					  "url": {
-						  "raw": "{{domain}}{{xdebug}}",
-						  "host": [
-							  "{{domain}}{{xdebug}}"
-						  ]
-					  }
-				  },
-							  "response": []
-						  },
-						  {
-							  "name": "SW: create freeShip cat",
-							  "event": [
-								  {
-									  "listen": "test",
-									  "script": {
-										  "exec": [
-											  "pm.test(\"Created single entity\", function () {\r",
-											  "    pm.response.to.have.status(204);\r",
-											  "});"
-										  ],
-										  "type": "text/javascript"
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}{{xdebug}}",
+                      "host": [
+                        "{{domain}}{{xdebug}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: create freeShip cat",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Created single entity\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
                       }
                     }
                   ],
                   "protocolProfileBehavior": {
-					  "disabledSystemHeaders": {
-						  "accept": true
-					  }
-				  },
+                    "disabledSystemHeaders": {
+                      "accept": true
+                    }
+                  },
                   "request": {
                     "auth": {
-						"type": "bearer",
-						"bearer": [
-							{
-								"key": "token",
-								"value": "{{gen_access_token}}",
-								"type": "string"
-							}
-						]
-					},
-					  "method": "POST",
-					  "header": [
-						  {
-							  "key": "Accept",
-							  "value": "application/json",
-							  "type": "text"
-						  }
-					  ],
-					  "body": {
-						  "mode": "raw",
-						  "raw": "{\r\n    \"id\": \"{{created_category_noFreeShip_id}}\",\r\n    \"displayNestedProducts\": true,\r\n    \"parentId\": \"{{category_freeTime_id}}\",\r\n    \"type\": \"page\",\r\n    \"productAssignmentType\": \"product_stream\",\r\n    \"name\": \"No Free Ship Dynamic Cat\",\r\n    \"cmsPageId\": \"{{gen_cms_page_default_id}}\",\r\n    \"productStream\": {\r\n        \"id\": \"{{created_stream_noFreeShip_id}}\",\r\n        \"name\": \"No Free Shipping products\",\r\n        \"filters\": [\r\n            {\r\n                \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                \"type\": \"equals\",\r\n                \"field\": \"shippingFree\",\r\n                \"value\": \"1\",\r\n                \"parent\": {\r\n                    \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                    \"type\": \"not\",\r\n                    \"value\": \"0\",\r\n                    \"parent\": {\r\n                        \"productStreamId\" :\"{{created_stream_noFreeShip_id}}\",\r\n                        \"type\": \"multi\",\r\n                        \"operator\": \"AND\"\r\n                    }\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
-						  "options": {
-							  "raw": {
-								  "language": "json"
-							  }
-						  }
-					  },
-					  "url": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"id\": \"{{created_category_noFreeShip_id}}\",\r\n    \"displayNestedProducts\": true,\r\n    \"parentId\": \"{{category_freeTime_id}}\",\r\n    \"type\": \"page\",\r\n    \"productAssignmentType\": \"product_stream\",\r\n    \"name\": \"No Free Ship Dynamic Cat\",\r\n    \"cmsPageId\": \"{{gen_cms_page_default_id}}\",\r\n    \"productStream\": {\r\n        \"id\": \"{{created_stream_noFreeShip_id}}\",\r\n        \"name\": \"No Free Shipping products\",\r\n        \"filters\": [\r\n            {\r\n                \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                \"type\": \"equals\",\r\n                \"field\": \"shippingFree\",\r\n                \"value\": \"1\",\r\n                \"parent\": {\r\n                    \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                    \"type\": \"not\",\r\n                    \"value\": \"0\",\r\n                    \"parent\": {\r\n                        \"productStreamId\" :\"{{created_stream_noFreeShip_id}}\",\r\n                        \"type\": \"multi\",\r\n                        \"operator\": \"AND\"\r\n                    }\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
                       "raw": "{{host}}/api/category",
                       "host": [
                         "{{host}}"
@@ -1592,100 +1381,100 @@
                   },
                   "response": []
                 },
-						  {
-							  "name": "SG: category created",
-							  "event": [
-								  {
-									  "listen": "test",
-									  "script": {
-										  "exec": [
-											  "pm.test(\"Not an error\", function () {",
-											  "    pm.response.to.not.have.jsonBody('error');",
-											  "});",
-											  "",
-											  "pm.test(\"Dynamic category created\", function () {",
-											  "    const jsonObject = xml2Json(responseBody);",
-											  "    if (pm.globals.get('verbose')){",
-											  "        console.log(jsonObject);",
-											  "    }",
-											  "",
-											  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
-											  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
-											  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.eq('No Free Ship Dynamic Cat')",
-											  "});"
-										  ],
+                {
+                  "name": "SG: category created",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "pm.test(\"Dynamic category created\", function () {",
+                          "    const jsonObject = xml2Json(responseBody);",
+                          "    if (pm.globals.get('verbose')){",
+                          "        console.log(jsonObject);",
+                          "    }",
+                          "",
+                          "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
+                          "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
+                          "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.eq('No Free Ship Dynamic Cat')",
+                          "});"
+                        ],
                         "type": "text/javascript"
                       }
                     }
                   ],
                   "request": {
-					  "method": "POST",
-					  "header": [
-						  {
-							  "key": "Accept",
-							  "value": "*/*"
-						  },
-						  {
-							  "key": "X-Shopgate-Auth-User",
-							  "value": "{{gen_sg_header_auth_user}}"
-						  },
-						  {
-							  "key": "X-Shopgate-Auth-Token",
-							  "value": "{{gen_sg_header_auth_token}}"
-						  }
-					  ],
-					  "body": {
-						  "mode": "formdata",
-						  "formdata": [
-							  {
-								  "key": "shop_number",
-								  "value": "{{shop_number}}",
-								  "type": "text"
-							  },
-							  {
-								  "key": "action",
-								  "value": "{{framework_action_get_categories}}",
-								  "type": "text"
-							  },
-							  {
-								  "key": "uids[0]",
-								  "value": "{{created_category_noFreeShip_id}}",
-								  "type": "text"
-							  }
-						  ]
-					  },
-					  "url": {
-						  "raw": "{{domain}}",
-						  "host": [
-							  "{{domain}}"
-						  ]
-					  }
-				  },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_categories}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{created_category_noFreeShip_id}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
                   "response": []
                 },
-						  {
-							  "name": "SG: check after",
-							  "event": [
-								  {
-									  "listen": "test",
-									  "script": {
-										  "exec": [
-											  "pm.test(\"Not an error\", function () {",
-											  "    pm.response.to.not.have.jsonBody('error');",
-											  "});",
-											  "",
-											  "pm.test(\"Is in the dynamic category\", function () {",
-											  "    const jsonObject = xml2Json(responseBody);",
-											  "    if (pm.globals.get('verbose')){",
-											  "        console.log(jsonObject);",
-											  "    }",
-											  "",
-											  "    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
-											  "    pm.expect(jsonObject.items.item.categories.category[0].$.uid).to.be.eq(pm.environment.get('created_category_noFreeShip_id'));",
-											  "    pm.expect(jsonObject.items.item.categories.category[0].$.sort_order).to.be.eq('1');",
-											  "    pm.expect(jsonObject.items.item.categories.category[1].$.sort_order).to.be.eq('2');",
-											  "});"
-										  ],
+                {
+                  "name": "SG: check after",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "pm.test(\"Is in the dynamic category\", function () {",
+                          "    const jsonObject = xml2Json(responseBody);",
+                          "    if (pm.globals.get('verbose')){",
+                          "        console.log(jsonObject);",
+                          "    }",
+                          "",
+                          "    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
+                          "    pm.expect(jsonObject.items.item.categories.category[0].$.uid).to.be.eq(pm.environment.get('created_category_noFreeShip_id'));",
+                          "    pm.expect(jsonObject.items.item.categories.category[0].$.sort_order).to.be.eq('1');",
+                          "    pm.expect(jsonObject.items.item.categories.category[1].$.sort_order).to.be.eq('2');",
+                          "});"
+                        ],
                         "type": "text/javascript"
                       }
                     }
@@ -1719,23 +1508,234 @@
                           "value": "{{framework_action_get_items}}",
                           "type": "text"
                         },
-						  {
-							  "key": "limit",
-							  "value": "100",
-							  "description": "\n",
-							  "type": "text"
-						  },
-						  {
-							  "key": "offset",
-							  "value": "0",
-							  "type": "text"
-						  },
-						  {
-							  "key": "uids[0]",
-							  "value": "{{catalog_product_main_id}}",
-							  "type": "text"
-						  }
-					  ]
+                        {
+                          "key": "limit",
+                          "value": "100",
+                          "description": "\n",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Manual Category Sort",
+              "item": [
+                {
+                  "name": "SW: create manual cat",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Created single entity\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {}
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"id\": \"{{created_category_manual_id}}\",\r\n    \"displayNestedProducts\": true,\r\n    \"parentId\": \"{{category_freeTime_id}}\",\r\n    \"afterCategoryId\": \"{{created_category_noFreeShip_id}}\",\r\n    \"type\": \"page\",\r\n    \"productAssignmentType\": \"product\",\r\n    \"name\": \"Manual products category\",\r\n    \"cmsPageId\": \"{{gen_cms_page_default_id}}\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/category",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "category"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: create prod map",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {
+                      "accept": true
+                    }
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"write-product-category\": {\r\n        \"entity\": \"product_category\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_disabled}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_variant}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/_action/sync",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "_action",
+                        "sync"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: get all products",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "const jsonObject = xml2Json(responseBody);",
+                          "if (pm.globals.get('verbose')) {",
+                          "    console.log(jsonObject);",
+                          "}",
+                          "pm.test(\"Check product sort\", function () {",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_advPrices_id'), '4');",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_freeShip'), '2');",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_variant'), '1');",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '3');",
+                          "});",
+                          "",
+                          "function checkManualCategoryExistence(productId, positionNumber) {",
+                          "    const product = getObjectById(productId, jsonObject.items.item);",
+                          "    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
+                          "    const category = getObjectById(pm.environment.get('created_category_manual_id'), product.categories.category);",
+                          "    if (pm.globals.get('verbose')) {",
+                          "        console.log(productId, category.$.sort_order);",
+                          "    }",
+                          "    pm.expect(category, 'Could not locate manual category for prod id: ' + productId).to.haveOwnProperty('$').to.haveOwnProperty('sort_order').to.eq(positionNumber);",
+                          "}",
+                          "",
+                          "function getObjectById(id, object) {",
+                          "    return object.find(item => item.$.uid === id);",
+                          "}"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_items}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "100",
+                          "description": "\n",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        }
+                      ]
                     },
                     "url": {
                       "raw": "{{domain}}",
