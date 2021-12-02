@@ -27,13 +27,6 @@ class SortTree
     private FileCache $cache;
     private LoggerInterface $logger;
 
-    /**
-     * @param FileCache $cacheObject
-     * @param ContextManager $contextManager
-     * @param CategoryBridge $categoryBridge
-     * @param AbstractProductListingRoute $listingRoute
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         FileCache $cacheObject,
         ContextManager $contextManager,
@@ -61,8 +54,7 @@ class SortTree
         if (!$tree->isHit()) {
             $this->logger->debug('Building new sort order cache');
             $build = $this->build($rootCategoryId);
-            $tree->set($build);
-            $this->cache->save($tree);
+            $this->cache->save($tree->set($build));
         }
         return $tree->get();
     }
@@ -94,7 +86,10 @@ class SortTree
             $i = 0;
             /** @var ProductEntity $product */
             foreach ($products as $product) {
-                $tree[$category->getId()][$product->getParentId() ?: $product->getId()] = $maxProducts - $i++;
+                $tree[$product->getParentId() ?: $product->getId()][] = [
+                    'categoryId' => $category->getId(),
+                    'position' => $maxProducts - $i++
+                ];
             }
         }
 

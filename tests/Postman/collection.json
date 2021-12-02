@@ -1386,7 +1386,7 @@
                           "    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
                           "    pm.expect(jsonObject.items.item.categories.category[0].$.uid).to.be.eq(pm.environment.get('created_category_noFreeShip_id'));",
                           "    pm.expect(jsonObject.items.item.categories.category[0].$.sort_order).to.be.eq('1');",
-                          "    pm.expect(jsonObject.items.item.categories.category[1].$.sort_order).to.be.eq('2');",
+                          "    pm.expect(jsonObject.items.item.categories.category[1].$.sort_order).to.be.eq('5');",
                           "});"
                         ],
                         "type": "text/javascript"
