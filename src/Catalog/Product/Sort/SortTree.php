@@ -12,6 +12,7 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\FileCache;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
@@ -91,8 +92,9 @@ class SortTree
             $products = $result->getEntities();
             $maxProducts = $products->count();
             $i = 0;
+            /** @var ProductEntity $product */
             foreach ($products as $product) {
-                $tree[$category->getId()][$product->getId()] = $maxProducts - $i++;
+                $tree[$category->getId()][$product->getParentId() ?: $product->getId()] = $maxProducts - $i++;
             }
         }
 
