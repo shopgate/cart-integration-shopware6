@@ -12,6 +12,7 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\FileCache;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,13 +27,6 @@ class SortTree
     private FileCache $cache;
     private LoggerInterface $logger;
 
-    /**
-     * @param FileCache $cacheObject
-     * @param ContextManager $contextManager
-     * @param CategoryBridge $categoryBridge
-     * @param AbstractProductListingRoute $listingRoute
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         FileCache $cacheObject,
         ContextManager $contextManager,
@@ -60,8 +54,7 @@ class SortTree
         if (!$tree->isHit()) {
             $this->logger->debug('Building new sort order cache');
             $build = $this->build($rootCategoryId);
-            $tree->set($build);
-            $this->cache->save($tree);
+            $this->cache->save($tree->set($build));
         }
         return $tree->get();
     }
@@ -91,8 +84,12 @@ class SortTree
             $products = $result->getEntities();
             $maxProducts = $products->count();
             $i = 0;
+            /** @var ProductEntity $product */
             foreach ($products as $product) {
-                $tree[$category->getId()][$product->getId()] = $maxProducts - $i++;
+                $tree[$product->getParentId() ?: $product->getId()][] = [
+                    'categoryId' => $category->getId(),
+                    'position' => $maxProducts - $i++
+                ];
             }
         }
 

@@ -103,6 +103,31 @@
       "enabled": true
     },
     {
+      "key": "category_freeTime_id",
+      "value": "251448b91bc742de85643f5fccd89051",
+      "enabled": true
+    },
+    {
+      "key": "created_category_noFreeShip_id",
+      "value": "756340dd497a0a7d5177f1bbd554ddab",
+      "enabled": true
+    },
+    {
+      "key": "created_category_manual_id",
+      "value": "13ac93d00dce334bba916278aa7eba9e",
+      "enabled": true
+    },
+    {
+      "key": "catalog_product_main_id",
+      "value": "2a88d9b59d474c7e869d8071649be43c",
+      "enabled": true
+    },
+    {
+      "key": "catalog_product_variant",
+      "value": "43a23e0c03bf4ceabc6055a2185faa87",
+      "enabled": true
+    },
+    {
       "key": "catalog_product_disabled",
       "value": "1901dc5e888f4b1ea4168c2c5f005540",
       "enabled": true
@@ -113,13 +138,18 @@
       "enabled": true
     },
     {
+      "key": "catalog_product_advPrices_id",
+      "value": "11dc680240b04f469ccba354cbf0b967",
+      "enabled": true
+    },
+    {
       "key": "catalog_product_freeShip",
       "value": "3ac014f329884b57a2cce5a29f34779c",
       "enabled": true
     },
     {
-      "key": "catalog_product_variant",
-      "value": "43a23e0c03bf4ceabc6055a2185faa87",
+      "key": "created_stream_noFreeShip_id",
+      "value": "4d25454578dc3c6fbadb60804e649b6e",
       "enabled": true
     },
     {
@@ -159,6 +189,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2021-11-30T09:26:32.800Z",
+  "_postman_exported_at": "2021-12-02T17:31:39.398Z",
   "_postman_exported_using": "Postman/9.2.0"
 }

@@ -64,7 +64,6 @@ class ProductBridge
             ->addFilter(new ProductAvailableFilter($context->getSalesChannel()->getId()))
             ->addFilter(new EqualsFilter('product.parentId', null))
             ->addAssociations([
-                'categories',
                 'manufacturer',
                 'media',
                 'options',
@@ -77,7 +76,6 @@ class ProductBridge
                 'variation',
 
                 'children',
-                'children.categories',
                 'children.manufacturer',
                 'children.media',
                 'children.options',
