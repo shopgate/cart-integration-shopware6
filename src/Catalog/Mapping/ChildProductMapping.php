@@ -7,25 +7,21 @@ use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_Attribute;
+use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 
 class ChildProductMapping extends SimpleProductMapping
 {
 
-    /**
-     * @param ContextManager $contextManager
-     * @param CustomFieldBridge $customFieldSetBridge
-     * @param SortTree $sortTree
-     * @param TierPriceMapping $tierPriceMapping
-     * @param Formatter $translation
-     */
     public function __construct(
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
-        Formatter $translation
+        Formatter $translation,
+        AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
-        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation);
+        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation,
+            $crossSellingRoute);
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';
     }

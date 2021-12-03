@@ -23,7 +23,10 @@ use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Symfony\Component\HttpFoundation\Request;
 
 class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
@@ -36,26 +39,22 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected TierPriceMapping $tierPriceMapping;
     protected Formatter $formatter;
     private CustomFieldBridge $customFieldSetBridge;
+    private AbstractProductCrossSellingRoute $crossSellingRoute;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param CustomFieldBridge $customFieldSetBridge
-     * @param SortTree $sortTree
-     * @param TierPriceMapping $tierPriceMapping
-     * @param Formatter $formatter
-     */
     public function __construct(
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
-        Formatter $formatter
+        Formatter $formatter,
+        AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
         $this->contextManager = $contextManager;
         $this->customFieldSetBridge = $customFieldSetBridge;
         $this->sortTree = $sortTree;
         $this->tierPriceMapping = $tierPriceMapping;
         $this->formatter = $formatter;
+        $this->crossSellingRoute = $crossSellingRoute;
         parent::__construct();
     }
 
@@ -393,26 +392,53 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         parent::setTags($tags);
     }
 
-    public function setRelations(): void
-    {
-        $relationProducts = [];
-        if ($crossSellProducts = $this->item->getCrossSellings()) {
-            $relationProduct = new Shopgate_Model_Catalog_Relation();
-            $relationProduct->setType(Shopgate_Model_Catalog_Relation::DEFAULT_RELATION_TYPE_CROSSSELL);
-            $values = [];
-            foreach ($crossSellProducts as $crossSellProduct) {
-                $values[] = $crossSellProduct->getId();
-            }
-            $relationProduct->setValues($values);
-            $relationProducts[] = $relationProduct;
-        }
-        parent::setRelations($relationProducts);
-    }
-
     public function setInternalOrderInfo(): void
     {
         if ($extension = $this->item->getExtension(ProductExportExtension::EXT_KEY)) {
             parent::setInternalOrderInfo((string)$extension);
         }
+    }
+
+    /**
+     * We export only 4 sliders per SG limitations
+     *
+     * @throws MissingContextException
+     */
+    public function setRelations(): void
+    {
+        if (!$this->item->getCrossSellings()) {
+            return;
+        }
+
+        $crossSellings = $this->crossSellingRoute->load(
+            $this->item->getId(),
+            new Request(),
+            $this->contextManager->getSalesContext(),
+            new Criteria()
+        )->getResult();
+        $typeList = [
+            Shopgate_Model_Catalog_Relation::DEFAULT_RELATION_TYPE_CROSSSELL,
+            Shopgate_Model_Catalog_Relation::DEFAULT_RELATION_TYPE_UPSELL,
+            Shopgate_Model_Catalog_Relation::DEFAULT_RELATION_TYPE_CUSTOM,
+            Shopgate_Model_Catalog_Relation::DEFAULT_RELATION_TYPE_RELATION,
+        ];
+        $export = [];
+        foreach ($crossSellings as $element) {
+            if (count($typeList) === 0 || $element->getProducts()->count() === 0) {
+                continue;
+            }
+            $relation = new Shopgate_Model_Catalog_Relation();
+            $relation->setType(array_shift($typeList));
+            $crossSellingEntity = $element->getCrossSelling();
+            $relation->setLabel($crossSellingEntity->getTranslation('name'));
+            $itemIds = [];
+            foreach ($element->getProducts() as $product) {
+                $id = $product->getParentId() ?: $product->getId();
+                $itemIds[$id] = $id;
+            }
+            $relation->setValues($itemIds);
+            $export[] = $relation;
+        }
+        parent::setRelations($export);
     }
 }

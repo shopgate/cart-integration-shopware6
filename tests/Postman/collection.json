@@ -1747,6 +1747,231 @@
                   "response": []
                 }
               ]
+            },
+            {
+              "name": "Cross Sell",
+              "item": [
+                {
+                  "name": "SW: create CS",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {
+                      "accept": true
+                    }
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"write-product-cross-selling\": {\r\n        \"entity\": \"product_cross_selling\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Upsell: All active, 3 limit\",\r\n                \"position\": 4,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 3,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"price\",\r\n                \"sortDirection\": \"DESC\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Relations: all active\",\r\n                \"position\": 6,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 10,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"name\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Disabled list\",\r\n                \"position\": 3,\r\n                \"type\": \"productList\",\r\n                \"active\": false,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Cross Sell: manual 2, 1 dis, 1 dupe\",\r\n                \"position\": 2,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_disabled}}\",\r\n                        \"position\": 2\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_variant}}\",\r\n                        \"position\": 4\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Custom: manual 3\",\r\n                \"position\": 5,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_freeShip}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                        \"position\": 2\r\n                    },\r\n\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Not exported\",\r\n                \"position\": 7,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                \"sortBy\": \"name\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/_action/sync",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "_action",
+                        "sync"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: create active stream",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Created single entity\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {}
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"id\": \"{{created_stream_allActive_id}}\",\r\n    \"name\": \"All active stream\",\r\n    \"filters\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"active\",\r\n            \"value\": \"1\",\r\n            \"parent\": {\r\n                \"type\": \"multi\",\r\n                \"operator\": \"AND\"\r\n            }\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/product-stream",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "product-stream"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: check CS exist",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "pm.test(\"Is in the dynamic category\", function () {",
+                          "    const jsonObject = xml2Json(responseBody);",
+                          "    if (pm.globals.get('verbose')){",
+                          "        console.log(jsonObject);",
+                          "    }",
+                          "",
+                          "    pm.expect(jsonObject.items.item.relations.relation).to.be.an('array', 'Where are the sliders?').length(4, 'Should be 4 sliders max');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[0].$.type).to.be.eq('crosssell');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[0].uid).to.be.an('array', 'Where be the children 1?').length(2, 'Should be 2. Maybe child displaying?');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[0].uid[0]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[0].uid[1]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                          "",
+                          "    pm.expect(jsonObject.items.item.relations.relation[1].$.type).to.be.eq('upsell');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[1].uid).to.be.an('array', 'Where be the children 2?').length(3, 'All active, 3 limit');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[1].uid[0]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[1].uid[1]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                          "",
+                          "    pm.expect(jsonObject.items.item.relations.relation[2].$.type).to.be.eq('custom');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[2].label).to.be.an('string').to.be.eq('Custom: manual 3');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[2].uid).to.be.an('array', 'Where be the children 3?').length(3, '3 manual products');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[2].uid[0]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[2].uid[1]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[2].uid[2]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                          "",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].$.type).to.be.eq('relation');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(5, 'All 5 products?');",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_items}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "100",
+                          "description": "\n",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
             }
           ]
         },
@@ -2754,7 +2979,7 @@
               "response": []
             },
             {
-              "name": "SG: reviews (offset)",
+              "name": "SG: reviews (main) Copy",
               "event": [
                 {
                   "listen": "test",
