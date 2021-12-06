@@ -10,27 +10,15 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
+use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 
 class ConfigProductMapping extends SimpleProductMapping
 {
-    /** @var ContextManager */
     protected ContextManager $contextManager;
-    /** @var SortTree */
     protected SortTree $sortTree;
-    /** @var PropertyBridge */
-    private $productProperties;
-    /** @var ChildProductMapping */
-    private $childProductMapping;
+    private PropertyBridge $productProperties;
+    private ChildProductMapping $childProductMapping;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param CustomFieldBridge $customFieldSetBridge
-     * @param SortTree $sortTree
-     * @param TierPriceMapping $tierPriceMapping
-     * @param Formatter $translation
-     * @param PropertyBridge $productProperties
-     * @param ChildProductMapping $childProductMapping
-     */
     public function __construct(
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
@@ -38,9 +26,11 @@ class ConfigProductMapping extends SimpleProductMapping
         TierPriceMapping $tierPriceMapping,
         Formatter $translation,
         PropertyBridge $productProperties,
-        ChildProductMapping $childProductMapping
+        ChildProductMapping $childProductMapping,
+        AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
-        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation);
+        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation,
+            $crossSellingRoute);
         $this->productProperties = $productProperties;
         $this->childProductMapping = $childProductMapping;
     }

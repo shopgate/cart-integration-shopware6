@@ -27,13 +27,6 @@ class ProductBridge
     private ConfigBridge $configReader;
     private EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * @param AbstractProductListRoute $productListRoute
-     * @param ContextManager $contextManager
-     * @param SortBridge $productSorting
-     * @param ConfigBridge $configReader
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(
         AbstractProductListRoute $productListRoute,
         ContextManager $contextManager,
@@ -64,6 +57,7 @@ class ProductBridge
             ->addFilter(new ProductAvailableFilter($context->getSalesChannel()->getId()))
             ->addFilter(new EqualsFilter('product.parentId', null))
             ->addAssociations([
+                'crossSellings',
                 'manufacturer',
                 'media',
                 'options',
