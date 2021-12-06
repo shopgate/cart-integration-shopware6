@@ -1,6 +1,7 @@
-# Pre-version
+# 1.6.5
 
 - fixed customer address type mapping in case billing and shipping address are the same
+- fixed guest check_cart calls failing
 
 # 1.6.4
 
