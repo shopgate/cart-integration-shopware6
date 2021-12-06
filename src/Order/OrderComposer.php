@@ -83,7 +83,7 @@ class OrderComposer
         }
         // load desktop cart, duplicate its context, add info to context & create new cart based on it
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId);
+        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? '');
         if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(),
             $cleanCartContext->getContext())) {
             throw new ShopgateLibraryException(
