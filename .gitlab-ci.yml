@@ -162,6 +162,7 @@ validate zip:
   rules:
     - exists:
         - composer.json
+      if: '$CI_COMMIT_TAG != null && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   before_script: [ ]
   script:
     - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PWD/$PLUGIN_NAME.zip
@@ -179,7 +180,7 @@ upload zip to store:
   needs:
     - build zip
   rules:
-    - if: '$ACCOUNT_USER && $ACCOUNT_PASSWORD'
+    - if: '$ACCOUNT_USER && $ACCOUNT_PASSWORD && $CI_COMMIT_TAG != null && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   before_script: [ ]
   script:
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
