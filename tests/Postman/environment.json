@@ -181,24 +181,24 @@
       "key": "product_review_freeShip_disabled_id",
       "value": "1b49514500d220615bb67bf5394f437c",
       "enabled": true
-	},
-	  {
-		  "key": "product_review_child_id",
-		  "value": "56e5f02f7b6e0cd775f84a4157de7c8a",
-		  "enabled": true
-	  },
-	  {
-		  "key": "system_default_language",
-		  "value": "2fbb5fe2e29a4d70aa5854ce7ce3e20b",
-		  "enabled": true
-	  },
-	  {
-		  "key": "system_default_currency_id",
-		  "value": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
-		  "enabled": true
-	  }
+    },
+    {
+      "key": "product_review_child_id",
+      "value": "56e5f02f7b6e0cd775f84a4157de7c8a",
+      "enabled": true
+    },
+    {
+      "key": "system_default_language",
+      "value": "2fbb5fe2e29a4d70aa5854ce7ce3e20b",
+      "enabled": true
+    },
+    {
+      "key": "system_default_currency_id",
+      "value": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
+      "enabled": true
+    }
   ],
-	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2021-12-09T10:25:59.772Z",
-	"_postman_exported_using": "Postman/9.3.1"
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2021-12-09T10:25:59.772Z",
+  "_postman_exported_using": "Postman/9.3.1"
 }
