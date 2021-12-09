@@ -389,6 +389,73 @@
           "response": []
         },
         {
+          "name": "SW: find All Valid Rule",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Get values\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Always valid (Default)', 'Rule exists, check that you are on the right language');\r",
+                  "    pm.environment.set(\"gen_rule_allValid_id\", jsonData.data[0].id);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Always valid (Default)\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/rule",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "rule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "SW: find CMS page ID",
           "event": [
             {
@@ -624,58 +691,7 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "const createRequest = {",
-              "            \"client_id\": pm.environment.get(\"sw_client_id\"),",
-              "            \"grant_type\": \"password\",",
-              "            \"scopes\": \"write\",",
-              "            \"username\": pm.environment.get(\"sw_admin\"),",
-              "            \"password\": pm.environment.get(\"sw_pass\")",
-              "        };",
-              "const refreshRequest = {",
-              "    \"grant_type\": \"refresh_token\",",
-              "    \"client_id\": pm.environment.get(\"sw_client_id\"),",
-              "    \"refresh_token\": pm.environment.get(\"gen_refresh_token\")",
-              "};",
-              "// SW Auth",
-              "const authRequest = {",
-              "  url: pm.environment.replaceIn(pm.globals.get(\"sw_endpoint_auth\")),",
-              "  method: 'POST',",
-              "  header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
-              "  body: {",
-              "    mode: 'application/json'",
-              "  }",
-              "};",
-              "",
-              "",
-              "var getToken = true;",
-              "",
-              "if (!pm.environment.get('gen_token_expires') || ",
-              "    !pm.environment.get('gen_access_token')) {",
-              "    console.log('Token or expiry date are missing')",
-              "} else if (pm.environment.get('gen_token_expires') <= (new Date()).getTime()) {",
-              "    console.log('Token is expired')",
-              "} else {",
-              "    getToken = false;",
-              "    console.log('Token and expiry date are all good');",
-              "}",
-              "",
-              "if (getToken === true) {",
-              "    // set body depending on type of request needed",
-              "    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
-              "    pm.sendRequest(authRequest, function (err, res) {",
-              "    console.log(err ? err : res.json());",
-              "        if (err === null) {",
-              "            console.log('Saving the token and expiry date')",
-              "            var responseJson = res.json();",
-              "            pm.environment.set('gen_access_token', responseJson.access_token)",
-              "           ",
-              "            var expiryDate = new Date();",
-              "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
-              "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
-              "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
-              "        }",
-              "    });",
-              "}"
+              ""
             ]
           }
         },
@@ -1752,117 +1768,117 @@
               "name": "Cross Sell",
               "item": [
                 {
-					"name": "SW: create active stream",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Created single entity\", function () {\r",
-									"    pm.response.to.have.status(204);\r",
-									"});"
-								],
-								"type": "text/javascript"
+                  "name": "SW: create active stream",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Created single entity\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
                       }
                     }
                   ],
                   "protocolProfileBehavior": {
-					  "disabledSystemHeaders": {}
+                    "disabledSystemHeaders": {}
                   },
                   "request": {
                     "auth": {
-						"type": "bearer",
-						"bearer": [
-							{
-								"key": "token",
-								"value": "{{gen_access_token}}",
-								"type": "string"
-							}
-						]
-					},
-					  "method": "POST",
-					  "header": [],
-					  "body": {
-						  "mode": "raw",
-						  "raw": "{\r\n    \"id\": \"{{created_stream_allActive_id}}\",\r\n    \"name\": \"All active stream\",\r\n    \"filters\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"active\",\r\n            \"value\": \"1\",\r\n            \"parent\": {\r\n                \"type\": \"multi\",\r\n                \"operator\": \"AND\"\r\n            }\r\n        }\r\n    ]\r\n}",
-						  "options": {
-							  "raw": {
-								  "language": "json"
-							  }
-						  }
-					  },
-					  "url": {
-						  "raw": "{{host}}/api/product-stream",
-						  "host": [
-							  "{{host}}"
-						  ],
-						  "path": [
-							  "api",
-							  "product-stream"
-						  ]
-					  }
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"id\": \"{{created_stream_allActive_id}}\",\r\n    \"name\": \"All active stream\",\r\n    \"filters\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"active\",\r\n            \"value\": \"1\",\r\n            \"parent\": {\r\n                \"type\": \"multi\",\r\n                \"operator\": \"AND\"\r\n            }\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/product-stream",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "product-stream"
+                      ]
+                    }
                   },
                   "response": []
                 },
-				  {
-					  "name": "SW: create CS",
-					  "event": [
-						  {
-							  "listen": "test",
-							  "script": {
-								  "exec": [
-									  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
-									  "    pm.response.to.have.status(200);\r",
-									  "});"
-								  ],
-								  "type": "text/javascript"
+                {
+                  "name": "SW: create CS",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
                       }
                     }
                   ],
                   "protocolProfileBehavior": {
-					  "disabledSystemHeaders": {
-						  "accept": true
-					  }
-				  },
+                    "disabledSystemHeaders": {
+                      "accept": true
+                    }
+                  },
                   "request": {
                     "auth": {
-						"type": "bearer",
-						"bearer": [
-							{
-								"key": "token",
-								"value": "{{gen_access_token}}",
-								"type": "string"
-							}
-						]
-					},
-					  "method": "POST",
-					  "header": [
-						  {
-							  "key": "Accept",
-							  "value": "application/json",
-							  "type": "text"
-						  }
-					  ],
-					  "body": {
-						  "mode": "raw",
-						  "raw": "{\r\n    \"write-product-cross-selling\": {\r\n        \"entity\": \"product_cross_selling\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Upsell: All active, 3 limit\",\r\n                \"position\": 4,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 3,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"price\",\r\n                \"sortDirection\": \"DESC\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Relations: all active\",\r\n                \"position\": 6,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 10,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"name\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Disabled list\",\r\n                \"position\": 3,\r\n                \"type\": \"productList\",\r\n                \"active\": false,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Cross Sell: manual 2, 1 dis, 1 dupe\",\r\n                \"position\": 2,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_disabled}}\",\r\n                        \"position\": 2\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_variant}}\",\r\n                        \"position\": 4\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Custom: manual 3\",\r\n                \"position\": 5,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_freeShip}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                        \"position\": 2\r\n                    },\r\n\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Not exported\",\r\n                \"position\": 7,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                \"sortBy\": \"name\"\r\n            }\r\n        ]\r\n    }\r\n}",
-						  "options": {
-							  "raw": {
-								  "language": "json"
-							  }
-						  }
-					  },
-					  "url": {
-						  "raw": "{{host}}/api/_action/sync",
-						  "host": [
-							  "{{host}}"
-						  ],
-						  "path": [
-							  "api",
-							  "_action",
-							  "sync"
-						  ]
-					  }
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"write-product-cross-selling\": {\r\n        \"entity\": \"product_cross_selling\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Upsell: All active, 3 limit\",\r\n                \"position\": 4,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 3,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"price\",\r\n                \"sortDirection\": \"DESC\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Relations: all active\",\r\n                \"position\": 6,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 10,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"name\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Disabled list\",\r\n                \"position\": 3,\r\n                \"type\": \"productList\",\r\n                \"active\": false,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Cross Sell: manual 2, 1 dis, 1 dupe\",\r\n                \"position\": 2,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_disabled}}\",\r\n                        \"position\": 2\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_variant}}\",\r\n                        \"position\": 4\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Custom: manual 3\",\r\n                \"position\": 5,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_freeShip}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                        \"position\": 2\r\n                    },\r\n\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Not exported\",\r\n                \"position\": 7,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                \"sortBy\": \"name\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/_action/sync",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "_action",
+                        "sync"
+                      ]
+                    }
                   },
                   "response": []
                 },
@@ -1958,6 +1974,293 @@
                         {
                           "key": "uids[0]",
                           "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Tier Prices",
+              "item": [
+                {
+                  "name": "SG: customer grp tier",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
+                          "    const jsonObject = xml2Json(responseBody);",
+                          "    if (pm.globals.get('verbose')){",
+                          "        console.log(jsonObject);",
+                          "    }",
+                          "",
+                          "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
+                          "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
+                          "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Content: 1');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0]._).to.be.eq('200');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.threshold).to.be.eq('12');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.type).to.be.eq('fixed');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$, 'Should be a customer group tier price')",
+                          "    .to.haveOwnProperty('customer_group_uid')",
+                          "    .to.be.eq(pm.environment.get('gen_customer_group_main_id'), 'Should equal default customer group');",
+                          "",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.threshold).to.be.eq('1');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1]._).to.be.eq('150');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.type).to.be.eq('fixed');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$, 'Should be a customer group tier price')",
+                          "    .to.haveOwnProperty('customer_group_uid')",
+                          "    .to.be.eq(pm.environment.get('gen_customer_group_main_id'), 'Should equal default customer group');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_items}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{catalog_product_advPrices_id}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: clone adv prices",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Save product id for later use\", function () {\r",
+                          "    const jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
+                          "    pm.environment.set(\"gen_product_advPricesOne_id\", jsonData.id);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"name\" : \"API: Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "_action",
+                        "clone",
+                        "product",
+                        "{{catalog_product_advPrices_id}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: assing to channel",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Successfully added channel visibility to product\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {
+                      "accept": true
+                    }
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"productId\": \"{{gen_product_advPricesOne_id}}\",\r\n    \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n    \"visibility\": 30\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/api/product-visibility",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "api",
+                        "product-visibility"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: check tier prices",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
+                          "    const jsonObject = xml2Json(responseBody);",
+                          "    if (pm.globals.get('verbose')){",
+                          "        console.log(jsonObject);",
+                          "    }",
+                          "",
+                          "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
+                          "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
+                          "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Inhalt: 1'); //check translation",
+                          "",
+                          "    //tier",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0]._).to.be.eq('220');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.threshold).to.be.eq('1');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.max_quantity).to.be.eq('5');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.type).to.be.eq('fixed');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$, 'Should be a customer group tier price').not.haveOwnProperty('customer_group_uid');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number_headless}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_items}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{gen_product_advPricesOne_id}}",
                           "type": "text"
                         }
                       ]
@@ -3774,6 +4077,9 @@
       "script": {
         "type": "text/javascript",
         "exec": [
+          "/**",
+          " *  SG Token generation",
+          " */",
           "var tstamp = Math.floor(Date.now() / 1000);",
           "",
           "// Use the CryptoJS",
@@ -3784,7 +4090,63 @@
           "",
           "// Set the new header values",
           "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
-          "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
+          "pm.environment.set(\"gen_sg_header_auth_token\", authToken);",
+          "",
+          "",
+          "/**",
+          " * SW Token generation",
+          " */",
+          "var getToken = true;",
+          "if (!pm.environment.get('gen_token_expires') || !pm.environment.get('gen_access_token')) {",
+          "    console.log('Token or expiry date are missing');",
+          "} else if (pm.environment.get('gen_token_expires') <= (new Date()).getTime()) {",
+          "    console.log('Token is expired');",
+          "} else {",
+          "    getToken = false;",
+          "    console.log('Token and expiry date are all good');",
+          "}",
+          "",
+          "if (getToken === true) {",
+          "    const createRequest = {",
+          "        \"client_id\": pm.environment.get(\"sw_client_id\"),",
+          "        \"grant_type\": \"password\",",
+          "        \"scopes\": \"write\",",
+          "        \"username\": pm.environment.get(\"sw_admin\"),",
+          "        \"password\": pm.environment.get(\"sw_pass\")",
+          "    };",
+          "    const refreshRequest = {",
+          "        \"grant_type\": \"refresh_token\",",
+          "        \"client_id\": pm.environment.get(\"sw_client_id\"),",
+          "        \"refresh_token\": pm.environment.get(\"gen_refresh_token\")",
+          "    };",
+          "    // SW Auth",
+          "    const authRequest = {",
+          "        url: pm.environment.replaceIn(pm.globals.get(\"sw_endpoint_auth\")),",
+          "        method: 'POST',",
+          "        header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
+          "        body: {",
+          "            mode: 'application/json'",
+          "        }",
+          "    };",
+          "    // set body depending on type of request needed",
+          "    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
+          "    pm.sendRequest(authRequest, function (err, res) {",
+          "        if (pm.globals.get('verbose')){",
+          "            console.log(err ? err : res.json());",
+          "        }",
+          "        ",
+          "        if (err === null) {",
+          "            console.log('Saving the token and expiry date')",
+          "            var responseJson = res.json();",
+          "            pm.environment.set('gen_access_token', responseJson.access_token)",
+          "           ",
+          "            var expiryDate = new Date();",
+          "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+          "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
+          "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+          "        }",
+          "    });",
+          "}"
         ]
       }
     },
