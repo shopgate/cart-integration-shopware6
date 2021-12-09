@@ -128,18 +128,24 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         if (!$shopwarePrice = $this->item->getCurrencyPrice($currencyId)) {
             throw new MissingContextException('Could not find price for currency: ' . $currencyId);
         }
-        $highestPrice = $this->tierPriceMapping->getHighestPrice($this->item->getPrices(), $shopwarePrice);
         $shopgatePrice = new Shopgate_Model_Catalog_Price();
         $shopgatePrice->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
-        $shopgatePrice->setPrice($highestPrice->getGross());
+        $shopgatePrice->setPrice($shopwarePrice->getGross());
         $shopgatePrice->setMsrp($shopwarePrice->getListPrice() ? $shopwarePrice->getListPrice()->getGross() : 0);
-        if ($this->item->getPurchasePrices() && $cost = $this->item->getPurchasePrices()
-                ->getCurrencyPrice($currencyId)) {
+
+        if ($priceCollection = $this->item->getPrices()) {
+            $priceCollection->sortByQuantity();
+            $highestPrice = $this->tierPriceMapping->getHighestPrice($priceCollection, $shopwarePrice);
+            $shopgatePrice->setPrice($highestPrice->getGross());
+            $shopgatePrice->setTierPricesGroup(
+                $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice)
+            );
+        }
+
+        if ($this->item->getPurchasePrices()
+            && $cost = $this->item->getPurchasePrices()->getCurrencyPrice($currencyId)) {
             $shopgatePrice->setCost($cost->getGross());
         }
-        $shopgatePrice->setTierPricesGroup(
-            $this->tierPriceMapping->mapTierPrices($this->item->getPrices(), $highestPrice)
-        );
 
         /**
          * Base Price

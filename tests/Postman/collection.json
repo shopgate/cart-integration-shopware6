@@ -1990,6 +1990,83 @@
               ]
             },
             {
+              "name": "Regular prices",
+              "item": [
+                {
+                  "name": "SG: check prices",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "pm.test(\"Checking basic prices\", function () {",
+                          "    const jsonObject = xml2Json(responseBody);",
+                          "    if (pm.globals.get('verbose')){",
+                          "        console.log(jsonObject);",
+                          "    }",
+                          "",
+                          "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
+                          "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('19.99');",
+                          "    pm.expect(jsonObject.items.item.prices.msrp).to.be.eq('0');",
+                          "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Content: 1');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_items}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{catalog_product_variant}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "Tier Prices",
               "item": [
                 {
@@ -2012,17 +2089,18 @@
                           "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
                           "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
                           "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Content: 1');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0]._).to.be.eq('200');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.threshold).to.be.eq('12');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.type).to.be.eq('fixed');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$, 'Should be a customer group tier price')",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.threshold).to.be.eq('12');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1]._).to.be.eq('200');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.type).to.be.eq('fixed');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$, 'Should be a customer group tier price')",
                           "    .to.haveOwnProperty('customer_group_uid')",
                           "    .to.be.eq(pm.environment.get('gen_customer_group_main_id'), 'Should equal default customer group');",
                           "",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.threshold).to.be.eq('1');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1]._).to.be.eq('150');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.type).to.be.eq('fixed');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$, 'Should be a customer group tier price')",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.threshold).to.be.eq('1');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.max_quantity).to.be.eq('11');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0]._).to.be.eq('150');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.type).to.be.eq('fixed');",
+                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$, 'Should be a customer group tier price')",
                           "    .to.haveOwnProperty('customer_group_uid')",
                           "    .to.be.eq(pm.environment.get('gen_customer_group_main_id'), 'Should equal default customer group');",
                           "});"
@@ -4103,7 +4181,6 @@
           "    console.log('Token is expired');",
           "} else {",
           "    getToken = false;",
-          "    console.log('Token and expiry date are all good');",
           "}",
           "",
           "if (getToken === true) {",
