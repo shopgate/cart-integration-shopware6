@@ -1,3 +1,7 @@
+# 1.7.0
+
+- changed export to save files via Flysystem
+
 # 1.6.5
 
 - fixed customer address type mapping in case billing and shipping address are the same
