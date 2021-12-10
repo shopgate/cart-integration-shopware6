@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Core;
 
-use ShopgateLibraryException;
 use ShopgatePluginApiResponseAppXmlExport;
 
 class ExtendedApiResponseXmlExport extends ShopgatePluginApiResponseAppXmlExport
@@ -19,18 +18,15 @@ class ExtendedApiResponseXmlExport extends ShopgatePluginApiResponseAppXmlExport
 
     /**
      * Rewritten to handle data stream
-     *
-     * @throws ShopgateLibraryException
      */
     public function send(): void
     {
-        $this->assertData($this->data);
-
         if (is_resource($this->data)) {
             $fp = $this->data;
-        } else {
+        } elseif (is_string($this->data)) {
             $fp = @fopen($this->data, 'rb');
-            $this->assertData($fp);
+        } else {
+            exit;
         }
 
         // output headers ...
@@ -48,19 +44,5 @@ class ExtendedApiResponseXmlExport extends ShopgatePluginApiResponseAppXmlExport
         // clean up and leave
         fclose($fp);
         exit;
-    }
-
-    /**
-     * @throws ShopgateLibraryException
-     */
-    private function assertData($stream): void
-    {
-        if (!$stream) {
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::PLUGIN_FILE_OPEN_ERROR,
-                'File: ' . $this->data,
-                true
-            );
-        }
     }
 }

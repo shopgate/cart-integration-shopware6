@@ -8,7 +8,7 @@ use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use ShopgateLibraryException;
 use ShopgatePluginApi;
-use ShopgatePluginApiResponseAppXmlExport;
+use ShopgatePluginApiResponseAppJson;
 
 class ExtendedPluginApi extends ShopgatePluginApi
 {
@@ -31,27 +31,22 @@ class ExtendedPluginApi extends ShopgatePluginApi
         return $this;
     }
 
-    /**
-     * @throws ShopgateLibraryException
-     */
     public function handleRequest(array $data = array())
     {
         parent::handleRequest($data);
 
-        // Only runs if preventResponseOutput was set to true
-        if ($this->response instanceof ShopgatePluginApiResponseAppXmlExport) {
-            $this->response = new ExtendedApiResponseXmlExport($this->trace_id);
+        if (!$this->preventResponseOutput) {
+            return;
         }
+
         try {
+            $this->response = new ExtendedApiResponseXmlExport($this->trace_id);
             $this->response->setData(
                 $this->privateFileSystem->readStream($this->responseData)
             );
         } catch (FileNotFoundException $e) {
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::PLUGIN_FILE_OPEN_ERROR,
-                'File: ' . $this->responseData,
-                true
-            );
+            $this->response = new ShopgatePluginApiResponseAppJson($this->trace_id);
+            $this->response->markError(ShopgateLibraryException::FILE_READ_WRITE_ERROR, $e->getMessage());
         }
 
         $this->response->send();
