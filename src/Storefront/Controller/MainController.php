@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Storefront\Controller;
 
 use Shopgate\Shopware\Plugin;
+use Shopgate\Shopware\Shopgate\Extended\Core\ExtendedBuilder;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\System\Mapping\ConfigMapping;
-use ShopgateBuilder;
 use ShopgateLibraryException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Util\Random;
@@ -24,14 +24,17 @@ class MainController extends StorefrontController
     public const IS_SHOPGATE = 'IS_SHOPGATE_CALL';
     private ConfigBridge $systemConfigService;
     private ContextManager $contextManager;
+    private ExtendedBuilder $builder;
 
     public function __construct(
         ConfigBridge $systemConfigService,
         ContainerInterface $container,
-        ContextManager $context
+        ContextManager $context,
+        ExtendedBuilder $builder
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->contextManager = $context;
+        $this->builder = $builder;
         Facade::init($container);
     }
 
@@ -76,8 +79,8 @@ class MainController extends StorefrontController
         }, $this->getParameter('shopgate.action.whitelist'));
         $config = new ConfigMapping($actionWhitelist);
         $config->initShopwareConfig($this->systemConfigService);
-        $builder = new ShopgateBuilder($config);
-        $plugin = new Plugin($builder);
+        $this->builder->setConfig($config);
+        $plugin = new Plugin($this->builder);
 
         $plugin->handleRequest($request->request->all());
 

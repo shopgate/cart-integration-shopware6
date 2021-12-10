@@ -29,6 +29,7 @@ class ConfigMapping extends ShopgateConfig
      */
     protected function startup(): bool
     {
+        $this->setExportFolderPath('export');
         $this->setPluginName('Shopgate Go Plugin for Shopware 6');
         return parent::startup();
     }

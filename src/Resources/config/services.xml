@@ -77,6 +77,9 @@
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
         <service id="Shopgate\Shopware\Order\Quote\QuoteBridge"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedBuilder">
+            <argument type="service" id="sgate_shopgate_plugin_s_w6.filesystem.private"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
         </service>
