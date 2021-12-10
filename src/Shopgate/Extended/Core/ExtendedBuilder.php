@@ -33,13 +33,12 @@ class ExtendedBuilder extends ShopgateBuilder
      */
     public function __construct(FilesystemInterface $privateFileSystem)
     {
-        //parent::__construct($config);
         $this->privateFileSystem = $privateFileSystem;
     }
 
-    public function setConfig(ShopgateConfigInterface $config): ExtendedBuilder
+    public function initConstruct(ShopgateConfigInterface $config): ExtendedBuilder
     {
-        $this->config = $config;
+        parent::__construct($config);
 
         return $this;
     }
