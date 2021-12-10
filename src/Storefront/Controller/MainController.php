@@ -25,16 +25,19 @@ class MainController extends StorefrontController
     private ConfigBridge $systemConfigService;
     private ContextManager $contextManager;
     private ExtendedBuilder $builder;
+    private ConfigMapping $configMapping;
 
     public function __construct(
         ConfigBridge $systemConfigService,
         ContainerInterface $container,
         ContextManager $context,
-        ExtendedBuilder $builder
+        ExtendedBuilder $builder,
+        ConfigMapping $configMapping
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->contextManager = $context;
         $this->builder = $builder;
+        $this->configMapping = $configMapping;
         Facade::init($container);
     }
 
@@ -74,12 +77,8 @@ class MainController extends StorefrontController
                 'error_text' => 'site in maintenance mode'
             ]);
         }
-        $actionWhitelist = array_map(static function ($item) {
-            return (bool)$item;
-        }, $this->getParameter('shopgate.action.whitelist'));
-        $config = new ConfigMapping($actionWhitelist);
-        $config->initShopwareConfig($this->systemConfigService);
-        $this->builder->setConfig($config);
+        $this->configMapping->initShopwareConfig($this->systemConfigService);
+        $this->builder->initConstruct($this->configMapping);
         $plugin = new Plugin($this->builder);
 
         $plugin->handleRequest($request->request->all());

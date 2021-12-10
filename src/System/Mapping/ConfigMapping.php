@@ -23,14 +23,4 @@ class ConfigMapping extends ShopgateConfig
         $this->setShopNumber($this->configReader->get('shopNumber'));
         $this->setApikey($this->configReader->get('apiKey'));
     }
-
-    /**
-     * @return bool
-     */
-    protected function startup(): bool
-    {
-        $this->setExportFolderPath('export');
-        $this->setPluginName('Shopgate Go Plugin for Shopware 6');
-        return parent::startup();
-    }
 }
