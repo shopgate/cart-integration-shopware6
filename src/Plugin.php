@@ -6,7 +6,8 @@ namespace Shopgate\Shopware;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
-use Shopgate\Shopware\System\Di\Forwarder;
+use Shopgate\Shopware\Shopgate\RequestPersist;
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCart;
 use ShopgateCustomer;
@@ -17,20 +18,29 @@ use ShopgatePlugin;
 
 class Plugin extends ShopgatePlugin
 {
-    /** @var null|Forwarder $forwarder */
-    protected Forwarder $forwarder;
+    protected ExportService $exportService;
+    protected ImportService $importService;
+    protected LoggerInterface $logger;
+    protected RequestPersist $requestPersist;
 
     /**
      * @required
      */
-    public function injectForwarder(Forwarder $forwarder): void
-    {
-        $this->forwarder = $forwarder;
+    public function dependencyInjector(
+        ExportService $exportService,
+        ImportService $importService,
+        LoggerInterface $logger,
+        RequestPersist $requestPersist
+    ): void {
+        $this->exportService = $exportService;
+        $this->importService = $importService;
+        $this->logger = $logger;
+        $this->requestPersist = $requestPersist;
     }
 
     public function startup(): void
     {
-        // NOTE! Everything here runs before injectForwarder method
+        // NOTE! Everything here runs before dependencyInjector method
     }
 
     /**
@@ -44,7 +54,7 @@ class Plugin extends ShopgatePlugin
      */
     public function cron($jobname, $params, &$message, &$errorcount): void
     {
-        $this->forwarder->getExportService()->cron($jobname, $this->builder->buildMerchantApi());
+        $this->exportService->cron($jobname, $this->builder->buildMerchantApi());
     }
 
     /**
@@ -56,7 +66,7 @@ class Plugin extends ShopgatePlugin
      */
     public function getCustomer($user, $pass): ShopgateCustomer
     {
-        return $this->forwarder->getExportService()->getCustomer($user, $pass);
+        return $this->exportService->getCustomer($user, $pass);
     }
 
     /**
@@ -68,7 +78,7 @@ class Plugin extends ShopgatePlugin
      */
     public function registerCustomer($user, $pass, ShopgateCustomer $customer): void
     {
-        $this->forwarder->getImportService()->registerCustomer($user, $pass, $customer);
+        $this->importService->registerCustomer($user, $pass, $customer);
     }
 
     /**
@@ -79,12 +89,12 @@ class Plugin extends ShopgatePlugin
      */
     public function addOrder(ShopgateOrder $order): array
     {
-        $this->forwarder->getLogger()->debug('Incoming Add Order');
-        $this->forwarder->getLogger()->debug(print_r($order->toArray(), true));
+        $this->logger->debug('Incoming Add Order');
+        $this->logger->debug(print_r($order->toArray(), true));
         $newOrder = (new ExtendedOrder())->loadFromShopgateOrder($order);
-        $this->forwarder->getRequestPersist()->setIncomingOrder($newOrder);
+        $this->requestPersist->setIncomingOrder($newOrder);
 
-        return $this->forwarder->getImportService()->addOrder($newOrder);
+        return $this->importService->addOrder($newOrder);
     }
 
     public function updateOrder(ShopgateOrder $order)
@@ -100,13 +110,13 @@ class Plugin extends ShopgatePlugin
      */
     public function checkCart(ShopgateCart $cart): array
     {
-        $this->forwarder->getLogger()->debug('Incoming Check Cart');
-        $this->forwarder->getLogger()->debug(print_r($cart->toArray(), true));
+        $this->logger->debug('Incoming Check Cart');
+        $this->logger->debug(print_r($cart->toArray(), true));
         $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
 
-        $result = $this->forwarder->getExportService()->checkCart($newCart);
-        $this->forwarder->getLogger()->debug('Check Cart Response');
-        $this->forwarder->getLogger()->debug((print_r($result, true)));
+        $result = $this->exportService->checkCart($newCart);
+        $this->logger->debug('Check Cart Response');
+        $this->logger->debug((print_r($result, true)));
         return $result;
     }
 
@@ -121,7 +131,7 @@ class Plugin extends ShopgatePlugin
      */
     public function getSettings(): array
     {
-        return $this->forwarder->getExportService()->getSettings();
+        return $this->exportService->getSettings();
     }
 
     public function getOrders(
@@ -142,7 +152,7 @@ class Plugin extends ShopgatePlugin
 
     public function createPluginInfo(): array
     {
-        return $this->forwarder->getExportService()->getInfo();
+        return $this->exportService->getInfo();
     }
 
     protected function createMediaCsv()
@@ -164,7 +174,7 @@ class Plugin extends ShopgatePlugin
             $offset = is_null($offset) ? $this->exportOffset : $offset;
         }
 
-        $products = $this->forwarder->getExportService()->getProducts($limit, $offset, $uids);
+        $products = $this->exportService->getProducts($limit, $offset, $uids);
 
         foreach ($products as $product) {
             $this->addItemModel($product);
@@ -184,8 +194,7 @@ class Plugin extends ShopgatePlugin
             $offset = is_null($offset) ? $this->exportOffset : $offset;
         }
 
-        $categories = $this->forwarder->getExportService()->getCategories($limit, $offset, $uids);
-
+        $categories = $this->exportService->getCategories($limit, $offset, $uids);
         foreach ($categories as $category) {
             $this->addCategoryModel($category);
         }
