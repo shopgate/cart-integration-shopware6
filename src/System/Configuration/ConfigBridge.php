@@ -33,7 +33,7 @@ class ConfigBridge
     private ContextManager $contextManager;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $systemConfigRepo;
-    private array $config;
+    private array $config = [];
     private DomainBridge $domainBridge;
     private array $error = [];
 
@@ -222,5 +222,4 @@ class ConfigBridge
     {
         return $this->error;
     }
-
 }
