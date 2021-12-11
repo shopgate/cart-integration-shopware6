@@ -21,7 +21,13 @@
         </input-field>
     </card>
     <card>
-        <title>Product Export</title>
+        <title>Export</title>
+        <input-field type="bool">
+            <name>isFlysystem</name>
+            <label>Flysystem writer</label>
+            <helpText>Less performant alternative. Enable only if your system disallows file writing operations.
+            </helpText>
+        </input-field>
         <input-field type="multi-select">
             <name>productTypesToExport</name>
             <label>Product types to be exported</label>

@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\System\Configuration;
 
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\DomainBridge;
+use ShopgateLibraryException;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
@@ -23,6 +24,7 @@ class ConfigBridge
     public const PLUGIN_NAMESPACE = 'SgateShopgatePluginSW6';
     public const SYSTEM_CONFIG_DOMAIN = self::PLUGIN_NAMESPACE . '.config.';
     public const SYSTEM_CONFIG_PROD_EXPORT = self::SYSTEM_CONFIG_DOMAIN . 'productTypesToExport';
+    public const SYSTEM_CONFIG_IS_ACTIVE = 'isActive';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 
@@ -33,6 +35,7 @@ class ConfigBridge
     private EntityRepositoryInterface $systemConfigRepo;
     private array $config;
     private DomainBridge $domainBridge;
+    private array $error = [];
 
     /**
      * @param EntityRepositoryInterface $pluginRepository
@@ -83,6 +86,35 @@ class ConfigBridge
             $version = 'not installed';
         }
         return $version;
+    }
+
+    /** @noinspection PhpUnused */
+    public function loadByShopNumber($shopNumber): void
+    {
+        if (!$shopNumber) {
+            $this->error = [
+                'error' => ShopgateLibraryException::PLUGIN_API_UNKNOWN_SHOP_NUMBER,
+                'error_text' => 'No shop_number property provided in the API call.'
+            ];
+            return;
+        }
+
+        $channel = $this->getSalesChannelId($shopNumber);
+        if (null === $channel) {
+            $this->error = [
+                'error' => ShopgateLibraryException::PLUGIN_API_UNKNOWN_SHOP_NUMBER,
+                'error_text' => 'No shop_number exists in the Shopgate configuration. Configure a specific channel.'
+            ];
+            return;
+        }
+
+        $this->load($channel);
+        if ($this->get(self::SYSTEM_CONFIG_IS_ACTIVE) !== true) {
+            $this->error = [
+                'error' => ShopgateLibraryException::CONFIG_PLUGIN_NOT_ACTIVE,
+                'error_text' => 'Plugin is not active in Shopware config'
+            ];
+        }
     }
 
     /**
@@ -182,4 +214,13 @@ class ConfigBridge
 
         return $domainUrl;
     }
+
+    /**
+     * @return array
+     */
+    public function getError(): array
+    {
+        return $this->error;
+    }
+
 }

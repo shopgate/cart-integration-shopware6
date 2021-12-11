@@ -40,6 +40,8 @@ composer update --no-dev -d custom/plugins/SgateShopgatePluginSW6
 ```shell
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-sdk:^2.9.81
+composer require symfony/expression-language:^5.4.0
+# and any other dependency we have in the SgateShopgatePluginSW6/composer.json file
 ```
 
 ## Enable & Activate
@@ -75,6 +77,12 @@ cd [shopware6 root folder]
   1. Check `Domains` list, see that there is no domain URL with default language (e.g., English)
 
 # Configuration
+
+### Administration
+
+##### Export
+
+- Flysystem - uses Flysystem to write SDK file export
 
 ### Email template variable usage (supported as of Shopware 6.4.4.0)
 

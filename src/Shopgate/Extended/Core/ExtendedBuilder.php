@@ -38,6 +38,7 @@ class ExtendedBuilder extends ShopgateBuilder
 
     public function initConstruct(ShopgateConfigInterface $config): ExtendedBuilder
     {
+        $config->setExportFolderPath('export');
         parent::__construct($config);
 
         return $this;
