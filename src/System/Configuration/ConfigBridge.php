@@ -85,6 +85,7 @@ class ConfigBridge
         } catch (Throwable $e) {
             $version = 'not installed';
         }
+
         return $version;
     }
 

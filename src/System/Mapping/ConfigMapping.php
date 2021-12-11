@@ -9,11 +9,10 @@ use ShopgateConfig;
 
 class ConfigMapping extends ShopgateConfig
 {
-    /** @var ConfigBridge */
-    protected $configReader;
+    protected ConfigBridge $configReader;
 
     /**
-     * @param ConfigBridge $configReader
+     * @required
      */
     public function initShopwareConfig(ConfigBridge $configReader): void
     {

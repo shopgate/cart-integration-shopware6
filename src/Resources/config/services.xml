@@ -76,6 +76,14 @@
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
         <service id="Shopgate\Shopware\Order\Quote\QuoteBridge"/>
+        <service id="shopgate.plugin" class="Shopgate\Shopware\Plugin">
+            <!-- if Flysystem config is enabled we route to the Extended Builder class, otherwise use default -->
+            <argument key="$builder" type="expression">
+                service('shopgate.config_bridge').get('isFlysystem') === true
+                ? service('shopgate.extended_builder')
+                : service('shopgate.sdk.builder')
+            </argument>
+        </service>
         <service id="shopgate.extended_builder" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedBuilder">
             <argument type="service" id="sgate_shopgate_plugin_s_w6.filesystem.private"/>
             <call method="initConstruct">
@@ -115,9 +123,6 @@
         <service id="Shopgate\Shopware\System\Log\Logger"/>
         <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Mapping\ConfigMapping" shared="true">
             <argument>%shopgate.configurations%</argument>
-            <call method="initShopwareConfig">
-                <argument type="service" id="shopgate.config_bridge"/>
-            </call>
         </service>
         <service id="Shopgate\Shopware\System\Db\Rule\IsShopgateRuleCondition">
             <tag name="shopware.rule.definition"/>
@@ -141,17 +146,12 @@
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
         </service>
-        <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/><!-- Public (needed for controllers and classes instantiated via Facade class -->
+        <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
+        <!-- Public (needed for controllers and classes instantiated via Facade class -->
         <service id="Shopgate\Shopware\System\Di\Forwarder" public="true"/>
-        <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true">
-            <!-- if Flysystem config is enabled we route to the Extended Builder class, otherwise use default -->
-            <argument key="$builder" type="expression">
-                service('shopgate.config_bridge').get('isFlysystem') === true
-                ? service('shopgate.extended_builder')
-                : service('shopgate.sdk.builder')
-            </argument>
-        </service>
-        <!-- Interfaces -->
+        <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
+        <!-- Interfaces & aliases-->
+        <service id="Shopgate\Shopware\Plugin" alias="shopgate.plugin"/>
         <service id="Shopgate\Shopware\System\Log\LoggerInterface" alias="Shopgate\Shopware\System\Log\Logger"/>
         <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute" alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"/>
         <service id="Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute" alias="Shopware\Core\Content\Product\SalesChannel\ProductListRoute"/>

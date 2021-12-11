@@ -12,7 +12,7 @@ use Shopgate\Shopware\System\Log\LoggerInterface;
 /**
  * Forwarder for Plugin class where we cannot use
  * DI via constructor because of the "final" constructor
- * in the SDK library class. Instantiated via Facade class.
+ * in the SDK library class.
  */
 class Forwarder
 {

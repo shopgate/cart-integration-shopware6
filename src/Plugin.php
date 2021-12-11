@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
-use Shopgate\Shopware\Exceptions\DiException;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
-use Shopgate\Shopware\System\Di\Facade;
 use Shopgate\Shopware\System\Di\Forwarder;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCart;
@@ -20,15 +18,19 @@ use ShopgatePlugin;
 class Plugin extends ShopgatePlugin
 {
     /** @var null|Forwarder $forwarder */
-    protected $forwarder;
+    protected Forwarder $forwarder;
 
     /**
-     * @throws DiException
+     * @required
      */
+    public function injectForwarder(Forwarder $forwarder): void
+    {
+        $this->forwarder = $forwarder;
+    }
+
     public function startup(): void
     {
-        $this->forwarder = Facade::create(Forwarder::class);
-        $this->forwarder->getExportService()->definePluginVersion();
+        // NOTE! Everything here runs before injectForwarder method
     }
 
     /**
