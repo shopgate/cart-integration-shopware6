@@ -38,9 +38,6 @@ class ContextManager
         $this->channelContextFactory = $channelContextFactory;
     }
 
-    /**
-     * @required
-     */
     public function createAndLoadByChannelId(string $salesChannelId): ContextManager
     {
         $salesChannelContext = $this->createNewContext($salesChannelId);
@@ -49,14 +46,9 @@ class ContextManager
         return $this;
     }
 
-    public function setSalesChannelContext(SalesChannelContext $salesChannelContext): ContextManager
-    {
-        $this->salesContext = $salesChannelContext;
-        return $this;
-    }
-
     /**
      * Will only throw if developer messes the context system up
+     * @throws MissingContextException
      */
     public function getSalesContext(): SalesChannelContext
     {

@@ -142,9 +142,6 @@
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
-            <call method="createAndLoadByChannelId">
-                <argument type="expression">service('shopgate.config_bridge').get('salesChannelId')</argument>
-            </call>
         </service>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
