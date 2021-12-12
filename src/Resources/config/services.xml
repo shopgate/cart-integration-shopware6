@@ -44,7 +44,6 @@
         <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree"/>
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
             <argument type="service" id="salutation.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\AddressMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\CustomerMapping"/>
@@ -52,7 +51,6 @@
         <service id="Shopgate\Shopware\Customer\Mapping\LocationMapping">
             <argument type="service" id="country.repository"/>
             <argument type="service" id="country_state.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\ExportService"/>
         <service id="Shopgate\Shopware\ImportService"/>
@@ -131,7 +129,6 @@
             <argument type="service" id="tax.repository"/>
             <argument type="service" id="tax_rule.repository"/>
             <argument type="service" id="tax_rule_type.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\System\PaymentHandler\GenericHandler">
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
@@ -142,14 +139,18 @@
         </service>
         <service id="Shopgate\Shopware\System\Formatter"/>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
-        <service id="Shopgate\Shopware\Storefront\ContextManager">
+        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <call method="createAndLoadByChannelId">
+                <argument type="expression">service('shopgate.config_bridge').get('salesChannelId')</argument>
+            </call>
         </service>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <!-- Interfaces & aliases-->
         <service id="Shopgate\Shopware\Plugin" alias="shopgate.plugin"/>
+        <service id="Shopgate\Shopware\Storefront\ContextManager" alias="shopgate.context_manager"/>
         <service id="Shopgate\Shopware\System\Log\LoggerInterface" alias="Shopgate\Shopware\System\Log\Logger"/>
         <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute" alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"/>
         <service id="Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute" alias="Shopware\Core\Content\Product\SalesChannel\ProductListRoute"/>

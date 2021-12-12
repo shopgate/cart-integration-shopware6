@@ -89,7 +89,10 @@ class ConfigBridge
         return $version;
     }
 
-    /** @noinspection PhpUnused */
+    /**
+     * @required
+     * @noinspection PhpUnused
+     */
     public function loadByShopNumber($shopNumber): void
     {
         if (!$shopNumber) {
@@ -168,11 +171,9 @@ class ConfigBridge
             $fallback
         );
 
-        $config = [];
-
+        $config = ['salesChannelId' => $salesChannelId];
         foreach ($values as $key => $value) {
             $property = substr($key, strlen(self::SYSTEM_CONFIG_DOMAIN));
-
             $config[$property] = $value;
         }
 

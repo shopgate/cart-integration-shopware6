@@ -36,6 +36,9 @@ class ExtendedBuilder extends ShopgateBuilder
         $this->privateFileSystem = $privateFileSystem;
     }
 
+    /**
+     * @required
+     */
     public function initConstruct(ShopgateConfigInterface $config): ExtendedBuilder
     {
         $config->setExportFolderPath('export');
