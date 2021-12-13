@@ -25,6 +25,7 @@ variables:
   PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
   SW_ADMIN_USER: myadmin
   SW_ADMIN_PASS: test.123
+  MOCK_SERVER_URL: 'http://127.0.0.1:3000'
   VERBOSE: ''
 
 # Cache libraries in between PR commits
@@ -104,7 +105,7 @@ newman:
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
       --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE}
-      --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "verbose=$VERBOSE";
+      --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
     expire_in: 30 days
