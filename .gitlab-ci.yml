@@ -36,7 +36,7 @@ cache:
 workflow:
   rules:
     # do not run on push
-    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG == null'
       when: never
     - when: always
 
@@ -136,10 +136,8 @@ phpunit:
 
 build zip:
   stage: build
-  rules:
-    - exists:
-        - composer.json
-      if: '$CI_COMMIT_TAG != null'
+  only:
+    - tags
   script:
     - composer require frosh/plugin-uploader:0.3.19
     - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
@@ -159,10 +157,8 @@ validate zip:
     GIT_STRATEGY: none
   needs:
     - build zip
-  rules:
-    - exists:
-        - composer.json
-      if: '$CI_COMMIT_TAG != null'
+  only:
+    - tags
   before_script: [ ]
   script:
     - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PWD/$PLUGIN_NAME.zip
@@ -179,8 +175,8 @@ upload zip to store:
     GIT_STRATEGY: none
   needs:
     - build zip
-  rules:
-    - if: '$ACCOUNT_USER && $ACCOUNT_PASSWORD && $CI_COMMIT_TAG != null'
+  only:
+    - tags
   before_script: [ ]
   script:
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
