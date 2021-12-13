@@ -1,6 +1,6 @@
 # 1.7.0
 
-- changed export to save files via Flysystem
+- added configuration to save export files via Flysystem
 
 # 1.6.5
 
