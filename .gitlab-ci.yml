@@ -84,7 +84,7 @@ default:
 newman:
   stage: test
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra > /dev/null
+    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --activate SwagPlatformDemoData
     - export SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
@@ -99,6 +99,7 @@ newman:
       if [[ $VERBOSE != "" ]]; then
           mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
       fi
+    - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"

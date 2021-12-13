@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "71a2b055-5c4b-4249-b254-b9b5151810a4",
+    "_postman_id": "3c1dd711-b010-4f27-ae1c-65c1f0a1a966",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -2835,6 +2835,77 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "SG: cart guest check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "",
+                      "    var jsonData = pm.response.json();",
+                      "    ",
+                      "     if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_main_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -3360,7 +3431,7 @@
               "response": []
             },
             {
-              "name": "SG: reviews (main) Copy",
+              "name": "SG: reviews (offset)",
               "event": [
                 {
                   "listen": "test",
@@ -3429,77 +3500,6 @@
                     {
                       "key": "offset",
                       "value": "2",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: cart guest check",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.response.to.have.status(200);",
-                      "",
-                      "    var jsonData = pm.response.json();",
-                      "    ",
-                      "     if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_check_cart}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][0][item_number]",
-                      "value": "{{catalog_product_main_id}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][0][quantity]",
-                      "value": "1",
                       "type": "text"
                     }
                   ]
@@ -3688,6 +3688,264 @@
     {
       "name": "Import",
       "item": [
+        {
+          "name": "AddOrder",
+          "item": [
+            {
+              "name": "M: mock server check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function () {\r",
+                      "    pm.response.to.have.status(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mockoon is enabled\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_server_merchant_uri}}",
+                  "host": [
+                    "{{mock_server_merchant_uri}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: set mock api url",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_set_settings}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][name]",
+                      "value": "server",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][value]",
+                      "value": "custom",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][name]",
+                      "value": "api_url",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][value]",
+                      "value": "{{mock_server_merchant_uri}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: addOrder",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
+                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "",
+                      "function getValue(data, incomingKey) {",
+                      "    const found = data.find(function({key}) {",
+                      "        return key === incomingKey;",
+                      "    });",
+                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0001",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get order",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(jsonData.data.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(jsonData.data.campaignCode).to.eql(null);\r",
+                      "\r",
+                      "    pm.expect(jsonData.data.orderCustomer.email).to.eql('test@example.com');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "{{host}}/api/order/{{gen_order_0001_id}}",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "order",
+                    "{{gen_order_0001_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
         {
           "name": "SG: register_customer",
           "event": [
@@ -4063,7 +4321,7 @@
                   "    pm.expect(jsonData.shopgate_settings[0].old).to.eq('live');",
                   "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('custom');",
                   "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('api_url');",
-                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq('https://api.shopgate.com/merchant/');",
+                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(pm.globals.get(\"mock_server_merchant_uri\"));",
                   "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('http://some.url');",
                   "    pm.expect(jsonData.shopgate_settings[2].name).to.eq('product_types_to_export');",
                   "    pm.expect(jsonData.shopgate_settings[2].old).to.be.an('array').length(2);",
