@@ -9,11 +9,10 @@ use ShopgateConfig;
 
 class ConfigMapping extends ShopgateConfig
 {
-    /** @var ConfigBridge */
-    protected $configReader;
+    protected ConfigBridge $configReader;
 
     /**
-     * @param ConfigBridge $configReader
+     * @required
      */
     public function initShopwareConfig(ConfigBridge $configReader): void
     {
@@ -22,14 +21,5 @@ class ConfigMapping extends ShopgateConfig
         $this->setCustomerNumber($this->configReader->get('customerNumber'));
         $this->setShopNumber($this->configReader->get('shopNumber'));
         $this->setApikey($this->configReader->get('apiKey'));
-    }
-
-    /**
-     * @return bool
-     */
-    protected function startup(): bool
-    {
-        $this->setPluginName('Shopgate Go Plugin for Shopware 6');
-        return parent::startup();
     }
 }

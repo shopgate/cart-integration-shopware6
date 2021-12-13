@@ -3,7 +3,7 @@
   "description": "Shopgate Module for Shopware 6",
   "license": "proprietary",
   "type": "shopware-platform-plugin",
-  "version": "1.6.5",
+  "version": "1.7.0",
   "keywords": [
     "mobile",
     "app"
@@ -16,7 +16,8 @@
   ],
   "require": {
     "shopware/core": "^6.4.0",
-    "shopgate/cart-integration-sdk": "^2.9.81"
+    "shopgate/cart-integration-sdk": "^2.9.81",
+    "symfony/expression-language": "~5.3.0"
   },
   "extra": {
     "shopware-plugin-class": "Shopgate\\Shopware\\SgateShopgatePluginSW6",
