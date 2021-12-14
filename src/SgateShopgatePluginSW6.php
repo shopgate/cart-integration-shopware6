@@ -49,9 +49,9 @@ class SgateShopgatePluginSW6 extends Plugin
         }
 
         if ($connection = $this->container->get(Connection::class)) {
-            $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0;');
-            $connection->executeQuery(sprintf('DROP TABLE IF EXISTS `%s`', ShopgateOrderDefinition::ENTITY_NAME));
-            $connection->executeQuery('SET FOREIGN_KEY_CHECKS=1;');
+            $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0;');
+            $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', ShopgateOrderDefinition::ENTITY_NAME));
+            $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1;');
         }
     }
 
