@@ -6,106 +6,6 @@
   },
   "item": [
     {
-      "name": "Integrity Check",
-      "item": [
-        {
-          "name": "SW: check SG shipping",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "const jsonData = pm.response.json();\r",
-                  "pm.test(\"Check rules\", function () {\r",
-                  "    jsonData.data.map(shippingMethod => pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`));\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Check rules\", function () {\r",
-                  "    pm.expect(jsonData.total).to.eql(2, 'Supposed to have 2 shipping methods installed.');\r",
-                  "    jsonData.data.map(shipMethod => checkRule(shipMethod));\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Check deliveries\", function () {\r",
-                  "    jsonData.data.map(shipMethod => checkDelivery(shipMethod));\r",
-                  "});\r",
-                  "\r",
-                  "function checkDelivery(shippingMethod) {\r",
-                  "    pm.expect(shippingMethod.deliveryTimeId).to.eq(\r",
-                  "        pm.environment.get('default_deliveryTime_sg_id'),\r",
-                  "        `Incorect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
-                  "    );\r",
-                  "}\r",
-                  "\r",
-                  "function checkRule(shippingMethod) {\r",
-                  "    pm.expect(shippingMethod, 'Rule not present in shipping method: ' + shippingMethod.name).has.ownProperty('availabilityRuleId')\r",
-                  "    .to.eq(\r",
-                  "        pm.environment.get('default_rule_isShopgate_id'),\r",
-                  "        `Incorect rule ID '${shippingMethod.availabilityRuleId}' for shipMethod: '${shippingMethod.name}' >>>` \r",
-                  "    );\r",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/search/shipping-method",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "search",
-                "shipping-method"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
       "name": "Init",
       "item": [
         {
@@ -779,6 +679,68 @@
                 "product",
                 "{{catalog_product_variant}}",
                 "children"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: TMP update rule ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/sync",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "sync"
               ]
             }
           },
