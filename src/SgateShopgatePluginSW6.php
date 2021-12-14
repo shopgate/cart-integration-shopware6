@@ -17,14 +17,10 @@ use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Throwable;
 
 class SgateShopgatePluginSW6 extends Plugin
 {
 
-    /**
-     * @throws Throwable
-     */
     public function install(InstallContext $installContext): void
     {
         /** @var SystemConfigService $configBridge */
@@ -42,9 +38,6 @@ class SgateShopgatePluginSW6 extends Plugin
         parent::install($installContext);
     }
 
-    /**
-     * @throws Throwable
-     */
     public function uninstall(UninstallContext $uninstallContext): void
     {
         (new ShippingMethodInstaller($this->container))->deactivate($uninstallContext->getContext());
@@ -62,9 +55,6 @@ class SgateShopgatePluginSW6 extends Plugin
         }
     }
 
-    /**
-     * @throws Throwable
-     */
     public function activate(Plugin\Context\ActivateContext $activateContext): void
     {
         (new ShippingMethodInstaller($this->container))->activate($activateContext);
@@ -72,9 +62,6 @@ class SgateShopgatePluginSW6 extends Plugin
         parent::activate($activateContext);
     }
 
-    /**
-     * @throws Throwable
-     */
     public function deactivate(Plugin\Context\DeactivateContext $deactivateContext): void
     {
         (new ShippingMethodInstaller($this->container))->deactivate($deactivateContext->getContext());

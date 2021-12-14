@@ -4,36 +4,30 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
-use RuntimeException;
 use Shopgate\Shopware\System\Db\ClassCastInterface;
-use Shopgate_Helper_DataStructure;
-use Shopware\Core\Framework\Api\Controller\SyncController;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Throwable;
 
 abstract class EntityInstaller
 {
     protected array $entityInstallList = [];
     protected string $entityName;
-    protected SyncController $syncController;
-    protected RequestStack $requestStack;
     /** @var EntityRepositoryInterface */
     protected $entityRepo;
 
+    /**
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->entityRepo = $container->get($this->entityName . '.repository');
-        $this->syncController = $container->get(SyncController::class);
-        $this->requestStack = $container->get('request_stack');
     }
 
     /**
-     * @throws Throwable
+     * @param InstallContext $context
      */
     public function install(InstallContext $context): void
     {
@@ -53,35 +47,45 @@ abstract class EntityInstaller
     }
 
     /**
-     * @throws Throwable
+     * @param ClassCastInterface $entity
+     * @param Context $context
      */
     protected function upsertEntity(ClassCastInterface $entity, Context $context): void
     {
-        $payload = [
-            [
-                'action' => 'upsert',
-                'entity' => $this->entityName,
-                'payload' => [$entity->toArray()],
-            ]
-        ];
-
-        $this->syncPayload($payload, $context);
+        $data = $entity->toArray();
+        $existingEntity = $this->findEntity($entity->getId(), $context);
+        if (null !== $existingEntity) {
+            $this->updateEntity($data, $context);
+        } else {
+            $this->installEntity($data, $context);
+        }
     }
 
     /**
-     * @throws Throwable
+     * @param string $id
+     * @param Context $context
+     * @return object|null
      */
-    protected function syncPayload(array $payload, Context $context): void
+    protected function findEntity(string $id, Context $context): ?object
     {
-        $jsonHelper = new Shopgate_Helper_DataStructure();
-        $request = new Request([], [], [], [], [], [], $jsonHelper->jsonEncode($payload));
-        $this->requestStack->push($request);
-        $response = $this->syncController->sync($request, $context);
-        $this->requestStack->pop();
-        $result = $jsonHelper->jsonDecode($response->getContent(), true);
+        return $this->entityRepo->search(new Criteria([$id]), $context)->first();
+    }
 
-        if ($response->getStatusCode() >= 400) {
-            throw new RuntimeException(sprintf('Error initializing: %s', print_r($result, true)));
-        }
+    /**
+     * @param array $data
+     * @param Context $context
+     */
+    protected function updateEntity(array $data, Context $context): void
+    {
+        $this->entityRepo->update([$data], $context);
+    }
+
+    /**
+     * @param array $info
+     * @param Context $context
+     */
+    protected function installEntity(array $info, Context $context): void
+    {
+        $this->entityRepo->create([$info], $context);
     }
 }
