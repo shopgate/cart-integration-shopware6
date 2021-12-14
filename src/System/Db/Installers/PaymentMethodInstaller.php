@@ -7,10 +7,10 @@ namespace Shopgate\Shopware\System\Db\Installers;
 use Shopgate\Shopware\SgateShopgatePluginSW6;
 use Shopgate\Shopware\System\Db\ClassCastInterface;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
-use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Throwable;
 
 class PaymentMethodInstaller extends EntityChannelInstaller
 {
@@ -35,23 +35,23 @@ class PaymentMethodInstaller extends EntityChannelInstaller
     /**
      * Rewritten because of pluginId field
      *
-     * @param ClassCastInterface $entity
-     * @param Context $context
+     * @throws Throwable
      */
     protected function upsertEntity(ClassCastInterface $entity, Context $context): void
     {
-        $data = array_merge($entity->toArray(), [
-            'pluginId' => $this->pluginIdProvider->getPluginIdByBaseClass(SgateShopgatePluginSW6::class, $context),
-        ]);
+        $payload = [
+            [
+                'action' => 'upsert',
+                'entity' => $this->entityName,
+                'payload' => [
+                    array_merge($entity->toArray(), [
+                        'pluginId' => $this->pluginIdProvider->getPluginIdByBaseClass(SgateShopgatePluginSW6::class,
+                            $context),
+                    ])
+                ],
+            ]
+        ];
 
-        // Find existing payment method by ID for update / install decision
-        $paymentMethodEntity = $this->findEntity($entity->getId(), $context);
-
-        // Decide whether to update an existing or install a new payment method
-        if ($paymentMethodEntity instanceof PaymentMethodEntity) {
-            $this->updateEntity($data, $context);
-        } else {
-            $this->installEntity($data, $context);
-        }
+        $this->syncPayload($payload, $context);
     }
 }

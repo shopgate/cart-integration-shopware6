@@ -6,6 +6,7 @@
 - added support for categories with `dynamic product groups`
 - added support for product `CrossSell` sliders (max 4)
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
+- fixed `Is Shopgate` rule sometimes not applied to Shopgate Shipping/Payment methods on install
 
 # 1.6.5
 

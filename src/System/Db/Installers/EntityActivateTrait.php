@@ -8,6 +8,7 @@ use Shopgate\Shopware\System\Db\ClassCastInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
+use Throwable;
 
 trait EntityActivateTrait
 {
@@ -15,7 +16,7 @@ trait EntityActivateTrait
     abstract public function getEntities(): array;
 
     /**
-     * @param ActivateContext $context
+     * @throws Throwable
      */
     public function activate(ActivateContext $context): void
     {
@@ -25,9 +26,7 @@ trait EntityActivateTrait
     }
 
     /**
-     * @param bool $active
-     * @param ClassCastInterface $entity
-     * @param Context $context
+     * @throws Throwable
      */
     protected function setIsActive(bool $active, ClassCastInterface $entity, Context $context): void
     {
@@ -35,8 +34,14 @@ trait EntityActivateTrait
             return;
         }
 
-        $data = ['id' => $entity->getId(), 'active' => $active];
-        $this->entityRepo->update([$data], $context);
+        $payload = [
+            [
+                'action' => 'upsert',
+                'entity' => $this->entityName,
+                'payload' => [['id' => $entity->getId(), 'active' => $active]],
+            ]
+        ];
+        $this->syncPayload($payload, $context);
     }
 
     /**
@@ -59,7 +64,7 @@ trait EntityActivateTrait
      * Only deactivates entities, deleting can cause data issues.
      * e.g. orders should not be referencing a non-existing shipping method, payment, etc
      *
-     * @param Context $context
+     * @throws Throwable
      */
     public function deactivate(Context $context): void
     {
