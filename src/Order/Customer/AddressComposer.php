@@ -11,6 +11,7 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use ShopgateAddress;
 use ShopgateCartBase;
 use ShopgateLibraryException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -76,6 +77,11 @@ class AddressComposer
         if (!$addressId) {
             $shopwareAddress = $this->addressMapping->mapToShopwareAddress($address);
             $addressId = $this->addressBridge->addAddress($shopwareAddress, $context, $customer)->getId();
+            // handle customFields separately
+            $fields = $shopwareAddress->get('customFields');
+            if ($fields instanceof RequestDataBag) {
+                $this->addressBridge->updateAddress([['id' => $addressId, 'customFields' => $fields->all()]], $context);
+            }
         }
         if (!$addressId) {
             throw new ShopgateLibraryException(

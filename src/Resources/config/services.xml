@@ -17,6 +17,8 @@
             <parameter key="enable_add_order">true</parameter>
             <parameter key="enable_cron">true</parameter>
         </parameter>
+        <!-- Note that whitelists control mapping of $sgEntity->custom_fields[]->field to existing $swEntity->field. -->
+        <!-- Whatever does not map here goes into the $swEntity->customFields list, it will only save if the field exists. -->
         <parameter key="shopgate.customer.custom_field.whitelist" type="collection">
             <parameter key="title">string</parameter>
             <parameter key="affiliateCode">string</parameter>
@@ -26,6 +28,11 @@
         </parameter>
         <parameter key="shopgate.customer.address.custom_field.whitelist" type="collection">
             <parameter key="department">string</parameter>
+        </parameter>
+        <parameter key="shopgate.order.custom_field.whitelist" type="collection">
+            <parameter key="affiliateCode">string</parameter>
+            <parameter key="campaignCode">string</parameter>
+            <parameter key="customerComment">string</parameter>
         </parameter>
     </parameters>
     <services>
@@ -40,7 +47,9 @@
         </service>
         <service id="Shopgate\Shopware\Catalog\Review\ReviewMapping"/>
         <service id="Shopgate\Shopware\Customer\CustomerComposer"/>
-        <service id="Shopgate\Shopware\Customer\AddressBridge"/>
+        <service id="Shopgate\Shopware\Customer\AddressBridge">
+            <argument key="$addressRepository" type="service" id="customer_address.repository"/>
+        </service>
         <service id="Shopgate\Shopware\Customer\CustomerBridge"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
@@ -69,6 +78,9 @@
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\CustomerMapping">
             <argument key="$customFieldMapping" type="service" id="sg.customer.custom_field.whitelist"/>
+        </service>
+        <service id="Shopgate\Shopware\Order\Quote\OrderMapping">
+            <argument key="$customFieldMapping" type="service" id="sg.order.custom_field.whitelist"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\GroupMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\LocationMapping">
@@ -118,12 +130,13 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="system_config.repository"/>
         </service>
-        <service id="sg.customer.custom_field.whitelist"
-                 class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
+        <service id="sg.order.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
+            <argument key="$whitelist">%shopgate.order.custom_field.whitelist%</argument>
+        </service>
+        <service id="sg.customer.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
             <argument key="$whitelist">%shopgate.customer.custom_field.whitelist%</argument>
         </service>
-        <service id="sg.customer.address.custom_field.whitelist"
-                 class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
+        <service id="sg.customer.address.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
             <argument key="$whitelist">%shopgate.customer.address.custom_field.whitelist%</argument>
         </service>
         <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"

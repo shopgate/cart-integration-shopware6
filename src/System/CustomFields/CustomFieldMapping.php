@@ -5,6 +5,7 @@ namespace Shopgate\Shopware\System\CustomFields;
 
 use ShopgateAddress;
 use ShopgateCustomer;
+use ShopgateOrder;
 use ShopgateOrderCustomField;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 
@@ -18,14 +19,14 @@ class CustomFieldMapping
     }
 
     /**
-     * @param Entity $detailedCustomer
+     * @param Entity $entity
      * @return ShopgateOrderCustomField[]
      */
-    public function mapToShopgateCustomFields(Entity $detailedCustomer): array
+    public function mapToShopgateCustomFields(Entity $entity): array
     {
         $customFields = [];
         foreach ($this->whitelist as $method => $type) {
-            if ($detailedCustomer->has($method) && ($value = $detailedCustomer->get($method))) {
+            if ($entity->has($method) && ($value = $entity->get($method))) {
                 $customField = new ShopgateOrderCustomField();
                 $customField->setLabel($method);
                 $customField->setInternalFieldName($method);
@@ -41,7 +42,7 @@ class CustomFieldMapping
      * Note that whitelist does not filter incoming data, just
      * used as reference to `type` of field
      *
-     * @param ShopgateCustomer|ShopgateAddress $entity
+     * @param ShopgateCustomer|ShopgateAddress|ShopgateOrder $entity
      * @return array<string, string|array>
      */
     public function mapToShopwareCustomFields($entity): array
@@ -50,8 +51,11 @@ class CustomFieldMapping
         foreach ($entity->getCustomFields() as $customField) {
             $type = $this->whitelist[$customField->getInternalFieldName()] ?? null;
             $value = $customField->getValue();
-            if (!empty($value)) {
+            $isEmpty = $value === '' || $value === null;
+            if ($type && !$isEmpty) {
                 $data[$customField->getInternalFieldName()] = $type === 'array' ? [$value] : $value;
+            } elseif (!$isEmpty) {
+                $data['customFields'][$customField->getInternalFieldName()] = $value;
             }
         }
 

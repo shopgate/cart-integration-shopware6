@@ -745,6 +745,60 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "SW: create customFieldSets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Created all custom field sets\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/sync",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "event": [
@@ -3858,6 +3912,60 @@
               "response": []
             },
             {
+              "name": "SW: create customFields",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created all custom fields\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/_action/sync",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "SG: addOrder",
               "event": [
                 {
@@ -3935,17 +4043,8 @@
               "response": []
             },
             {
-              "name": "SW: get order",
+              "name": "SW: check order",
               "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
-                },
                 {
                   "listen": "test",
                   "script": {
@@ -3954,21 +4053,38 @@
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
                       "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "const order = jsonData.data[0];\r",
                       "pm.test(\"Check order data\", function () {\r",
-                      "    const jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.data.shippingTotal).to.eql(4.9);\r",
-                      "    pm.expect(jsonData.data.affiliateCode).to.eql(null);\r",
-                      "    pm.expect(jsonData.data.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('test@example.com');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "});\r",
+                      "pm.test(\"Custom Field data for order good\", function () {\r",
+                      "    pm.expect(order.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_custom_field');\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_int_0001').to.eq(13);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_float_0001').to.eq(11.5);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_bool_0001').to.eq(true);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_text_0001').to.eq('mapped string value');\r",
+                      "});\r",
+                      "pm.test(\"Billing custom field data is good\", function () {\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_int_0001').to.eq(17);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_float_0001').to.eq(3.3);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_bool_0001').to.eq(false);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_text_0001').to.eq('mapped string value as well');\r",
+                      "    pm.expect(order.billingAddress.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_field');\r",
+                      "});\r",
                       "\r",
-                      "    pm.expect(jsonData.data.orderCustomer.email).to.eql('test@example.com');\r",
-                      "});"
+                      "   "
                     ],
                     "type": "text/javascript"
                   }
                 }
               ],
               "protocolProfileBehavior": {
-                "disableBodyPruning": true
+                "disabledSystemHeaders": {}
               },
               "request": {
                 "auth": {
@@ -3981,7 +4097,7 @@
                     }
                   ]
                 },
-                "method": "GET",
+                "method": "POST",
                 "header": [
                   {
                     "key": "Accept",
@@ -3990,18 +4106,174 @@
                   }
                 ],
                 "body": {
-                  "mode": "formdata",
-                  "formdata": []
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
-                  "raw": "{{host}}/api/order/{{gen_order_0001_id}}",
+                  "raw": "{{host}}/api/search/order",
                   "host": [
                     "{{host}}"
                   ],
                   "path": [
                     "api",
-                    "order",
-                    "{{gen_order_0001_id}}"
+                    "search",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: addOrder (guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
+                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "",
+                      "function getValue(data, incomingKey) {",
+                      "    const found = data.find(function({key}) {",
+                      "        return key === incomingKey;",
+                      "    });",
+                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0002",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check order (guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "const order = jsonData.data[0];\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('guest_customer@apite.io');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "    pm.expect(order.customFields).to.eql(null);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.eql(null);\r",
+                      "});\r",
+                      "\r",
+                      "   "
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/search/order",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "search",
+                    "order"
                   ]
                 }
               },
@@ -4048,7 +4320,7 @@
                   "    pm.expect(billing.street_2).to.eql('Street2');",
                   "    pm.expect(billing.phone).to.eql('12345');",
                   "    pm.expect(billing.gender).to.eql('f');",
-                  "    pm.expect(billing.custom_fields).length(1, 'Billinbg 1 custom field')",
+                  "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
                   "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
                   "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
                   "",
@@ -4059,7 +4331,7 @@
                   "    pm.expect(shipping.first_name).to.not.eql(firstName);",
                   "    pm.expect(shipping.last_name).to.not.eql(lastName);",
                   "    pm.expect(shipping.gender).to.eql('m');",
-                  "    pm.expect(shipping.custom_fields).length(0, 'no custom fields');",
+                  "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
                   "});",
                   "",
                   "// unset temp variables",

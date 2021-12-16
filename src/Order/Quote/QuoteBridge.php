@@ -10,6 +10,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ class QuoteBridge
     private AbstractCartLoadRoute $cartLoadRoute;
     private AbstractCartItemAddRoute $cartItemAddRoute;
     private AbstractCartDeleteRoute $cartDeleteRoute;
+    private EntityRepositoryInterface $orderRepository;
 
     /**
      * @param AbstractCartOrderRoute $cartOrderRoute
@@ -31,12 +33,14 @@ class QuoteBridge
         AbstractCartOrderRoute $cartOrderRoute,
         AbstractCartLoadRoute $cartLoadRoute,
         AbstractCartItemAddRoute $cartItemAddRoute,
-        AbstractCartDeleteRoute $cartDeleteRoute
+        AbstractCartDeleteRoute $cartDeleteRoute,
+        EntityRepositoryInterface $orderRepository
     ) {
         $this->cartOrderRoute = $cartOrderRoute;
         $this->cartLoadRoute = $cartLoadRoute;
         $this->cartItemAddRoute = $cartItemAddRoute;
         $this->cartDeleteRoute = $cartDeleteRoute;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
@@ -68,6 +72,12 @@ class QuoteBridge
     public function createOrder(Cart $cart, SalesChannelContext $context, ?RequestDataBag $data = null): OrderEntity
     {
         return $this->cartOrderRoute->order($cart, $context, $data ?: new RequestDataBag())->getOrder();
+    }
+
+    public function updateOrder(string $orderId, array $updateData, SalesChannelContext $context): void
+    {
+        $updateData['id'] = $orderId;
+        $this->orderRepository->update([$updateData], $context->getContext());
     }
 
     /**

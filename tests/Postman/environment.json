@@ -113,6 +113,21 @@
       "enabled": true
     },
     {
+      "key": "created_address_customFieldSet_id",
+      "value": "e44610f63493b8f3ddec553f5dfc7fd5",
+      "enabled": true
+    },
+    {
+      "key": "created_customer_customFieldSet_id",
+      "value": "f5d45e2679d66386aeb584ada3f79267",
+      "enabled": true
+    },
+    {
+      "key": "created_order_customFieldSet_id",
+      "value": "247b3a83846c6774ec120d4edb655594",
+      "enabled": true
+    },
+    {
       "key": "created_category_manual_id",
       "value": "13ac93d00dce334bba916278aa7eba9e",
       "enabled": true
@@ -224,6 +239,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2021-12-14T17:47:22.973Z",
-  "_postman_exported_using": "Postman/9.4.1"
+  "_postman_exported_at": "2021-12-16T15:21:04.737Z",
+  "_postman_exported_using": "Postman/9.5.0"
 }

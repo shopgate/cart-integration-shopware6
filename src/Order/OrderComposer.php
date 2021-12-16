@@ -8,6 +8,7 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
+use Shopgate\Shopware\Order\Quote\OrderMapping;
 use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Shipping\ShippingComposer;
@@ -42,6 +43,7 @@ class OrderComposer
     private ShopgateOrderBridge $shopgateOrderBridge;
     private PaymentComposer $paymentComposer;
     private OrderCustomerComposer $orderCustomerComposer;
+    private OrderMapping $orderMapping;
 
     public function __construct(
         ContextManager $contextManager,
@@ -52,7 +54,8 @@ class OrderComposer
         ShopgateOrderBridge $shopgateOrderBridge,
         ShippingComposer $shippingComposer,
         PaymentComposer $paymentComposer,
-        OrderCustomerComposer $orderCustomerComposer
+        OrderCustomerComposer $orderCustomerComposer,
+        OrderMapping $orderMapping
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -63,6 +66,7 @@ class OrderComposer
         $this->contextComposer = $contextComposer;
         $this->paymentComposer = $paymentComposer;
         $this->orderCustomerComposer = $orderCustomerComposer;
+        $this->orderMapping = $orderMapping;
     }
 
     /**
@@ -112,7 +116,12 @@ class OrderComposer
             $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
                 return $error->isPersistent() === false;
             }));
-            $swOrder = $this->quoteBridge->createOrder($swCart, $newContext);
+            $swOrder = $this->quoteBridge->createOrder($swCart, $newContext); // creates order & sends email
+            $this->quoteBridge->updateOrder(
+                $swOrder->getId(),
+                $this->orderMapping->mapIncomingOrder($order),
+                $newContext
+            );
         } catch (InvalidCartException $error) {
             throw $this->errorMapping->mapInvalidCartError($error);
         } catch (ConstraintViolationException $exception) {

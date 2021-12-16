@@ -105,17 +105,24 @@ Payment Type:
 
 ### Custom fields
 
-This is provided inside Shopgate amin panel to pass to Shopware. This has nothing to do with mapping to Shopware custom
-fields.
+These values can be set inside Shopgate admin panel or script to pass to Shopware & will bind to the Entities. One can
+also pass non-existing or existing customFields to Shopware. If a Custom Set exists for an entity (e.g. Order), and it
+has a customField defined, it will map.
 
 #### Customer
 
-- title - customer title
-- affiliateCode
-- campaignCode
-- vatIds - provide a single VAT ID, `accountType` must be business for this to be set
-- accountType - `business` or `private`
+- `title` - customer title
+- `affiliateCode`
+- `campaignCode`
+- `accountType` - `business` or `private`
+- `vatIds` - provide a **single** VAT ID, `accountType` must be `business` for this to be set
 
 #### Customer Address
 
-- department - department of a company
+- `department` - department of a company
+
+#### Order
+
+- `affiliateCode`
+- `campaignCode`
+- `customerComment` - a comment string from the customer

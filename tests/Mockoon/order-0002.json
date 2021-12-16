@@ -27,12 +27,12 @@
       "update_shipping": false,
       "update_payment": false,
       "delivery_notes": null,
-      "customer_number": "2059691",
+      "customer_number": null,
       "external_order_number": null,
       "external_order_id": null,
       "external_customer_number": null,
-      "external_customer_id": "6c97534c2c0747f39e8751e43cb2b013",
-      "mail": null,
+      "external_customer_id": null,
+      "mail": "guest_customer@apite.io",
       "phone": null,
       "mobile": null,
       "shipping_group": "DHL",
@@ -45,33 +45,7 @@
         "weight": 0,
         "api_response": null
       },
-      "custom_fields": [
-        {
-          "label": "Unmapped Custom Field",
-          "internal_field_name": "unmapped_custom_field",
-          "value": "not mapped field"
-        },
-        {
-          "label": "Mapped Custom Field String",
-          "internal_field_name": "api_order_custom_field_text_0001",
-          "value": "mapped string value"
-        },
-        {
-          "label": "Mapped Custom Field Boolean",
-          "internal_field_name": "api_order_custom_field_bool_0001",
-          "value": true
-        },
-        {
-          "label": "Mapped Custom Field Float",
-          "internal_field_name": "api_order_custom_field_float_0001",
-          "value": 11.5
-        },
-        {
-          "label": "Mapped Custom Field Float",
-          "internal_field_name": "api_order_custom_field_int_0001",
-          "value": 13
-        }
-      ],
+      "custom_fields": [],
       "payment_method": "PREPAY",
       "payment_group": "PREPAY",
       "amount_items": "139.95",
@@ -99,33 +73,7 @@
         "phone": null,
         "mobile": null,
         "mail": null,
-        "custom_fields": [
-          {
-            "label": "Unmapped field",
-            "internal_field_name": "unmapped_field",
-            "value": 0
-          },
-          {
-            "label": "Mapped Custom Field String",
-            "internal_field_name": "api_address_custom_field_text_0001",
-            "value": "mapped string value as well"
-          },
-          {
-            "label": "Mapped Custom Field Boolean",
-            "internal_field_name": "api_address_custom_field_bool_0001",
-            "value": false
-          },
-          {
-            "label": "Mapped Custom Field Float",
-            "internal_field_name": "api_address_custom_field_float_0001",
-            "value": 3.3
-          },
-          {
-            "label": "Mapped Custom Field Float",
-            "internal_field_name": "api_address_custom_field_int_0001",
-            "value": 17
-          }
-        ]
+        "custom_fields": null
       },
       "delivery_address": {
         "id": null,
@@ -145,13 +93,7 @@
         "phone": null,
         "mobile": null,
         "mail": null,
-        "custom_fields": [
-          {
-            "label": "Is house?",
-            "internal_field_name": "is_house",
-            "value": 1
-          }
-        ]
+        "custom_fields": []
       },
       "external_coupons": [],
       "shopgate_coupons": [],
