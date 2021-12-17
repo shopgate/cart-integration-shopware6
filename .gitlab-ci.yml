@@ -66,6 +66,7 @@ default:
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
+    - composer require bamarni/composer-bin-plugin:~1.4.1 --no-interaction --quiet
     - composer install --no-dev --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
