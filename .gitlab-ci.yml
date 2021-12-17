@@ -32,7 +32,6 @@ cache:
   key: $CI_MERGE_REQUEST_IID
   paths:
     - vendor/
-    - composer.lock
 
 workflow:
   rules:
@@ -55,14 +54,13 @@ default:
     - PLUGIN_COMPOSER_VERSION=$(jq -r ".version" composer.json)
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
     - >
-      mkdir -p /tmp/sw-cache || true
-      [ -d vendor ] && mv ./* /tmp/sw-cache/
+      [ -d vendor ] && mv vendor /tmp/
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
     - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
     - >
-      [ -d /tmp/sw-cache ] && mv /tmp/sw-cache ./
+      [ -d /tmp/vendor ] && mv /tmp/vendor ./
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
@@ -144,7 +142,9 @@ build zip:
   only:
     - tags
   script:
+    - composer require frosh/plugin-uploader:0.3.19
     - cd $CI_PROJECT_DIR/custom/plugins
+    - cp $PLUGIN_NAME/devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
     - zip -q -r $PLUGIN_NAME.zip $PLUGIN_NAME -x $PLUGIN_NAME/.\* -x $PLUGIN_NAME/tests/\* -x $PLUGIN_NAME/devops/\*
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
