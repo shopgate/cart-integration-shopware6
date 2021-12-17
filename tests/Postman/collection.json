@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "71a2b055-5c4b-4249-b254-b9b5151810a4",
+    "_postman_id": "3c1dd711-b010-4f27-ae1c-65c1f0a1a966",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -679,6 +679,122 @@
                 "product",
                 "{{catalog_product_variant}}",
                 "children"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: TMP update rule ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/sync",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: create customFieldSets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Created all custom field sets\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/sync",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "sync"
               ]
             }
           },
@@ -2285,22 +2401,23 @@
                           "    pm.response.to.not.have.jsonBody('error');",
                           "});",
                           "",
-                          "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
-                          "    const jsonObject = xml2Json(responseBody);",
-                          "    if (pm.globals.get('verbose')){",
-                          "        console.log(jsonObject);",
-                          "    }",
-                          "",
+                          "const jsonObject = xml2Json(responseBody);",
+                          "if (pm.globals.get('verbose')){",
+                          "    console.log(jsonObject);",
+                          "}",
+                          "pm.test(\"Checking regular price options\", function () {",
                           "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
                           "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
-                          "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Inhalt: 1'); //check translation",
+                          "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Inhalt: 1'); //check translation ",
+                          "});",
                           "",
-                          "    //tier",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0]._).to.be.eq('220');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.threshold).to.be.eq('1');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.max_quantity).to.be.eq('5');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.type).to.be.eq('fixed');",
-                          "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$, 'Should be a customer group tier price').not.haveOwnProperty('customer_group_uid');",
+                          "pm.test('Check tier prices', function() {",
+                          "    const nonGroupTierPrice = jsonObject.items.item.prices.tier_prices.tier_price.find(price => !price.$.hasOwnProperty('customer_group_uid'));",
+                          "    pm.expect(nonGroupTierPrice._).to.be.eq('220');",
+                          "    pm.expect(nonGroupTierPrice.$.threshold).to.be.eq('1');",
+                          "    pm.expect(nonGroupTierPrice.$.max_quantity).to.be.eq('5');",
+                          "    pm.expect(nonGroupTierPrice.$.type).to.be.eq('fixed');",
+                          "    pm.expect(nonGroupTierPrice.$, 'Should not be a customer group tier price').not.haveOwnProperty('customer_group_uid');",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -2823,6 +2940,77 @@
                     {
                       "key": "cart[delivery_address][country]",
                       "value": "{{gen_customer_default_country_iso}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart guest check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "",
+                      "    var jsonData = pm.response.json();",
+                      "    ",
+                      "     if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_main_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
                       "type": "text"
                     }
                   ]
@@ -3360,7 +3548,7 @@
               "response": []
             },
             {
-              "name": "SG: reviews (main) Copy",
+              "name": "SG: reviews (offset)",
               "event": [
                 {
                   "listen": "test",
@@ -3429,77 +3617,6 @@
                     {
                       "key": "offset",
                       "value": "2",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: cart guest check",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.response.to.have.status(200);",
-                      "",
-                      "    var jsonData = pm.response.json();",
-                      "    ",
-                      "     if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_check_cart}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][0][item_number]",
-                      "value": "{{catalog_product_main_id}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][0][quantity]",
-                      "value": "1",
                       "type": "text"
                     }
                   ]
@@ -3689,6 +3806,482 @@
       "name": "Import",
       "item": [
         {
+          "name": "AddOrder",
+          "item": [
+            {
+              "name": "M: mock server check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function () {\r",
+                      "    pm.response.to.have.status(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mockoon is enabled\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_server_merchant_uri}}",
+                  "host": [
+                    "{{mock_server_merchant_uri}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: set mock api url",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_set_settings}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][name]",
+                      "value": "server",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][value]",
+                      "value": "custom",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][name]",
+                      "value": "api_url",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][value]",
+                      "value": "{{mock_server_merchant_uri}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create customFields",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created all custom fields\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/_action/sync",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: addOrder",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
+                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "",
+                      "function getValue(data, incomingKey) {",
+                      "    const found = data.find(function({key}) {",
+                      "        return key === incomingKey;",
+                      "    });",
+                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0001",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "const order = jsonData.data[0];\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('test@example.com');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "});\r",
+                      "pm.test(\"Custom Field data for order good\", function () {\r",
+                      "    pm.expect(order.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_custom_field');\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_int_0001').to.eq(13);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_float_0001').to.eq(11.5);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_bool_0001').to.eq(true);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_text_0001').to.eq('mapped string value');\r",
+                      "});\r",
+                      "pm.test(\"Billing custom field data is good\", function () {\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_int_0001').to.eq(17);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_float_0001').to.eq(3.3);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_bool_0001').to.eq(false);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_text_0001').to.eq('mapped string value as well');\r",
+                      "    pm.expect(order.billingAddress.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_field');\r",
+                      "});\r",
+                      "\r",
+                      "   "
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/search/order",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "search",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: addOrder (guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
+                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "",
+                      "function getValue(data, incomingKey) {",
+                      "    const found = data.find(function({key}) {",
+                      "        return key === incomingKey;",
+                      "    });",
+                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0002",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check order (guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "const order = jsonData.data[0];\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('guest_customer@apite.io');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "    pm.expect(order.customFields).to.eql(null);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.eql(null);\r",
+                      "});\r",
+                      "\r",
+                      "   "
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/search/order",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "search",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "SG: register_customer",
           "event": [
             {
@@ -3727,7 +4320,7 @@
                   "    pm.expect(billing.street_2).to.eql('Street2');",
                   "    pm.expect(billing.phone).to.eql('12345');",
                   "    pm.expect(billing.gender).to.eql('f');",
-                  "    pm.expect(billing.custom_fields).length(1, 'Billinbg 1 custom field')",
+                  "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
                   "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
                   "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
                   "",
@@ -3738,7 +4331,7 @@
                   "    pm.expect(shipping.first_name).to.not.eql(firstName);",
                   "    pm.expect(shipping.last_name).to.not.eql(lastName);",
                   "    pm.expect(shipping.gender).to.eql('m');",
-                  "    pm.expect(shipping.custom_fields).length(0, 'no custom fields');",
+                  "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
                   "});",
                   "",
                   "// unset temp variables",
@@ -4060,10 +4653,10 @@
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.shopgate_settings).to.be.a('array').to.be.not.empty;",
                   "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('server');",
-                  "    pm.expect(jsonData.shopgate_settings[0].old).to.eq('live');",
+                  "    pm.expect(jsonData.shopgate_settings[0].old).to.eq('custom');",
                   "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('custom');",
                   "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('api_url');",
-                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq('https://api.shopgate.com/merchant/');",
+                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(pm.globals.get(\"mock_server_merchant_uri\"));",
                   "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('http://some.url');",
                   "    pm.expect(jsonData.shopgate_settings[2].name).to.eq('product_types_to_export');",
                   "    pm.expect(jsonData.shopgate_settings[2].old).to.be.an('array').length(2);",

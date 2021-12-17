@@ -98,8 +98,7 @@ class CustomerMapping
             $customer->getFirstName() ? ['firstName' => $customer->getFirstName()] : [],
             $customer->getLastName() ? ['lastName' => $customer->getLastName()] : [],
             count($bd) === 3 ? ['birthdayYear' => $bd[0], 'birthdayMonth' => $bd[1], 'birthdayDay' => $bd[2]] : [],
-            $shopgateBillingAddress
-                ? ['billingAddress' => $this->addressMapping->mapToShopwareAddress($shopgateBillingAddress)] : [],
+            ['billingAddress' => $this->addressMapping->mapToShopwareAddress($shopgateBillingAddress)],
             $shopgateShippingAddress
                 ? ['shippingAddress' => $this->addressMapping->mapToShopwareAddress($shopgateShippingAddress)] : []
         );

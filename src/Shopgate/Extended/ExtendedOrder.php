@@ -17,7 +17,10 @@ class ExtendedOrder extends ShopgateOrder
      */
     public function loadFromShopgateOrder(ShopgateOrder $order): ExtendedOrder
     {
-        $this->dataToEntity($order->toArray());
+        $visitor = new ExtendedToArrayVisitor();
+        $visitor->visitContainer($order);
+        $this->dataToEntity($visitor->getArray());
+
         return $this;
     }
 }

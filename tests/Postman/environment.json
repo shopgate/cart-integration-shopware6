@@ -113,6 +113,21 @@
       "enabled": true
     },
     {
+      "key": "created_address_customFieldSet_id",
+      "value": "e44610f63493b8f3ddec553f5dfc7fd5",
+      "enabled": true
+    },
+    {
+      "key": "created_customer_customFieldSet_id",
+      "value": "f5d45e2679d66386aeb584ada3f79267",
+      "enabled": true
+    },
+    {
+      "key": "created_order_customFieldSet_id",
+      "value": "247b3a83846c6774ec120d4edb655594",
+      "enabled": true
+    },
+    {
       "key": "created_category_manual_id",
       "value": "13ac93d00dce334bba916278aa7eba9e",
       "enabled": true
@@ -196,9 +211,34 @@
       "key": "system_default_currency_id",
       "value": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
       "enabled": true
+    },
+    {
+      "key": "default_deliveryTime_sg_id",
+      "value": "49dd403eea0b4ca69e5c14894263cf2e",
+      "enabled": true
+    },
+    {
+      "key": "default_rule_isShopgate_id",
+      "value": "7d24818ee04546d797cb6fc1a604a379",
+      "enabled": true
+    },
+    {
+      "key": "default_shipMethod_sgDefault_id",
+      "value": "368e891dbec442c2892f82edd6f4a7dc",
+      "enabled": true
+    },
+    {
+      "key": "default_shipMethod_sgFree_id",
+      "value": "92929e3cb97141f1b70ab9a8616df6a7",
+      "enabled": true
+    },
+    {
+      "key": "default_payMethod_sgDefault_id",
+      "value": "7046c79435a7410fb90a8b82f13d30a9",
+      "enabled": true
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2021-12-09T10:25:59.772Z",
-  "_postman_exported_using": "Postman/9.3.1"
+  "_postman_exported_at": "2021-12-16T15:21:04.737Z",
+  "_postman_exported_using": "Postman/9.5.0"
 }

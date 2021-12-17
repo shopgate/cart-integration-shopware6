@@ -25,6 +25,7 @@ variables:
   PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
   SW_ADMIN_USER: myadmin
   SW_ADMIN_PASS: test.123
+  MOCK_SERVER_URL: 'http://127.0.0.1:3000'
   VERBOSE: ''
 
 # Cache libraries in between PR commits
@@ -84,7 +85,7 @@ default:
 newman:
   stage: test
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra > /dev/null
+    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --activate SwagPlatformDemoData
     - export SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
@@ -99,11 +100,12 @@ newman:
       if [[ $VERBOSE != "" ]]; then
           mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
       fi
+    - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
       --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE}
-      --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "verbose=$VERBOSE";
+      --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
     expire_in: 30 days
