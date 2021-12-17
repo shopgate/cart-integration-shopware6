@@ -143,10 +143,9 @@ build zip:
     - tags
   script:
     - composer require frosh/plugin-uploader:0.3.19
-    - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
-    - cp ./devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
-    - rm -rf ./devops
-    - $PROJECT_ROOT/vendor/bin/pluginupload ext:zip --strategy=plain -- "$PWD"
+    - cd $CI_PROJECT_DIR/custom/plugins
+    - cp $PLUGIN_NAME/devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
+    - zip -q -r $PLUGIN_NAME.zip $PLUGIN_NAME -x $PLUGIN_NAME/.\* -x $PLUGIN_NAME/tests/\* -x $PLUGIN_NAME/devops/\*
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:

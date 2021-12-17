@@ -40,7 +40,7 @@ composer update --no-dev -d custom/plugins/SgateShopgatePluginSW6
 ```shell
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-sdk:^2.9.81
-composer require symfony/expression-language:^5.4.0
+composer require symfony/expression-language:~5.3.0
 # and any other dependency we have in the SgateShopgatePluginSW6/composer.json file
 ```
 
