@@ -143,27 +143,16 @@ build zip:
     - tags
   script:
     - composer require frosh/plugin-uploader:0.3.19
-    - cd $CI_PROJECT_DIR/custom/plugins
-    - cp $PLUGIN_NAME/devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
-    - zip -q -r $PLUGIN_NAME.zip $PLUGIN_NAME -x $PLUGIN_NAME/.\* -x $PLUGIN_NAME/tests/\* -x $PLUGIN_NAME/devops/\*
+    - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
+    - cp ./devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
+    - $PROJECT_ROOT/vendor/bin/pluginupload ext:zip --strategy=plain -- "$PWD"
+    - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PLUGIN_NAME.zip
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
     name: '${PLUGIN_NAME}.zip'
     paths:
       - '*.zip'
-
-validate zip:
-  stage: test
-  variables:
-    GIT_STRATEGY: none
-  needs:
-    - build zip
-  only:
-    - tags
-  before_script: [ ]
-  script:
-    - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PWD/$PLUGIN_NAME.zip
 
 upload zip to store:
   stage: deploy

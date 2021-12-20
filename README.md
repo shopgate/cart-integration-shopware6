@@ -8,11 +8,13 @@ This plugin is available on `packagist.org`. To install simply add the composer 
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-shopware6
 ```
-Afterwards just increment the plugin version root/composer.json, and run `composer update` to get the latest version.
+Afterwards just increment the plugin version inside `root/composer.json`, and run `composer update` to get the latest
+version.
 
 ### Folder install
 
-It can be installed manually by copying the plugin folder to `custom/plugins` folder.
+It can be installed manually by copying the plugin folder to `custom/plugins` directory. However, please make sure you
+have a composer compiled version of the plugin. Meaning, you have a `vendor` directory in the plugin folder.
 
 #### Composer symlink (development)
 
@@ -27,21 +29,6 @@ composer config repositories.sym '{"type": "path", "url": "custom/plugins/*", "o
 
 # make sure to use the exact version (e.g. `1.6.4`) that is provided in the composer.json of this plugin.
 composer require shopgate/cart-integration-shopware6:1.6.4
-```
-
-#### Update SDK separately
-
-Alternatively you could place this plugin's folder in the `custom/plguins`. Afterwards make sure the run
-the `composer update` inside this plugin's folder so that the Shopgate SDK is installed. Not recommended as it will also download the shopware core package.
-```shell
-composer update --no-dev -d custom/plugins/SgateShopgatePluginSW6 
-```
-**Or** you can install SDK separately in the root composer. Not recommended as you will have to manually update SDK version & keep track of it.
-```shell
-cd [shopware6 root folder]
-composer require shopgate/cart-integration-sdk:^2.9.81
-composer require symfony/expression-language:~5.3.0
-# and any other dependency we have in the SgateShopgatePluginSW6/composer.json file
 ```
 
 ## Enable & Activate
