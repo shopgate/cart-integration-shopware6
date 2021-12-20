@@ -3088,15 +3088,15 @@
                       "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_secondary_id'));",
                       "});",
                       "pm.test(\"Check shipping method\", function () {    ",
-                      "    pm.expect(jsonData.shipping_methods[0].id).to.eql('7eeb1279777f4d26b723f1b218c2c5a7');",
+                      "    pm.expect(jsonData.shipping_methods[0].title).to.eql('Standard');",
                       "});",
                       "pm.test(\"Check item success\", function () {",
-                      "    pm.expect(jsonData.items[0].item_number).to.eql('2a88d9b59d474c7e869d8071649be43c');",
+                      "    pm.expect(jsonData.items[0].item_number).to.eql(pm.environment.get('catalog_product_advPrices_id'));",
                       "    pm.expect(jsonData.items[0].is_buyable).to.eql(1);",
                       "    pm.expect(jsonData.items[0].qty_buyable).to.eql(1);",
                       "    pm.expect(jsonData.items[0].stock_quantity).to.eql(10);",
-                      "    pm.expect(jsonData.items[0].unit_amount).to.eql(416.76);",
-                      "    pm.expect(jsonData.items[0].unit_amount_with_tax).to.eql(495.95);",
+                      "    pm.expect(jsonData.items[0].unit_amount).to.eql(672.27);",
+                      "    pm.expect(jsonData.items[0].unit_amount_with_tax).to.eql(800);",
                       "});",
                       "pm.test(\"Check item not found\", function () {",
                       "    pm.expect(jsonData.items[2].item_number).to.eql('1901dc5e888f4b1ea4168c2c5f005540');",
@@ -3235,12 +3235,12 @@
                     },
                     {
                       "key": "cart[items][0][item_number]",
-                      "value": "2a88d9b59d474c7e869d8071649be43c",
+                      "value": "{{catalog_product_advPrices_id}}",
                       "type": "text"
                     },
                     {
                       "key": "cart[items][0][item_number_public]",
-                      "value": "SWDEMO10001",
+                      "value": "SWDEMO10002",
                       "type": "text"
                     },
                     {
@@ -3250,12 +3250,12 @@
                     },
                     {
                       "key": "cart[items][0][unit_amount]",
-                      "value": "416.7647",
+                      "value": "672.27",
                       "type": "text"
                     },
                     {
                       "key": "cart[items][0][unit_amount_with_tax]",
-                      "value": "495.95",
+                      "value": "800",
                       "type": "text"
                     },
                     {
