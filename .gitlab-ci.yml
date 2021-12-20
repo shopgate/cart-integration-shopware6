@@ -171,5 +171,5 @@ upload zip to store:
     - tags
   before_script: [ ]
   script:
-    - zip -d $PLUGIN_NAME.zip "$PLUGIN_NAME/composer.lock"
+    - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
