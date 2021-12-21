@@ -1,3 +1,7 @@
+# 1.7.2
+
+- fixed guest `check_cart` call running out of memory when customer database has a lot of customers
+
 # 1.7.1
 
 - added `expression-language` composer dependency for installations without dev-dependencies installed

@@ -59,9 +59,12 @@ cd [shopware6 root folder]
 * `No SaleChannel domain exists corresponding to the SaleChannel default language` - indicates an issue when there is a
   default language set for a domain, but no domain URL exists that has that language. In short:
   1. go to `SalesChannels`
-  1. select SaleChannel that is being queried by Shopgate API
-  1. Check `General Settings` default language (e.g., English)
-  1. Check `Domains` list, see that there is no domain URL with default language (e.g., English)
+  2. select SaleChannel that is being queried by Shopgate API
+  3. Check `General Settings` default language (e.g., English)
+  4. Check `Domains` list, see that there is no domain URL with default language (e.g., English)
+* `Cannot declare interface XXX, because the name is already in use` - happens after installing of our plugin via
+  symlink. This is because there is a `vendor` directory inside our plugin folder. Either remove `vendor` directory from
+  our plugin directory **or** do not install via symlink. These are two different ways of installing our plugin.
 
 # Configuration
 
