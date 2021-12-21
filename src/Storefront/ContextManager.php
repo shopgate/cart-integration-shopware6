@@ -107,14 +107,18 @@ class ContextManager
      * Creates a duplicate of current context with a new token.
      * We can then manipulate the context & cart without fear
      * of messing with the desktop context & cart.
+     *
+     * @param SalesChannelContext $context
+     * @param string|null $customerId
+     * @return SalesChannelContext
      */
-    public function duplicateContextWithNewToken(SalesChannelContext $context, string $customerId): SalesChannelContext
+    public function duplicateContextWithNewToken(SalesChannelContext $context, ?string $customerId): SalesChannelContext
     {
         $options = [
             SalesChannelContextService::LANGUAGE_ID => $context->getSalesChannel()->getLanguageId(),
             SalesChannelContextService::CURRENCY_ID => $context->getSalesChannel()->getCurrencyId(),
             SalesChannelContextService::PERMISSIONS => $context->getPermissions(),
-            SalesChannelContextService::CUSTOMER_ID => $customerId
+            SalesChannelContextService::CUSTOMER_ID => !empty($customerId) ? $customerId : null,
         ];
 
         return $this->createNewContext($context->getSalesChannelId(), $options);
