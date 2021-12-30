@@ -1,8 +1,8 @@
 {
   "info": {
-	  "_postman_id": "259fb291-5a0d-4276-b62f-64cd9aaf37b6",
-	  "name": "SW6 CI Tests",
-	  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "302492b7-590e-4a94-980f-88d92d321ebb",
+    "name": "SW6 CI Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -685,12 +685,305 @@
           "response": []
         },
         {
+          "name": "SW: create customFieldSets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Created all custom field sets\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/sync",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: check SG shipping",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "// Disabled until SGSW6-88 is handled\r",
+                  "/*\r",
+                  "const jsonData = pm.response.json();\r",
+                  "pm.test(\"Check rules\", function () {\r",
+                  "    jsonData.data.map(shippingMethod => pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`));\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check rules\", function () {\r",
+                  "    pm.expect(jsonData.total).to.eql(2, 'Supposed to have 2 shipping methods installed.');\r",
+                  "    jsonData.data.map(shipMethod => checkRule(shipMethod));\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check deliveries\", function () {\r",
+                  "    jsonData.data.map(shipMethod => checkDelivery(shipMethod));\r",
+                  "});\r",
+                  "*/\r",
+                  "function checkDelivery(shippingMethod) {\r",
+                  "    pm.expect(shippingMethod.deliveryTimeId).to.eq(\r",
+                  "        pm.environment.get('default_deliveryTime_sg_id'),\r",
+                  "        `Incorect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
+                  "    );\r",
+                  "}\r",
+                  "\r",
+                  "function checkRule(shippingMethod) {\r",
+                  "    pm.expect(shippingMethod, 'Rule not present in shipping method: ' + shippingMethod.name).has.ownProperty('availabilityRule').has.ownProperty('id')\r",
+                  "    .to.eq(\r",
+                  "        pm.environment.get('gen_rule_cartGreaterThan0_id'),\r",
+                  "        `Incorect rule by name '${shippingMethod.availabilityRule.name}' for shipMethod: '${shippingMethod.name}' >>>` \r",
+                  "    );\r",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/shipping-method",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "shipping-method"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: find Cart>0 Rule",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Get values\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Cart >= 0', 'Rule exists, check that you are on the right language');\r",
+                  "    pm.environment.set(\"gen_rule_cartGreaterThan0_id\", jsonData.data[0].id);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Cart >= 0\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/rule",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "rule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: find other shipping",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const jsonData = pm.response.json();\r",
+                  "pm.test(\"Check ship methods\", function () {\r",
+                  "    pm.expect(jsonData).to.haveOwnProperty('total').to.eq(2);\r",
+                  "    jsonData.data.map((shippingMethod, index) => {\r",
+                  "        pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`);\r",
+                  "        pm.environment.set(\"gen_shipMethod_nonSg_\" + index, shippingMethod.id);\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/shipping-method",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "shipping-method"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "SW: TMP update rule ID",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
+                  "// marked as temp because of ticket SGSW6-88\r",
                   "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
                   "    pm.response.to.have.status(200);\r",
                   "});"
@@ -725,61 +1018,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/_action/sync",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "_action",
-                "sync"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create customFieldSets",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Created all custom field sets\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+              "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_0}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_1}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2807,64 +3046,17 @@
         {
           "name": "Cart",
           "item": [
-			  {
-				  "name": "SW: get all shipping",
-				  "event": [
-					  {
-						  "listen": "test",
-						  "script": {
-							  "exec": [
-								  "pm.test(\"Status code is 200\", function () {\r",
-								  "    pm.response.to.have.status(200);\r",
-								  "});"
-							  ],
-							  "type": "text/javascript"
-						  }
-					  }
-				  ],
-				  "request": {
-					  "auth": {
-						  "type": "bearer",
-						  "bearer": [
-							  {
-								  "key": "token",
-								  "value": "{{gen_access_token}}",
-								  "type": "string"
-							  }
-						  ]
-					  },
-					  "method": "GET",
-					  "header": [
-						  {
-							  "key": "Accept",
-							  "value": "application/json",
-							  "type": "text"
-						  }
-					  ],
-					  "url": {
-						  "raw": "{{host}}/api/shipping-method",
-						  "host": [
-							  "{{host}}"
-						  ],
-						  "path": [
-							  "api",
-							  "shipping-method"
-						  ]
-					  }
-				  },
-				  "response": []
-			  },
-			  {
-				  "name": "SG: cart customer grp",
-				  "event": [
-					  {
-						  "listen": "test",
-						  "script": {
-							  "exec": [
-								  "pm.test(\"Check default customer group set for customer\", function () {",
-								  "    var jsonData = pm.response.json();",
-								  "    ",
-								  "     if (pm.globals.get('verbose')) {",
+            {
+              "name": "SG: cart customer grp",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    ",
+                      "     if (pm.globals.get('verbose')) {",
                       "        console.log(jsonData);",
                       "    }",
                       "",
