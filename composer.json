@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "shopware/core": "^6.4.7",
+    "shopware/core": "^6.4.6",
     "shopgate/cart-integration-sdk": "^2.9.81"
   },
   "extra": {
