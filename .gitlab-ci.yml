@@ -68,7 +68,7 @@ default:
     - composer install --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
-    - bin/console system:install --drop-database --basic-setup --force --quiet
+    - bin/console system:install --drop-database --basic-setup --force --no-interaction --quiet
     - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
     - chown -R 1000:1000 .
     - bin/console plugin:refresh --quiet
