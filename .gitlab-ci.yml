@@ -64,7 +64,8 @@ default:
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
-    - composer install --quiet
+    - composer config allow-plugins true
+    - composer install -n --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
     - bin/console system:install --drop-database --basic-setup --force --quiet
