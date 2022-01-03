@@ -13,6 +13,9 @@
             <parameter key="enable_add_order">true</parameter>
             <parameter key="enable_cron">true</parameter>
             <parameter key="plugin_name" type="string">Shopgate Go Plugin for Shopware 6</parameter>
+            <parameter key="log_folder_path" type="string">%kernel.logs_dir%/shopgate</parameter>
+            <parameter key="cache_folder_path" type="string">%kernel.cache_dir%/shopgate</parameter>
+            <parameter key="export_folder_path" type="string">%kernel.cache_dir%/shopgate</parameter>
         </parameter>
     </parameters>
     <services>
@@ -121,6 +124,18 @@
         <service id="Shopgate\Shopware\System\Log\Logger"/>
         <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Mapping\ConfigMapping" shared="true">
             <argument>%shopgate.configurations%</argument>
+            <call method="setConfigBridge"/>
+            <call method="initShopwareConfig">
+                <argument type="expression">
+                    {
+                    "shop_is_active": service('shopgate.config_bridge').get('isActive'),
+                    "customer_number": service('shopgate.config_bridge').get('customerNumber'),
+                    "shop_number": service('shopgate.config_bridge').get('shopNumber'),
+                    "apikey": service('shopgate.config_bridge').get('apiKey')
+                    }
+                </argument>
+            </call>
+            <call method="initFolderStructure"/>
         </service>
         <service id="Shopgate\Shopware\System\Db\Rule\IsShopgateRuleCondition">
             <tag name="shopware.rule.definition"/>
