@@ -1038,6 +1038,115 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "SW: create customer grp",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Created customer group successfully\", function () {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/customer-group",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "customer-group"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: create customGrp customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Product created\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Save product id for later use\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
+                  "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{gen_customer_group_secondary_id}}\",\r\n        \"email\": \"test_customGrp@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/clone/customer/{{customer_default_id}}",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "clone",
+                "customer",
+                "{{customer_default_id}}"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "event": [
@@ -2859,56 +2968,6 @@
               "response": []
             },
             {
-              "name": "SW: create customer grp",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Created customer group successfully\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{host}}/api/customer-group",
-                  "host": [
-                    "{{host}}"
-                  ],
-                  "path": [
-                    "api",
-                    "customer-group"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
               "name": "SG: get_settings (2 grps)",
               "event": [
                 {
@@ -2974,68 +3033,6 @@
                   "raw": "{{domain}}",
                   "host": [
                     "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: change customer grp",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Successfully changed customer group\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {
-                  "accept": true
-                }
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"groupId\": \"{{gen_customer_group_secondary_id}}\"\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{host}}/api/customer/{{customer_default_id}}",
-                  "host": [
-                    "{{host}}"
-                  ],
-                  "path": [
-                    "api",
-                    "customer",
-                    "{{customer_default_id}}"
                   ]
                 }
               },
@@ -3265,7 +3262,6 @@
                       "pm.test(\"Save product id for later use\", function () {\r",
                       "    const jsonData = pm.response.json();\r",
                       "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                      "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -3287,7 +3283,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"overwrites\": {\r\n        \"name\" : \"API: check_cart Two\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART02\",\r\n        \"stock\": 100,\r\n        \"maxPurchase\": 10\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_maxPurchaseTen_id}}\",\r\n        \"name\" : \"API: max purchase 10\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART02\",\r\n        \"stock\": 100,\r\n        \"maxPurchase\": 10\r\n    },\r\n    \"cloneChildren\": false\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3311,47 +3307,58 @@
               "response": []
             },
             {
-              "name": "SG: check_cart",
+              "name": "SG: cart (main cust)",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "    var jsonData = pm.response.json();",
-                      "     if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
+                      "const jsonData = pm.response.json();",
+                      "if (pm.globals.get('verbose')) {",
+                      "    console.log(jsonData);",
+                      "}",
                       "",
                       "pm.test(\"Check default customer group set for customer\", function () {",
-                      "",
-                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_secondary_id'));",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
                       "});",
-                      "pm.test(\"Check shipping method\", function () {    ",
-                      "    pm.expect(jsonData.shipping_methods[0].title).to.eql('Standard');",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(4, 'Should be 4 items in cart');",
                       "});",
                       "pm.test(\"Check item success\", function () {",
-                      "    pm.expect(jsonData.items[0].item_number).to.eql(pm.environment.get('catalog_product_advPrices_id'));",
-                      "    pm.expect(jsonData.items[0].is_buyable).to.eql(1);",
-                      "    pm.expect(jsonData.items[0].qty_buyable).to.eql(1);",
-                      "    pm.expect(jsonData.items[0].stock_quantity).to.eql(10);",
-                      "    pm.expect(jsonData.items[0].unit_amount).to.eql(672.27);",
-                      "    pm.expect(jsonData.items[0].unit_amount_with_tax).to.eql(800);",
+                      "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(672.27);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
                       "});",
                       "pm.test(\"Check item not found\", function () {",
-                      "    pm.expect(jsonData.items[2].item_number).to.eql('1901dc5e888f4b1ea4168c2c5f005540');",
-                      "    pm.expect(jsonData.items[2].is_buyable).to.eql(0);",
-                      "    pm.expect(jsonData.items[2].error).to.eql(301);",
+                      "    const item = getItemById('1901dc5e888f4b1ea4168c2c5f005540');",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.error).to.eql(301);",
                       "});",
                       "pm.test(\"Check item out of stock\", function () {",
-                      "    pm.expect(jsonData.items[3].item_number).to.eql(pm.environment.get('gen_product_stock_zero_id'));",
-                      "    pm.expect(jsonData.items[3].is_buyable).to.eql(0);",
-                      "    pm.expect(jsonData.items[3].error).to.eql(300);",
+                      "    const item = getItemById(pm.environment.get('gen_product_stock_zero_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.error).to.eql(300);",
                       "});",
                       "pm.test(\"Check item max purchase\", function () {",
-                      "    pm.expect(jsonData.items[1].item_number).to.eql(pm.environment.get('gen_product_max_purchase_ten_id'));",
-                      "    pm.expect(jsonData.items[1].qty_buyable).to.eql(10);",
-                      "    pm.expect(jsonData.items[1].error).to.eql(302);",
+                      "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.qty_buyable).to.eql(10);",
+                      "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.error).to.eql(302);",
                       "});",
+                      "",
+                      "function getItemById(id) {",
+                      "    return jsonData.items.find(item => item.item_number === id);",
+                      "};",
                       ""
                     ],
                     "type": "text/javascript"
@@ -3579,7 +3586,7 @@
                     },
                     {
                       "key": "cart[items][3][item_number]",
-                      "value": "{{gen_product_max_purchase_ten_id}}",
+                      "value": "{{created_product_maxPurchaseTen_id}}",
                       "type": "text"
                     },
                     {
@@ -3610,6 +3617,198 @@
                     {
                       "key": "cart[items][3][currency]",
                       "value": "EUR",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart (customGrp)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "if (pm.globals.get('verbose')) {",
+                      "    console.log(jsonData);",
+                      "}",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_secondary_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(1, 'Should be 1 item in cart');",
+                      "});",
+                      "pm.test(\"Check item success\", function () {",
+                      "    const item = getItemById(pm.environment.get('gen_product_advPricesOne_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(500);",
+                      "    pm.expect(item.unit_amount).to.eql(721.29);",
+                      "    //pm.expect(item.unit_amount_with_tax).to.eql(730);",
+                      "});",
+                      "",
+                      "function getItemById(id) {",
+                      "    return jsonData.items.find(item => item.item_number === id);",
+                      "};",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "{{gen_customer_default_country_iso}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "{{gen_customer_default_country_iso}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{gen_product_advPricesOne_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "721.29",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "730",
                       "type": "text"
                     }
                   ]

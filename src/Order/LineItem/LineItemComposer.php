@@ -31,13 +31,6 @@ class LineItemComposer
     private EventDispatcherInterface $eventDispatcher;
     private QuoteBridge $quoteBridge;
 
-    /**
-     * @param LineItemProductMapping $productMapping
-     * @param LineItemPromoMapping $promoMapping
-     * @param LoggerInterface $logger
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param QuoteBridge $quoteBridge
-     */
     public function __construct(
         LineItemProductMapping $productMapping,
         LineItemPromoMapping $promoMapping,
@@ -54,7 +47,6 @@ class LineItemComposer
 
     /**
      * @param ExtendedCart|ExtendedOrder $cart
-     * @return array
      */
     public function mapIncomingLineItems(ShopgateCartBase $cart): array
     {
@@ -65,11 +57,6 @@ class LineItemComposer
         );
     }
 
-    /**
-     * @param Cart $cart
-     * @param ExtendedCart $sgCart
-     * @return array
-     */
     public function mapOutgoingLineItems(Cart $cart, ExtendedCart $sgCart): array
     {
         $lineItems = [];
@@ -93,13 +80,14 @@ class LineItemComposer
                     $lineItems[$id] = $this->productMapping->mapValidProduct(
                         $lineItem,
                         $incomingItem,
-                        $cart->getErrors()
+                        $cart->getErrors(),
+                        $cart->getPrice()->getTaxStatus()
                     );
                     break;
                 case LineItem::PROMOTION_LINE_ITEM_TYPE:
                     $coupon = $this->promoMapping->mapValidCoupon($lineItem, $sgCart);
                     if ($coupon->isNew()) {
-                        // otherwise it is updated by reference instead
+                        // otherwise, it is updated by reference instead
                         $externalCoupons[$id] = $coupon;
                     }
                     break;
@@ -158,20 +146,12 @@ class LineItemComposer
     /**
      * Safety check for strange cart cases with duplicate
      * line items without proper ID's
-     * @param string $uuid
-     * @return bool
      */
     private function isValidUuid(string $uuid): bool
     {
         return ctype_xdigit($uuid);
     }
 
-    /**
-     * @param Cart $shopwareCart
-     * @param SalesChannelContext $context
-     * @param array $lineItems
-     * @return Cart
-     */
     public function addLineItemsToCart(Cart $shopwareCart, SalesChannelContext $context, array $lineItems): Cart
     {
         $request = new Request();

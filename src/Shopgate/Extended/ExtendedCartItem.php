@@ -11,12 +11,23 @@ class ExtendedCartItem extends ShopgateCartItem
 {
     use CloningTrait;
 
-    /**
-     * @param ShopgateOrderItem $orderItem
-     * @return ExtendedCartItem
-     */
     public function transformFromOrderItem(ShopgateOrderItem $orderItem): ExtendedCartItem
     {
         return $this->dataToEntity($orderItem->toArray());
+    }
+
+    public function setUnitAmount($value): void
+    {
+        parent::setUnitAmount(round($value, 2));
+    }
+
+    public function setUnitAmountWithTax($value): void
+    {
+        parent::setUnitAmountWithTax(round($value, 2));
+    }
+
+    public function setStockQuantity($value): void
+    {
+        parent::setStockQuantity((int)$value);
     }
 }

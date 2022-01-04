@@ -40,16 +40,12 @@ class LineItemProductMapping
     /**
      * Valid products are the ones that are still in Shopware cart
      * after all validation checks are made
-     *
-     * @param LineItem $lineItem
-     * @param ShopgateOrderItem $incomingItem
-     * @param ErrorCollection $collection
-     * @return ExtendedCartItem
      */
     public function mapValidProduct(
         LineItem $lineItem,
         ShopgateOrderItem $incomingItem,
-        ErrorCollection $collection
+        ErrorCollection $collection,
+        string $taxStatus
     ): ExtendedCartItem {
         $outgoingItem = (new ExtendedCartItem())->transformFromOrderItem($incomingItem);
         $outgoingItem->setItemNumber($lineItem->getId());
@@ -60,8 +56,7 @@ class LineItemProductMapping
         }
         if ($price = $lineItem->getPrice()) {
             $outgoingItem->setQtyBuyable($price->getQuantity());
-            $outgoingItem->setUnitAmountWithTax(round($price->getUnitPrice(), 2));
-
+            //todo: test items with custom tax entered instead of %
             /** @var CalculatedTax $tax */
             $tax = array_reduce(
                 $price->getCalculatedTaxes()->getElements(),
@@ -70,7 +65,13 @@ class LineItemProductMapping
                 },
                 0.0
             );
-            $outgoingItem->setUnitAmount(round($price->getUnitPrice() - ($tax / $price->getQuantity()), 2));
+            if ($taxStatus === 'net') {
+                $outgoingItem->setUnitAmount($price->getUnitPrice());
+                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice() + ($tax / $price->getQuantity()));
+            } else {
+                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice());
+                $outgoingItem->setUnitAmount($price->getUnitPrice() - ($tax / $price->getQuantity()));
+            }
 
             /**
              * Soft line item errors that do not remove items from the cart
@@ -96,11 +97,9 @@ class LineItemProductMapping
     }
 
     /**
-     * @param ErrorCollection $errors
-     * @param $lineItemId
      * @return Error[]
      */
-    private function getProductErrors(ErrorCollection $errors, $lineItemId): array
+    private function getProductErrors(ErrorCollection $errors, string $lineItemId): array
     {
         return array_filter($errors->getElements(), function (Error $error) use ($lineItemId) {
             $id = $this->getIdFromError($error);
@@ -108,10 +107,6 @@ class LineItemProductMapping
         });
     }
 
-    /**
-     * @param Error $error
-     * @return string
-     */
     public function getIdFromError(Error $error): string
     {
         return str_replace($error->getMessageKey(), '', $error->getId());
@@ -119,10 +114,6 @@ class LineItemProductMapping
 
     /**
      * Invalid products that are removed from cart by Shopware
-     *
-     * @param Error $error
-     * @param ShopgateOrderItem $missingItem
-     * @return ExtendedCartItem
      */
     public function mapInvalidProduct(Error $error, ShopgateOrderItem $missingItem): ExtendedCartItem
     {
