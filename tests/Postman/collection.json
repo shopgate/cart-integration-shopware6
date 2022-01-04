@@ -1069,7 +1069,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
+              "raw": "{\r\n    \"id\": \"{{created_customerGroup_gross_id}}\",\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1084,65 +1084,6 @@
               "path": [
                 "api",
                 "customer-group"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create customGrp customer",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Product created\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Save product id for later use\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                  "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{gen_customer_group_secondary_id}}\",\r\n        \"email\": \"test_customGrp@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/_action/clone/customer/{{customer_default_id}}",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "_action",
-                "clone",
-                "customer",
-                "{{customer_default_id}}"
               ]
             }
           },
@@ -2991,7 +2932,7 @@
                       "    const nonDefaultGroup = jsonData.customer_groups.find(group => { return group.name === 'A custom group'});",
                       "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.not.eq(pm.environment.get('gen_customer_group_main_id'));",
                       "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
-                      "    pm.environment.set('gen_customer_group_secondary_id', nonDefaultGroup.id);",
+                      "    pm.environment.set('created_customerGroup_gross_id', nonDefaultGroup.id);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -3037,6 +2978,65 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "SW: create customGrp customer",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Save product id for later use\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
+                      "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{created_customerGroup_gross_id}}\",\r\n        \"email\": \"test_customGrp@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/_action/clone/customer/{{customer_default_id}}",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "_action",
+                    "clone",
+                    "customer",
+                    "{{customer_default_id}}"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -3057,7 +3057,7 @@
                       "        console.log(jsonData);",
                       "    }",
                       "",
-                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_secondary_id'));",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_gross_id'));",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -3643,7 +3643,7 @@
                       "}",
                       "",
                       "pm.test(\"Check default customer group set for customer\", function () {",
-                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_secondary_id'));",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_gross_id'));",
                       "});",
                       "pm.test(\"Check shipping methods\", function () {",
                       "    pm.expect(jsonData.shipping_methods).length(2);",
@@ -4512,7 +4512,7 @@
                   "    pm.expect(jsonData.user_data.customer_number).to.eql('SWDEMO10000');",
                   "    pm.expect(jsonData.user_data.birthday).to.eql('1996-06-06');",
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.not.be.empty;",
-                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_secondary_id'));",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('A custom group');",
                   "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
                   "});",
