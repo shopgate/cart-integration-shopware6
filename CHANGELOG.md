@@ -1,3 +1,7 @@
+# 1.8.0
+
+- changed generated file location to use `var/cache` and `var/log` folders instead of our SDK in vendor
+
 # 1.7.2
 
 - fixed guest `check_cart` call running out of memory when customer database has a lot of customers
