@@ -3412,7 +3412,7 @@
                       "    });",
                       "});",
                       "pm.test(\"General item check\", function () {",
-                      "    pm.expect(jsonData.items).length(1, 'Should be 1 item in cart');",
+                      "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
                       "});",
                       "pm.test(\"Check item success\", function () {",
                       "    const item = getItemById(pm.environment.get('gen_product_advPricesOne_id'));",
