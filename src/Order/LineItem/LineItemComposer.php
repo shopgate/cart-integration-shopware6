@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem;
 
+use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\LineItem\Events\AfterOutLineItemMappingEvent;
 use Shopgate\Shopware\Order\LineItem\Events\BeforeIncLineItemMappingEvent;
 use Shopgate\Shopware\Order\LineItem\Events\BeforeOutLineItemMappingEvent;
@@ -57,6 +58,9 @@ class LineItemComposer
         );
     }
 
+    /**
+     * @throws MissingContextException
+     */
     public function mapOutgoingLineItems(Cart $cart, ExtendedCart $sgCart): array
     {
         $lineItems = [];

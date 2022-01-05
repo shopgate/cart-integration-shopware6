@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem;
 
+use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
+use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use ShopgateLibraryException;
 use ShopgateOrderItem;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
@@ -17,6 +20,13 @@ use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
 
 class LineItemProductMapping
 {
+    private ExtendedClassFactory $extendedClassFactory;
+
+    public function __construct(ExtendedClassFactory $extendedClassFactory)
+    {
+        $this->extendedClassFactory = $extendedClassFactory;
+    }
+
     /**
      * @param ShopgateOrderItem[] $items
      * @return array
@@ -40,6 +50,7 @@ class LineItemProductMapping
     /**
      * Valid products are the ones that are still in Shopware cart
      * after all validation checks are made
+     * @throws MissingContextException
      */
     public function mapValidProduct(
         LineItem $lineItem,
@@ -47,7 +58,7 @@ class LineItemProductMapping
         ErrorCollection $collection,
         string $taxStatus
     ): ExtendedCartItem {
-        $outgoingItem = (new ExtendedCartItem())->transformFromOrderItem($incomingItem);
+        $outgoingItem = $this->extendedClassFactory->createCartItem()->transformFromOrderItem($incomingItem);
         $outgoingItem->setItemNumber($lineItem->getId());
         $outgoingItem->setIsBuyable(1);
         $outgoingItem->setStockQuantity($lineItem->getQuantity());
@@ -56,7 +67,6 @@ class LineItemProductMapping
         }
         if ($price = $lineItem->getPrice()) {
             $outgoingItem->setQtyBuyable($price->getQuantity());
-            //todo: test items with custom tax entered instead of %
             /** @var CalculatedTax $tax */
             $tax = array_reduce(
                 $price->getCalculatedTaxes()->getElements(),
@@ -65,12 +75,15 @@ class LineItemProductMapping
                 },
                 0.0
             );
-            if ($taxStatus === 'net') {
+            if ($taxStatus === CartPrice::TAX_STATE_NET) {
                 $outgoingItem->setUnitAmount($price->getUnitPrice());
                 $outgoingItem->setUnitAmountWithTax($price->getUnitPrice() + ($tax / $price->getQuantity()));
-            } else {
+            } elseif ($taxStatus === CartPrice::TAX_STATE_GROSS) {
                 $outgoingItem->setUnitAmountWithTax($price->getUnitPrice());
                 $outgoingItem->setUnitAmount($price->getUnitPrice() - ($tax / $price->getQuantity()));
+            } else {
+                $outgoingItem->setUnitAmount($price->getUnitPrice());
+                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice());
             }
 
             /**
@@ -117,7 +130,7 @@ class LineItemProductMapping
      */
     public function mapInvalidProduct(Error $error, ShopgateOrderItem $missingItem): ExtendedCartItem
     {
-        $errorItem = (new ExtendedCartItem())->transformFromOrderItem($missingItem);
+        $errorItem = $this->extendedClassFactory->createCartItem()->transformFromOrderItem($missingItem);
         $errorItem->setIsBuyable(0);
         $errorItem->setErrorText(sprintf($error->getMessage(), $missingItem->getName()));
         if ($error instanceof ProductNotFoundError) {
