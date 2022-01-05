@@ -3123,10 +3123,10 @@
                       "pm.test(\"Check item success\", function () {",
                       "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
                       "    pm.expect(item.is_buyable).to.eql(1);",
-                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(12);",
                       "    pm.expect(item.stock_quantity).to.eql(10);",
-                      "    pm.expect(item.unit_amount).to.eql(672.27);",
-                      "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
+                      "    pm.expect(item.unit_amount).to.eql(630.25);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(750);",
                       "});",
                       "pm.test(\"Check item not found\", function () {",
                       "    const item = getItemById('1901dc5e888f4b1ea4168c2c5f005540');",
@@ -3143,6 +3143,8 @@
                       "    pm.expect(item.is_buyable).to.eql(0);",
                       "    pm.expect(item.qty_buyable).to.eql(10);",
                       "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.unit_amount).to.eql(672.27);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
                       "    pm.expect(item.error).to.eql(302);",
                       "});",
                       "",
@@ -3281,28 +3283,20 @@
                     },
                     {
                       "key": "cart[items][0][quantity]",
-                      "value": "1",
+                      "value": "12",
                       "type": "text"
                     },
                     {
                       "key": "cart[items][0][unit_amount]",
-                      "value": "672.27",
-                      "type": "text"
+                      "value": "630.25",
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[items][0][unit_amount_with_tax]",
-                      "value": "800",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][0][tax_percent]",
-                      "value": "19.00",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][0][currency]",
-                      "value": "EUR",
-                      "type": "text"
+                      "value": "750",
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[items][1][item_number]",
@@ -3322,22 +3316,14 @@
                     {
                       "key": "cart[items][1][unit_amount]",
                       "value": "16.8067",
-                      "type": "text"
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[items][1][unit_amount_with_tax]",
                       "value": "20",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][1][tax_percent]",
-                      "value": "19.00",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][1][currency]",
-                      "value": "EUR",
-                      "type": "text"
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[items][2][item_number]",
@@ -3357,22 +3343,14 @@
                     {
                       "key": "cart[items][2][unit_amount]",
                       "value": "1",
-                      "type": "text"
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[items][2][unit_amount_with_tax]",
                       "value": "1.19",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][2][tax_percent]",
-                      "value": "19.00",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][2][currency]",
-                      "value": "EUR",
-                      "type": "text"
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[items][3][item_number]",
@@ -3392,22 +3370,14 @@
                     {
                       "key": "cart[items][3][unit_amount]",
                       "value": "672.27",
-                      "type": "text"
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[items][3][unit_amount_with_tax]",
-                      "value": "800",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][3][tax_percent]",
-                      "value": "19.00",
-                      "type": "text"
-                    },
-                    {
-                      "key": "cart[items][3][currency]",
-                      "value": "EUR",
-                      "type": "text"
+                      "value": "850",
+                      "type": "text",
+                      "disabled": true
                     }
                   ]
                 },
@@ -3450,7 +3420,16 @@
                       "    pm.expect(item.qty_buyable).to.eql(1);",
                       "    pm.expect(item.stock_quantity).to.eql(500);",
                       "    pm.expect(item.unit_amount).to.eql(721.29);",
-                      "    //pm.expect(item.unit_amount_with_tax).to.eql(730);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(858.34);",
+                      "});",
+                      "pm.test(\"Check item max purchase\", function () {",
+                      "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.qty_buyable).to.eql(10);",
+                      "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.error).to.eql(302);",
+                      "    pm.expect(item.unit_amount).to.eql(798.32);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
                       "});",
                       "",
                       "function getItemById(id) {",
@@ -3598,7 +3577,42 @@
                     },
                     {
                       "key": "cart[items][0][unit_amount_with_tax]",
-                      "value": "730",
+                      "value": "858.34",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "{{created_product_maxPurchaseTen_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number_public]",
+                      "value": "SGDEMOCHECKCART02",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "798.32",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount_with_tax]",
+                      "value": "950",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][tax_percent]",
+                      "value": "19.00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][currency]",
+                      "value": "EUR",
                       "type": "text"
                     }
                   ]

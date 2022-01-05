@@ -75,15 +75,12 @@ class LineItemProductMapping
                 },
                 0.0
             );
-            if ($taxStatus === CartPrice::TAX_STATE_NET) {
-                $outgoingItem->setUnitAmount($price->getUnitPrice());
-                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice() + ($tax / $price->getQuantity()));
-            } elseif ($taxStatus === CartPrice::TAX_STATE_GROSS) {
+            if ($taxStatus === CartPrice::TAX_STATE_GROSS) {
                 $outgoingItem->setUnitAmountWithTax($price->getUnitPrice());
                 $outgoingItem->setUnitAmount($price->getUnitPrice() - ($tax / $price->getQuantity()));
             } else {
                 $outgoingItem->setUnitAmount($price->getUnitPrice());
-                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice());
+                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice() + ($tax / $price->getQuantity()));
             }
 
             /**
