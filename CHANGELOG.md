@@ -5,6 +5,7 @@
 - added Shopgate `custom_fields` support to customer & customer addresses (see [README](README.md))
 - added support for categories with `dynamic product groups`
 - added support for product `CrossSell` sliders (max 4)
+- added product tax calculations to `cart`
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
 
 # 1.6.5
