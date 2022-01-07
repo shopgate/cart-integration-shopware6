@@ -9,54 +9,34 @@ use ReflectionProperty;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use ShopgateConfig;
-use ShopgateLibraryException;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ConfigMapping extends ShopgateConfig
 {
     protected array $product_types_to_export = [];
-    protected ConfigBridge $configBridge;
+    protected ConfigBridge $configReader;
 
-    /**
-     * @param ConfigBridge $configBridge
-     * @throws ReflectionException
-     */
-    public function initShopwareConfig(ConfigBridge $configBridge): void
+    public function setConfigBridge(ConfigBridge $configReader): ConfigMapping
     {
-        $this->configBridge = $configBridge;
-        $this->setShopIsActive($this->configBridge->get('isActive'));
-        $this->setCustomerNumber($this->configBridge->get('customerNumber'));
-        $this->setShopNumber($this->configBridge->get('shopNumber'));
-        $this->setApikey($this->configBridge->get('apiKey'));
-        $this->setServer($this->configBridge->get('server', 'live'));
-        $this->setProductTypesToExport($this->configBridge->get('productTypesToExport'));
-        if ($this->configBridge->get('apiUrl', false)) {
-            $this->setApiUrl($this->configBridge->get('apiUrl'));
-        }
+        $this->configReader = $configReader;
+
+        return $this;
     }
 
     /**
-     * Writes the given fields to magento
-     *
-     * @param array $fieldList
-     * @param boolean $validate
-     *
-     * @throws ShopgateLibraryException
-     * @throws MissingContextException
      * @throws ReflectionException
      */
-    public function save(array $fieldList, $validate = true): void
+    public function initShopwareConfig(array $data = []): void
     {
-        if ($validate) {
-            $this->validate($fieldList);
+        $this->loadArray($data);
+        $this->setServer($this->configReader->get('server', 'live'));
+        $this->setProductTypesToExport($this->configReader->get('productTypesToExport'));
+        if ($this->configReader->get('apiUrl', false)) {
+            $this->setApiUrl($this->configReader->get('apiUrl'));
         }
-        foreach ($fieldList as $key) {
-            if (!property_exists($this, $key)) {
-                continue;
-            }
-            $value = $this->castToType($this->{$key}, $key);
-            $key = ['shop_is_active' => 'is_active'][$key] ?? $key;
-            $this->configBridge->set($this->camelize($key), $value);
-        }
+        $this->setLogFolderPath(implode('/', [$this->getLogFolderPath(), $this->getShopNumber()]));
+        $this->setCacheFolderPath(implode('/', [$this->getCacheFolderPath(), $this->getShopNumber()]));
+        $this->setExportFolderPath(implode('/', [$this->getExportFolderPath(), $this->getShopNumber()]));
     }
 
     /**
@@ -76,13 +56,13 @@ class ConfigMapping extends ShopgateConfig
         return $this->product_types_to_export;
     }
 
-    /**
-     * @return bool
-     */
-    protected function startup(): bool
+    public function initFolderStructure(Filesystem $filesystem): void
     {
-        $this->setPluginName('Shopgate Go Plugin for Shopware 6');
-        return parent::startup();
+        array_map(static function (string $path) use ($filesystem) {
+            if (!$filesystem->exists($path)) {
+                $filesystem->mkdir($path);
+            }
+        }, [$this->getLogFolderPath(), $this->getCacheFolderPath(), $this->getExportFolderPath()]);
     }
 
     /**
@@ -143,5 +123,29 @@ class ConfigMapping extends ShopgateConfig
         }
 
         return $value;
+    }
+
+    /**
+     * Writes the given fields to magento
+     *
+     * @param array $fieldList
+     * @param boolean $validate
+     *
+     * @throws MissingContextException
+     * @throws ReflectionException
+     */
+    public function save(array $fieldList, $validate = true): void
+    {
+        if ($validate) {
+            $this->validate($fieldList);
+        }
+        foreach ($fieldList as $key) {
+            if (!property_exists($this, $key)) {
+                continue;
+            }
+            $value = $this->castToType($this->{$key}, $key);
+            $key = ['shop_is_active' => 'is_active'][$key] ?? $key;
+            $this->configReader->set($this->camelize($key), $value);
+        }
     }
 }

@@ -8,6 +8,22 @@
 - added product tax calculations to `cart`
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
 
+# 1.8.0
+
+- changed generated file location to use `var/cache` and `var/log` folders instead of our SDK in vendor
+
+# 1.7.2
+
+- fixed guest `check_cart` call running out of memory when customer database has a lot of customers
+
+# 1.7.1
+
+- added `expression-language` composer dependency for installations without dev-dependencies installed
+
+# 1.7.0
+
+- added configuration to save export files via Flysystem
+
 # 1.6.5
 
 - fixed customer address type mapping in case billing and shipping address are the same
@@ -88,34 +104,42 @@
 - fixed issues with uninitialized php7.4 properties
 
 # 1.0.0
+
 - added support for Shopware 6.4 & min version PHP 7.4
 - removed support for Shopware below 6.4
 
 # 0.1.3
+
 - fixed issue when exporting properties with false (checkbox) value
 - fixed issue with shopgate order getting deleted on order edit
 
 # 0.1.2
+
 - added product custom fields to product export
 - fixed coupon error handling for ineligible rules
 - fixed property values to be concatenated with a comma instead of being separate values
 
 # 0.1.1
+
 - added more support for FinSearch subscribers
 
 # 0.1.0
+
 - added shopgate order details on admin shopware order detail page
 
 # 0.0.13
+
 - added variant (child) manufacturer, price & property export
 - fixed issue with missing payment/shipping method notifications showing for customer after a mobile order is made
 
 # 0.0.12
+
 - added exclusion of shopgate free shipping method from check_cart
 - added customer shipping/billing addresses to check_cart for rule calculations
 - fixed base_price currency formatting & adjusted overall presentation
 
 # 0.0.11
+
 - added shopgate free shipping method for 0 priced imports
 - added detailed trace SDK debug logs for addOrder issues
 - added detailed debug logs for check_cart calls
@@ -125,6 +149,7 @@
 - fixed image sort order for product export
 
 # 0.0.10
+
 - added better error logging for item export
 - fixed cover picture warnings when empty
 - fixed empty shipping info when checking out
@@ -132,23 +157,28 @@
 - changed sortTree logic to be more error resistant
 
 # 0.0.9
+
 - added detailed error log to product export
 - fixed shopNumber matching to be more precise
 - fixed DeepLink logic to output SEO URI instead of internal
 
 # 0.0.8
+
 - added support to sub-level root categories (2nd level+)
 - fixed co-existence with FindLogic Search & Navigation plugin
 - fixed products not exporting due to `array_value` null exception
 
 # 0.0.7
+
 - added shopgate shipping/payment showing up on admin/storefront
 
 # 0.0.6
+
 - fixed order address mapping
 - fixed check_cart exporting shopgate shipping method
 
 # 0.0.5
+
 - added cart support with shipping, items (partial), promos, customer - check_cart
 - added order support
 - added shopgate_order table

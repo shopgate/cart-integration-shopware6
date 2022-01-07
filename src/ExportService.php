@@ -104,14 +104,6 @@ class ExportService
     }
 
     /**
-     * Sets plugin version globally before action handler runs
-     */
-    public function definePluginVersion(): void
-    {
-        define('SHOPGATE_PLUGIN_VERSION', $this->configBridge->getShopgatePluginVersion());
-    }
-
-    /**
      * @return string[]
      */
     public function getInfo(): array

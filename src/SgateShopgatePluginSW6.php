@@ -18,6 +18,10 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
+    require_once dirname(__DIR__) . '/vendor/autoload.php';
+}
+
 class SgateShopgatePluginSW6 extends Plugin
 {
 

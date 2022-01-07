@@ -8,11 +8,13 @@ This plugin is available on `packagist.org`. To install simply add the composer 
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-shopware6
 ```
-Afterwards just increment the plugin version root/composer.json, and run `composer update` to get the latest version.
+Afterwards just increment the plugin version inside `root/composer.json`, and run `composer update` to get the latest
+version.
 
 ### Folder install
 
-It can be installed manually by copying the plugin folder to `custom/plugins` folder.
+It can be installed manually by copying the plugin folder to `custom/plugins` directory. However, please make sure you
+have a composer compiled version of the plugin. Meaning, you have a `vendor` directory in the plugin folder.
 
 #### Composer symlink (development)
 
@@ -27,19 +29,6 @@ composer config repositories.sym '{"type": "path", "url": "custom/plugins/*", "o
 
 # make sure to use the exact version (e.g. `1.6.4`) that is provided in the composer.json of this plugin.
 composer require shopgate/cart-integration-shopware6:1.6.4
-```
-
-#### Update SDK separately
-
-Alternatively you could place this plugin's folder in the `custom/plguins`. Afterwards make sure the run
-the `composer update` inside this plugin's folder so that the Shopgate SDK is installed. Not recommended as it will also download the shopware core package.
-```shell
-composer update --no-dev -d custom/plugins/SgateShopgatePluginSW6 
-```
-**Or** you can install SDK separately in the root composer. Not recommended as you will have to manually update SDK version & keep track of it.
-```shell
-cd [shopware6 root folder]
-composer require shopgate/cart-integration-sdk:^2.9.81
 ```
 
 ## Enable & Activate
@@ -70,11 +59,20 @@ cd [shopware6 root folder]
 * `No SaleChannel domain exists corresponding to the SaleChannel default language` - indicates an issue when there is a
   default language set for a domain, but no domain URL exists that has that language. In short:
   1. go to `SalesChannels`
-  1. select SaleChannel that is being queried by Shopgate API
-  1. Check `General Settings` default language (e.g., English)
-  1. Check `Domains` list, see that there is no domain URL with default language (e.g., English)
+  2. select SaleChannel that is being queried by Shopgate API
+  3. Check `General Settings` default language (e.g., English)
+  4. Check `Domains` list, see that there is no domain URL with default language (e.g., English)
+* `Cannot declare interface XXX, because the name is already in use` - happens after installing of our plugin via
+  symlink. This is because there is a `vendor` directory inside our plugin folder. Either remove `vendor` directory from
+  our plugin directory **or** do not install via symlink. These are two different ways of installing our plugin.
 
 # Configuration
+
+### Administration
+
+##### Export
+
+- Flysystem - uses Flysystem to write SDK file export
 
 ### Email template variable usage (supported as of Shopware 6.4.4.0)
 
