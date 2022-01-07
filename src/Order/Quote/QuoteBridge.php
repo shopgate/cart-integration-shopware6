@@ -23,12 +23,6 @@ class QuoteBridge
     private AbstractCartDeleteRoute $cartDeleteRoute;
     private EntityRepositoryInterface $orderRepository;
 
-    /**
-     * @param AbstractCartOrderRoute $cartOrderRoute
-     * @param AbstractCartLoadRoute $cartLoadRoute
-     * @param AbstractCartItemAddRoute $cartItemAddRoute
-     * @param AbstractCartDeleteRoute $cartDeleteRoute
-     */
     public function __construct(
         AbstractCartOrderRoute $cartOrderRoute,
         AbstractCartLoadRoute $cartLoadRoute,
@@ -43,32 +37,16 @@ class QuoteBridge
         $this->orderRepository = $orderRepository;
     }
 
-    /**
-     * @param SalesChannelContext $context
-     * @return Cart
-     */
     public function loadCartFromContext(SalesChannelContext $context): Cart
     {
         return $this->cartLoadRoute->load(new Request(), $context)->getCart();
     }
 
-    /**
-     * @param Request $request
-     * @param Cart $cart
-     * @param SalesChannelContext $context
-     * @return Cart
-     */
     public function addLineItemToQuote(Request $request, Cart $cart, SalesChannelContext $context): Cart
     {
         return $this->cartItemAddRoute->add($request, $cart, $context, null)->getCart();
     }
 
-    /**
-     * @param Cart $cart
-     * @param SalesChannelContext $context
-     * @param RequestDataBag|null $data
-     * @return OrderEntity
-     */
     public function createOrder(Cart $cart, SalesChannelContext $context, ?RequestDataBag $data = null): OrderEntity
     {
         return $this->cartOrderRoute->order($cart, $context, $data ?: new RequestDataBag())->getOrder();
@@ -80,9 +58,6 @@ class QuoteBridge
         $this->orderRepository->update([$updateData], $context->getContext());
     }
 
-    /**
-     * @param SalesChannelContext $context
-     */
     public function deleteCart(SalesChannelContext $context): void
     {
         $this->cartDeleteRoute->delete($context);

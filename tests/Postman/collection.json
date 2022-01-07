@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "3c1dd711-b010-4f27-ae1c-65c1f0a1a966",
+    "_postman_id": "302492b7-590e-4a94-980f-88d92d321ebb",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -685,68 +685,6 @@
           "response": []
         },
         {
-          "name": "SW: TMP update rule ID",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {
-              "accept": true
-            }
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/_action/sync",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "_action",
-                "sync"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "SW: create customFieldSets",
           "event": [
             {
@@ -795,6 +733,416 @@
                 "api",
                 "_action",
                 "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: check SG shipping",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "// Disabled until SGSW6-88 is handled\r",
+                  "/*\r",
+                  "const jsonData = pm.response.json();\r",
+                  "pm.test(\"Check rules\", function () {\r",
+                  "    jsonData.data.map(shippingMethod => pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`));\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check rules\", function () {\r",
+                  "    pm.expect(jsonData.total).to.eql(2, 'Supposed to have 2 shipping methods installed.');\r",
+                  "    jsonData.data.map(shipMethod => checkRule(shipMethod));\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check deliveries\", function () {\r",
+                  "    jsonData.data.map(shipMethod => checkDelivery(shipMethod));\r",
+                  "});\r",
+                  "*/\r",
+                  "function checkDelivery(shippingMethod) {\r",
+                  "    pm.expect(shippingMethod.deliveryTimeId).to.eq(\r",
+                  "        pm.environment.get('default_deliveryTime_sg_id'),\r",
+                  "        `Incorect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
+                  "    );\r",
+                  "}\r",
+                  "\r",
+                  "function checkRule(shippingMethod) {\r",
+                  "    pm.expect(shippingMethod, 'Rule not present in shipping method: ' + shippingMethod.name).has.ownProperty('availabilityRule').has.ownProperty('id')\r",
+                  "    .to.eq(\r",
+                  "        pm.environment.get('gen_rule_cartGreaterThan0_id'),\r",
+                  "        `Incorect rule by name '${shippingMethod.availabilityRule.name}' for shipMethod: '${shippingMethod.name}' >>>` \r",
+                  "    );\r",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/shipping-method",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "shipping-method"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: find Cart>0 Rule",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Get values\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Cart >= 0', 'Rule exists, check that you are on the right language');\r",
+                  "    pm.environment.set(\"gen_rule_cartGreaterThan0_id\", jsonData.data[0].id);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {}
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Cart >= 0\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/rule",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "rule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: find other shipping",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const jsonData = pm.response.json();\r",
+                  "pm.test(\"Check ship methods\", function () {\r",
+                  "    pm.expect(jsonData).to.haveOwnProperty('total').to.eq(2);\r",
+                  "    jsonData.data.map((shippingMethod, index) => {\r",
+                  "        pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`);\r",
+                  "        pm.environment.set(\"gen_shipMethod_nonSg_\" + index, shippingMethod.id);\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/search/shipping-method",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "search",
+                "shipping-method"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: TMP update rule ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// marked as temp because of ticket SGSW6-88\r",
+                  "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_0}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_1}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/sync",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: create customer grp",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Created customer group successfully\", function () {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": \"{{created_customerGroup_gross_id}}\",\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/customer-group",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "customer-group"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: create customGrp customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Product created\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Save product id for later use\", function () {\r",
+                  "    const jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
+                  "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{created_customerGroup_gross_id}}\",\r\n        \"email\": \"test_customGrp@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/clone/customer/{{customer_default_id}}",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "clone",
+                "customer",
+                "{{customer_default_id}}"
               ]
             }
           },
@@ -2488,22 +2836,25 @@
                       "});",
                       "",
                       "const jsonData = pm.response.json();",
-                      "pm.test(\"No error\", function () {",
-                      "    if (jsonData.error > 0) {",
-                      "        console.log(jsonData.error_text);",
-                      "    }",
+                      "pm.test(\"Check issues with payload\", function () {",
                       "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
+                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
                       "});",
                       "",
-                      "pm.test(\"Value checks\", function () {",
-                      "     if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData.customer_groups);",
-                      "    }",
-                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(1);",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('name').to.eq('Standard customer group');",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('is_default').to.eq('1');",
-                      "});"
+                      "pm.test(\"Check custom gross group\", function () {",
+                      "    const nonDefaultGroup = findByName('A custom group');",
+                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_gross_id'));",
+                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                      "});",
+                      "pm.test(\"Check default group\", function () {",
+                      "    const defaultGroup = findByName('Standard customer group');",
+                      "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                      "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
+                      "});",
+                      "",
+                      "function findByName(name) {",
+                      "    return jsonData.customer_groups.find(group => group.name === name);",
+                      "};"
                     ],
                     "type": "text/javascript"
                   }
@@ -2556,24 +2907,28 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
                       "const jsonData = pm.response.json();",
-                      "pm.test(\"No error\", function () {",
-                      "    pm.expect(jsonData.error).to.eql(0);",
+                      "pm.test(\"Check issues with payload\", function () {",
+                      "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
+                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
                       "});",
                       "",
-                      "pm.test(\"Value checks\", function () {",
-                      "     if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData.customer_groups);",
-                      "    }",
-                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(1);",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('name').to.eq('Standard-Kundengruppe');",
-                      "    pm.expect(jsonData.customer_groups[0]).to.haveOwnProperty('is_default').to.eq('1');",
-                      "});"
+                      "// todo: fix needed in SGSW6-64",
+                      "// pm.test(\"Check custom gross group\", function () {",
+                      "//     const nonDefaultGroup = findByName('A custom group');",
+                      "//     pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_gross_id'));",
+                      "//     pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                      "// });",
+                      "",
+                      "pm.test(\"Check default group\", function () {",
+                      "    const defaultGroup = findByName('Standard-Kundengruppe');",
+                      "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                      "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
+                      "});",
+                      "",
+                      "function findByName(name) {",
+                      "    return jsonData.customer_groups.find(group => group.name === name);",
+                      "};"
                     ],
                     "type": "text/javascript"
                   }
@@ -2618,16 +2973,27 @@
                 }
               },
               "response": []
-            },
+            }
+          ]
+        },
+        {
+          "name": "Cart",
+          "item": [
             {
-              "name": "SW: create customer grp",
+              "name": "SW: create out of stock product",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Created customer group successfully\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Save product id for later use\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
+                      "    pm.environment.set(\"gen_product_stock_zero_id\", jsonData.id);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -2649,7 +3015,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"name\" : \"API: check_cart One\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART01\",\r\n        \"stock\": 0,\r\n        \"isCloseout\": true\r\n    },\r\n    \"cloneChildren\": false\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2657,109 +3023,41 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/customer-group",
+                  "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
                   "host": [
                     "{{host}}"
                   ],
                   "path": [
                     "api",
-                    "customer-group"
+                    "_action",
+                    "clone",
+                    "product",
+                    "{{catalog_product_advPrices_id}}"
                   ]
                 }
               },
               "response": []
             },
             {
-              "name": "SG: get_settings (2 grps)",
+              "name": "SW: create max purchse product",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.response.to.have.status(200);",
-                      "});",
-                      "",
-                      "const jsonData = pm.response.json();",
-                      "pm.test(\"No error\", function () {",
-                      "    pm.expect(jsonData.error).to.eql(0);",
-                      "});",
-                      "",
-                      "pm.test(\"Value checks\", function () {",
-                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData.customer_groups);",
-                      "    }",
-                      "    const nonDefaultGroup = jsonData.customer_groups.find(group => { return group.name === 'A custom group'});",
-                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.not.eq(pm.environment.get('gen_customer_group_main_id'));",
-                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
-                      "    pm.environment.set('gen_customer_group_secondary_id', nonDefaultGroup.id);",
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Save product id for later use\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
                       "});"
                     ],
                     "type": "text/javascript"
                   }
                 }
               ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_get_settings}}",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: change customer grp",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Successfully changed customer group\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {
-                  "accept": true
-                }
-              },
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -2771,17 +3069,11 @@
                     }
                   ]
                 },
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
+                "method": "POST",
+                "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"groupId\": \"{{gen_customer_group_secondary_id}}\"\r\n}",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_maxPurchaseTen_id}}\",\r\n        \"name\" : \"API: max purchase 10\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART02\",\r\n        \"stock\": 100,\r\n        \"maxPurchase\": 10\r\n    },\r\n    \"cloneChildren\": false\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2789,40 +3081,77 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/customer/{{customer_default_id}}",
+                  "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
                   "host": [
                     "{{host}}"
                   ],
                   "path": [
                     "api",
-                    "customer",
-                    "{{customer_default_id}}"
+                    "_action",
+                    "clone",
+                    "product",
+                    "{{catalog_product_advPrices_id}}"
                   ]
                 }
               },
               "response": []
-            }
-          ]
-        },
-        {
-          "name": "Cart",
-          "item": [
+            },
             {
-              "name": "SG: cart customer grp",
+              "name": "SG: cart (main cust)",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Check default customer group set for customer\", function () {",
-                      "    var jsonData = pm.response.json();",
-                      "    ",
-                      "     if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
+                      "const jsonData = pm.response.json();",
+                      "if (pm.globals.get('verbose')) {",
+                      "    console.log(jsonData);",
+                      "}",
                       "",
-                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_secondary_id'));",
-                      "});"
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(4, 'Should be 4 items in cart');",
+                      "});",
+                      "pm.test(\"Check item success\", function () {",
+                      "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(12);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(630.25);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(750);",
+                      "});",
+                      "pm.test(\"Check item not found\", function () {",
+                      "    const item = getItemById('1901dc5e888f4b1ea4168c2c5f005540');",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.error).to.eql(301);",
+                      "});",
+                      "pm.test(\"Check item out of stock\", function () {",
+                      "    const item = getItemById(pm.environment.get('gen_product_stock_zero_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.error).to.eql(300);",
+                      "});",
+                      "pm.test(\"Check item max purchase\", function () {",
+                      "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.qty_buyable).to.eql(10);",
+                      "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.unit_amount).to.eql(672.27);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
+                      "    pm.expect(item.error).to.eql(302);",
+                      "});",
+                      "",
+                      "function getItemById(id) {",
+                      "    return jsonData.items.find(item => item.item_number === id);",
+                      "};",
+                      ""
                     ],
                     "type": "text/javascript"
                   }
@@ -2941,6 +3270,114 @@
                       "key": "cart[delivery_address][country]",
                       "value": "{{gen_customer_default_country_iso}}",
                       "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "12",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "630.25",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "750",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "1901dc5e888f4b1ea4168c2c5f005540",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number_public]",
+                      "value": "SWDEMO10006",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "100",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "16.8067",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount_with_tax]",
+                      "value": "20",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][2][item_number]",
+                      "value": "{{gen_product_stock_zero_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][item_number_public]",
+                      "value": "SGDEMOCHECKCART01",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][unit_amount]",
+                      "value": "1",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][2][unit_amount_with_tax]",
+                      "value": "1.19",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][3][item_number]",
+                      "value": "{{created_product_maxPurchaseTen_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][item_number_public]",
+                      "value": "SGDEMOCHECKCART02",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][unit_amount]",
+                      "value": "672.27",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][3][unit_amount_with_tax]",
+                      "value": "850",
+                      "type": "text",
+                      "disabled": true
                     }
                   ]
                 },
@@ -2954,21 +3391,51 @@
               "response": []
             },
             {
-              "name": "SG: cart guest check",
+              "name": "SG: cart (customGrp)",
               "event": [
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.response.to.have.status(200);",
+                      "const jsonData = pm.response.json();",
+                      "if (pm.globals.get('verbose')) {",
+                      "    console.log(jsonData);",
+                      "}",
                       "",
-                      "    var jsonData = pm.response.json();",
-                      "    ",
-                      "     if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "});"
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_gross_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
+                      "});",
+                      "pm.test(\"Check item success\", function () {",
+                      "    const item = getItemById(pm.environment.get('gen_product_advPricesOne_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(500);",
+                      "    pm.expect(item.unit_amount).to.eql(721.29);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(858.34);",
+                      "});",
+                      "pm.test(\"Check item max purchase\", function () {",
+                      "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.qty_buyable).to.eql(10);",
+                      "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.error).to.eql(302);",
+                      "    pm.expect(item.unit_amount).to.eql(798.32);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
+                      "});",
+                      "",
+                      "function getItemById(id) {",
+                      "    return jsonData.items.find(item => item.item_number === id);",
+                      "};",
+                      ""
                     ],
                     "type": "text/javascript"
                   }
@@ -3004,13 +3471,148 @@
                       "type": "text"
                     },
                     {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "{{gen_customer_default_country_iso}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "{{gen_customer_default_country_iso}}",
+                      "type": "text"
+                    },
+                    {
                       "key": "cart[items][0][item_number]",
-                      "value": "{{catalog_product_main_id}}",
+                      "value": "{{gen_product_advPricesOne_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
                       "type": "text"
                     },
                     {
                       "key": "cart[items][0][quantity]",
                       "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "721.29",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "858.34",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "{{created_product_maxPurchaseTen_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number_public]",
+                      "value": "SGDEMOCHECKCART02",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "798.32",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount_with_tax]",
+                      "value": "950",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][tax_percent]",
+                      "value": "19.00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][currency]",
+                      "value": "EUR",
                       "type": "text"
                     }
                   ]
@@ -3714,8 +4316,8 @@
                   "    pm.expect(jsonData.user_data.customer_number).to.eql('SWDEMO10000');",
                   "    pm.expect(jsonData.user_data.birthday).to.eql('1996-06-06');",
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.not.be.empty;",
-                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_secondary_id'));",
-                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('A custom group');",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('Standard customer group');",
                   "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
                   "});",
                   "",

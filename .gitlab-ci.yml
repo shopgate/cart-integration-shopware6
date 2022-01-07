@@ -65,10 +65,11 @@ default:
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
-    - composer install --quiet
+    - composer config allow-plugins true
+    - composer install -n --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
-    - bin/console system:install --drop-database --basic-setup --force --quiet
+    - bin/console system:install --drop-database --basic-setup --force --no-interaction --quiet
     - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
     - chown -R 1000:1000 .
     - bin/console plugin:refresh --quiet
@@ -85,7 +86,7 @@ default:
 newman:
   stage: test
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
+    - npm install -g newman@^5.3.0 newman-reporter-htmlextra newman-reporter-junitfull @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --activate SwagPlatformDemoData
     - export SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
@@ -102,13 +103,18 @@ newman:
       fi
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --color on --insecure --no-insecure-file-read
+    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junitfull
+      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junitfull-export ${PROJECT_ROOT}/newman.junit.xml
+      --color on --insecure --no-insecure-file-read
       --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
-      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE}
+      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY"
       --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
-    expire_in: 30 days
+    expire_in: 15 days
+    expose_as: 'Newman HTML Report'
+    reports:
+      junit: newman.junit.xml
     paths:
       - ./postman-report.html
 

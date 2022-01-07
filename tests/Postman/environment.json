@@ -1,6 +1,6 @@
 {
   "id": "f088265d-450e-4f0d-a152-200b604b894b",
-  "name": "Shopware 6 (local)",
+  "name": "Shopware 6",
   "values": [
     {
       "key": "host",
@@ -49,12 +49,12 @@
     },
     {
       "key": "sw_admin",
-      "value": "myadmin",
+      "value": "admin",
       "enabled": true
     },
     {
       "key": "sw_pass",
-      "value": "test.123",
+      "value": "shopware",
       "enabled": true
     },
     {
@@ -108,13 +108,18 @@
       "enabled": true
     },
     {
-      "key": "created_category_noFreeShip_id",
-      "value": "756340dd497a0a7d5177f1bbd554ddab",
+      "key": "created_address_customFieldSet_id",
+      "value": "e44610f63493b8f3ddec553f5dfc7fd5",
       "enabled": true
     },
     {
-      "key": "created_address_customFieldSet_id",
-      "value": "e44610f63493b8f3ddec553f5dfc7fd5",
+      "key": "created_category_manual_id",
+      "value": "13ac93d00dce334bba916278aa7eba9e",
+      "enabled": true
+    },
+    {
+      "key": "created_category_noFreeShip_id",
+      "value": "756340dd497a0a7d5177f1bbd554ddab",
       "enabled": true
     },
     {
@@ -123,13 +128,23 @@
       "enabled": true
     },
     {
-      "key": "created_order_customFieldSet_id",
-      "value": "247b3a83846c6774ec120d4edb655594",
+      "key": "created_customer_withCustomGrp_id",
+      "value": "56b861af79034c7fa1e9158dbe62be16",
       "enabled": true
     },
     {
-      "key": "created_category_manual_id",
-      "value": "13ac93d00dce334bba916278aa7eba9e",
+      "key": "created_customerGroup_gross_id",
+      "value": "7ed46ba83b40423284938fbc98697aa7",
+      "enabled": true
+    },
+    {
+      "key": "created_product_maxPurchaseTen_id",
+      "value": "e01bd9c71f4e4eebad39b64dd58d34fe",
+      "enabled": true
+    },
+    {
+      "key": "created_order_customFieldSet_id",
+      "value": "247b3a83846c6774ec120d4edb655594",
       "enabled": true
     },
     {
@@ -239,6 +254,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2021-12-16T15:21:04.737Z",
-  "_postman_exported_using": "Postman/9.5.0"
+  "_postman_exported_at": "2022-01-04T21:44:12.363Z",
+  "_postman_exported_using": "Postman/9.7.1"
 }
