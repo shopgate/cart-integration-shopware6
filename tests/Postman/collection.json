@@ -62,12 +62,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/sales-channel",
+              "raw": "{{sw_endpoint_api}}/search/sales-channel",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "sales-channel"
               ]
@@ -128,12 +127,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/plugin",
+              "raw": "{{sw_endpoint_api}}/search/plugin",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "plugin"
               ]
@@ -191,12 +189,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search-ids/category",
+              "raw": "{{sw_endpoint_api}}/search-ids/category",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search-ids",
                 "category"
               ]
@@ -248,12 +245,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search-ids/customer-group",
+              "raw": "{{sw_endpoint_api}}/search-ids/customer-group",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search-ids",
                 "customer-group"
               ]
@@ -308,12 +304,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search-ids/language",
+              "raw": "{{sw_endpoint_api}}/search-ids/language",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search-ids",
                 "language"
               ]
@@ -375,12 +370,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/sales-channel",
+              "raw": "{{sw_endpoint_api}}/search/sales-channel",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "sales-channel"
               ]
@@ -437,12 +431,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/_action/sync",
+              "raw": "{{sw_endpoint_api}}/_action/sync",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "_action",
                 "sync"
               ]
@@ -504,12 +497,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/rule",
+              "raw": "{{sw_endpoint_api}}/search/rule",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "rule"
               ]
@@ -571,12 +563,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/cms-page",
+              "raw": "{{sw_endpoint_api}}/search/cms-page",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "cms-page"
               ]
@@ -633,12 +624,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/sales-channel/{{gen_channel_headless_id}}",
+              "raw": "{{sw_endpoint_api}}/sales-channel/{{gen_channel_headless_id}}",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "sales-channel",
                 "{{gen_channel_headless_id}}"
               ]
@@ -682,12 +672,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}/api/customer-address/{{customer_default_address_id}}/country",
+              "raw": "{{sw_endpoint_api}}/customer-address/{{customer_default_address_id}}/country",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "customer-address",
                 "{{customer_default_address_id}}",
                 "country"
@@ -732,12 +721,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}/api/product/{{catalog_product_variant}}/children",
+              "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "product",
                 "{{catalog_product_variant}}",
                 "children"
@@ -787,12 +775,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/_action/sync",
+              "raw": "{{sw_endpoint_api}}/_action/sync",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "_action",
                 "sync"
               ]
@@ -883,12 +870,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/shipping-method",
+              "raw": "{{sw_endpoint_api}}/search/shipping-method",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "shipping-method"
               ]
@@ -950,12 +936,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/rule",
+              "raw": "{{sw_endpoint_api}}/search/rule",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "rule"
               ]
@@ -1025,12 +1010,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/shipping-method",
+              "raw": "{{sw_endpoint_api}}/search/shipping-method",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "shipping-method"
               ]
@@ -1088,12 +1072,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/_action/sync",
+              "raw": "{{sw_endpoint_api}}/_action/sync",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "_action",
                 "sync"
               ]
@@ -1139,12 +1122,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/customer-group",
+              "raw": "{{sw_endpoint_api}}/customer-group",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "customer-group"
               ]
             }
@@ -1195,12 +1177,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/_action/clone/customer/{{customer_default_id}}",
+              "raw": "{{sw_endpoint_api}}/_action/clone/customer/{{customer_default_id}}",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "_action",
                 "clone",
                 "customer",
@@ -2035,12 +2016,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/category",
+                      "raw": "{{sw_endpoint_api}}/category",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "category"
                       ]
                     }
@@ -2247,12 +2227,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/category",
+                      "raw": "{{sw_endpoint_api}}/category",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "category"
                       ]
                     }
@@ -2308,12 +2287,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/_action/sync",
+                      "raw": "{{sw_endpoint_api}}/_action/sync",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "_action",
                         "sync"
                       ]
@@ -2473,12 +2451,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/product-stream",
+                      "raw": "{{sw_endpoint_api}}/product-stream",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "product-stream"
                       ]
                     }
@@ -2534,12 +2511,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/_action/sync",
+                      "raw": "{{sw_endpoint_api}}/_action/sync",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "_action",
                         "sync"
                       ]
@@ -2863,12 +2839,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "_action",
                         "clone",
                         "product",
@@ -2927,12 +2902,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/product-visibility",
+                      "raw": "{{sw_endpoint_api}}/product-visibility",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "product-visibility"
                       ]
                     }
@@ -3176,56 +3150,6 @@
               "response": []
             },
             {
-              "name": "SW: create customer grp",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Created customer group successfully\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{host}}/api/customer-group",
-                  "host": [
-                    "{{host}}"
-                  ],
-                  "path": [
-                    "api",
-                    "customer-group"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
               "name": "SG: get_settings (2 grps)",
               "event": [
                 {
@@ -3345,12 +3269,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/customer/{{customer_default_id}}",
+                  "raw": "{{sw_endpoint_api}}/customer/{{customer_default_id}}",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "customer",
                     "{{customer_default_id}}"
                   ]
@@ -3407,12 +3330,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "clone",
                     "product",
@@ -3465,12 +3387,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "clone",
                     "product",
@@ -4064,12 +3985,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/sync",
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "sync"
                   ]
@@ -5152,12 +5072,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/sync",
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "sync"
                   ]
@@ -5315,12 +5234,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/search/order",
+                  "raw": "{{sw_endpoint_api}}/search/order",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "search",
                     "order"
                   ]
@@ -5466,12 +5384,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/search/order",
+                  "raw": "{{sw_endpoint_api}}/search/order",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "search",
                     "order"
                   ]
@@ -6064,12 +5981,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/system-config",
+              "raw": "{{sw_endpoint_api}}/system-config",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "system-config"
               ]
             }
@@ -6199,7 +6115,7 @@
           "    };",
           "    // SW Auth",
           "    const authRequest = {",
-          "        url: pm.environment.replaceIn(pm.globals.get(\"sw_endpoint_auth\")),",
+          "        url: pm.globals.replaceIn(pm.environment.replaceIn(pm.environment.get(\"sw_endpoint_auth\"))),",
           "        method: 'POST',",
           "        header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
           "        body: {",
