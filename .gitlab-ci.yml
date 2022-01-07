@@ -12,9 +12,8 @@ variables:
   GIT_STRATEGY: clone
   # things plugins might want to override
   DEV_IMAGE: shopware/development:7.4-composer-2
-  MYSQL_IMAGE: mysql:5.7
+  MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
-  MYSQL8_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
   PLATFORM_BRANCH: '6.4.6.0'
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
