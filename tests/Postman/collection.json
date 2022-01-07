@@ -5769,18 +5769,12 @@
                   "pm.test(\"Has settings changed\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.shopgate_settings).to.be.a('array').to.be.not.empty;",
-                  "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('server');",
-                  "    pm.expect(jsonData.shopgate_settings[0].old).to.eq('custom');",
-                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('custom');",
-                  "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('api_url');",
-                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(pm.globals.get(\"mock_server_merchant_uri\"));",
-                  "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('http://some.url');",
-                  "    pm.expect(jsonData.shopgate_settings[2].name).to.eq('product_types_to_export');",
-                  "    pm.expect(jsonData.shopgate_settings[2].old).to.be.an('array').length(2);",
-                  "    pm.expect(jsonData.shopgate_settings[2].new).to.eq('simple');",
-                  "    pm.expect(jsonData.shopgate_settings[3].name).to.eq('shop_is_active');",
-                  "    pm.expect(jsonData.shopgate_settings[3].old).to.eq(1);",
-                  "    pm.expect(jsonData.shopgate_settings[3].new).to.eq('1');",
+                  "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('product_types_to_export');",
+                  "    pm.expect(jsonData.shopgate_settings[0].old).to.be.an('array').length(2);",
+                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('simple');",
+                  "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('shop_is_active');",
+                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(1);",
+                  "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('1');",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -5814,41 +5808,21 @@
                 },
                 {
                   "key": "shopgate_settings[0][name]",
-                  "value": "server",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[0][value]",
-                  "value": "custom",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[1][name]",
-                  "value": "api_url",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[1][value]",
-                  "value": "http://some.url",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[2][name]",
                   "value": "product_types_to_export",
                   "type": "text"
                 },
                 {
-                  "key": "shopgate_settings[2][value]",
+                  "key": "shopgate_settings[0][value]",
                   "value": "simple",
                   "type": "text"
                 },
                 {
-                  "key": "shopgate_settings[3][name]",
+                  "key": "shopgate_settings[1][name]",
                   "value": "shop_is_active",
                   "type": "text"
                 },
                 {
-                  "key": "shopgate_settings[3][value]",
+                  "key": "shopgate_settings[1][value]",
                   "value": "1",
                   "type": "text"
                 }
@@ -6006,6 +5980,12 @@
                   "pm.test(\"Flysystem export check\", function () {",
                   "    var jsonObject = xml2Json(responseBody);",
                   "    pm.expect(jsonObject.items.item, 'Should have items with Flysystem enabled').to.be.a('array').to.be.not.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type is present\", function () {",
+                  "    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
+                  "    pm.response.to.be.header('Content-Length', '15701');",
+                  "    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
                   "});"
                 ],
                 "type": "text/javascript"
