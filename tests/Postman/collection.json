@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "ce5cce14-9c26-4577-8c5f-9312ebe7a91e",
+    "_postman_id": "90881d73-c46f-40dd-9be3-3c66b3da840c",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -322,7 +322,7 @@
           "response": []
         },
         {
-          "name": "SW: find Headless channel",
+          "name": "SW: get Headless channel",
           "event": [
             {
               "listen": "test",
@@ -389,7 +389,69 @@
           "response": []
         },
         {
-          "name": "SW: find All Valid Rule",
+          "name": "SW: set SG configs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.customerNumber\",\r\n                \"configurationValue\": \"{{customer_number}}\"\r\n            },\r\n            {\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.apiKey\",\r\n                \"configurationValue\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number_headless}}\",\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\"\r\n            },\r\n            {\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isActive\",\r\n                \"configurationValue\": true\r\n            },\r\n            {\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.productTypesToExport\",\r\n                \"configurationValue\": [\"simple\", \"variant\"]\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/api/_action/sync",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "api",
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: get All Valid Rule",
           "event": [
             {
               "listen": "test",
@@ -456,7 +518,7 @@
           "response": []
         },
         {
-          "name": "SW: find CMS page ID",
+          "name": "SW: get CMS page ID",
           "event": [
             {
               "listen": "test",
