@@ -177,7 +177,10 @@
                     "shop_is_active": service('shopgate.config_bridge').get('isActive'),
                     "customer_number": service('shopgate.config_bridge').get('customerNumber'),
                     "shop_number": service('shopgate.config_bridge').get('shopNumber'),
-                    "apikey": service('shopgate.config_bridge').get('apiKey')
+                    "apikey": service('shopgate.config_bridge').get('apiKey'),
+                    "server": service('shopgate.config_bridge').get('server', 'live'),
+                    "api_url": service('shopgate.config_bridge').get('apiUrl'),
+                    "product_types_to_export": service('shopgate.config_bridge').get('productTypesToExport'),
                     }
                 </argument>
             </call>

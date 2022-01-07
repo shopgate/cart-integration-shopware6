@@ -29,11 +29,6 @@ class ConfigMapping extends ShopgateConfig
     public function initShopwareConfig(array $data = []): void
     {
         $this->loadArray($data);
-        $this->setServer($this->configReader->get('server', 'live'));
-        $this->setProductTypesToExport($this->configReader->get('productTypesToExport'));
-        if ($this->configReader->get('apiUrl', false)) {
-            $this->setApiUrl($this->configReader->get('apiUrl'));
-        }
         $this->setLogFolderPath(implode('/', [$this->getLogFolderPath(), $this->getShopNumber()]));
         $this->setCacheFolderPath(implode('/', [$this->getCacheFolderPath(), $this->getShopNumber()]));
         $this->setExportFolderPath(implode('/', [$this->getExportFolderPath(), $this->getShopNumber()]));
