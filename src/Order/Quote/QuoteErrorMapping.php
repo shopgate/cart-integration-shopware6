@@ -10,18 +10,21 @@ use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
+use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 class QuoteErrorMapping
 {
     private LoggerInterface $logger;
+    private SerializerInterface $serializer;
 
     /**
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, SerializerInterface $serializer)
     {
         $this->logger = $logger;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -36,7 +39,7 @@ class QuoteErrorMapping
         }, $error->getCartErrors()->getElements());
         return new ShopgateLibraryException(
             ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-            $this->toJson($errors),
+            $this->serializer->serialize($errors, 'json'),
             true
         );
     }
@@ -50,16 +53,7 @@ class QuoteErrorMapping
         foreach ($error->getErrors(true) as $detailedError) {
             $detailedErrors[] = $detailedError;
         }
-        $this->logger->debug($this->toJson($detailedErrors));
-    }
-
-    /**
-     * @param array $data
-     * @return bool|string
-     */
-    private function toJson(array $data)
-    {
-        return extension_loaded('json') ? json_encode($data, JSON_PRETTY_PRINT) : print_r($data, true);
+        $this->logger->debug($detailedErrors);
     }
 
     /**

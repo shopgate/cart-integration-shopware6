@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\System\Mapping;
+namespace Shopgate\Shopware\System\Configuration;
 
 use ReflectionException;
 use ReflectionProperty;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use ShopgateConfig;
+use ShopgateLibraryException;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ConfigMapping extends ShopgateConfig
@@ -133,6 +133,7 @@ class ConfigMapping extends ShopgateConfig
      *
      * @throws MissingContextException
      * @throws ReflectionException
+     * @throws ShopgateLibraryException
      */
     public function save(array $fieldList, $validate = true): void
     {

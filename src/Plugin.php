@@ -15,9 +15,6 @@ use ShopgateLibraryException;
 use ShopgateMerchantApiException;
 use ShopgateOrder;
 use ShopgatePlugin;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 class Plugin extends ShopgatePlugin
 {
@@ -93,7 +90,7 @@ class Plugin extends ShopgatePlugin
     public function addOrder(ShopgateOrder $order): array
     {
         $this->logger->debug('Incoming Add Order');
-        $this->logger->debug(print_r($order->toArray(), true));
+        $this->logger->debug($order);
         $newOrder = (new ExtendedOrder())->loadFromShopgateOrder($order);
         $this->requestPersist->setIncomingOrder($newOrder);
 
@@ -114,14 +111,13 @@ class Plugin extends ShopgatePlugin
     public function checkCart(ShopgateCart $cart): array
     {
         $this->logger->debug('Incoming Check Cart');
-        $this->logger->debug(print_r($cart->toArray(), true));
+        $this->logger->debug($cart);
         $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
 
         $result = $this->exportService->checkCart($newCart);
         $this->logger->debug('Check Cart Response');
-        //todo: inject symfony/serializer once main branch is merged
-        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
-        $this->logger->debug($serializer->serialize($result, 'json'));
+        $this->logger->debug($result);
+
         return $result;
     }
 

@@ -168,7 +168,7 @@
             <argument>%kernel.cache_dir%</argument>
         </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
-        <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Mapping\ConfigMapping" shared="true">
+        <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Configuration\ConfigMapping" shared="true">
             <argument>%shopgate.configurations%</argument>
             <call method="setConfigBridge"/>
             <call method="initShopwareConfig">

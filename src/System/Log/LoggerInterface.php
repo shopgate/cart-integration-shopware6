@@ -9,14 +9,14 @@ interface LoggerInterface
     /**
      * Debug level log
      *
-     * @param string $info
+     * @param mixed $info
      */
-    public function debug(string $info): void;
+    public function debug($info): void;
 
     /**
      * Error level log
      *
-     * @param string $error
+     * @param mixed $error
      */
-    public function error(string $error): void;
+    public function error($error): void;
 }
