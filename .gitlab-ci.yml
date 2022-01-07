@@ -112,7 +112,7 @@ newman:
       --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
-    expire_in: 15 days
+    expire_in: 3 days
     expose_as: 'Newman HTML Report'
     reports:
       junit: newman.junit.xml
