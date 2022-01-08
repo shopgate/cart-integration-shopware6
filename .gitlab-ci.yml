@@ -47,8 +47,6 @@ default:
       alias: database
       entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
   before_script:
-    - df -h
-    - docker images
     - export APP_URL="http://$HOSTNAME"
     - apt update > /dev/null
     - apt-get install -y jq > /dev/null
