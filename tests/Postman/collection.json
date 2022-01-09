@@ -5858,7 +5858,7 @@
                   "",
                   "pm.test(\"Header check\", function () {",
                   "    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
-                  "    pm.response.to.be.header('Content-Length', `${responseBody.length}`);",
+                  "    pm.response.to.have.header('Content-Length');",
                   "    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
                   "});"
                 ],
