@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "302492b7-590e-4a94-980f-88d92d321ebb",
+    "_postman_id": "90881d73-c46f-40dd-9be3-3c66b3da840c",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -62,12 +62,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/sales-channel",
+              "raw": "{{sw_endpoint_api}}/search/sales-channel",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "sales-channel"
               ]
@@ -128,12 +127,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/plugin",
+              "raw": "{{sw_endpoint_api}}/search/plugin",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "plugin"
               ]
@@ -191,12 +189,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search-ids/category",
+              "raw": "{{sw_endpoint_api}}/search-ids/category",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search-ids",
                 "category"
               ]
@@ -248,12 +245,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search-ids/customer-group",
+              "raw": "{{sw_endpoint_api}}/search-ids/customer-group",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search-ids",
                 "customer-group"
               ]
@@ -308,12 +304,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search-ids/language",
+              "raw": "{{sw_endpoint_api}}/search-ids/language",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search-ids",
                 "language"
               ]
@@ -322,7 +317,7 @@
           "response": []
         },
         {
-          "name": "SW: find Headless channel",
+          "name": "SW: get Headless channel",
           "event": [
             {
               "listen": "test",
@@ -375,12 +370,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/sales-channel",
+              "raw": "{{sw_endpoint_api}}/search/sales-channel",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "sales-channel"
               ]
@@ -389,7 +383,68 @@
           "response": []
         },
         {
-          "name": "SW: find All Valid Rule",
+          "name": "SW: set SG configs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                 \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.customerNumber\",\r\n                \"configurationValue\": \"{{customer_number}}\"\r\n            },\r\n            {\r\n                \"id\": \"c9ee8625bc3a466ba073c8f6e9a10190\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.apiKey\",\r\n                \"configurationValue\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"id\": \"8711de7d1e0045229f22e1fe0ba98e5f\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"a9cb89b54d594d1b87c4c55be91b7c16\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number_headless}}\",\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"afcd57208add408ca1a019d5996211f0\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isActive\",\r\n                \"configurationValue\": true\r\n            },\r\n            {\r\n                \"id\": \"6a8a85fa614c4d0a889f749c8cde8205\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.productTypesToExport\",\r\n                \"configurationValue\": [\"simple\", \"variant\"]\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: get All Valid Rule",
           "event": [
             {
               "listen": "test",
@@ -442,12 +497,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/rule",
+              "raw": "{{sw_endpoint_api}}/search/rule",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "rule"
               ]
@@ -456,7 +510,7 @@
           "response": []
         },
         {
-          "name": "SW: find CMS page ID",
+          "name": "SW: get CMS page ID",
           "event": [
             {
               "listen": "test",
@@ -509,12 +563,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/cms-page",
+              "raw": "{{sw_endpoint_api}}/search/cms-page",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "cms-page"
               ]
@@ -571,12 +624,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/sales-channel/{{gen_channel_headless_id}}",
+              "raw": "{{sw_endpoint_api}}/sales-channel/{{gen_channel_headless_id}}",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "sales-channel",
                 "{{gen_channel_headless_id}}"
               ]
@@ -620,12 +672,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}/api/customer-address/{{customer_default_address_id}}/country",
+              "raw": "{{sw_endpoint_api}}/customer-address/{{customer_default_address_id}}/country",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "customer-address",
                 "{{customer_default_address_id}}",
                 "country"
@@ -670,12 +721,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}/api/product/{{catalog_product_variant}}/children",
+              "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "product",
                 "{{catalog_product_variant}}",
                 "children"
@@ -725,12 +775,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/_action/sync",
+              "raw": "{{sw_endpoint_api}}/_action/sync",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "_action",
                 "sync"
               ]
@@ -821,12 +870,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/shipping-method",
+              "raw": "{{sw_endpoint_api}}/search/shipping-method",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "shipping-method"
               ]
@@ -888,12 +936,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/rule",
+              "raw": "{{sw_endpoint_api}}/search/rule",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "rule"
               ]
@@ -963,12 +1010,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/search/shipping-method",
+              "raw": "{{sw_endpoint_api}}/search/shipping-method",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "search",
                 "shipping-method"
               ]
@@ -1026,12 +1072,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/_action/sync",
+              "raw": "{{sw_endpoint_api}}/_action/sync",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "_action",
                 "sync"
               ]
@@ -1077,12 +1122,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/customer-group",
+              "raw": "{{sw_endpoint_api}}/customer-group",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "customer-group"
               ]
             }
@@ -1133,12 +1177,11 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/_action/clone/customer/{{customer_default_id}}",
+              "raw": "{{sw_endpoint_api}}/_action/clone/customer/{{customer_default_id}}",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
                 "_action",
                 "clone",
                 "customer",
@@ -1216,6 +1259,130 @@
                   "value": "{{shop_number}}",
                   "type": "text"
                 },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                },
+                {
+                  "key": "debug_log",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "use_errorhandler",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "use_shutdown_handler",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: incorrect shop",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Shop number does not exist\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eq(24);",
+                  "    pm.expect(jsonData.error_text).to.eq('No shop_number exists in the Shopgate configuration. Configure a specific channel.');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "1234",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: no shop_number",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Shop number does not exist\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eq(24);",
+                  "    pm.expect(jsonData.error_text).to.eq('No shop_number property provided in the API call.');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
                 {
                   "key": "action",
                   "value": "{{framework_action_ping}}",
@@ -1340,7 +1507,7 @@
                           "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
                           "    pm.expect(jsonObject.categories.category.$.parent_uid).to.be.eq('77b959cf66de4c1590c7f9b7da3982f3');",
                           "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.eq('Bakery products');",
-                          "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.eq(pm.environment.get(\"host\") + '/Food/Bakery-products/');",
+                          "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.eq(pm.environment.get(\"host\") + pm.globals.get(\"system_port\") + '/Food/Bakery-products/');",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -1849,12 +2016,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/category",
+                      "raw": "{{sw_endpoint_api}}/category",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "category"
                       ]
                     }
@@ -1953,6 +2119,12 @@
                           "    pm.expect(jsonObject.items.item.categories.category[0].$.uid).to.be.eq(pm.environment.get('created_category_noFreeShip_id'));",
                           "    pm.expect(jsonObject.items.item.categories.category[0].$.sort_order).to.be.eq('1');",
                           "    pm.expect(jsonObject.items.item.categories.category[1].$.sort_order).to.be.eq('2');",
+                          "});",
+                          "",
+                          "pm.test(\"Header check\", function () {",
+                          "    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
+                          "    pm.response.to.have.header('Content-Length');",
+                          "    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -2061,12 +2233,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/category",
+                      "raw": "{{sw_endpoint_api}}/category",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "category"
                       ]
                     }
@@ -2122,12 +2293,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/_action/sync",
+                      "raw": "{{sw_endpoint_api}}/_action/sync",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "_action",
                         "sync"
                       ]
@@ -2214,6 +2384,21 @@
                           "key": "offset",
                           "value": "0",
                           "type": "text"
+                        },
+                        {
+                          "key": "debug_log",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "use_errorhandler",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "use_shutdown_handler",
+                          "value": "1",
+                          "type": "text"
                         }
                       ]
                     },
@@ -2272,12 +2457,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/product-stream",
+                      "raw": "{{sw_endpoint_api}}/product-stream",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "product-stream"
                       ]
                     }
@@ -2333,12 +2517,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/_action/sync",
+                      "raw": "{{sw_endpoint_api}}/_action/sync",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "_action",
                         "sync"
                       ]
@@ -2662,12 +2845,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "_action",
                         "clone",
                         "product",
@@ -2726,12 +2908,11 @@
                       }
                     },
                     "url": {
-                      "raw": "{{host}}/api/product-visibility",
+                      "raw": "{{sw_endpoint_api}}/product-visibility",
                       "host": [
-                        "{{host}}"
+                        "{{sw_endpoint_api}}"
                       ],
                       "path": [
-                        "api",
                         "product-visibility"
                       ]
                     }
@@ -3023,12 +3204,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "clone",
                     "product",
@@ -3081,12 +3261,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "clone",
                     "product",
@@ -3680,12 +3859,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/sync",
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "sync"
                   ]
@@ -4250,10 +4428,19 @@
                   "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
                   "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
                   "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
                   "",
+                  "pm.test('Check Configuration settings', function () {",
                   "    pm.expect(jsonData.configuration.server).to.be.eq('live');",
                   "    pm.expect(jsonData.configuration.api_url).to.be.eq('https://api.shopgate.com/merchant/');",
                   "    pm.expect(jsonData.configuration.enable_set_settings).to.be.eq(1);",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_number');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -4278,6 +4465,71 @@
                 {
                   "key": "shop_number",
                   "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: ping (Headless)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_number_headless');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number_headless}}",
                   "type": "text"
                 },
                 {
@@ -4389,6 +4641,146 @@
                 {
                   "key": "pass",
                   "value": "{{userPass}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: log (debug)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Successfull call', function(){",
+                  "    pm.response.to.be.success;",
+                  "});",
+                  "",
+                  "pm.test(\"Body matches string\", function () {",
+                  "    pm.expect(pm.response.text()).to.include(\"Finished Product Export\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "get_log_file",
+                  "type": "text"
+                },
+                {
+                  "key": "lines",
+                  "value": "25",
+                  "type": "text"
+                },
+                {
+                  "key": "log_type",
+                  "value": "debug",
+                  "description": "access, error, debug, request",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: log (error)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Successfull call', function(){",
+                  "    pm.response.to.be.success;",
+                  "});",
+                  "",
+                  "pm.test(\"Body matches string\", function () {",
+                  "    pm.expect(pm.response.text()).to.include(\"authentication failed\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "get_log_file",
+                  "type": "text"
+                },
+                {
+                  "key": "lines",
+                  "value": "25",
+                  "type": "text"
+                },
+                {
+                  "key": "log_type",
+                  "value": "error",
+                  "description": "access, error, debug, request",
                   "type": "text"
                 }
               ]
@@ -4554,12 +4946,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/sync",
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "sync"
                   ]
@@ -4717,12 +5108,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/search/order",
+                  "raw": "{{sw_endpoint_api}}/search/order",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "search",
                     "order"
                   ]
@@ -4868,12 +5258,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/search/order",
+                  "raw": "{{sw_endpoint_api}}/search/order",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "search",
                     "order"
                   ]
@@ -5254,18 +5643,12 @@
                   "pm.test(\"Has settings changed\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.shopgate_settings).to.be.a('array').to.be.not.empty;",
-                  "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('server');",
-                  "    pm.expect(jsonData.shopgate_settings[0].old).to.eq('custom');",
-                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('custom');",
-                  "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('api_url');",
-                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(pm.globals.get(\"mock_server_merchant_uri\"));",
-                  "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('http://some.url');",
-                  "    pm.expect(jsonData.shopgate_settings[2].name).to.eq('product_types_to_export');",
-                  "    pm.expect(jsonData.shopgate_settings[2].old).to.be.an('array').length(2);",
-                  "    pm.expect(jsonData.shopgate_settings[2].new).to.eq('simple');",
-                  "    pm.expect(jsonData.shopgate_settings[3].name).to.eq('shop_is_active');",
-                  "    pm.expect(jsonData.shopgate_settings[3].old).to.eq(1);",
-                  "    pm.expect(jsonData.shopgate_settings[3].new).to.eq('1');",
+                  "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('product_types_to_export');",
+                  "    pm.expect(jsonData.shopgate_settings[0].old).to.be.an('array').length(2);",
+                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('simple');",
+                  "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('shop_is_active');",
+                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(1);",
+                  "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('1');",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -5299,41 +5682,21 @@
                 },
                 {
                   "key": "shopgate_settings[0][name]",
-                  "value": "server",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[0][value]",
-                  "value": "custom",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[1][name]",
-                  "value": "api_url",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[1][value]",
-                  "value": "http://some.url",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[2][name]",
                   "value": "product_types_to_export",
                   "type": "text"
                 },
                 {
-                  "key": "shopgate_settings[2][value]",
+                  "key": "shopgate_settings[0][value]",
                   "value": "simple",
                   "type": "text"
                 },
                 {
-                  "key": "shopgate_settings[3][name]",
+                  "key": "shopgate_settings[1][name]",
                   "value": "shop_is_active",
                   "type": "text"
                 },
                 {
-                  "key": "shopgate_settings[3][value]",
+                  "key": "shopgate_settings[1][value]",
                   "value": "1",
                   "type": "text"
                 }
@@ -5367,7 +5730,6 @@
                   "",
                   "    pm.expect(jsonData.configuration.shop_is_active).to.be.eq(1);",
                   "    pm.expect(jsonData.configuration.server).to.be.eq('custom');",
-                  "    pm.expect(jsonData.configuration.api_url).to.be.eq('http://some.url');",
                   "    pm.expect(jsonData.configuration.product_types_to_export).to.be.a('array').length(1);",
                   "    pm.expect(jsonData.configuration.product_types_to_export[0]).to.eq('simple');",
                   "});"
@@ -5407,6 +5769,210 @@
               "raw": "{{domain}}",
               "host": [
                 "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Flysystem",
+      "item": [
+        {
+          "name": "SW: Enable flysystem",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully enabled flysystem\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"409fa1affcf441d59cf023b5ec62f782\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isFlysystem\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: get all products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "",
+                  "const jsonObject = xml2Json(responseBody);",
+                  "pm.test(\"Flysystem export check\", function () {",
+                  "    pm.expect(jsonObject.items.item, 'Should have items with Flysystem enabled').to.be.a('array').to.be.not.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Header check\", function () {",
+                  "    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
+                  "    pm.response.to.have.header('Content-Length');",
+                  "    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_items}}",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "100",
+                  "description": "\n",
+                  "type": "text"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: Disable flysystem",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully disabled flysystem\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"409fa1affcf441d59cf023b5ec62f782\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isFlysystem\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
               ]
             }
           },
@@ -5464,7 +6030,7 @@
           "    };",
           "    // SW Auth",
           "    const authRequest = {",
-          "        url: pm.environment.replaceIn(pm.globals.get(\"sw_endpoint_auth\")),",
+          "        url: pm.globals.replaceIn(pm.environment.replaceIn(pm.environment.get(\"sw_endpoint_auth\"))),",
           "        method: 'POST',",
           "        header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
           "        body: {",

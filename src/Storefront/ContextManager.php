@@ -38,20 +38,16 @@ class ContextManager
         $this->channelContextFactory = $channelContextFactory;
     }
 
-    /**
-     * @param SalesChannelContext $salesChannelContext
-     * @return $this
-     */
-    public function setSalesChannelContext(SalesChannelContext $salesChannelContext): ContextManager
+    public function createAndLoadByChannelId(string $salesChannelId): ContextManager
     {
+        $salesChannelContext = $this->createNewContext($salesChannelId);
         $this->salesContext = $salesChannelContext;
+
         return $this;
     }
 
     /**
      * Will only throw if developer messes the context system up
-     *
-     * @return SalesChannelContext
      * @throws MissingContextException
      */
     public function getSalesContext(): SalesChannelContext
@@ -62,11 +58,6 @@ class ContextManager
         return $this->salesContext;
     }
 
-    /**
-     * @param string $customerId
-     * @param SalesChannelContext|null $currentContext
-     * @return SalesChannelContext
-     */
     public function loadByCustomerId(string $customerId): SalesChannelContext
     {
         $context = $this->contextRestorer->restore($customerId, $this->salesContext);
@@ -78,8 +69,6 @@ class ContextManager
      * Resetting is necessary as our transactions use hidden methods.
      * Without resetting the new objects created will use the last
      * context as base.
-     *
-     * @param SalesChannelContext|null $context
      */
     public function resetContext(?SalesChannelContext $context = null): void
     {
@@ -94,11 +83,6 @@ class ContextManager
             ]), $context);
     }
 
-    /**
-     * @param RequestDataBag $dataBag
-     * @param SalesChannelContext|null $context
-     * @return SalesChannelContext
-     */
     public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
     {
         $token = $this->contextSwitchRoute->switchContext($dataBag, $context ?: $this->salesContext)->getToken();
@@ -107,10 +91,6 @@ class ContextManager
         return $this->salesContext = $context;
     }
 
-    /**
-     * @param string $token
-     * @return SalesChannelContext
-     */
     public function loadByCustomerToken(string $token): SalesChannelContext
     {
         $context = $this->contextService->get(new SalesChannelContextServiceParameters(
@@ -129,29 +109,30 @@ class ContextManager
      * of messing with the desktop context & cart.
      *
      * @param SalesChannelContext $context
-     * @param string $customerId
+     * @param string|null $customerId
      * @return SalesChannelContext
      */
-    public function duplicateContextWithNewToken(SalesChannelContext $context, string $customerId): SalesChannelContext
+    public function duplicateContextWithNewToken(SalesChannelContext $context, ?string $customerId): SalesChannelContext
     {
         $options = [
             SalesChannelContextService::LANGUAGE_ID => $context->getSalesChannel()->getLanguageId(),
             SalesChannelContextService::CURRENCY_ID => $context->getSalesChannel()->getCurrencyId(),
             SalesChannelContextService::PERMISSIONS => $context->getPermissions(),
-            SalesChannelContextService::CUSTOMER_ID => $customerId
+            SalesChannelContextService::CUSTOMER_ID => !empty($customerId) ? $customerId : null,
         ];
 
-        return $this->createNewContext(Random::getAlphanumericString(32), $context->getSalesChannelId(), $options);
+        return $this->createNewContext($context->getSalesChannelId(), $options);
     }
 
-    /**
-     * @param string $token
-     * @param string $salesChannelId
-     * @param array $options
-     * @return SalesChannelContext
-     */
-    public function createNewContext(string $token, string $salesChannelId, array $options = []): SalesChannelContext
-    {
+    public function createNewContext(
+        string $salesChannelId,
+        array $options = [],
+        string $token = null
+    ): SalesChannelContext {
+        if (null === $token) {
+            $token = Random::getAlphanumericString(32);
+        }
+
         return $this->channelContextFactory->create($token, $salesChannelId, $options);
     }
 }

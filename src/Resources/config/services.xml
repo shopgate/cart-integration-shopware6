@@ -1,11 +1,9 @@
 <?xml version="1.0" ?>
 
-<container xmlns="http://symfony.com/schema/dic/services"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://symfony.com/schema/dic/services
-        https://symfony.com/schema/dic/services/services-1.0.xsd">
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
-        <parameter key="shopgate.action.whitelist" type="collection">
+        <parameter key="shopgate.configurations" type="collection">
             <parameter key="enable_get_settings">true</parameter>
             <parameter key="enable_set_settings">true</parameter>
             <parameter key="enable_get_categories">true</parameter>
@@ -16,6 +14,10 @@
             <parameter key="enable_check_cart">true</parameter>
             <parameter key="enable_add_order">true</parameter>
             <parameter key="enable_cron">true</parameter>
+            <parameter key="plugin_name" type="string">Shopgate Go Plugin for Shopware 6</parameter>
+            <parameter key="log_folder_path" type="string">%kernel.logs_dir%/shopgate</parameter>
+            <parameter key="cache_folder_path" type="string">%kernel.cache_dir%/shopgate</parameter>
+            <parameter key="export_folder_path" type="string">%kernel.cache_dir%/shopgate</parameter>
         </parameter>
         <!-- Note that whitelists control mapping of $sgEntity->custom_fields[]->field to existing $swEntity->field. -->
         <!-- Whatever does not map here goes into the $swEntity->customFields list, it will only save if the field exists. -->
@@ -71,7 +73,6 @@
         <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree"/>
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
             <argument type="service" id="salutation.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\AddressMapping">
             <argument key="$customFieldMapping" type="service" id="sg.customer.address.custom_field.whitelist"/>
@@ -86,7 +87,6 @@
         <service id="Shopgate\Shopware\Customer\Mapping\LocationMapping">
             <argument type="service" id="country.repository"/>
             <argument type="service" id="country_state.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\ExportService"/>
         <service id="Shopgate\Shopware\ImportService"/>
@@ -110,6 +110,23 @@
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
         <service id="Shopgate\Shopware\Order\Quote\QuoteBridge"/>
+        <service id="shopgate.plugin" class="Shopgate\Shopware\Plugin">
+            <!-- if Flysystem config is enabled we route to the Extended Builder class, otherwise use default -->
+            <argument key="$builder" type="expression">
+                service('shopgate.config_bridge').get('isFlysystem') === true
+                ? service('shopgate.extended_builder')
+                : service('shopgate.sdk.builder')
+            </argument>
+        </service>
+        <service id="shopgate.extended_builder" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedBuilder">
+            <argument type="service" id="sgate_shopgate_plugin_s_w6.filesystem.private"/>
+            <call method="initConstruct">
+                <argument type="service" id="shopgate.config_mapping"/>
+            </call>
+        </service>
+        <service id="shopgate.sdk.builder" class="\ShopgateBuilder">
+            <argument type="service" id="shopgate.config_mapping"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
         </service>
@@ -125,12 +142,14 @@
         <service id="Shopgate\Shopware\System\DomainBridge">
             <argument type="service" id="sales_channel_domain.repository"/>
         </service>
-        <service id="Shopgate\Shopware\System\Configuration\ConfigBridge">
-            <argument type="service" id="plugin.repository"/>
-            <argument type="string">%kernel.shopware_version%</argument>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="system_config.repository"/>
+        <service id="Shopgate\Shopware\System\Configuration\ConfigBridge" alias="shopgate.config_bridge"/>
+        <service id="shopgate.config_bridge" class="Shopgate\Shopware\System\Configuration\ConfigBridge" shared="true">
+            <argument key="$pluginRepository" type="service" id="plugin.repository"/>
+            <argument key="$shopwareVersion" type="string">%kernel.shopware_version%</argument>
+            <argument key="$systemConfigRepo" type="service" id="system_config.repository"/>
+            <call method="loadByShopNumber">
+                <argument type="expression">service('request_stack').getCurrentRequest().request.get('shop_number')</argument>
+            </call>
         </service>
         <service id="sg.order.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
             <argument key="$whitelist">%shopgate.order.custom_field.whitelist%</argument>
@@ -149,6 +168,24 @@
             <argument>%kernel.cache_dir%</argument>
         </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
+        <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Configuration\ConfigMapping" shared="true">
+            <argument>%shopgate.configurations%</argument>
+            <call method="setConfigBridge"/>
+            <call method="initShopwareConfig">
+                <argument type="expression">
+                    {
+                    "shop_is_active": service('shopgate.config_bridge').get('isActive'),
+                    "customer_number": service('shopgate.config_bridge').get('customerNumber'),
+                    "shop_number": service('shopgate.config_bridge').get('shopNumber'),
+                    "apikey": service('shopgate.config_bridge').get('apiKey'),
+                    "server": service('shopgate.config_bridge').get('server', 'live'),
+                    "api_url": service('shopgate.config_bridge').get('apiUrl'),
+                    "product_types_to_export": service('shopgate.config_bridge').get('productTypesToExport'),
+                    }
+                </argument>
+            </call>
+            <call method="initFolderStructure"/>
+        </service>
         <service id="Shopgate\Shopware\System\Db\Rule\IsShopgateRuleCondition">
             <tag name="shopware.rule.definition"/>
         </service>
@@ -156,11 +193,9 @@
             <argument type="service" id="tax.repository"/>
             <argument type="service" id="tax_rule.repository"/>
             <argument type="service" id="tax_rule_type.repository"/>
-            <argument type="service" id="Shopgate\Shopware\Storefront\ContextManager"/>
         </service>
         <service id="Shopgate\Shopware\System\PaymentHandler\GenericHandler">
-            <argument type="service"
-                      id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <tag name="shopware.payment.method.sync"/>
         </service>
         <service id="Shopgate\Shopware\System\PaymentHandler\PaymentLoaderSubscriber">
@@ -168,49 +203,32 @@
         </service>
         <service id="Shopgate\Shopware\System\Formatter"/>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
-        <service id="Shopgate\Shopware\Storefront\ContextManager">
+        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager">
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
         </service>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
-        <!-- Public (needed for controllers and classes instantiated via Facade class -->
-        <service id="Shopgate\Shopware\System\Di\Forwarder" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
-        <!-- Interfaces -->
+        <!-- Interfaces & aliases-->
+        <service id="Shopgate\Shopware\Plugin" alias="shopgate.plugin"/>
+        <service id="Shopgate\Shopware\Storefront\ContextManager" alias="shopgate.context_manager"/>
         <service id="Shopgate\Shopware\System\Log\LoggerInterface" alias="Shopgate\Shopware\System\Log\Logger"/>
-        <service id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute"
-                 alias="Shopware\Core\Content\Product\SalesChannel\CrossSelling\CachedProductCrossSellingRoute"/>
-        <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute"
-                 alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"/>
-        <service id="Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute"
-                 alias="Shopware\Core\Content\Product\SalesChannel\ProductListRoute"/>
-        <service id="Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute"
-                 alias="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
-        <service id="Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory"
-                 alias="Shopware\Core\System\SalesChannel\Context\CachedSalesChannelContextFactory"/>
-        <service id="Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute"
-                 alias="Shopware\Core\System\Language\SalesChannel\CachedLanguageRoute"/>
-        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute"
-                 alias="Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute"/>
-        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute"
-                 alias="Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute"/>
-        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute"
-                 alias="Shopware\Core\Checkout\Cart\SalesChannel\CartItemAddRoute"/>
-        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute"
-                 alias="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
-        <service id="Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute"
-                 alias="Shopware\Core\Checkout\Shipping\SalesChannel\CachedShippingMethodRoute"/>
-        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractCustomerRoute"
-                 alias="Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute"/>
-        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute"
-                 alias="Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute"/>
-        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute"
-                 alias="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
-        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractUpsertAddressRoute"
-                 alias="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
-        <service id="Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute"
-                 alias="Shopware\Core\Content\Category\SalesChannel\CategoryListRoute"/>
-        <service id="Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute"
-                 alias="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"/>
+        <service id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute" alias="Shopware\Core\Content\Product\SalesChannel\CrossSelling\CachedProductCrossSellingRoute"/>
+        <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute" alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"/>
+        <service id="Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute" alias="Shopware\Core\Content\Product\SalesChannel\ProductListRoute"/>
+        <service id="Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute" alias="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
+        <service id="Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory" alias="Shopware\Core\System\SalesChannel\Context\CachedSalesChannelContextFactory"/>
+        <service id="Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute" alias="Shopware\Core\System\Language\SalesChannel\CachedLanguageRoute"/>
+        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute"/>
+        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute"/>
+        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartItemAddRoute"/>
+        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
+        <service id="Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute" alias="Shopware\Core\Checkout\Shipping\SalesChannel\CachedShippingMethodRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractCustomerRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
+        <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractUpsertAddressRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
+        <service id="Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute" alias="Shopware\Core\Content\Category\SalesChannel\CategoryListRoute"/>
+        <service id="Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute" alias="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"/>
     </services>
 </container>

@@ -7,14 +7,8 @@ namespace Shopgate\Shopware\Storefront\Controller;
 use Shopgate\Shopware\Plugin;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
-use Shopgate\Shopware\System\Di\Facade;
-use Shopgate\Shopware\System\Mapping\ConfigMapping;
-use ShopgateBuilder;
-use ShopgateLibraryException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Util\Random;
 use Shopware\Storefront\Controller\StorefrontController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,15 +18,13 @@ class MainController extends StorefrontController
     public const IS_SHOPGATE = 'IS_SHOPGATE_CALL';
     private ConfigBridge $systemConfigService;
     private ContextManager $contextManager;
+    private Plugin $plugin;
 
-    public function __construct(
-        ConfigBridge $systemConfigService,
-        ContainerInterface $container,
-        ContextManager $context
-    ) {
+    public function __construct(ConfigBridge $systemConfigService, ContextManager $contextManager, Plugin $plugin)
+    {
         $this->systemConfigService = $systemConfigService;
-        $this->contextManager = $context;
-        Facade::init($container);
+        $this->contextManager = $contextManager;
+        $this->plugin = $plugin;
     }
 
     /**
@@ -44,42 +36,12 @@ class MainController extends StorefrontController
     public function execute(Request $request): JsonResponse
     {
         define(self::IS_SHOPGATE, true);
-        $salesChannelId = $this->systemConfigService->getSalesChannelId(
-            (string) $request->request->get('shop_number')
-        );
-        if (null === $salesChannelId) {
-            return new JsonResponse(
-                [
-                    'error' => ShopgateLibraryException::PLUGIN_API_UNKNOWN_SHOP_NUMBER,
-                    'error_text' => 'No shop_number exists in the Shopgate configuration. Configure a specific channel.'
-                ]
-            );
+        if ($error = $this->systemConfigService->getError()) {
+            return new JsonResponse($error);
         }
-        $this->systemConfigService->load($salesChannelId);
-        if ($this->systemConfigService->get('isActive') !== true) {
-            return new JsonResponse([
-                'error' => ShopgateLibraryException::CONFIG_PLUGIN_NOT_ACTIVE,
-                'error_text' => 'Plugin is not active in Shopware config'
-            ]);
-        }
-        $context = $this->contextManager->createNewContext(Random::getAlphanumericString(32), $salesChannelId);
-        $this->contextManager->setSalesChannelContext($context);
-
-        if ($context->getSalesChannel()->isMaintenance()) {
-            return new JsonResponse([
-                'error' => ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                'error_text' => 'site in maintenance mode'
-            ]);
-        }
-        $actionWhitelist = array_map(static function ($item) {
-            return (bool)$item;
-        }, $this->getParameter('shopgate.action.whitelist'));
-        $config = new ConfigMapping($actionWhitelist);
-        $config->initShopwareConfig($this->systemConfigService);
-        $builder = new ShopgateBuilder($config);
-        $plugin = new Plugin($builder);
-
-        $plugin->handleRequest($request->request->all());
+        $this->contextManager->createAndLoadByChannelId($this->systemConfigService->get('salesChannelId'));
+        define('SHOPGATE_PLUGIN_VERSION', $this->systemConfigService->getShopgatePluginVersion());
+        $this->plugin->handleRequest($request->request->all());
 
         exit;
     }

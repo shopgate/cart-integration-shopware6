@@ -97,7 +97,7 @@ class LineItemComposer
                     break;
                 default:
                     $this->logger->debug('Cannot map item type: ' . $lineItem->getType());
-                    $this->logger->debug(print_r($lineItem->jsonSerialize(), true));
+                    $this->logger->debug($lineItem);
             }
         }
 
@@ -133,7 +133,7 @@ class LineItemComposer
                     break;
                 default:
                     $this->logger->debug('Unmapped cart errors & notifications');
-                    $this->logger->debug(print_r($error->jsonSerialize(), true));
+                    $this->logger->debug($error);
             }
         }
 
