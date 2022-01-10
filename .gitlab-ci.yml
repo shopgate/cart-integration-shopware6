@@ -19,12 +19,6 @@ variables:
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
-  PLUGIN_CONFIG_APIKEY: '111111111111111111111111'
-  PLUGIN_CONFIG_SHOPNUMBER: '123456'
-  PLUGIN_CONFIG_HEADLESS_SHOPNUMBER: '1234567'
-  PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
-  SW_ADMIN_USER: myadmin
-  SW_ADMIN_PASS: test.123
   MOCK_SERVER_URL: 'http://127.0.0.1:3000'
   VERBOSE: ''
 
@@ -53,7 +47,6 @@ default:
     - apt update > /dev/null
     - apt-get install -y jq > /dev/null
     - PLUGIN_COMPOSER_NAME=$(jq -r ".name" composer.json)
-    - PLUGIN_COMPOSER_VERSION=$(jq -r ".version" composer.json)
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
     - >
       [ -d vendor ] && mv vendor /tmp/
@@ -100,9 +93,7 @@ newman:
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junitfull
       --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junitfull-export ${PROJECT_ROOT}/newman.junit.xml
       --color on --insecure --no-insecure-file-read
-      --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
-      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY"
-      --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
+      --env-var "host=$APP_URL" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
     expire_in: 3 days
