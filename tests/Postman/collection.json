@@ -2123,7 +2123,7 @@
                           "",
                           "pm.test(\"Header check\", function () {",
                           "    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
-                          "    pm.response.to.be.header('Content-Length', `${responseBody.length}`);",
+                          "    pm.response.to.have.header('Content-Length');",
                           "    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
                           "});"
                         ],
@@ -5786,7 +5786,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                  "pm.test(\"Successfully enabled flysystem\", function () {\r",
                   "    pm.response.to.have.status(200);\r",
                   "});"
                 ],
@@ -5924,7 +5924,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                  "pm.test(\"Successfully disabled flysystem\", function () {\r",
                   "    pm.response.to.have.status(200);\r",
                   "});"
                 ],
