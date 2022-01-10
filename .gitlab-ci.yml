@@ -10,6 +10,7 @@ variables:
   MYSQL_DATABASE: root
   MYSQL_ROOT_PASSWORD: root
   GIT_STRATEGY: clone
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
   # things plugins might want to override
   DEV_IMAGE: shopware/development:7.4-composer-2
   MYSQL_IMAGE: mariadb:10.3
@@ -29,8 +30,9 @@ variables:
 
 # Cache libraries in between PR commits
 cache:
-  key: $CI_MERGE_REQUEST_IID
+  key: $PLATFORM_BRANCH
   paths:
+    - .cache/npm
     - vendor/
 
 workflow:
