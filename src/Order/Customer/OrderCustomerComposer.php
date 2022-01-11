@@ -7,6 +7,7 @@ namespace Shopgate\Shopware\Order\Customer;
 use Shopgate\Shopware\Customer\CustomerBridge;
 use Shopgate\Shopware\Customer\CustomerComposer;
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;
 use ShopgateCartCustomer;
 use ShopgateLibraryException;
@@ -18,19 +19,21 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class OrderCustomerComposer
 {
-
     private CustomerBridge $customerBridge;
     private CustomerMapping $customerMapping;
     private CustomerComposer $customerComposer;
+    private LoggerInterface $logger;
 
     public function __construct(
         CustomerBridge $customerBridge,
         CustomerMapping $customerMapping,
-        CustomerComposer $customerComposer
+        CustomerComposer $customerComposer,
+        LoggerInterface $logger
     ) {
         $this->customerBridge = $customerBridge;
         $this->customerMapping = $customerMapping;
         $this->customerComposer = $customerComposer;
+        $this->logger = $logger;
     }
 
     /**
@@ -56,6 +59,7 @@ class OrderCustomerComposer
         SalesChannelContext $salesChannelContext
     ): CustomerEntity {
         $guest = $this->customerBridge->getGuestByEmail($email, $salesChannelContext);
+        $this->logger->debug($guest ? 'Found existing guest' : 'Creating new guest customer');
         if (null === $guest) {
             $detailCustomer = $this->customerMapping->orderToShopgateCustomer($cart);
             $guest = $this->customerComposer->registerCustomer(null, $detailCustomer);
