@@ -61,8 +61,8 @@ class CartComposer
         }
         // load desktop cart, duplicate its context, add info to context & create new cart based on it
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
-        $this->contextComposer->addCustomerAddress($sgCart, $cleanCartContext);
+        $duplicatedContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
+        $cleanCartContext = $this->contextComposer->addCustomerAddress($sgCart, $duplicatedContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $cleanCartContext);
         $context = $this->contextComposer->addActivePayment($paymentId, $cleanCartContext);
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);

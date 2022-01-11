@@ -83,9 +83,9 @@ class OrderComposer
         }
         // load desktop cart, duplicate its context, add info to context & create new cart based on it
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        $cleanCartContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
+        $duplicatedContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
         if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(),
-            $cleanCartContext->getContext())) {
+            $duplicatedContext->getContext())) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
                 $order->getOrderNumber(),
@@ -93,7 +93,7 @@ class OrderComposer
             );
         }
 
-        $this->contextComposer->addCustomerAddress($order, $cleanCartContext);
+        $cleanCartContext = $this->contextComposer->addCustomerAddress($order, $duplicatedContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
         $dataBag = [
             SalesChannelContextService::SHIPPING_METHOD_ID =>

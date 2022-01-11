@@ -1,3 +1,7 @@
+# 1.8.1
+
+- fixed rules not honoring customer/guest address mapping
+
 # 1.8.0
 
 - changed generated file location to use `var/cache` and `var/log` folders instead of our SDK in vendor
