@@ -48,6 +48,12 @@ class AddressComposer
     {
         $addressBag = [];
         if ($context->getCustomer()) {
+            if (!$order->getDeliveryAddress() || !$order->getInvoiceAddress()) {
+                throw new ShopgateLibraryException(
+                    ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                    'Please provide shipping & billing address'
+                );
+            }
             $deliveryId = $this->getOrCreateAddress($order->getDeliveryAddress(), $context);
             $invoiceId = $this->getOrCreateAddress($order->getInvoiceAddress(), $context);
             $addressBag = [
