@@ -180,5 +180,6 @@
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractUpsertAddressRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
         <service id="Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute" alias="Shopware\Core\Content\Category\SalesChannel\CategoryListRoute"/>
         <service id="Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute" alias="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"/>
+        <service id="Shopware\Core\Framework\Adapter\Translation\AbstractTranslator" alias="Shopware\Core\Framework\Adapter\Translation\Translator"/>
     </services>
 </container>
