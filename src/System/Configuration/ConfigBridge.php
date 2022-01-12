@@ -37,7 +37,7 @@ class ConfigBridge
     private ContextManager $contextManager;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $systemConfigRepo;
-    private SystemConfigCollection $config;
+    private ?SystemConfigCollection $config = null;
     private DomainBridge $domainBridge;
     private array $error = [];
 
@@ -178,9 +178,12 @@ class ConfigBridge
      */
     public function get(string $key, $fallback = '')
     {
-        $wholeKey = self::SYSTEM_CONFIG_DOMAIN . $key;
+        // the only time this happens is when an incorrect shop_number is not provided in the request
+        if (null === $this->config) {
+            return $fallback;
+        }
         /** @var ?SystemConfigEntity $config */
-        $config = $this->config->filterByProperty('configurationKey', $wholeKey)->first();
+        $config = $this->config->filterByProperty('configurationKey', self::SYSTEM_CONFIG_DOMAIN . $key)->first();
 
         return $config && !empty($config->getConfigurationValue()) ? $config->getConfigurationValue() : $fallback;
     }
