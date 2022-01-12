@@ -1,3 +1,8 @@
+# 1.8.2
+
+- added translations to configurations
+- changed uncaught errors to be converted into json
+
 # 1.8.1
 
 - fixed rules not honoring customer/guest address mapping
