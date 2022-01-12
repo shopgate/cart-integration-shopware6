@@ -154,6 +154,9 @@
         </service>
         <service id="Shopgate\Shopware\System\Formatter"/>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
+        <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
