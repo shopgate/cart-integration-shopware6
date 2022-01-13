@@ -154,10 +154,10 @@
         </service>
         <service id="Shopgate\Shopware\System\Formatter"/>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
-        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager">
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+        <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
+            <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <!-- Interfaces & aliases-->
@@ -180,5 +180,6 @@
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractUpsertAddressRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
         <service id="Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute" alias="Shopware\Core\Content\Category\SalesChannel\CategoryListRoute"/>
         <service id="Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute" alias="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"/>
+        <service id="Shopware\Core\Framework\Adapter\Translation\AbstractTranslator" alias="Shopware\Core\Framework\Adapter\Translation\Translator"/>
     </services>
 </container>

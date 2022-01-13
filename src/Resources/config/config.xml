@@ -6,18 +6,24 @@
         <input-field type="bool">
             <name>isActive</name>
             <label>Enable</label>
+            <label lang="de-DE">Aktiv</label>
+            <helpText>Please test the connection in your Shopgate account.</helpText>
+            <helpText lang="de-DE">Verbindung im Shopgate Händlerbereich testen.</helpText>
         </input-field>
-        <input-field>
+        <input-field type="int">
             <name>customerNumber</name>
             <label>Customer number</label>
+            <label lang="de-DE">Kundennummer</label>
         </input-field>
-        <input-field>
+        <input-field type="int">
             <name>shopNumber</name>
             <label>Shop number</label>
+            <label lang="de-DE">Shopnummer</label>
         </input-field>
         <input-field>
             <name>apiKey</name>
             <label>API key</label>
+            <label lang="de-DE">API Key</label>
         </input-field>
     </card>
     <card>
@@ -25,20 +31,24 @@
         <input-field type="bool">
             <name>isFlysystem</name>
             <label>Flysystem writer</label>
-            <helpText>Less performant alternative. Enable only if your system disallows file writing operations.
-            </helpText>
+            <label lang="de-DE">Flysystem Filewriter</label>
+            <helpText>Less performant alternative. Enable only if your system disallows file writing operations.</helpText>
+            <helpText lang="de-DE">Weniger performante Alternative. Nur aktivieren, falls der Server keine Schreiboperationen erlaubt.</helpText>
         </input-field>
         <input-field type="multi-select">
             <name>productTypesToExport</name>
             <label>Product types to be exported</label>
+            <label lang="de-DE">Zu exportierende Produkttypen</label>
             <options>
                 <option>
                     <id>simple</id>
                     <name>Simple</name>
+                    <name lang="de-DE">Simple</name>
                 </option>
                 <option>
                     <id>variant</id>
                     <name>Variant</name>
+                    <name lang="de-DE">Variante</name>
                 </option>
             </options>
         </input-field>

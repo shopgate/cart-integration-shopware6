@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "5d63658c-2559-4ef3-b103-c3e18233861f",
+    "_postman_id": "a3973387-56ee-47cf-bb44-de0194a54a35",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -746,6 +746,87 @@
                 {
                   "key": "action",
                   "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: cart no address error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Check error\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql(999);",
+                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error localtion')",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "action",
+                  "value": "{{framework_action_check_cart}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[external_customer_id]",
+                  "value": "{{customer_default_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[payment_group]",
+                  "value": "COD",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[payment_method]",
+                  "value": "COD",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[invoice_address][]",
+                  "value": "null",
                   "type": "text"
                 }
               ]
@@ -2199,14 +2280,15 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Successfull call', function(){",
-                  "    pm.response.to.be.success;",
-                  "});",
-                  "",
-                  "pm.test(\"Body matches string\", function () {",
-                  "    pm.expect(pm.response.text()).to.include(\"authentication failed\");",
-                  "});"
-                ],
+					"pm.test('Successfull call', function(){",
+					"    pm.response.to.be.success;",
+					"});",
+					"",
+					"pm.test(\"Body matches string\", function () {",
+					"    pm.expect(pm.response.text()).to.include(\"authentication failed\");",
+					"    pm.expect(pm.response.text()).to.include(\"Uncaught error was thrown\");",
+					"});"
+				],
                 "type": "text/javascript"
               }
             }
@@ -2240,11 +2322,11 @@
                   "value": "get_log_file",
                   "type": "text"
                 },
-                {
-                  "key": "lines",
-                  "value": "25",
-                  "type": "text"
-                },
+				  {
+					  "key": "lines",
+					  "value": "100",
+					  "type": "text"
+				  },
                 {
                   "key": "log_type",
                   "value": "error",
