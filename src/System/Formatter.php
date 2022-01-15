@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\System;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopware\Core\Framework\Adapter\Translation\AbstractTranslator;
 use Shopware\Core\Framework\Adapter\Translation\Translator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyFormatter;
@@ -24,15 +25,9 @@ class Formatter
     /** @var string|false|null */
     private $locale = false;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param Translator $translator
-     * @param AbstractLanguageRoute $languageRoute
-     * @param CurrencyFormatter $currencyFormatter
-     */
     public function __construct(
         ContextManager $contextManager,
-        Translator $translator,
+        AbstractTranslator $translator,
         AbstractLanguageRoute $languageRoute,
         CurrencyFormatter $currencyFormatter
     ) {
