@@ -141,4 +141,9 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     {
         parent::setIsActive($this->item->getActive() && $this->item->getVisible());
     }
+
+    public function getItem(): CategoryEntity
+    {
+        return $this->item;
+    }
 }

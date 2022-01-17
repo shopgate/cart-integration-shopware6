@@ -8,29 +8,17 @@ use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
+use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
 
 class ConfigProductMapping extends SimpleProductMapping
 {
-    /** @var ContextManager */
     protected ContextManager $contextManager;
-    /** @var SortTree */
     protected SortTree $sortTree;
-    /** @var PropertyBridge */
-    private $productProperties;
-    /** @var ChildProductMapping */
-    private $childProductMapping;
+    private PropertyBridge $productProperties;
+    private Shopgate_Model_AbstractExport $childProductMapping;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param CustomFieldBridge $customFieldSetBridge
-     * @param SortTree $sortTree
-     * @param TierPriceMapping $tierPriceMapping
-     * @param Formatter $translation
-     * @param PropertyBridge $productProperties
-     * @param ChildProductMapping $childProductMapping
-     */
     public function __construct(
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
@@ -38,7 +26,7 @@ class ConfigProductMapping extends SimpleProductMapping
         TierPriceMapping $tierPriceMapping,
         Formatter $translation,
         PropertyBridge $productProperties,
-        ChildProductMapping $childProductMapping
+        Shopgate_Model_AbstractExport $childProductMapping
     ) {
         parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation);
         $this->productProperties = $productProperties;

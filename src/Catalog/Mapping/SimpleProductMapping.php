@@ -37,13 +37,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected Formatter $formatter;
     private CustomFieldBridge $customFieldSetBridge;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param CustomFieldBridge $customFieldSetBridge
-     * @param SortTree $sortTree
-     * @param TierPriceMapping $tierPriceMapping
-     * @param Formatter $formatter
-     */
     public function __construct(
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
@@ -100,8 +93,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     }
 
     /**
-     * @param ProductEntity $productEntity
-     * @return string
      * @throws MissingContextException
      */
     private function getDeepLinkUrl(ProductEntity $productEntity): string
@@ -416,5 +407,10 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         if ($extension = $this->item->getExtension(ProductExportExtension::EXT_KEY)) {
             parent::setInternalOrderInfo((string)$extension);
         }
+    }
+
+    public function getItem(): SalesChannelProductEntity
+    {
+        return $this->item;
     }
 }

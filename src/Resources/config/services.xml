@@ -21,15 +21,23 @@
     <services>
         <defaults autoconfigure="true" autowire="true"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge"/>
-        <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer"/>
+        <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer">
+            <argument key="$categoryMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge"/>
         <service id="Shopgate\Shopware\Catalog\Product\ProductComposer"/>
         <service id="Shopgate\Shopware\Customer\CustomerComposer"/>
         <service id="Shopgate\Shopware\Customer\AddressBridge"/>
         <service id="Shopgate\Shopware\Customer\CustomerBridge"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
-        <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
-        <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping">
+            <argument key="$childProductMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
+        </service>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory">
+            <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
+            <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\TierPriceMapping"/>
         <service id="Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge">

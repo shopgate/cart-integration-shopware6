@@ -1,3 +1,9 @@
+# 1.8.3
+
+- added decoration possibility to product mapping classes
+- added decoration possibility to category mapping class
+- changed translation service to use abstract class
+
 # 1.8.2
 
 - added translations to configurations

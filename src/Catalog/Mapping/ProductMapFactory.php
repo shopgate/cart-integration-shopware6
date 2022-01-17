@@ -4,34 +4,33 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Shopgate_Model_AbstractExport;
 use Shopware\Core\Content\Product\ProductEntity;
 
 class ProductMapFactory
 {
-    private SimpleProductMapping $simpleProductMapping;
-    private ConfigProductMapping $configProductMapping;
+    private Shopgate_Model_AbstractExport $simpleProductMapping;
+    private Shopgate_Model_AbstractExport $variantProductMapping;
 
-    /**
-     * @param SimpleProductMapping $simpleProductMapping
-     * @param ConfigProductMapping $configProductMapping
-     */
-    public function __construct(SimpleProductMapping $simpleProductMapping, ConfigProductMapping $configProductMapping)
-    {
+    public function __construct(
+        Shopgate_Model_AbstractExport $simpleProductMapping,
+        Shopgate_Model_AbstractExport $configProductMapping
+    ) {
         $this->simpleProductMapping = $simpleProductMapping;
-        $this->configProductMapping = $configProductMapping;
+        $this->variantProductMapping = $configProductMapping;
     }
 
     /**
-     * @param ProductEntity $entity
      * @return SimpleProductMapping|ConfigProductMapping
      */
-    public function createMapClass(ProductEntity $entity)
+    public function createMapClass(ProductEntity $entity): Shopgate_Model_AbstractExport
     {
+        // empty is a quick check for 0 or null
         /** @noinspection IsEmptyFunctionUsageInspection */
         if (empty($entity->getChildCount())) {
             $product = clone $this->simpleProductMapping;
         } else {
-            $product = clone $this->configProductMapping;
+            $product = clone $this->variantProductMapping;
         }
         return $product;
     }
