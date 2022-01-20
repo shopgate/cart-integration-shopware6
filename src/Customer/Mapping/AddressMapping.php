@@ -12,6 +12,8 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressCollection;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
 class AddressMapping
@@ -129,35 +131,38 @@ class AddressMapping
     }
 
     /**
-     * @param CustomerEntity $customerEntity
      * @return ShopgateAddress[]
      */
     public function mapFromShopware(CustomerEntity $customerEntity): array
     {
         $shopgateAddresses = [];
         foreach ($customerEntity->getAddresses() as $shopwareAddress) {
-            $type = $this->mapAddressType($customerEntity, $shopwareAddress);
-            $shopgateAddresses[] = $this->mapAddress($shopwareAddress, $type);
+            $type = $this->mapAddressType($shopwareAddress,
+                $customerEntity->getDefaultBillingAddressId(),
+                $customerEntity->getDefaultShippingAddressId());
+            $address = $this->mapAddress($shopwareAddress, $type);
+            $shopgateAddresses[] = $address;
         }
         return $shopgateAddresses;
     }
 
     /**
-     * @param CustomerEntity $customerEntity
-     * @param CustomerAddressEntity $addressEntity
+     * @param CustomerAddressEntity|OrderAddressEntity $addressEntity
+     * @param string $defaultBillingId
+     * @param string $defaultShippingId
      * @return int
      */
-    public function mapAddressType(CustomerEntity $customerEntity, CustomerAddressEntity $addressEntity): int
+    public function mapAddressType(Entity $addressEntity, string $defaultBillingId, string $defaultShippingId): int
     {
         $isBoth = false;
-        if ($customerEntity->getDefaultBillingAddressId() === $customerEntity->getDefaultShippingAddressId()) {
+        if ($defaultBillingId === $defaultShippingId) {
             $isBoth = ShopgateAddress::BOTH;
         }
 
         switch ($addressEntity->getId()) {
-            case $customerEntity->getDefaultBillingAddressId():
+            case $defaultBillingId:
                 return $isBoth ?: ShopgateAddress::INVOICE;
-            case $customerEntity->getDefaultShippingAddressId():
+            case $defaultShippingId:
                 return $isBoth ?: ShopgateAddress::DELIVERY;
             default:
                 return ShopgateAddress::BOTH;
@@ -165,15 +170,15 @@ class AddressMapping
     }
 
     /**
-     * @param int $type
-     * @param CustomerAddressEntity $shopwareAddress
+     * @param CustomerAddressEntity|OrderAddressEntity $shopwareAddress
+     * @param int $addressType - shopgate address type
      * @return ShopgateAddress
      */
-    public function mapAddress(CustomerAddressEntity $shopwareAddress, int $type): ShopgateAddress
+    public function mapAddress(Entity $shopwareAddress, int $addressType): ShopgateAddress
     {
         $shopgateAddress = new ShopgateAddress();
-        $shopgateAddress->setAddressType($type);
         $shopgateAddress->setId($shopwareAddress->getId());
+        $shopgateAddress->setAddressType($addressType);
         $shopgateAddress->setFirstName($shopwareAddress->getFirstName());
         $shopgateAddress->setLastName($shopwareAddress->getLastName());
         $shopgateAddress->setPhone($shopwareAddress->getPhoneNumber());
@@ -193,7 +198,7 @@ class AddressMapping
         if ($shopwareAddress->getCountry()) {
             $shopgateAddress->setCountry($shopwareAddress->getCountry()->getIso());
         }
-        if ($shopwareAddress->getCustomer()) {
+        if (method_exists($shopwareAddress, 'getCustomer') && $shopwareAddress->getCustomer()) {
             $shopgateAddress->setMail($shopwareAddress->getCustomer()->getEmail());
         }
         if ($shopwareAddress->getSalutation()) {

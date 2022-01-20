@@ -3,22 +3,37 @@
 namespace Shopgate\Shopware\Shopgate;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
-use Shopgate\Shopware\Storefront\ContextManager;
-use Shopware\Core\Checkout\Cart\Price\CashRounding;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax;
 
 class ExtendedClassFactory
 {
-    private CashRounding $rounding;
-    private ContextManager $contextManager;
+    private ExtendedCartItem $extendedCartItem;
+    private ExtendedExternalOrderItem $externalOrderItem;
+    private ExtendedExternalOrderTax $externalOrderTax;
 
-    public function __construct(CashRounding $rounding, ContextManager $contextManager)
-    {
-        $this->rounding = $rounding;
-        $this->contextManager = $contextManager;
+    public function __construct(
+        ExtendedCartItem $extendedCartItem,
+        ExtendedExternalOrderItem $externalOrderItem,
+        ExtendedExternalOrderTax $externalOrderTax
+    ) {
+        $this->extendedCartItem = $extendedCartItem;
+        $this->externalOrderItem = $externalOrderItem;
+        $this->externalOrderTax = $externalOrderTax;
     }
 
     public function createCartItem(): ExtendedCartItem
     {
-        return new ExtendedCartItem($this->rounding, $this->contextManager);
+        return clone $this->extendedCartItem;
+    }
+
+    public function createOrderLineItem(): ExtendedExternalOrderItem
+    {
+        return clone $this->externalOrderItem;
+    }
+
+    public function createExternalOrderTax(): ExtendedExternalOrderTax
+    {
+        return clone $this->externalOrderTax;
     }
 }

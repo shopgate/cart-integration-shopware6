@@ -15,6 +15,7 @@ use ShopgateLibraryException;
 use ShopgateMerchantApiException;
 use ShopgateOrder;
 use ShopgatePlugin;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class Plugin extends ShopgatePlugin
 {
@@ -135,6 +136,10 @@ class Plugin extends ShopgatePlugin
         return $this->exportService->getSettings();
     }
 
+    /**
+     * @throws ShopgateLibraryException
+     * @throws Exceptions\MissingContextException
+     */
     public function getOrders(
         $customerToken,
         $customerLanguage,
@@ -142,8 +147,13 @@ class Plugin extends ShopgatePlugin
         $offset = 0,
         $orderDateFrom = '',
         $sortOrder = 'created_desc'
-    ) {
-        // TODO: Implement getOrders() method.
+    ): array {
+        if (empty($customerToken) || false === Uuid::isValid($customerToken)) {
+            throw new ShopgateLibraryException(ShopgateLibraryException::PLUGIN_CUSTOMER_TOKEN_INVALID);
+        }
+        return $this->exportService->getOrders(
+            $customerToken, (int)$limit, (int)$offset, !empty($sortOrder) ? $sortOrder : null, $orderDateFrom
+        );
     }
 
     public function syncFavouriteList($customerToken, $items)

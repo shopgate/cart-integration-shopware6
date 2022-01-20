@@ -8,6 +8,7 @@
             <parameter key="enable_set_settings">true</parameter>
             <parameter key="enable_get_categories">true</parameter>
             <parameter key="enable_get_customer">true</parameter>
+            <parameter key="enable_get_orders">true</parameter>
             <parameter key="enable_get_reviews">true</parameter>
             <parameter key="enable_get_items">true</parameter>
             <parameter key="enable_register_customer">true</parameter>
@@ -39,6 +40,7 @@
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
+        <service id="shopgate.sdk.external_order" class="\ShopgateExternalOrder"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer"/>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge"/>
@@ -82,6 +84,7 @@
         </service>
         <service id="Shopgate\Shopware\Order\Quote\OrderMapping">
             <argument key="$customFieldMapping" type="service" id="sg.order.custom_field.whitelist"/>
+            <argument key="$sgExternalOrder" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrder"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\GroupMapping"/>
         <service id="Shopgate\Shopware\Customer\Mapping\LocationMapping">
@@ -109,6 +112,7 @@
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
+        <service id="Shopgate\Shopware\Order\Taxes\TaxMapping"/>
         <service id="Shopgate\Shopware\Order\Quote\QuoteBridge"/>
         <service id="shopgate.plugin" class="Shopgate\Shopware\Plugin">
             <!-- if Flysystem config is enabled we route to the Extended Builder class, otherwise use default -->
@@ -131,6 +135,9 @@
             <tag name="shopware.entity.extension"/>
         </service>
         <service id="Shopgate\Shopware\Shopgate\ExtendedClassFactory"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrder"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem"/>
         <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_order"/>
@@ -219,10 +226,11 @@
         <service id="Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute" alias="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
         <service id="Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory" alias="Shopware\Core\System\SalesChannel\Context\CachedSalesChannelContextFactory"/>
         <service id="Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute" alias="Shopware\Core\System\Language\SalesChannel\CachedLanguageRoute"/>
-        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute"/>
+        <service id="Shopware\Core\Checkout\Order\SalesChannel\AbstractOrderRoute" alias="Shopware\Core\Checkout\Order\SalesChannel\OrderRoute"/>
         <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute"/>
         <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartItemAddRoute"/>
         <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
+        <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute"/>
         <service id="Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute" alias="Shopware\Core\Checkout\Shipping\SalesChannel\CachedShippingMethodRoute"/>
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractCustomerRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute"/>
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute"/>

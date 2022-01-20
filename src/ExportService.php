@@ -19,7 +19,9 @@ use Shopgate\Shopware\System\Tax\TaxComposer;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;
+use ShopgateExternalOrder;
 use ShopgateLibraryException;
+use ShopgateMerchantApi;
 use ShopgateMerchantApiException;
 use ShopgatePluginApi;
 
@@ -114,7 +116,15 @@ class ExportService
     }
 
     /**
-     * @return array[]
+     * @return ShopgateExternalOrder[]
+     * @throws MissingContextException
+     */
+    public function getOrders(string $token, int $limit, int $offset, string $sortOrder, string $orderDateFrom): array
+    {
+        return $this->orderComposer->getOrders($token, $limit, $offset, $sortOrder, $orderDateFrom);
+    }
+
+    /**
      * @throws MissingContextException
      */
     public function getSettings(): array
@@ -129,8 +139,6 @@ class ExportService
     }
 
     /**
-     * @param ExtendedCart $cart
-     * @return array
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
@@ -140,15 +148,13 @@ class ExportService
     }
 
     /**
-     * @param $jobname
-     * @param $merchantApi
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      * @throws ShopgateMerchantApiException
      */
-    public function cron($jobname, $merchantApi): void
+    public function cron(string $jobname, ShopgateMerchantApi $merchantApi): void
     {
-        $this->log->debug('Start cronjob '. $jobname);
+        $this->log->debug('Start cronjob ' . $jobname);
         switch ($jobname) {
             case ShopgatePluginApi::JOB_SET_SHIPPING_COMPLETED:
                 $this->log->debug('Start setShippingCompleted');
@@ -165,9 +171,6 @@ class ExportService
     }
 
     /**
-     * @param int|null $limit
-     * @param int|null $offset
-     * @param string[] $uids
      * @return ReviewMapping[]
      * @throws MissingContextException
      */

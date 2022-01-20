@@ -8,6 +8,7 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
+use Shopgate\Shopware\Order\Quote\GetOrdersCriteria;
 use Shopgate\Shopware\Order\Quote\OrderMapping;
 use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
@@ -18,15 +19,19 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use ShopgateDeliveryNote;
+use ShopgateExternalOrder;
 use ShopgateLibraryException;
 use ShopgateMerchantApi;
 use ShopgateMerchantApiException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 class OrderComposer
@@ -113,9 +118,9 @@ class OrderComposer
             $lineItems = $this->lineItemComposer->mapIncomingLineItems($order);
             $swCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $newContext, $lineItems);
             // some errors are just success notifications, so we have to remove them
-            $swCart->setErrors($swCart->getErrors()->filter(function (Error $error) {
-                return $error->isPersistent() === false;
-            }));
+            $swCart->setErrors($swCart->getErrors()->filter(
+                fn(Error $error) => $error->isPersistent() === false)
+            );
             $swOrder = $this->quoteBridge->createOrder($swCart, $newContext); // creates order & sends email
             $this->quoteBridge->updateOrder(
                 $swOrder->getId(),
@@ -141,8 +146,32 @@ class OrderComposer
     }
 
     /**
-     * @param ShopgateMerchantApi $merchantApi
-     * @throws MissingContextException
+     * @return ShopgateExternalOrder[]
+     */
+    public function getOrders(
+        string $id,
+        int $limit = 10,
+        int $offset = 0,
+        string $sortOrder = 'created_desc',
+        ?string $orderDateFrom = null
+    ): array {
+        $criteria = (new GetOrdersCriteria())
+            ->setLimit($limit)
+            ->setOffset($offset)
+            ->setShopgateSort($sortOrder)
+            ->setShopgateFromDate($orderDateFrom)
+            ->addShopgateAssociations();
+        $criteria->getAssociation('lineItems')->addFilter(new EqualsFilter('parentId', null));
+
+        $initContext = $this->contextComposer->getContextByCustomerId($id);
+        $orderResponse = $this->quoteBridge->getOrders(new Request(), $criteria, $initContext);
+
+        return $orderResponse->getOrders()->map(
+            fn(OrderEntity $entity) => $this->orderMapping->mapOutgoingOrder($entity)
+        );
+    }
+
+    /**
      * @throws ShopgateLibraryException
      * @throws ShopgateMerchantApiException
      */
@@ -173,8 +202,6 @@ class OrderComposer
     }
 
     /**
-     * @param ShopgateMerchantApi $merchantApi
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      * @throws ShopgateMerchantApiException
      */
