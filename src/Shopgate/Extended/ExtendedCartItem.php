@@ -30,18 +30,18 @@ class ExtendedCartItem extends ShopgateCartItem
 
     public function setUnitAmount($value): void
     {
-        parent::setUnitAmount($this->rounding->cashRound(
+        parent::setUnitAmount(null !== $value ? $this->rounding->cashRound(
             (float)$value,
             $this->contextManager->getSalesContext()->getItemRounding()
-        ));
+        ) : null);
     }
 
     public function setUnitAmountWithTax($value): void
     {
-        parent::setUnitAmountWithTax($this->rounding->cashRound(
+        parent::setUnitAmountWithTax(null !== $value ? $this->rounding->cashRound(
             (float)$value,
             $this->contextManager->getSalesContext()->getItemRounding()
-        ));
+        ) : null);
     }
 
     public function setStockQuantity($value): void

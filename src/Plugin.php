@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
-use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
+use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\RequestPersist;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
@@ -23,6 +23,7 @@ class Plugin extends ShopgatePlugin
     protected ImportService $importService;
     protected LoggerInterface $logger;
     protected RequestPersist $requestPersist;
+    protected ExtendedClassFactory $classFactory;
 
     /**
      * @required
@@ -31,12 +32,14 @@ class Plugin extends ShopgatePlugin
         ExportService $exportService,
         ImportService $importService,
         LoggerInterface $logger,
-        RequestPersist $requestPersist
+        RequestPersist $requestPersist,
+        ExtendedClassFactory $classFactory
     ): void {
         $this->exportService = $exportService;
         $this->importService = $importService;
         $this->logger = $logger;
         $this->requestPersist = $requestPersist;
+        $this->classFactory = $classFactory;
     }
 
     public function startup(): void
@@ -113,7 +116,7 @@ class Plugin extends ShopgatePlugin
     {
         $this->logger->debug('Incoming Check Cart');
         $this->logger->debug($cart);
-        $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
+        $newCart = $this->classFactory->createCart()->loadFromShopgateCart($cart);
 
         $result = $this->exportService->checkCart($newCart);
         $this->logger->debug('Check Cart Response');

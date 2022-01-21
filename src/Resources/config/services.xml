@@ -135,9 +135,11 @@
             <tag name="shopware.entity.extension"/>
         </service>
         <service id="Shopgate\Shopware\Shopgate\ExtendedClassFactory"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrder"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem"/>
         <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_order"/>
