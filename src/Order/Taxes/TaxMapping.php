@@ -50,4 +50,13 @@ class TaxMapping
 
         return $sgTax;
     }
+
+    public function getPriceTaxRate(CalculatedPrice $price): float
+    {
+        $tax = $price->getCalculatedTaxes()->filter(function (CalculatedTax $price) {
+            return $price->getTax() !== 0.0;
+        })->sortByTax()->first();
+
+        return $tax ? $tax->getTaxRate() : 0.0;
+    }
 }

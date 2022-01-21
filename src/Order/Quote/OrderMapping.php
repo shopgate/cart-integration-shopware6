@@ -10,6 +10,7 @@ use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\System\CustomFields\CustomFieldMapping;
 use ShopgateContainer;
 use ShopgateOrder;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Struct\Struct;
 
@@ -54,13 +55,18 @@ class OrderMapping
         $sgOrder->setCurrency($swOrder->getCurrency());
         $sgOrder->setCustomFields($this->customFieldMapping->mapToShopgateCustomFields($swOrder));
         if ($lineItems = $swOrder->getLineItems()) {
-            $lineItems->addExtension(
-                'sg.taxStatus',
-                (new class() extends Struct {
-                })->assign(['taxStatus' => $swOrder->getTaxStatus()])
-            );
-            $sgOrder->setItems($lineItems);
-            $lineItems->removeExtension('sg.taxStatus');
+            $status = (new class() extends Struct {
+            })->assign(['taxStatus' => $swOrder->getTaxStatus()]);
+            // products
+            $products = $lineItems->filterByType(LineItem::PRODUCT_LINE_ITEM_TYPE);
+            $products->addExtension('sg.taxStatus', $status);
+            $sgOrder->setItems($products);
+            $products->removeExtension('sg.taxStatus');
+            // coupons
+            $coupons = $lineItems->filterByType(LineItem::PROMOTION_LINE_ITEM_TYPE);
+            $coupons->addExtension('sg.taxStatus', $status);
+            $sgOrder->setExternalCoupons($coupons);
+            $coupons->removeExtension('sg.taxStatus');
         }
         $sgOrder->setOrderTaxes($swOrder->getPrice()->getCalculatedTaxes());
 

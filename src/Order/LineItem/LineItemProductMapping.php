@@ -15,7 +15,6 @@ use ShopgateOrderItem;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
@@ -148,15 +147,12 @@ class LineItemProductMapping
         $sgLineItem->setName($swLineItem->getLabel());
         $sgLineItem->setUnitAmount($swLineItem->getUnitPrice());
         $sgLineItem->setQuantity($swLineItem->getQuantity());
+        $sgLineItem->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
         if ($price = $swLineItem->getPrice()) {
             [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($price, $taxStatus);
             $sgLineItem->setUnitAmount($priceWithoutTax);
             $sgLineItem->setUnitAmountWithTax($priceWithTax);
-            $tax = $price->getCalculatedTaxes()->filter(function (CalculatedTax $price) {
-                return $price->getTax() !== 0.0;
-            })->sortByTax()->first();
-            $sgLineItem->setTaxPercent($tax ? $tax->getTaxRate() : 0);
-            $sgLineItem->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
+            $sgLineItem->setTaxPercent($this->taxMapping->getPriceTaxRate($price));
         }
 
         $product = $swLineItem->getProduct();

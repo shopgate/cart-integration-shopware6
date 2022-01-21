@@ -7,6 +7,7 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 use DateTimeInterface;
 use Shopgate\Shopware\Customer\Mapping\AddressMapping;
 use Shopgate\Shopware\Order\LineItem\LineItemProductMapping;
+use Shopgate\Shopware\Order\LineItem\LineItemPromoMapping;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use ShopgateAddress;
 use ShopgateExternalOrder;
@@ -25,15 +26,18 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
     private AddressMapping $addressMapping;
     private LineItemProductMapping $productMapping;
     private TaxMapping $taxMapping;
+    private LineItemPromoMapping $promoMapping;
 
     public function __construct(
         AddressMapping $addressMapping,
         LineItemProductMapping $productMapping,
+        LineItemPromoMapping $promoMapping,
         TaxMapping $taxMapping
     ) {
         parent::__construct([]);
         $this->addressMapping = $addressMapping;
         $this->productMapping = $productMapping;
+        $this->promoMapping = $promoMapping;
         $this->taxMapping = $taxMapping;
     }
 
@@ -62,7 +66,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
     }
 
     /**
-     * @param OrderLineItemCollection|null $value
+     * @param OrderLineItemCollection $value
      */
     public function setItems($value): void
     {
@@ -114,6 +118,18 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
         parent::setOrderTaxes($value->map(
             fn(CalculatedTax $tax) => $this->taxMapping->mapOutgoingOrderTaxes($tax))
         );
+    }
+
+    /**
+     * @param OrderLineItemCollection $value
+     */
+    public function setExternalCoupons($value): void
+    {
+        /** @var ?ArrayStruct $status */
+        $status = $value->getExtension('sg.taxStatus');
+        $taxStatus = $status ? $status->getVars()['taxStatus'] : null;
+        parent::setExternalCoupons($value->map(
+            fn(OrderLineItemEntity $entity) => $this->promoMapping->mapOutgoingOrderPromo($entity, $taxStatus)));
     }
 
     private function mapAddress(

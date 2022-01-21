@@ -30,8 +30,13 @@ class GetOrdersCriteria extends Criteria
             'stateMachineState',
             'lineItems',
             'lineItems.product',
+            'billingAddress',
+            'deliveries.shippingOrderAddress',
             NativeOrderExtension::PROPERTY
         ]);
+        $addressAssociations = ['country', 'countryState', 'salutation'];
+        $this->getAssociation('deliveries.shippingOrderAddress')->addAssociations($addressAssociations);
+        $this->getAssociation('billingAddress')->addAssociations($addressAssociations);
 
         return $this;
     }
