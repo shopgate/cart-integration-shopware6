@@ -7,51 +7,84 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
+use ShopgateCart;
+use ShopgateCartItem;
+use ShopgateExternalCoupon;
+use ShopgateExternalOrderItem;
+use ShopgateExternalOrderTax;
+use ShopgateOrder;
 
 class ExtendedClassFactory
 {
-    private ExtendedCartItem $extendedCartItem;
-    private ExtendedExternalOrderItem $externalOrderItem;
-    private ExtendedExternalOrderTax $externalOrderTax;
-    private ExtendedExternalCoupon $extendedExternalCoupon;
-    private ExtendedCart $extendedCart;
+    private ShopgateCart $cart;
+    private ShopgateCartItem $cartItem;
+    private ShopgateExternalOrderItem $orderItem;
+    private ShopgateExternalOrderTax $orderTax;
+    private ShopgateExternalCoupon $externalCoupon;
+    private ShopgateOrder $order;
 
     public function __construct(
-        ExtendedCart $extendedCart,
-        ExtendedCartItem $extendedCartItem,
-        ExtendedExternalOrderItem $externalOrderItem,
-        ExtendedExternalOrderTax $externalOrderTax,
-        ExtendedExternalCoupon $extendedExternalCoupon
+        ShopgateCart $cart,
+        ShopgateCartItem $cartItem,
+        ShopgateExternalOrderItem $orderItem,
+        ShopgateExternalOrderTax $orderTax,
+        ShopgateExternalCoupon $externalCoupon,
+        ShopgateOrder $order
     ) {
-        $this->extendedCart = $extendedCart;
-        $this->extendedCartItem = $extendedCartItem;
-        $this->externalOrderItem = $externalOrderItem;
-        $this->externalOrderTax = $externalOrderTax;
-        $this->extendedExternalCoupon = $extendedExternalCoupon;
+        $this->cart = $cart;
+        $this->cartItem = $cartItem;
+        $this->orderItem = $orderItem;
+        $this->orderTax = $orderTax;
+        $this->externalCoupon = $externalCoupon;
+        $this->order = $order;
     }
 
-    public function createCartItem(): ExtendedCartItem
+    /**
+     * @return ExtendedCartItem|ShopgateCartItem
+     */
+    public function createCartItem(): ShopgateCartItem
     {
-        return clone $this->extendedCartItem;
+        return clone $this->cartItem;
     }
 
-    public function createOrderLineItem(): ExtendedExternalOrderItem
+    /**
+     * @return ExtendedExternalOrderItem|ShopgateExternalOrderItem
+     */
+    public function createOrderLineItem(): ShopgateExternalOrderItem
     {
-        return clone $this->externalOrderItem;
+        return clone $this->orderItem;
     }
 
-    public function createExternalOrderTax(): ExtendedExternalOrderTax
+    /**
+     * @return ExtendedExternalOrderTax|ShopgateExternalOrderTax
+     */
+    public function createExternalOrderTax(): ShopgateExternalOrderTax
     {
-        return clone $this->externalOrderTax;
+        return clone $this->orderTax;
     }
 
-    public function createExternalCoupon(): ExtendedExternalCoupon
+    /**
+     * @return ExtendedExternalCoupon|ShopgateExternalCoupon
+     */
+    public function createExternalCoupon(): ShopgateExternalCoupon
     {
-        return clone $this->extendedExternalCoupon;
+        return clone $this->externalCoupon;
     }
 
-    public function createCart(): ExtendedCart
+    /**
+     * @return ExtendedCart|ShopgateCart
+     */
+    public function createCart(): ShopgateCart
     {
-        return clone $this->extendedCart;
+        return clone $this->cart;
+    }
+
+    /**
+     * @return ExtendedOrder|ShopgateOrder
+     */
+    public function createOrder(): ShopgateOrder
+    {
+        return clone $this->order;
     }
 }

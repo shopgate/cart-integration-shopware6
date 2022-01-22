@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
-use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\RequestPersist;
 use Shopgate\Shopware\System\Log\LoggerInterface;
@@ -95,7 +94,7 @@ class Plugin extends ShopgatePlugin
     {
         $this->logger->debug('Incoming Add Order');
         $this->logger->debug($order);
-        $newOrder = (new ExtendedOrder())->loadFromShopgateOrder($order);
+        $newOrder = $this->classFactory->createOrder()->loadFromShopgateOrder($order);
         $this->requestPersist->setIncomingOrder($newOrder);
 
         return $this->importService->addOrder($newOrder);
@@ -154,9 +153,7 @@ class Plugin extends ShopgatePlugin
         if (empty($customerToken) || false === Uuid::isValid($customerToken)) {
             throw new ShopgateLibraryException(ShopgateLibraryException::PLUGIN_CUSTOMER_TOKEN_INVALID);
         }
-        return $this->exportService->getOrders(
-            $customerToken, (int)$limit, (int)$offset, !empty($sortOrder) ? $sortOrder : null, $orderDateFrom
-        );
+        return $this->exportService->getOrders($customerToken, (int)$limit, (int)$offset, $sortOrder, $orderDateFrom);
     }
 
     public function syncFavouriteList($customerToken, $items)

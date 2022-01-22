@@ -40,6 +40,8 @@
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
+        <service id="shopgate.sdk.external_coupon" class="\ShopgateExternalCoupon"/>
+        <service id="shopgate.sdk.delivery_note" class="\ShopgateDeliveryNote"/>
         <service id="shopgate.sdk.external_order" class="\ShopgateExternalOrder"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer"/>
@@ -109,7 +111,9 @@
         <service id="Shopgate\Shopware\Order\Payment\PaymentBridge"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentComposer"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentMapping"/>
-        <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping">
+            <argument type="service" id="shopgate.sdk.delivery_note"/>
+        </service>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
         <service id="Shopgate\Shopware\Order\Taxes\TaxMapping"/>
@@ -134,13 +138,27 @@
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
         </service>
-        <service id="Shopgate\Shopware\Shopgate\ExtendedClassFactory"/>
+        <service id="Shopgate\Shopware\Shopgate\ExtendedClassFactory">
+            <argument key="$cart" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart"/>
+            <argument key="$cartItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem"/>
+            <argument key="$externalCoupon" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
+            <argument key="$orderItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem"/>
+            <argument key="$orderTax" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax"/>
+            <argument key="$order" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrder"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrder"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax"/>
-        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart">
+            <argument key="$extendedExternalCoupon" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedToArrayVisitor"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrder">
+            <argument key="$extendedExternalCoupon" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
+            <argument key="$visitor" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedToArrayVisitor"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_order"/>
         </service>

@@ -12,9 +12,9 @@ class ExtendedCart extends ShopgateCart
     use CloningTrait;
     use CartUtilityTrait;
 
-    private ExtendedExternalCoupon $extendedExternalCoupon;
+    private ShopgateExternalCoupon $extendedExternalCoupon;
 
-    public function __construct(ExtendedExternalCoupon $extendedExternalCoupon)
+    public function __construct(ShopgateExternalCoupon $extendedExternalCoupon)
     {
         parent::__construct([]);
         $this->extendedExternalCoupon = $extendedExternalCoupon;
@@ -75,5 +75,4 @@ class ExtendedCart extends ShopgateCart
 
         $this->external_coupons = $value;
     }
-
 }
