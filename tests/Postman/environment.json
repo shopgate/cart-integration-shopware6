@@ -180,26 +180,38 @@
       "enabled": true
     },
     {
-      "key": "catalog_product_advPrices_id",
-      "value": "11dc680240b04f469ccba354cbf0b967",
-      "enabled": true
-    },
-    {
-      "key": "catalog_product_freeShip",
-      "value": "3ac014f329884b57a2cce5a29f34779c",
-      "enabled": true
-    },
-    {
-      "key": "created_stream_noFreeShip_id",
-      "value": "4d25454578dc3c6fbadb60804e649b6e",
-      "enabled": true
-    },
-    {
-      "key": "created_stream_allActive_id",
-      "value": "5c95c0421f832b16ae99d0a295d2deb0",
-      "enabled": true
-    },
-    {
+		"key": "catalog_product_advPrices_id",
+		"value": "11dc680240b04f469ccba354cbf0b967",
+		"enabled": true
+	},
+	  {
+		  "key": "catalog_product_freeShip",
+		  "value": "3ac014f329884b57a2cce5a29f34779c",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_promotion_byCode_code",
+		  "value": "API-PROMO-BY_CODE",
+		  "type": "default",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_promotion_byCode_id",
+		  "value": "a10923e207367d25ee81511ae40b473c",
+		  "type": "default",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_stream_noFreeShip_id",
+		  "value": "4d25454578dc3c6fbadb60804e649b6e",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_stream_allActive_id",
+		  "value": "5c95c0421f832b16ae99d0a295d2deb0",
+		  "enabled": true
+	  },
+	  {
       "key": "product_review_disabled_id",
       "value": "efc3860674f0a32b13293983fd03d26b",
       "enabled": true
@@ -256,16 +268,16 @@
     },
     {
       "key": "default_shipMethod_sgFree_id",
-      "value": "92929e3cb97141f1b70ab9a8616df6a7",
-      "enabled": true
-    },
-    {
-      "key": "default_payMethod_sgDefault_id",
-      "value": "7046c79435a7410fb90a8b82f13d30a9",
-      "enabled": true
-    }
+		"value": "92929e3cb97141f1b70ab9a8616df6a7",
+		"enabled": true
+	},
+	  {
+		  "key": "default_payMethod_sgDefault_id",
+		  "value": "7046c79435a7410fb90a8b82f13d30a9",
+		  "enabled": true
+	  }
   ],
-  "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-01-07T14:59:01.319Z",
-  "_postman_exported_using": "Postman/9.8.1"
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2022-01-22T12:32:01.539Z",
+	"_postman_exported_using": "Postman/9.9.3"
 }

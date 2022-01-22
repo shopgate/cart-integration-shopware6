@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "90881d73-c46f-40dd-9be3-3c66b3da840c",
+    "_postman_id": "edbf7223-af65-4bc5-8a56-a6ea5646efed",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -1190,6 +1190,55 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "SW: create coupon code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Created entity successfully\", function () {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": \"{{created_promotion_byCode_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: promo by code\",\r\n    \"code\": \"{{created_promotion_byCode_code}}\",\r\n    \"exclusive\": false,\r\n    \"useCodes\": true,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 2.25\r\n        }\r\n    ],\r\n    \"salesChannels\":[\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/promotion",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "promotion"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "event": [
@@ -1383,6 +1432,1063 @@
             "body": {
               "mode": "formdata",
               "formdata": [
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: get_orders bad token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Has error\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql(73);",
+                  "    pm.expect(jsonData.error_text).to.eql('invalid customer token');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_orders}}",
+                  "type": "text"
+                },
+                {
+                  "key": "customer_token",
+                  "value": "124",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "customer_language",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Import",
+      "item": [
+        {
+          "name": "AddOrder",
+          "item": [
+            {
+              "name": "M: mock server check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function () {\r",
+                      "    pm.response.to.have.status(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mockoon is enabled\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{mock_server_merchant_uri}}",
+                  "host": [
+                    "{{mock_server_merchant_uri}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: set mock api url",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_set_settings}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][name]",
+                      "value": "server",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][value]",
+                      "value": "custom",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][name]",
+                      "value": "api_url",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][value]",
+                      "value": "{{mock_server_merchant_uri}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create customFields",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created all custom fields\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: addOrder",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
+                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "",
+                      "function getValue(data, incomingKey) {",
+                      "    const found = data.find(function({key}) {",
+                      "        return key === incomingKey;",
+                      "    });",
+                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0001",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "const order = jsonData.data[0];\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('test@example.com');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "});\r",
+                      "pm.test(\"Custom Field data for order good\", function () {\r",
+                      "    pm.expect(order.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_custom_field');\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_int_0001').to.eq(13);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_float_0001').to.eq(11.5);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_bool_0001').to.eq(true);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_text_0001').to.eq('mapped string value');\r",
+                      "});\r",
+                      "pm.test(\"Billing custom field data is good\", function () {\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_int_0001').to.eq(17);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_float_0001').to.eq(3.3);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_bool_0001').to.eq(false);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_text_0001').to.eq('mapped string value as well');\r",
+                      "    pm.expect(order.billingAddress.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_field');\r",
+                      "});\r",
+                      "\r",
+                      "   "
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/order",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: addOrder (guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
+                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "",
+                      "function getValue(data, incomingKey) {",
+                      "    const found = data.find(function({key}) {",
+                      "        return key === incomingKey;",
+                      "    });",
+                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0002",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check order (guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "const order = jsonData.data[0];\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('guest_customer@apite.io');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "    pm.expect(order.customFields).to.eql(null);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.eql(null);\r",
+                      "});\r",
+                      "\r",
+                      "   "
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/order",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "SG: register_customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check customer data\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (pm.globals.get('verbose')) {",
+                  "        console.log(jsonData);",
+                  "    }",
+                  "    const firstName = pm.environment.get('temp-first-name');",
+                  "    const lastName = pm.environment.get('temp-last-name');",
+                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
+                  "    pm.expect(jsonData.user_data.gender).to.eql('f');",
+                  "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
+                  "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
+                  "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
+                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
+                  "    ",
+                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
+                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
+                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
+                  "    pm.expect(billing.country).to.eql('DE');",
+                  "    pm.expect(billing.zipcode).to.eql('54321');",
+                  "    pm.expect(billing.state).to.eql('DE-SH');",
+                  "    pm.expect(billing.first_name).to.eql(firstName);",
+                  "    pm.expect(billing.last_name).to.eql(lastName);",
+                  "    pm.expect(billing.company).to.eql('My Company');",
+                  "    pm.expect(billing.street_2).to.eql('Street2');",
+                  "    pm.expect(billing.phone).to.eql('12345');",
+                  "    pm.expect(billing.gender).to.eql('f');",
+                  "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
+                  "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
+                  "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
+                  "",
+                  "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
+                  "    pm.expect(shipping.country).to.eql('DE');",
+                  "    pm.expect(shipping.zipcode).to.eql('12340');",
+                  "    pm.expect(shipping.state).to.be.null;",
+                  "    pm.expect(shipping.first_name).to.not.eql(firstName);",
+                  "    pm.expect(shipping.last_name).to.not.eql(lastName);",
+                  "    pm.expect(shipping.gender).to.eql('m');",
+                  "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
+                  "});",
+                  "",
+                  "// unset temp variables",
+                  "pm.environment.unset(\"temp-email\");",
+                  "pm.environment.unset(\"temp-first-name\");",
+                  "pm.environment.unset(\"temp-last-name\");"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_register_customer}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "pass",
+                  "value": "{{userPass}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[registration_date]",
+                  "value": "2021-01-27T13:07:38+0000",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[first_name]",
+                  "value": "{{temp-first-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[last_name]",
+                  "value": "{{temp-last-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[gender]",
+                  "value": "f",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[mail]",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[birthday]",
+                  "value": "1987-05-19",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_invoice_address]",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_delivery_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][first_name]",
+                  "value": "{{$randomFirstName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][last_name]",
+                  "value": "{{$randomLastName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][gender]",
+                  "value": "m",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][zipcode]",
+                  "value": "12340",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_invoice_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_delivery_address]",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][first_name]",
+                  "value": "rewritten_first_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][last_name]",
+                  "value": "rewritten_last_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][gender]",
+                  "value": "m",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][zipcode]",
+                  "value": "54321",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][state]",
+                  "value": "DE-SH",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][company]",
+                  "value": "My Company",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_2]",
+                  "value": "Street2",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][phone]",
+                  "value": "12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][name]",
+                  "value": "VAT IDs",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][internal_field_name]",
+                  "value": "vatIds",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][value]",
+                  "value": "1234,12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][internal_field_name]",
+                  "value": "affiliateCode",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][value]",
+                  "value": "AFFILIATE_CODE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][value]",
+                  "value": "Big Boss",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][internal_field_name]",
+                  "value": "accountType",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][value]",
+                  "value": "business",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][internal_field_name]",
+                  "value": "cannotMap",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][value]",
+                  "value": "not mapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][value]",
+                  "value": "Mr.",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
+                  "value": "notMapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][value]",
+                  "value": "not mapped either",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
+                  "value": "department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][value]",
+                  "value": "Some department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][value]",
+                  "value": "Mrs.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: set_settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Has settings changed\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shopgate_settings).to.be.a('array').to.be.not.empty;",
+                  "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('product_types_to_export');",
+                  "    pm.expect(jsonData.shopgate_settings[0].old).to.be.an('array').length(2);",
+                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('simple');",
+                  "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('shop_is_active');",
+                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(1);",
+                  "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('1');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_set_settings}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][name]",
+                  "value": "product_types_to_export",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][value]",
+                  "value": "simple",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[1][name]",
+                  "value": "shop_is_active",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[1][value]",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: ping check change",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "",
+                  "    pm.expect(jsonData.configuration.shop_is_active).to.be.eq(1);",
+                  "    pm.expect(jsonData.configuration.server).to.be.eq('custom');",
+                  "    pm.expect(jsonData.configuration.product_types_to_export).to.be.a('array').length(1);",
+                  "    pm.expect(jsonData.configuration.product_types_to_export[0]).to.eq('simple');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
                 {
                   "key": "action",
                   "value": "{{framework_action_ping}}",
@@ -3283,9 +4389,6 @@
                   "script": {
                     "exec": [
                       "const jsonData = pm.response.json();",
-                      "if (pm.globals.get('verbose')) {",
-                      "    console.log(jsonData);",
-                      "}",
                       "",
                       "pm.test(\"Check default customer group set for customer\", function () {",
                       "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
@@ -3325,6 +4428,21 @@
                       "    pm.expect(item.unit_amount).to.eql(672.27);",
                       "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
                       "    pm.expect(item.error).to.eql(302);",
+                      "});",
+                      "",
+                      "pm.test(\"Check basic coupon code\", function () {",
+                      "    const coupon = jsonData.external_coupons[0];",
+                      "    pm.expect(jsonData.external_coupons).length(1);",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
+                      "    pm.expect(coupon.amount_net).to.eq(null);",
+                      "    pm.expect(coupon.amount_gross).to.eq(2.25);",
+                      "    pm.expect(coupon.name).to.eq('API: promo by code');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.id).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('coupon');",
                       "});",
                       "",
                       "function getItemById(id) {",
@@ -3557,6 +4675,11 @@
                       "value": "850",
                       "type": "text",
                       "disabled": true
+                    },
+                    {
+                      "key": "cart[external_coupons][0][code]",
+                      "value": "{{created_promotion_byCode_code}}",
+                      "type": "text"
                     }
                   ]
                 },
@@ -4413,6 +5536,269 @@
           ]
         },
         {
+          "name": "Order",
+          "item": [
+            {
+              "name": "SG: addOrder (coupon)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    if (pm.globals.get('verbose')) {",
+                      "        console.log(jsonData);",
+                      "    }",
+                      "",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
+                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "",
+                      "function getValue(data, incomingKey) {",
+                      "    const found = data.find(function({key}) {",
+                      "        return key === incomingKey;",
+                      "    });",
+                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0003",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: get last order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const moment = require('moment');",
+                      "const now = moment().format('YYYY-MM-DD');",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.expect(jsonData.error).to.eq(0);",
+                      "    pm.expect(jsonData.orders).to.be.length(1);",
+                      "});",
+                      "",
+                      "const order = jsonData.orders[0];",
+                      "pm.test(\"Basic order data\", function () {",
+                      "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_0003_id'));",
+                      "    pm.expect(order.status_name).to.eq('Open');",
+                      "    pm.expect(order.mail).to.eq(pm.environment.get('userEmail'));",
+                      "    pm.expect(order.phone).to.eq('+1-111-111-1111');",
+                      "    pm.expect(order.currency).to.eq('EUR');",
+                      "    pm.expect(order.is_paid).to.eq(0);",
+                      "    pm.expect(order.payment_method).to.eq('Vorkasse (Eigene Abwicklung)');",
+                      "    pm.expect(order.payment_time).to.eq('2022-01-20T11:14:03+00:00');",
+                      "    pm.expect(order.is_shipping_completed).to.eq(0);",
+                      "});",
+                      "",
+                      "pm.test(\"Custom Fields\", function () {",
+                      "    pm.expect(order.custom_fields).to.be.length(1);",
+                      "    const field = order.custom_fields[0];",
+                      "    pm.expect(field.label).to.eq('customerComment');",
+                      "    pm.expect(field.internal_field_name).to.eq('customerComment');",
+                      "    pm.expect(field.value).to.eq('My order comment');",
+                      "});",
+                      "",
+                      "pm.test(\"Billing Address check\", function () {",
+                      "    const address = order.invoice_address;",
+                      "    pm.expect(address.is_invoice_address).to.eq(1);",
+                      "    pm.expect(address.is_delivery_address).to.eq(0);",
+                      "    pm.expect(address.first_name).to.eq('First Name');",
+                      "    pm.expect(address.last_name).to.eq('Last Name');",
+                      "    pm.expect(address.gender).to.eq('f');",
+                      "    pm.expect(address.birthday).to.eq(null);",
+                      "    pm.expect(address.company).to.eq('My Company 1');",
+                      "    pm.expect(address.street_1).to.eq('My Street 1 A');",
+                      "    pm.expect(address.street_2).to.eq('My Street 2 A');",
+                      "    pm.expect(address.zipcode).to.eq('27404');",
+                      "    pm.expect(address.city).to.eq('Frankenbostel');",
+                      "    pm.expect(address.country).to.eq('GB');",
+                      "    pm.expect(address.state).to.eq('GB-ABC');",
+                      "    pm.expect(address.phone).to.eq('+1-111-111-1111');",
+                      "});",
+                      "",
+                      "pm.test(\"Shipping Address check\", function () {",
+                      "    const address = order.delivery_address;",
+                      "    pm.expect(address.is_invoice_address).to.eq(0);",
+                      "    pm.expect(address.is_delivery_address).to.eq(1);",
+                      "    pm.expect(address.first_name).to.eq('Bank');",
+                      "    pm.expect(address.last_name).to.eq('Payment');",
+                      "    pm.expect(address.gender).to.eq('m');",
+                      "    pm.expect(address.birthday).to.eq(null);",
+                      "    pm.expect(address.company).to.eq('My Company 2');",
+                      "    pm.expect(address.street_1).to.eq('My Street 1 B');",
+                      "    pm.expect(address.street_2).to.eq('My Street 2 B');",
+                      "    pm.expect(address.zipcode).to.eq('27404');",
+                      "    pm.expect(address.city).to.eq('Frankenbostel');",
+                      "    pm.expect(address.country).to.eq('GB');",
+                      "    pm.expect(address.state).to.eq('GB-ABC');",
+                      "    pm.expect(address.phone).to.eq('+2-111-111-1111');",
+                      "});",
+                      "",
+                      "pm.test(\"Delivery notes\", function () {",
+                      "    pm.expect(order.delivery_notes).to.be.length(1);",
+                      "    const note = order.delivery_notes[0];",
+                      "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                      "    pm.expect(note.shipping_service_name).to.eq('');",
+                      "    pm.expect(note.tracking_number).to.eq('');",
+                      "    pm.expect(note.shipping_time).to.eq(null);",
+                      "});",
+                      "",
+                      "pm.test(\"Taxes\", function () {",
+                      "    pm.expect(order.order_taxes).to.be.length(1);",
+                      "    const tax = order.order_taxes[0];",
+                      "    pm.expect(tax.label).to.eq('plus 20% VAT');",
+                      "    pm.expect(tax.tax_percent).to.eq(20);",
+                      "    pm.expect(tax.amount).to.eq(83.1);",
+                      "});",
+                      "",
+                      "pm.test(\"Promotion check\", function () {",
+                      "    pm.expect(order.external_coupons).to.be.length(1);",
+                      "    const coupon = order.external_coupons[0];",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
+                      "    pm.expect(coupon.name).to.eq('API: promo by code');",
+                      "    pm.expect(coupon.amount_net).to.eq(1.87);",
+                      "    pm.expect(coupon.amount_gross).to.eq(2.25);",
+                      "    pm.expect(coupon.tax_type).to.eq('auto');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.is_free_shipping).to.eq(null);",
+                      "});",
+                      "",
+                      "pm.test(\"Item check\", function () {",
+                      "    pm.expect(order.items).to.be.length(1);",
+                      "    const product = order.items[0];",
+                      "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+                      "    pm.expect(product.quantity).to.eq(1);",
+                      "    pm.expect(product.name).to.eq('Main product');",
+                      "    pm.expect(product.unit_amount).to.eq(413.29);",
+                      "    pm.expect(product.unit_amount_with_tax).to.eq(495.95);",
+                      "    pm.expect(product.tax_percent).to.eq(20);",
+                      "    pm.expect(product.currency).to.eq('EUR');",
+                      "    pm.expect(product.description).to.not.be.empty;",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_orders}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_token",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_language",
+                      "value": "",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "SG: ping",
           "event": [
             {
@@ -4781,986 +6167,6 @@
                   "key": "log_type",
                   "value": "error",
                   "description": "access, error, debug, request",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Import",
-      "item": [
-        {
-          "name": "AddOrder",
-          "item": [
-            {
-              "name": "M: mock server check",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 404\", function () {\r",
-                      "    pm.response.to.have.status(404);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Mockoon is enabled\", function () {\r",
-                      "    var jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{mock_server_merchant_uri}}",
-                  "host": [
-                    "{{mock_server_merchant_uri}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: set mock api url",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.response.to.have.status(200);",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_set_settings}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[0][name]",
-                      "value": "server",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[0][value]",
-                      "value": "custom",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[1][name]",
-                      "value": "api_url",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[1][value]",
-                      "value": "{{mock_server_merchant_uri}}",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: create customFields",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Created all custom fields\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {}
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/_action/sync",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "_action",
-                    "sync"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: addOrder",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const jsonData = pm.response.json();",
-                      "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
-                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
-                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
-                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
-                      "});",
-                      "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_add_order}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "order_number",
-                      "value": "0001",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: check order",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "const jsonData = pm.response.json();\r",
-                      "const order = jsonData.data[0];\r",
-                      "pm.test(\"Check order data\", function () {\r",
-                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
-                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
-                      "    pm.expect(order.campaignCode).to.eql(null);\r",
-                      "    pm.expect(order.orderCustomer.email).to.eql('test@example.com');\r",
-                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
-                      "});\r",
-                      "pm.test(\"Custom Field data for order good\", function () {\r",
-                      "    pm.expect(order.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_custom_field');\r",
-                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_int_0001').to.eq(13);\r",
-                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_float_0001').to.eq(11.5);\r",
-                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_bool_0001').to.eq(true);\r",
-                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_text_0001').to.eq('mapped string value');\r",
-                      "});\r",
-                      "pm.test(\"Billing custom field data is good\", function () {\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_int_0001').to.eq(17);\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_float_0001').to.eq(3.3);\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_bool_0001').to.eq(false);\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_text_0001').to.eq('mapped string value as well');\r",
-                      "    pm.expect(order.billingAddress.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_field');\r",
-                      "});\r",
-                      "\r",
-                      "   "
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {}
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/search/order",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "search",
-                    "order"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: addOrder (guest)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const jsonData = pm.response.json();",
-                      "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
-                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
-                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
-                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
-                      "});",
-                      "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_add_order}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "order_number",
-                      "value": "0002",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: check order (guest)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "const jsonData = pm.response.json();\r",
-                      "const order = jsonData.data[0];\r",
-                      "pm.test(\"Check order data\", function () {\r",
-                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
-                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
-                      "    pm.expect(order.campaignCode).to.eql(null);\r",
-                      "    pm.expect(order.orderCustomer.email).to.eql('guest_customer@apite.io');\r",
-                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
-                      "    pm.expect(order.customFields).to.eql(null);\r",
-                      "    pm.expect(order.billingAddress.customFields).to.eql(null);\r",
-                      "});\r",
-                      "\r",
-                      "   "
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {}
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{}\r\n    }\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/search/order",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "search",
-                    "order"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "SG: register_customer",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Check customer data\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    if (pm.globals.get('verbose')) {",
-                  "        console.log(jsonData);",
-                  "    }",
-                  "    const firstName = pm.environment.get('temp-first-name');",
-                  "    const lastName = pm.environment.get('temp-last-name');",
-                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
-                  "    pm.expect(jsonData.user_data.gender).to.eql('f');",
-                  "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
-                  "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
-                  "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
-                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
-                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
-                  "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
-                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
-                  "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
-                  "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
-                  "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
-                  "    ",
-                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
-                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
-                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
-                  "    pm.expect(billing.country).to.eql('DE');",
-                  "    pm.expect(billing.zipcode).to.eql('54321');",
-                  "    pm.expect(billing.state).to.eql('DE-SH');",
-                  "    pm.expect(billing.first_name).to.eql(firstName);",
-                  "    pm.expect(billing.last_name).to.eql(lastName);",
-                  "    pm.expect(billing.company).to.eql('My Company');",
-                  "    pm.expect(billing.street_2).to.eql('Street2');",
-                  "    pm.expect(billing.phone).to.eql('12345');",
-                  "    pm.expect(billing.gender).to.eql('f');",
-                  "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
-                  "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
-                  "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
-                  "",
-                  "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
-                  "    pm.expect(shipping.country).to.eql('DE');",
-                  "    pm.expect(shipping.zipcode).to.eql('12340');",
-                  "    pm.expect(shipping.state).to.be.null;",
-                  "    pm.expect(shipping.first_name).to.not.eql(firstName);",
-                  "    pm.expect(shipping.last_name).to.not.eql(lastName);",
-                  "    pm.expect(shipping.gender).to.eql('m');",
-                  "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
-                  "});",
-                  "",
-                  "// unset temp variables",
-                  "pm.environment.unset(\"temp-email\");",
-                  "pm.environment.unset(\"temp-first-name\");",
-                  "pm.environment.unset(\"temp-last-name\");"
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
-                  "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
-                  "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_register_customer}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user",
-                  "value": "{{temp-email}}",
-                  "type": "text"
-                },
-                {
-                  "key": "pass",
-                  "value": "{{userPass}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[registration_date]",
-                  "value": "2021-01-27T13:07:38+0000",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[first_name]",
-                  "value": "{{temp-first-name}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[last_name]",
-                  "value": "{{temp-last-name}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[gender]",
-                  "value": "f",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[mail]",
-                  "value": "{{temp-email}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[birthday]",
-                  "value": "1987-05-19",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][is_invoice_address]",
-                  "value": "0",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][is_delivery_address]",
-                  "value": "1",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][first_name]",
-                  "value": "{{$randomFirstName}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][last_name]",
-                  "value": "{{$randomLastName}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][gender]",
-                  "value": "m",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][street_1]",
-                  "value": "{{$randomStreetAddress}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][zipcode]",
-                  "value": "12340",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][city]",
-                  "value": "{{$randomCity}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][country]",
-                  "value": "DE",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][is_invoice_address]",
-                  "value": "1",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][is_delivery_address]",
-                  "value": "0",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][first_name]",
-                  "value": "rewritten_first_name",
-                  "description": "Seems like this field get rewritten no matter what we set",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][last_name]",
-                  "value": "rewritten_last_name",
-                  "description": "Seems like this field get rewritten no matter what we set",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][gender]",
-                  "value": "m",
-                  "description": "Seems like this field get rewritten no matter what we set",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][street_1]",
-                  "value": "{{$randomStreetAddress}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][zipcode]",
-                  "value": "54321",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][city]",
-                  "value": "{{$randomCity}}",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][country]",
-                  "value": "DE",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][state]",
-                  "value": "DE-SH",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][company]",
-                  "value": "My Company",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][street_2]",
-                  "value": "Street2",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][phone]",
-                  "value": "12345",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][0][name]",
-                  "value": "VAT IDs",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][0][internal_field_name]",
-                  "value": "vatIds",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][0][value]",
-                  "value": "1234,12345",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][1][internal_field_name]",
-                  "value": "affiliateCode",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][1][value]",
-                  "value": "AFFILIATE_CODE",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][2][internal_field_name]",
-                  "value": "title",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][2][value]",
-                  "value": "Big Boss",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][3][internal_field_name]",
-                  "value": "accountType",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][3][value]",
-                  "value": "business",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][4][internal_field_name]",
-                  "value": "cannotMap",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[custom_fields][4][value]",
-                  "value": "not mapped",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
-                  "value": "title",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][custom_fields][0][value]",
-                  "value": "Mr.",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
-                  "value": "notMapped",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][custom_fields][1][value]",
-                  "value": "not mapped either",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
-                  "value": "department",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][1][custom_fields][2][value]",
-                  "value": "Some department",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
-                  "value": "title",
-                  "type": "text"
-                },
-                {
-                  "key": "user_data[addresses][0][custom_fields][0][value]",
-                  "value": "Mrs.",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: set_settings",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Has settings changed\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.shopgate_settings).to.be.a('array').to.be.not.empty;",
-                  "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('product_types_to_export');",
-                  "    pm.expect(jsonData.shopgate_settings[0].old).to.be.an('array').length(2);",
-                  "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('simple');",
-                  "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('shop_is_active');",
-                  "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(1);",
-                  "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('1');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_set_settings}}",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[0][name]",
-                  "value": "product_types_to_export",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[0][value]",
-                  "value": "simple",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[1][name]",
-                  "value": "shop_is_active",
-                  "type": "text"
-                },
-                {
-                  "key": "shopgate_settings[1][value]",
-                  "value": "1",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: ping check change",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonData = pm.response.json();",
-                  "pm.test(\"Ping Pong\", function () {",
-                  "    pm.expect(jsonData.pong).to.eql('OK');",
-                  "});",
-                  "",
-                  "pm.test('Plugin Versions', function () {",
-                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
-                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
-                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
-                  "",
-                  "    pm.expect(jsonData.configuration.shop_is_active).to.be.eq(1);",
-                  "    pm.expect(jsonData.configuration.server).to.be.eq('custom');",
-                  "    pm.expect(jsonData.configuration.product_types_to_export).to.be.a('array').length(1);",
-                  "    pm.expect(jsonData.configuration.product_types_to_export[0]).to.eq('simple');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_ping}}",
                   "type": "text"
                 }
               ]
