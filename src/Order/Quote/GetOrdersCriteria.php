@@ -27,11 +27,11 @@ class GetOrdersCriteria extends Criteria
         $this->addAssociations([
             'currency',
             'deliveries',
-            'stateMachineState',
-            'lineItems',
             'lineItems.product',
             'billingAddress',
             'deliveries.shippingOrderAddress',
+            'deliveries.order.' . NativeOrderExtension::PROPERTY,
+            'deliveries.stateMachineState.toStateMachineHistoryEntries',
             NativeOrderExtension::PROPERTY
         ]);
         $addressAssociations = ['country', 'countryState', 'salutation'];

@@ -150,9 +150,9 @@ class OrderComposer
      */
     public function getOrders(
         string $id,
-        int $limit = 10,
-        int $offset = 0,
-        string $sortOrder = 'created_desc',
+        int $limit,
+        int $offset,
+        string $sortOrder,
         ?string $orderDateFrom = null
     ): array {
         $criteria = (new GetOrdersCriteria())

@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Shopgate\Shopware\Customer\Mapping\AddressMapping;
 use Shopgate\Shopware\Order\LineItem\LineItemProductMapping;
 use Shopgate\Shopware\Order\LineItem\LineItemPromoMapping;
+use Shopgate\Shopware\Order\Shipping\ShippingMapping;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use ShopgateAddress;
 use ShopgateExternalOrder;
@@ -15,6 +16,8 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -27,18 +30,21 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
     private LineItemProductMapping $productMapping;
     private TaxMapping $taxMapping;
     private LineItemPromoMapping $promoMapping;
+    private ShippingMapping $shippingMapping;
 
     public function __construct(
         AddressMapping $addressMapping,
         LineItemProductMapping $productMapping,
         LineItemPromoMapping $promoMapping,
-        TaxMapping $taxMapping
+        TaxMapping $taxMapping,
+        ShippingMapping $shippingMapping
     ) {
         parent::__construct([]);
         $this->addressMapping = $addressMapping;
         $this->productMapping = $productMapping;
         $this->promoMapping = $promoMapping;
         $this->taxMapping = $taxMapping;
+        $this->shippingMapping = $shippingMapping;
     }
 
     /**
@@ -130,6 +136,16 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
         $taxStatus = $status ? $status->getVars()['taxStatus'] : null;
         parent::setExternalCoupons($value->map(
             fn(OrderLineItemEntity $entity) => $this->promoMapping->mapOutgoingOrderPromo($entity, $taxStatus)));
+    }
+
+    /**
+     * @param OrderDeliveryCollection $value
+     */
+    public function setDeliveryNotes($value): void
+    {
+        parent::setDeliveryNotes($value->map(
+            fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutgoingOrderDeliveryNote($entity))
+        );
     }
 
     private function mapAddress(

@@ -80,6 +80,9 @@ class OrderMapping
         $sgOrder->setBillingAddress($swOrder->getBillingAddress(), $shippingId);
         $sgOrder->setPhone($swOrder->getBillingAddress());
 
+        // shipping
+        $sgOrder->setDeliveryNotes($swOrder->getDeliveries());
+
         return $sgOrder;
     }
 }

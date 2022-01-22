@@ -13,7 +13,7 @@ class GenericShippingMethod extends ShippingMethodEntity implements ClassCastInt
     public const UUID = '368e891dbec442c2892f82edd6f4a7dc';
     protected $id = self::UUID;
     protected $deliveryTimeId = GenericDeliveryTime::UUID;
-    protected $name = 'Shopgate Shipping';
+    protected $name = 'Generic Shipping (SG)';
     protected $description = 'Used for Shopgate imports';
     protected $availabilityRuleId = IsShopgateRuleGroup::UUID;
     protected $active = false;

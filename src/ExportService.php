@@ -117,9 +117,8 @@ class ExportService
 
     /**
      * @return ShopgateExternalOrder[]
-     * @throws MissingContextException
      */
-    public function getOrders(string $token, int $limit, int $offset, string $sortOrder, string $orderDateFrom): array
+    public function getOrders(string $token, int $limit, int $offset, string $sortOrder, ?string $orderDateFrom): array
     {
         return $this->orderComposer->getOrders($token, $limit, $offset, $sortOrder, $orderDateFrom);
     }
