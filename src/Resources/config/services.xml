@@ -40,9 +40,11 @@
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
+        <service id="shopgate.sdk.shipping_method" class="\ShopgateShippingMethod"/>
         <service id="shopgate.sdk.external_coupon" class="\ShopgateExternalCoupon"/>
         <service id="shopgate.sdk.delivery_note" class="\ShopgateDeliveryNote"/>
         <service id="shopgate.sdk.external_order" class="\ShopgateExternalOrder"/>
+        <service id="shopgate.sdk.external_order_extra_cost" class="\ShopgateExternalOrderExtraCost"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer"/>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge"/>
@@ -111,9 +113,7 @@
         <service id="Shopgate\Shopware\Order\Payment\PaymentBridge"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentComposer"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentMapping"/>
-        <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping">
-            <argument type="service" id="shopgate.sdk.delivery_note"/>
-        </service>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
         <service id="Shopgate\Shopware\Order\Taxes\TaxMapping"/>
@@ -145,6 +145,9 @@
             <argument key="$orderItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem"/>
             <argument key="$orderTax" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax"/>
             <argument key="$order" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrder"/>
+            <argument key="$shippingMethod" type="service" id="shopgate.sdk.shipping_method"/>
+            <argument key="$deliveryNote" type="service" id="shopgate.sdk.delivery_note"/>
+            <argument key="$orderExtraCost" type="service" id="shopgate.sdk.external_order_extra_cost"/>
         </service>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrder"/>
@@ -162,6 +165,7 @@
         <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_order"/>
         </service>
+        <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping"/>
         <service id="Shopgate\Shopware\Shopgate\RequestPersist" shared="true"/>
         <service id="Shopgate\Shopware\Shopgate\ShopgateOrderBridge">
             <argument type="service" id="shopgate_order.repository"/>

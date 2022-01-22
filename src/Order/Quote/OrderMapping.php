@@ -82,6 +82,7 @@ class OrderMapping
 
         // shipping
         $sgOrder->setDeliveryNotes($swOrder->getDeliveries());
+        $sgOrder->setExtraCosts($swOrder);
 
         return $sgOrder;
     }

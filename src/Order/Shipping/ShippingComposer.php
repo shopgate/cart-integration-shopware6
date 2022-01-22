@@ -13,6 +13,7 @@ use ShopgateLibraryException;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
@@ -85,7 +86,9 @@ class ShippingComposer
     {
         $deliveries = $this->getCalculatedDeliveries($context);
         $this->eventDispatcher->dispatch(new BeforeShippingMethodMappingEvent($deliveries));
-        $result = new DataBag($this->shippingMapping->mapShippingMethods($deliveries));
+        $result = new DataBag($deliveries->map(
+            fn(Delivery $delivery) => $this->shippingMapping->mapOutCartShippingMethod($delivery))
+        );
         $this->eventDispatcher->dispatch(new AfterShippingMethodMappingEvent($result));
 
         return $result->all();

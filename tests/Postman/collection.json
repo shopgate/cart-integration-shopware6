@@ -5730,6 +5730,15 @@
                       "    pm.expect(product.tax_percent).to.eq(20);",
                       "    pm.expect(product.currency).to.eq('EUR');",
                       "    pm.expect(product.description).to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.test(\"Shipping extra cost check\", function () {",
+                      "    pm.expect(order.extra_costs).to.be.length(1);",
+                      "    const extraCost = order.extra_costs[0];",
+                      "    pm.expect(extraCost.type).to.eq('shipping');",
+                      "    pm.expect(extraCost.tax_percent).to.eq(20);",
+                      "    pm.expect(extraCost.amount).to.eq(4.9);",
+                      "    pm.expect(extraCost.label).to.eq('DHL Pakte gogreen');",
                       "});"
                     ],
                     "type": "text/javascript"

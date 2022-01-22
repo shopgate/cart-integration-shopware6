@@ -10,10 +10,13 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use ShopgateCart;
 use ShopgateCartItem;
+use ShopgateDeliveryNote;
 use ShopgateExternalCoupon;
+use ShopgateExternalOrderExtraCost;
 use ShopgateExternalOrderItem;
 use ShopgateExternalOrderTax;
 use ShopgateOrder;
+use ShopgateShippingMethod;
 
 class ExtendedClassFactory
 {
@@ -23,6 +26,9 @@ class ExtendedClassFactory
     private ShopgateExternalOrderTax $orderTax;
     private ShopgateExternalCoupon $externalCoupon;
     private ShopgateOrder $order;
+    private ShopgateShippingMethod $shippingMethod;
+    private ShopgateDeliveryNote $deliveryNote;
+    private ShopgateExternalOrderExtraCost $orderExtraCost;
 
     public function __construct(
         ShopgateCart $cart,
@@ -30,7 +36,10 @@ class ExtendedClassFactory
         ShopgateExternalOrderItem $orderItem,
         ShopgateExternalOrderTax $orderTax,
         ShopgateExternalCoupon $externalCoupon,
-        ShopgateOrder $order
+        ShopgateOrder $order,
+        ShopgateShippingMethod $shippingMethod,
+        ShopgateDeliveryNote $deliveryNote,
+        ShopgateExternalOrderExtraCost $orderExtraCost
     ) {
         $this->cart = $cart;
         $this->cartItem = $cartItem;
@@ -38,6 +47,9 @@ class ExtendedClassFactory
         $this->orderTax = $orderTax;
         $this->externalCoupon = $externalCoupon;
         $this->order = $order;
+        $this->shippingMethod = $shippingMethod;
+        $this->deliveryNote = $deliveryNote;
+        $this->orderExtraCost = $orderExtraCost;
     }
 
     /**
@@ -86,5 +98,20 @@ class ExtendedClassFactory
     public function createOrder(): ShopgateOrder
     {
         return clone $this->order;
+    }
+
+    public function createShippingMethod(): ShopgateShippingMethod
+    {
+        return clone $this->shippingMethod;
+    }
+
+    public function createDeliveryNote(): ShopgateDeliveryNote
+    {
+        return clone $this->deliveryNote;
+    }
+
+    public function createOrderExtraCost(): ShopgateExternalOrderExtraCost
+    {
+        return clone $this->orderExtraCost;
     }
 }

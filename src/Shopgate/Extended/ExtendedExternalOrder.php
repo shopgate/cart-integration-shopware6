@@ -20,6 +20,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
@@ -145,6 +146,19 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
     {
         parent::setDeliveryNotes($value->map(
             fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutgoingOrderDeliveryNote($entity))
+        );
+    }
+
+    /**
+     * @param OrderEntity $value
+     */
+    public function setExtraCosts($value): void
+    {
+        parent::setExtraCosts(
+            array_merge(
+                $value->getDeliveries() ? $value->getDeliveries()->map(
+                    fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutOrderShippingMethod($entity)
+                ) : [])
         );
     }
 
