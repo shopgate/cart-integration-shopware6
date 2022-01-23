@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Tests\Customer\Mapping;
+namespace Shopgate\Shopware\Tests\Unit\Customer\Mapping;
 
 use PHPUnit\Framework\TestCase;
 use Shopgate\Shopware\Customer\Mapping\AddressMapping;

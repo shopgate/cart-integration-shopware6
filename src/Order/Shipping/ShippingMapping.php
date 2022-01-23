@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping;
 
+use Shopgate\Shopware\Order\State\StateMapping;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping;
@@ -12,7 +13,6 @@ use ShopgateExternalOrderExtraCost;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 
 class ShippingMapping
 {
@@ -20,15 +20,18 @@ class ShippingMapping
     private ExtendedClassFactory $classFactory;
     private TaxMapping $taxMapping;
     private ShopgateOrderMapping $shopgateOrderMapping;
+    private StateMapping $stateMapping;
 
     public function __construct(
         ExtendedClassFactory $classFactory,
         TaxMapping $taxMapping,
-        ShopgateOrderMapping $shopgateOrderMapping
+        ShopgateOrderMapping $shopgateOrderMapping,
+        StateMapping $stateMapping
     ) {
         $this->classFactory = $classFactory;
         $this->taxMapping = $taxMapping;
         $this->shopgateOrderMapping = $shopgateOrderMapping;
+        $this->stateMapping = $stateMapping;
     }
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
@@ -60,21 +63,11 @@ class ShippingMapping
         $sgDelivery = $this->classFactory->createDeliveryNote();
         $sgDelivery->setShippingServiceId($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
         $sgDelivery->setTrackingNumber(implode(', ', $deliveryEntity->getTrackingCodes()));
-        $sgDelivery->setShippingTime(
-            $deliveryEntity->getCreatedAt() ? $deliveryEntity->getCreatedAt()->format(DATE_ATOM) : null
-        );
+
         if ($state = $deliveryEntity->getStateMachineState()) {
-            $isShipped = in_array($state->getTechnicalName(),
-                [OrderDeliveryStates::STATE_SHIPPED, OrderDeliveryStates::STATE_PARTIALLY_SHIPPED],
-                true);
-            $backupTime = $isShipped && $state->getCreatedAt() ? $state->getCreatedAt()->format(DATE_ATOM) : null;
-            $sgDelivery->setShippingTime($backupTime);
-            $history = $state->getToStateMachineHistoryEntries()
-                ? $state->getToStateMachineHistoryEntries()->first()
-                : null;
-            if ($isShipped && $history && $history->getCreatedAt()) {
-                $sgDelivery->setShippingTime($history->getCreatedAt()->format(DATE_ATOM));
-            }
+            $isShipped = $this->stateMapping->isShipped($state);
+            $shippedDate = $this->stateMapping->getShippingTime($state);
+            $sgDelivery->setShippingTime($isShipped ? $shippedDate : null);
         }
 
         return $sgDelivery;

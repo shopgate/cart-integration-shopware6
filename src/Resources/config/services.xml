@@ -116,6 +116,7 @@
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMethodBridge"/>
+        <service id="Shopgate\Shopware\Order\State\StateMapping"/>
         <service id="Shopgate\Shopware\Order\Taxes\TaxMapping"/>
         <service id="Shopgate\Shopware\Order\Quote\QuoteBridge"/>
         <service id="shopgate.plugin" class="Shopgate\Shopware\Plugin">
