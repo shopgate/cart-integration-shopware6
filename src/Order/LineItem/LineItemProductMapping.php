@@ -143,7 +143,6 @@ class LineItemProductMapping
         ?string $taxStatus
     ): ShopgateExternalOrderItem {
         $sgLineItem = $this->extendedClassFactory->createOrderLineItem();
-        $sgLineItem->setItemNumber($swLineItem->getProductId());
         $sgLineItem->setName($swLineItem->getLabel());
         $sgLineItem->setUnitAmount($swLineItem->getUnitPrice());
         $sgLineItem->setQuantity($swLineItem->getQuantity());
@@ -155,9 +154,18 @@ class LineItemProductMapping
             $sgLineItem->setTaxPercent($this->taxMapping->getPriceTaxRate($price));
         }
 
-        $product = $swLineItem->getProduct();
-        $sgLineItem->setItemNumberPublic($product ? $product->getProductNumber() : $swLineItem->getLabel());
-        $sgLineItem->setDescription($product ? $product->getDescription() : '');
+        /**
+         * Deleted products will not have a 'product' reference
+         */
+        if ($product = $swLineItem->getProduct()) {
+            $sgLineItem->setItemNumberPublic($product->getProductNumber());
+            $sgLineItem->setItemNumber($swLineItem->getProductId());
+            $sgLineItem->setDescription($product->getDescription());
+        } else {
+            $sgLineItem->setItemNumberPublic($swLineItem->getPayload()['productNumber'] ?? $swLineItem->getLabel());
+            $sgLineItem->setItemNumber($swLineItem->getId());
+            $sgLineItem->setDescription($sgLineItem->getDescription());
+        }
 
         return $sgLineItem;
     }

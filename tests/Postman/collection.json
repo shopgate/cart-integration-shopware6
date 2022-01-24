@@ -9,1236 +9,1539 @@
       "name": "Init",
       "item": [
         {
-          "name": "SW: get sales channel",
-          "event": [
+          "name": "System",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get Main Sales Channel data\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Storefront');\r",
-                  "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: get sales channel",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get Main Sales Channel data\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Storefront');\r",
+                      "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
+                      "    pm.environment.set(\"gen_salesChannel_currency_id\", jsonData.data[0].attributes.currencyId);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Storefront\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/sales-channel",
-              "host": [
-                "{{sw_endpoint_api}}"
               ],
-              "path": [
-                "search",
-                "sales-channel"
-              ]
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Storefront\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/sales-channel",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "sales-channel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get non default lang ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Test finding non-default lang: \", function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(1);\r",
+                      "    pm.environment.set(`gen_non_default_lang`, jsonData.data[0]);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{system_default_language}}\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search-ids/language",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search-ids",
+                    "language"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get Headless channel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get values\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Headless');\r",
+                      "    pm.environment.set(\"gen_channel_headless_id\", jsonData.data[0].id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Headless\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/sales-channel",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "sales-channel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get Rules",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"AlwaysValid rule\", function () {\r",
+                      "    pm.expect(jsonData.data,'Should find 3 rules only').to.be.length(3);\r",
+                      "    const alwaysValid = getByName('Always valid (Default)');\r",
+                      "    pm.expect(alwaysValid).to.have.ownProperty('id');\r",
+                      "    pm.environment.set(\"gen_rule_allValid_id\", alwaysValid.id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Cart >= 0 rule\", function () {\r",
+                      "    const cartRule = getByName('Cart >= 0');\r",
+                      "    pm.expect(cartRule).to.have.ownProperty('id');\r",
+                      "    pm.environment.set(\"gen_rule_cartGreaterThan0_id\", cartRule.id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"USA customer rule\", function () {\r",
+                      "    const usaRule = getByName('Customers from USA');\r",
+                      "    pm.expect(usaRule).to.have.ownProperty('id');\r",
+                      "    pm.environment.set(\"gen_rule_usaCustomer_id\", usaRule.id);\r",
+                      "});\r",
+                      "\r",
+                      "function getByName(name) {\r",
+                      "    return jsonData.data.find(rule => rule.name === name);\r",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Always valid (Default)\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Cart >= 0\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Customers from USA\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/rule",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "rule"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: change channel lang",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully changed Headless channel language\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"languageId\": \"{{gen_non_default_lang}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/sales-channel/{{gen_channel_headless_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "sales-channel",
+                    "{{gen_channel_headless_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create customFieldSets",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created all custom field sets\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create customFields",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created all custom fields\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: find other shipping",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"Check ship methods\", function () {\r",
+                      "    pm.expect(jsonData).to.haveOwnProperty('total').to.eq(2);\r",
+                      "    jsonData.data.map((shippingMethod, index) => {\r",
+                      "        pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`);\r",
+                      "        pm.environment.set(\"gen_shipMethod_nonSg_\" + index, shippingMethod.id);\r",
+                      "    });\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/shipping-method",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "shipping-method"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: TMP update rule ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// marked as temp because of ticket SGSW6-88\r",
+                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_0}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_1}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "SW: get shopgate plugin",
-          "event": [
+          "name": "Plugin",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get values\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.environment.set(\"gen_plugin_version\", jsonData.data[0].attributes.version);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: get shopgate plugin",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get values\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"gen_plugin_version\", jsonData.data[0].attributes.version);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"composerName\",\r\n          \"value\": \"shopgate/cart-integration-shopware6\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/plugin",
-              "host": [
-                "{{sw_endpoint_api}}"
               ],
-              "path": [
-                "search",
-                "plugin"
-              ]
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"composerName\",\r\n          \"value\": \"shopgate/cart-integration-shopware6\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/plugin",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "plugin"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: set SG configs",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                 \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.customerNumber\",\r\n                \"configurationValue\": \"{{customer_number}}\"\r\n            },\r\n            {\r\n                \"id\": \"c9ee8625bc3a466ba073c8f6e9a10190\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.apiKey\",\r\n                \"configurationValue\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"id\": \"8711de7d1e0045229f22e1fe0ba98e5f\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"a9cb89b54d594d1b87c4c55be91b7c16\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number_headless}}\",\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"afcd57208add408ca1a019d5996211f0\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isActive\",\r\n                \"configurationValue\": true\r\n            },\r\n            {\r\n                \"id\": \"6a8a85fa614c4d0a889f749c8cde8205\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.productTypesToExport\",\r\n                \"configurationValue\": [\"simple\", \"variant\"]\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check SG shipping",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "// Disabled until SGSW6-88 is handled\r",
+                      "/*\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"Check rules\", function () {\r",
+                      "    jsonData.data.map(shippingMethod => pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`));\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check rules\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eql(2, 'Supposed to have 2 shipping methods installed.');\r",
+                      "    jsonData.data.map(shipMethod => checkRule(shipMethod));\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check deliveries\", function () {\r",
+                      "    jsonData.data.map(shipMethod => checkDelivery(shipMethod));\r",
+                      "});\r",
+                      "*/\r",
+                      "function checkDelivery(shippingMethod) {\r",
+                      "    pm.expect(shippingMethod.deliveryTimeId).to.eq(\r",
+                      "        pm.environment.get('default_deliveryTime_sg_id'),\r",
+                      "        `Incorect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
+                      "    );\r",
+                      "}\r",
+                      "\r",
+                      "function checkRule(shippingMethod) {\r",
+                      "    pm.expect(shippingMethod, 'Rule not present in shipping method: ' + shippingMethod.name).has.ownProperty('availabilityRule').has.ownProperty('id')\r",
+                      "    .to.eq(\r",
+                      "        pm.environment.get('gen_rule_cartGreaterThan0_id'),\r",
+                      "        `Incorect rule by name '${shippingMethod.availabilityRule.name}' for shipMethod: '${shippingMethod.name}' >>>` \r",
+                      "    );\r",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/shipping-method",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "shipping-method"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: set mock api url",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_set_settings}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][name]",
+                      "value": "server",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[0][value]",
+                      "value": "custom",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][name]",
+                      "value": "api_url",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shopgate_settings[1][value]",
+                      "value": "{{mock_server_merchant_uri}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "SW: get all categories",
-          "event": [
+          "name": "Catalog",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "const jsonData = pm.response.json();\r",
-                  "pm.environment.set(\"gen_category_count\", jsonData.total);\r",
-                  "\r",
-                  "pm.test(\"Test finding home category by name: \" + pm.environment.get('category_main_name'), function () {\r",
-                  "    pm.expect(jsonData.total).to.eq(8);\r",
-                  "    jsonData.data.forEach(function(category, index) {\r",
-                  "           pm.environment.set(`gen_category_uid_${index}`, category);\r",
-                  "    });\r",
-                  "});\r",
-                  "\r",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: get all categories",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.environment.set(\"gen_category_count\", jsonData.total);\r",
+                      "\r",
+                      "pm.test(\"Test finding home category by name: \" + pm.environment.get('category_main_name'), function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(8);\r",
+                      "    jsonData.data.forEach(function(category, index) {\r",
+                      "           pm.environment.set(`gen_category_uid_${index}`, category);\r",
+                      "    });\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"{{category_main_name}}\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search-ids/category",
-              "host": [
-                "{{sw_endpoint_api}}"
               ],
-              "path": [
-                "search-ids",
-                "category"
-              ]
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"{{category_main_name}}\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search-ids/category",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search-ids",
+                    "category"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get CMS page ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get values\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Default category layout');\r",
+                      "    pm.environment.set(\"gen_cms_page_default_id\", jsonData.data[0].id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Default category layout\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/cms-page",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "cms-page"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get prod taxId",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "pm.test(\"Tax ID saving\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data.taxId).to.be.a('string').to.not.be.empty;\r",
+                      "    pm.environment.set('gen_product_variant_taxId', jsonData.data.taxId);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "product",
+                    "{{catalog_product_variant}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get variant child",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get child ID\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
+                      "    pm.expect(child).length(1, 'Should have found a child product');\r",
+                      "    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "product",
+                    "{{catalog_product_variant}}",
+                    "children"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: clone variant child",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"parentId\": \"{{catalog_product_variant}}\",\r\n        \"id\": \"{{created_product_variant_child_id}}\",\r\n        \"name\": \"API: Variant Child (Red-M)\",\r\n        \"productNumber\": \"SG.DEMO.CHILD.1\",\r\n        \"taxId\": \"{{gen_product_variant_taxId}}\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 21.25,\r\n                \"gross\": 24.50,\r\n                \"linked\": true\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{gen_product_variant_child_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "clone",
+                    "product",
+                    "{{gen_product_variant_child_id}}"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "SW: get customer group",
-          "event": [
+          "name": "Customer",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "const jsonData = pm.response.json();\r",
-                  "pm.test(\"Test getting main customer group\", function () {\r",
-                  "    pm.expect(jsonData.total).to.eq(1);\r",
-                  "    pm.environment.set(`gen_customer_group_main_id`, jsonData.data[0]);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: get customer group",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"Test getting main customer group\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(1);\r",
+                      "    pm.environment.set(`gen_customer_group_main_id`, jsonData.data[0]);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"2fbb5fe2e29a4d70aa5854ce7ce3e20b\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search-ids/customer-group",
-              "host": [
-                "{{sw_endpoint_api}}"
               ],
-              "path": [
-                "search-ids",
-                "customer-group"
-              ]
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"2fbb5fe2e29a4d70aa5854ce7ce3e20b\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search-ids/customer-group",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search-ids",
+                    "customer-group"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get address country",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get country ISO\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data).be.an('array').to.be.not.empty\r",
+                      "    pm.expect(jsonData.data[0]).to.haveOwnProperty('attributes').to.haveOwnProperty('iso');\r",
+                      "    pm.environment.set(\"gen_customer_default_country_iso\", jsonData.data[0].attributes.iso);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/customer-address/{{customer_default_address_id}}/country",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "customer-address",
+                    "{{customer_default_address_id}}",
+                    "country"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create customer grp",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created customer group successfully\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"id\": \"{{created_customerGroup_gross_id}}\",\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/customer-group",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "customer-group"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create customGrp customer",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Save product id for later use\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
+                      "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{created_customerGroup_gross_id}}\",\r\n        \"email\": \"test_customGrp@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/clone/customer/{{customer_default_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "clone",
+                    "customer",
+                    "{{customer_default_id}}"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "SW: get non default lang ID",
-          "event": [
+          "name": "Promo / Coupons",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "const jsonData = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"Test finding non-default lang: \", function () {\r",
-                  "    pm.expect(jsonData.total).to.eq(1);\r",
-                  "    pm.environment.set(`gen_non_default_lang`, jsonData.data[0]);\r",
-                  "});\r",
-                  "\r",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: create coupon code",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created entity successfully\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{system_default_language}}\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search-ids/language",
-              "host": [
-                "{{sw_endpoint_api}}"
               ],
-              "path": [
-                "search-ids",
-                "language"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: get Headless channel",
-          "event": [
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"id\": \"{{created_promotion_byCode_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: promo by code\",\r\n    \"code\": \"{{created_promotion_byCode_code}}\",\r\n    \"exclusive\": false,\r\n    \"useCodes\": true,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 2.25\r\n        }\r\n    ],\r\n    \"salesChannels\":[\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/promotion",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "promotion"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get values\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Headless');\r",
-                  "    pm.environment.set(\"gen_channel_headless_id\", jsonData.data[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: create USA billing promo",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created entity successfully\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Headless\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/sales-channel",
-              "host": [
-                "{{sw_endpoint_api}}"
               ],
-              "path": [
-                "search",
-                "sales-channel"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: set SG configs",
-          "event": [
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"id\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: promo by Billing Country USA\",\r\n    \"code\": null,\r\n    \"exclusive\": false,\r\n    \"useCodes\": false,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"percentage\",\r\n            \"value\": 10\r\n        },\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"delivery\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 1.5\r\n        },\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"delivery\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 1.0\r\n        }\r\n    ],\r\n    \"salesChannels\": [\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/promotion",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "promotion"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {
-              "accept": true
-            }
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: condition to USA promo",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created entity successfully\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                 \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.customerNumber\",\r\n                \"configurationValue\": \"{{customer_number}}\"\r\n            },\r\n            {\r\n                \"id\": \"c9ee8625bc3a466ba073c8f6e9a10190\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.apiKey\",\r\n                \"configurationValue\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"id\": \"8711de7d1e0045229f22e1fe0ba98e5f\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"a9cb89b54d594d1b87c4c55be91b7c16\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number_headless}}\",\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"afcd57208add408ca1a019d5996211f0\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isActive\",\r\n                \"configurationValue\": true\r\n            },\r\n            {\r\n                \"id\": \"6a8a85fa614c4d0a889f749c8cde8205\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.productTypesToExport\",\r\n                \"configurationValue\": [\"simple\", \"variant\"]\r\n            }\r\n        ]\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/sync",
-              "host": [
-                "{{sw_endpoint_api}}"
               ],
-              "path": [
-                "_action",
-                "sync"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: get All Valid Rule",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get values\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Always valid (Default)', 'Rule exists, check that you are on the right language');\r",
-                  "    pm.environment.set(\"gen_rule_allValid_id\", jsonData.data[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"promotionId\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"ruleId\": \"{{gen_rule_usaCustomer_id}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/promotion-persona-rule",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "promotion-persona-rule"
+                  ]
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Always valid (Default)\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/rule",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "search",
-                "rule"
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: get CMS page ID",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get values\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Default category layout');\r",
-                  "    pm.environment.set(\"gen_cms_page_default_id\", jsonData.data[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Default category layout\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/cms-page",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "search",
-                "cms-page"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: change channel lang",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successfully changed Headless channel language\", function () {\r",
-                  "    pm.response.to.have.status(204);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {
-              "accept": true
-            }
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"languageId\": \"{{gen_non_default_lang}}\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/sales-channel/{{gen_channel_headless_id}}",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "sales-channel",
-                "{{gen_channel_headless_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: get address country",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get country ISO\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data).be.an('array').to.be.not.empty\r",
-                  "    pm.expect(jsonData.data[0]).to.haveOwnProperty('attributes').to.haveOwnProperty('iso');\r",
-                  "    pm.environment.set(\"gen_customer_default_country_iso\", jsonData.data[0].attributes.iso);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{sw_endpoint_api}}/customer-address/{{customer_default_address_id}}/country",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "customer-address",
-                "{{customer_default_address_id}}",
-                "country"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: get variant child",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get child ID\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
-                  "    pm.expect(child).length(1, 'Should have found a child product');\r",
-                  "    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "product",
-                "{{catalog_product_variant}}",
-                "children"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create customFieldSets",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Created all custom field sets\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/sync",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "sync"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: check SG shipping",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "// Disabled until SGSW6-88 is handled\r",
-                  "/*\r",
-                  "const jsonData = pm.response.json();\r",
-                  "pm.test(\"Check rules\", function () {\r",
-                  "    jsonData.data.map(shippingMethod => pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`));\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Check rules\", function () {\r",
-                  "    pm.expect(jsonData.total).to.eql(2, 'Supposed to have 2 shipping methods installed.');\r",
-                  "    jsonData.data.map(shipMethod => checkRule(shipMethod));\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Check deliveries\", function () {\r",
-                  "    jsonData.data.map(shipMethod => checkDelivery(shipMethod));\r",
-                  "});\r",
-                  "*/\r",
-                  "function checkDelivery(shippingMethod) {\r",
-                  "    pm.expect(shippingMethod.deliveryTimeId).to.eq(\r",
-                  "        pm.environment.get('default_deliveryTime_sg_id'),\r",
-                  "        `Incorect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
-                  "    );\r",
-                  "}\r",
-                  "\r",
-                  "function checkRule(shippingMethod) {\r",
-                  "    pm.expect(shippingMethod, 'Rule not present in shipping method: ' + shippingMethod.name).has.ownProperty('availabilityRule').has.ownProperty('id')\r",
-                  "    .to.eq(\r",
-                  "        pm.environment.get('gen_rule_cartGreaterThan0_id'),\r",
-                  "        `Incorect rule by name '${shippingMethod.availabilityRule.name}' for shipMethod: '${shippingMethod.name}' >>>` \r",
-                  "    );\r",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/shipping-method",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "search",
-                "shipping-method"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: find Cart>0 Rule",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get values\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Cart >= 0', 'Rule exists, check that you are on the right language');\r",
-                  "    pm.environment.set(\"gen_rule_cartGreaterThan0_id\", jsonData.data[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Cart >= 0\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/rule",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "search",
-                "rule"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: find other shipping",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "const jsonData = pm.response.json();\r",
-                  "pm.test(\"Check ship methods\", function () {\r",
-                  "    pm.expect(jsonData).to.haveOwnProperty('total').to.eq(2);\r",
-                  "    jsonData.data.map((shippingMethod, index) => {\r",
-                  "        pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`);\r",
-                  "        pm.environment.set(\"gen_shipMethod_nonSg_\" + index, shippingMethod.id);\r",
-                  "    });\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/search/shipping-method",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "search",
-                "shipping-method"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: TMP update rule ID",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// marked as temp because of ticket SGSW6-88\r",
-                  "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {
-              "accept": true
-            }
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"update-shipping-method\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{default_shipMethod_sgFree_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_0}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{gen_shipMethod_nonSg_1}}\",\r\n                \"availabilityRuleId\": \"{{gen_rule_cartGreaterThan0_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"update-payment-method\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{default_payMethod_sgDefault_id}}\",\r\n                \"availabilityRuleId\": \"{{default_rule_isShopgate_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/sync",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "sync"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create customer grp",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Created customer group successfully\", function () {\r",
-                  "    pm.response.to.have.status(204);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"id\": \"{{created_customerGroup_gross_id}}\",\r\n    \"name\": \"A custom group\",\r\n    \"displayGross\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/customer-group",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "customer-group"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create customGrp customer",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Product created\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Save product id for later use\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                  "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{created_customerGroup_gross_id}}\",\r\n        \"email\": \"test_customGrp@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/clone/customer/{{customer_default_id}}",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "clone",
-                "customer",
-                "{{customer_default_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create coupon code",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Created entity successfully\", function () {\r",
-                  "    pm.response.to.have.status(204);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"id\": \"{{created_promotion_byCode_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: promo by code\",\r\n    \"code\": \"{{created_promotion_byCode_code}}\",\r\n    \"exclusive\": false,\r\n    \"useCodes\": true,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 2.25\r\n        }\r\n    ],\r\n    \"salesChannels\":[\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/promotion",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "promotion"
-              ]
-            }
-          },
-          "response": []
+          ]
         }
       ],
       "event": [
@@ -1524,6 +1827,38 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "M: mock server check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Mockoon is enabled\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{mock_server_merchant_uri}}",
+              "host": [
+                "{{mock_server_merchant_uri}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -1533,162 +1868,6 @@
         {
           "name": "AddOrder",
           "item": [
-            {
-              "name": "M: mock server check",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 404\", function () {\r",
-                      "    pm.response.to.have.status(404);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Mockoon is enabled\", function () {\r",
-                      "    var jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{mock_server_merchant_uri}}",
-                  "host": [
-                    "{{mock_server_merchant_uri}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: set mock api url",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.response.to.have.status(200);",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_set_settings}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[0][name]",
-                      "value": "server",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[0][value]",
-                      "value": "custom",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[1][name]",
-                      "value": "api_url",
-                      "type": "text"
-                    },
-                    {
-                      "key": "shopgate_settings[1][value]",
-                      "value": "{{mock_server_merchant_uri}}",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: create customFields",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Created all custom fields\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {}
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/_action/sync",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "_action",
-                    "sync"
-                  ]
-                }
-              },
-              "response": []
-            },
             {
               "name": "SG: addOrder",
               "event": [
@@ -4441,7 +4620,7 @@
                       "    pm.expect(coupon.currency).to.eq('EUR');",
                       "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
-                      "    pm.expect(internalInfo.id).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
                       "});",
                       "",
@@ -4915,6 +5094,204 @@
                     {
                       "key": "cart[items][1][currency]",
                       "value": "EUR",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart USA ship promo",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(1, 'Should be 4 items in cart');",
+                      "});",
+                      "pm.test(\"Check item success\", function () {",
+                      "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(672.27);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
+                      "});",
+                      "",
+                      "pm.test(\"Check USA customer auto rule\", function () {",
+                      "    const coupon = jsonData.external_coupons[0];",
+                      "    pm.expect(jsonData.external_coupons).length(1);",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.code).to.be.a('string');",
+                      "    pm.expect(coupon.amount_net).to.eq(67.23);",
+                      "    pm.expect(coupon.amount_gross).to.eq(80);",
+                      "    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                      "});",
+                      "",
+                      "function getItemById(id) {",
+                      "    return jsonData.items.find(item => item.item_number === id);",
+                      "};"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "Phoenix",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "US",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][state]",
+                      "value": "US-AZ",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "{{gen_customer_default_country_iso}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
                       "type": "text"
                     }
                   ]
@@ -5622,8 +5999,9 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "const moment = require('moment');",
-                      "const now = moment().format('YYYY-MM-DD');",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
                       "",
                       "const jsonData = pm.response.json();",
                       "pm.test(\"Not an error\", function () {",
@@ -5664,9 +6042,9 @@
                       "    pm.expect(address.street_1).to.eq('My Street 1 A');",
                       "    pm.expect(address.street_2).to.eq('My Street 2 A');",
                       "    pm.expect(address.zipcode).to.eq('27404');",
-                      "    pm.expect(address.city).to.eq('Frankenbostel');",
-                      "    pm.expect(address.country).to.eq('GB');",
-                      "    pm.expect(address.state).to.eq('GB-ABC');",
+                      "    pm.expect(address.city).to.eq('Phoenix');",
+                      "    pm.expect(address.country).to.eq('US');",
+                      "    pm.expect(address.state).to.eq('US-AZ');",
                       "    pm.expect(address.phone).to.eq('+1-111-111-1111');",
                       "});",
                       "",
@@ -5702,12 +6080,13 @@
                       "    const tax = order.order_taxes[0];",
                       "    pm.expect(tax.label).to.eq('plus 20% VAT');",
                       "    pm.expect(tax.tax_percent).to.eq(20);",
-                      "    pm.expect(tax.amount).to.eq(83.1);",
+                      "    pm.expect(tax.amount).to.eq(78.08);",
                       "});",
                       "",
-                      "pm.test(\"Promotion check\", function () {",
-                      "    pm.expect(order.external_coupons).to.be.length(1);",
-                      "    const coupon = order.external_coupons[0];",
+                      "pm.test(\"Promotion by code check\", function () {",
+                      "    pm.expect(order.external_coupons).to.be.length(4);",
+                      "    const coupon = getItemByName(order.external_coupons, 'API: promo by code');",
+                      "    pm.expect(coupon, 'Could not locate coupon by code').to.not.be.undefined;",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
@@ -5717,19 +6096,64 @@
                       "    pm.expect(coupon.currency).to.eq('EUR');",
                       "    pm.expect(coupon.is_free_shipping).to.eq(null);",
                       "});",
+                      "pm.test(\"Auto Promo 10% discount check\", function () {",
+                      "    const promoDiscount = getItemByName(order.external_coupons, 'API: promo by Billing Country USA');",
+                      "    pm.expect(promoDiscount, 'Could not locate 10% promo discount').to.not.be.undefined;",
+                      "    pm.expect(promoDiscount.code).to.not.be.null;",
+                      "    pm.expect(promoDiscount.name).to.eq('API: promo by Billing Country USA');",
+                      "    pm.expect(promoDiscount.amount_net).to.eq(43.37);",
+                      "    pm.expect(promoDiscount.amount_gross).to.eq(52.05);",
+                      "    pm.expect(promoDiscount.tax_type).to.eq('auto');",
+                      "    pm.expect(promoDiscount.currency).to.eq('EUR');",
+                      "    pm.expect(promoDiscount.is_free_shipping).to.eq(null);",
+                      "});",
+                      "    ",
+                      "pm.test(\"Shipping discount 1 check\", function () {",
+                      "    const shippingDiscount = getItemByName(order.external_coupons, 'discount shipping costs 1');",
+                      "    pm.expect(shippingDiscount, 'Could not loate shipping discount').to.not.be.undefined;",
+                      "    pm.expect(shippingDiscount.code).to.eq('1');",
+                      "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 1');",
+                      "    pm.expect(shippingDiscount.amount_net).to.eq(0.83);",
+                      "    pm.expect(shippingDiscount.amount_gross).to.eq(1.0);",
+                      "    pm.expect(shippingDiscount.tax_type).to.eq('auto');",
+                      "    pm.expect(shippingDiscount.currency).to.eq('EUR');",
+                      "    pm.expect(shippingDiscount.is_free_shipping).to.eq(null);",
+                      "});",
+                      "",
+                      "pm.test(\"Shipping discount 2 check\", function () {",
+                      "    const shippingDiscount = getItemByName(order.external_coupons, 'discount shipping costs 2');",
+                      "    pm.expect(shippingDiscount, 'Could not loate shipping discount').to.not.be.undefined;",
+                      "    pm.expect(shippingDiscount.code).to.eq('2');",
+                      "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 2');",
+                      "    pm.expect(shippingDiscount.amount_net).to.eq(1.25);",
+                      "    pm.expect(shippingDiscount.amount_gross).to.eq(1.5);",
+                      "    pm.expect(shippingDiscount.tax_type).to.eq('auto');",
+                      "    pm.expect(shippingDiscount.currency).to.eq('EUR');",
+                      "    pm.expect(shippingDiscount.is_free_shipping).to.eq(null);",
+                      "});",
                       "",
                       "pm.test(\"Item check\", function () {",
-                      "    pm.expect(order.items).to.be.length(1);",
-                      "    const product = order.items[0];",
+                      "    pm.expect(order.items).to.be.length(2);",
+                      "    const product = getItemByName(order.items, 'Main product');",
+                      "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
                       "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
                       "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
                       "    pm.expect(product.quantity).to.eq(1);",
-                      "    pm.expect(product.name).to.eq('Main product');",
                       "    pm.expect(product.unit_amount).to.eq(413.29);",
                       "    pm.expect(product.unit_amount_with_tax).to.eq(495.95);",
                       "    pm.expect(product.tax_percent).to.eq(20);",
                       "    pm.expect(product.currency).to.eq('EUR');",
                       "    pm.expect(product.description).to.not.be.empty;",
+                      "    const variantChild = getItemByName(order.items, 'API: Variant Child (Red-M)');",
+                      "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
+                      "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
+                      "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
+                      "    pm.expect(variantChild.quantity).to.eq(1);",
+                      "    pm.expect(variantChild.unit_amount).to.eq(20.42);",
+                      "    pm.expect(variantChild.unit_amount_with_tax).to.eq(24.5);",
+                      "    pm.expect(variantChild.tax_percent).to.eq(20);",
+                      "    pm.expect(variantChild.currency).to.eq('EUR');",
+                      "    pm.expect(variantChild.description).to.be.null;",
                       "});",
                       "",
                       "pm.test(\"Shipping extra cost check\", function () {",
@@ -5738,7 +6162,240 @@
                       "    pm.expect(extraCost.type).to.eq('shipping');",
                       "    pm.expect(extraCost.tax_percent).to.eq(20);",
                       "    pm.expect(extraCost.amount).to.eq(4.9);",
-                      "    pm.expect(extraCost.label).to.eq('DHL Pakte gogreen');",
+                      "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
+                      "});",
+                      "",
+                      "function getItemByName(list, name) {",
+                      "    return list.find(item => item.name === name);",
+                      "};"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_orders}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_token",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_language",
+                      "value": "",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get deliveryId",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "pm.test(\"Your test name\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.total).to.eql(1);\r",
+                      "    const delivery = jsonData.data[0];\r",
+                      "    pm.expect(delivery.trackingCodes, 'Tracking codes should be empty').to.be.a('array').to.be.length(0);\r",
+                      "    pm.environment.set(\"gen_order_0003_delivery_id\", delivery.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/order/{{gen_order_0003_id}}/deliveries",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "order",
+                    "{{gen_order_0003_id}}",
+                    "deliveries"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: ship order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Your test name\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.technicalName).to.eql('shipped');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"sendMail\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/order_delivery/{{gen_order_0003_delivery_id}}/state/ship",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "order_delivery",
+                    "{{gen_order_0003_delivery_id}}",
+                    "state",
+                    "ship"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check delivery",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const moment = require('moment');",
+                      "",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.expect(jsonData.error).to.eq(0);",
+                      "    pm.expect(jsonData.orders).to.be.length(1);",
+                      "});",
+                      "",
+                      "const order = jsonData.orders[0];",
+                      "pm.test(\"Basic order data\", function () {",
+                      "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_0003_id'));",
+                      "    pm.expect(order.status_name).to.eq('Open');",
+                      "});",
+                      "",
+                      "pm.test(\"Delivery notes\", function () {",
+                      "    pm.expect(order.delivery_notes).to.be.length(1);",
+                      "    const note = order.delivery_notes[0];",
+                      "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                      "    pm.expect(note.shipping_service_name).to.eq('');",
+                      "    pm.expect(note.tracking_number).to.eq('test-code-1, test-code-2');",
+                      "    pm.expect(note.shipping_time).to.be.a('string').to.not.be.empty;",
+                      "    const time = moment(note.shipping_time);",
+                      "    pm.expect(time.isValid()).to.eq(true);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -5800,6 +6457,73 @@
                   "raw": "{{domain}}",
                   "host": [
                     "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: set tracking codes",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"trackingCodes\": [\"test-code-1\", \"test-code-2\"]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/order/{{gen_order_0003_id}}/deliveries/{{gen_order_0003_delivery_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "order",
+                    "{{gen_order_0003_id}}",
+                    "deliveries",
+                    "{{gen_order_0003_delivery_id}}"
                   ]
                 }
               },

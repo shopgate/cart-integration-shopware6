@@ -9,8 +9,10 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Formatter;
 use ShopgateExternalCoupon;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 
 class LineItemPromoMapping
@@ -18,15 +20,19 @@ class LineItemPromoMapping
     private ContextManager $contextManager;
     private ExtendedClassFactory $classFactory;
     private TaxMapping $taxMapping;
+    private Formatter $formatter;
+    private int $shippingDiscountIndex = 1;
 
     public function __construct(
         ContextManager $contextManager,
         ExtendedClassFactory $classFactory,
-        TaxMapping $taxMapping
+        TaxMapping $taxMapping,
+        Formatter $formatter
     ) {
         $this->contextManager = $contextManager;
         $this->classFactory = $classFactory;
         $this->taxMapping = $taxMapping;
+        $this->formatter = $formatter;
     }
 
     /**
@@ -50,22 +56,29 @@ class LineItemPromoMapping
         return $lineItems;
     }
 
+    /**
+     * A rule or coupon can have multiple discounts, and therefore we use discount ID as true identifier
+     */
     public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ShopgateExternalCoupon
     {
-        $couponId = $lineItem->getPayload()['promotionId'] ?? $lineItem->getId();
+        $discountId = $lineItem->getPayload()['discountId'] ?? $lineItem->getId();
         $couponCode = $lineItem->getReferencedId(); // empty string when automatic cart_rule
-        $code = empty($couponCode) ? $couponId : $couponCode;
+        $code = empty($couponCode) ? $discountId : $couponCode;
         $coupon = $sgCart->findExternalCoupon($code) ?? $this->classFactory->createExternalCoupon()->setIsNew(true);
         $coupon->setCode($code);
         $coupon->setType(empty($couponCode) ? ExtendedExternalCoupon::TYPE_CART_RULE
             : ExtendedExternalCoupon::TYPE_COUPON);
-        $coupon->addDecodedInfo(['id' => $couponId]);
+        $coupon->addDecodedInfo(array_intersect_key($lineItem->getPayload(),
+            array_flip(['discountId', 'promotionId'])));
         $coupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
         $coupon->setIsValid(true);
         $coupon->setName($lineItem->getLabel());
         $coupon->setIsFreeShipping(false);
         if ($lineItem->getPrice()) {
-            $coupon->setAmountGross(-($lineItem->getPrice()->getTotalPrice()));
+            // might need to pass cart status instead
+            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($lineItem->getPrice(), 'gross');
+            $coupon->setAmountNet(-($priceWithoutTax));
+            $coupon->setAmountGross(-($priceWithTax));
         }
 
         return $coupon;
@@ -88,6 +101,26 @@ class LineItemPromoMapping
             $sgCoupon->setAmountNet(-($priceWithoutTax));
             $sgCoupon->setAmountGross(-($priceWithTax));
         }
+
+        return $sgCoupon;
+    }
+
+    public function mapOutgoingOrderShippingPromo(OrderDeliveryEntity $deliveryEntity, ?string $taxStatus)
+    {
+        $index = (string)$this->shippingDiscountIndex;
+        $sgCoupon = $this->classFactory->createExternalCoupon();
+        $sgCoupon->setIsValid(true);
+        $sgCoupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
+        $sgCoupon->setName(
+            $this->formatter->translate('sg-quote.discountLabelShippingCosts', [], null) . " $index"
+        );
+        $sgCoupon->setCode($index);
+        if ($price = $deliveryEntity->getShippingCosts()) {
+            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($price, $taxStatus);
+            $sgCoupon->setAmountNet(-($priceWithoutTax));
+            $sgCoupon->setAmountGross(-($priceWithTax));
+        }
+        $this->shippingDiscountIndex++;
 
         return $sgCoupon;
     }

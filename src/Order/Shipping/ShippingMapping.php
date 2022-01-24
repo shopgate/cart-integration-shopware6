@@ -8,6 +8,7 @@ use Shopgate\Shopware\Order\State\StateMapping;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping;
+use Shopgate\Shopware\System\Formatter;
 use ShopgateDeliveryNote;
 use ShopgateExternalOrderExtraCost;
 use ShopgateShippingMethod;
@@ -16,22 +17,24 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 
 class ShippingMapping
 {
-
     private ExtendedClassFactory $classFactory;
     private TaxMapping $taxMapping;
     private ShopgateOrderMapping $shopgateOrderMapping;
     private StateMapping $stateMapping;
+    private Formatter $formatter;
 
     public function __construct(
         ExtendedClassFactory $classFactory,
         TaxMapping $taxMapping,
         ShopgateOrderMapping $shopgateOrderMapping,
-        StateMapping $stateMapping
+        StateMapping $stateMapping,
+        Formatter $formatter
     ) {
         $this->classFactory = $classFactory;
         $this->taxMapping = $taxMapping;
         $this->shopgateOrderMapping = $shopgateOrderMapping;
         $this->stateMapping = $stateMapping;
+        $this->formatter = $formatter;
     }
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
@@ -49,11 +52,13 @@ class ShippingMapping
 
     public function mapOutOrderShippingMethod(OrderDeliveryEntity $deliveryEntity): ShopgateExternalOrderExtraCost
     {
+        $price = $deliveryEntity->getShippingCosts()->getTotalPrice();
         $sgExport = $this->classFactory->createOrderExtraCost();
-        $sgExport->setAmount($deliveryEntity->getShippingCosts()->getTotalPrice());
+        $sgExport->setAmount($price);
         $sgExport->setType(ShopgateExternalOrderExtraCost::TYPE_SHIPPING);
         $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($deliveryEntity->getShippingCosts()));
-        $sgExport->setLabel($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
+        $label = $this->formatter->translate('sg-quote.summaryLabelShippingCosts', [], null);
+        $sgExport->setLabel($label);
 
         return $sgExport;
     }

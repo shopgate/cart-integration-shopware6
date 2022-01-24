@@ -42,8 +42,8 @@
           "value": "My order comment"
         }
       ],
-      "payment_method": "COD",
-      "payment_group": "COD",
+      "payment_method": "PREPAY",
+      "payment_group": "PREPAY",
       "invoice_address": {
         "id": null,
         "is_invoice_address": true,
@@ -56,9 +56,9 @@
         "street_1": "My Street 1 A",
         "street_2": "My Street 2 A",
         "zipcode": "27404",
-        "city": "Frankenbostel",
-        "country": "GB",
-        "state": "GB-ABC",
+        "city": "Phoenix",
+        "country": "US",
+        "state": "US-AZ",
         "phone": "+1-111-111-1111",
         "mobile": null,
         "mail": "customer_test2@example.com",
@@ -94,12 +94,12 @@
         {
           "item_number": "2a88d9b59d474c7e869d8071649be43c",
           "quantity": 1,
-          "name": "Main Product",
-          "currency": "EUR",
-          "internal_order_info": null,
-          "options": [],
-          "inputs": [],
-          "attributes": []
+          "name": "Main Product"
+        },
+        {
+          "item_number": "ff951c236e5b9fca68f186da252aa026",
+          "quantity": 1,
+          "name": "API: Cloned & Altered Variant Child Red-M"
         }
       ]
     }

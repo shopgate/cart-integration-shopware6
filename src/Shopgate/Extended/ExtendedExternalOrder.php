@@ -12,16 +12,15 @@ use Shopgate\Shopware\Order\Shipping\ShippingMapping;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use ShopgateAddress;
 use ShopgateExternalOrder;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 
@@ -73,16 +72,18 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
     }
 
     /**
-     * @param OrderLineItemCollection $value
+     * @param OrderEntity $value
      */
     public function setItems($value): void
     {
-        /** @var ?ArrayStruct $status */
-        $status = $value->getExtension('sg.taxStatus');
-        $taxStatus = $status ? $status->getVars()['taxStatus'] : null;
-        parent::setItems($value->map(
-            fn(OrderLineItemEntity $entity) => $this->productMapping->mapOutgoingOrderProduct($entity, $taxStatus))
-        );
+        if (null === ($lineItems = $value->getLineItems())) {
+            return;
+        }
+        $status = $value->getTaxStatus();
+        parent::setItems(
+            $lineItems
+                ->filterByType(LineItem::PRODUCT_LINE_ITEM_TYPE)
+                ->map(fn(OrderLineItemEntity $item) => $this->productMapping->mapOutgoingOrderProduct($item, $status)));
     }
 
     /**
@@ -122,29 +123,44 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setOrderTaxes($value): void
     {
-        parent::setOrderTaxes($value->map(
-            fn(CalculatedTax $tax) => $this->taxMapping->mapOutgoingOrderTaxes($tax))
-        );
+        parent::setOrderTaxes($value->map(fn(CalculatedTax $tax) => $this->taxMapping->mapOutgoingOrderTaxes($tax)));
     }
 
     /**
-     * @param OrderLineItemCollection $value
+     * Deliveries are presorted. The first element is the real shipping cost.
+     * The rest are discounts on shipping cost.
+     * Line items will contain 0 priced promotions (these are artifacts of discounted shipping costs)
+     * We get rid of the line item 0 promotion items and add them from the delivery list.
+     *
+     * @param OrderEntity $value
      */
     public function setExternalCoupons($value): void
     {
-        /** @var ?ArrayStruct $status */
-        $status = $value->getExtension('sg.taxStatus');
-        $taxStatus = $status ? $status->getVars()['taxStatus'] : null;
-        parent::setExternalCoupons($value->map(
-            fn(OrderLineItemEntity $entity) => $this->promoMapping->mapOutgoingOrderPromo($entity, $taxStatus)));
+        $promos = [];
+        $status = $value->getTaxStatus();
+        if ($value->getLineItems()) {
+            $promos = $value->getLineItems()
+                ->filterByType(LineItem::PROMOTION_LINE_ITEM_TYPE)
+                ->filter(fn(OrderLineItemEntity $entity) => abs($entity->getTotalPrice()) !== 0.0)
+                ->map(fn(OrderLineItemEntity $entity) => $this->promoMapping->mapOutgoingOrderPromo($entity, $status));
+        }
+        parent::setExternalCoupons(array_merge(
+            $promos,
+            $value->getDeliveries() ? $value->getDeliveries()->slice(1)->map(
+                fn(OrderDeliveryEntity $entity) => $this->promoMapping->mapOutgoingOrderShippingPromo($entity, $status)
+            ) : []
+        ));
     }
 
     /**
+     * Deliveries are presorted. The first element is the real shipping cost.
+     *
      * @param OrderDeliveryCollection $value
      */
     public function setDeliveryNotes($value): void
     {
-        parent::setDeliveryNotes($value->map(
+        // everything past the first note is a discounted shipping (coupon or promo)
+        parent::setDeliveryNotes($value->slice(0, 1)->map(
             fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutgoingOrderDeliveryNote($entity))
         );
     }
@@ -156,7 +172,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
     {
         parent::setExtraCosts(
             array_merge(
-                $value->getDeliveries() ? $value->getDeliveries()->map(
+                $value->getDeliveries() ? $value->getDeliveries()->slice(0, 1)->map(
                     fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutOrderShippingMethod($entity)
                 ) : [])
         );
