@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "edbf7223-af65-4bc5-8a56-a6ea5646efed",
-    "name": "SW6 CI Tests",
+    "name": "SW6 CI Tests - get_orders",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -3605,16 +3605,20 @@
                           "if (pm.globals.get('verbose')) {",
                           "    console.log(jsonObject);",
                           "}",
-                          "pm.test(\"Check `adv price` product caregory sort\", function () {",
+                          "pm.test(\"General check\", function () {",
+                          "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(5, 'Should have certain amount of products');",
+                          "});",
+                          "",
+                          "pm.test(\"Check `adv price` product category sort\", function () {",
                           "    checkManualCategoryExistence(pm.environment.get('catalog_product_advPrices_id'), '3');",
                           "});",
-                          "pm.test(\"Check `free ship` product caregory sort\", function () {",
+                          "pm.test(\"Check `free ship` product category sort\", function () {",
                           "    checkManualCategoryExistence(pm.environment.get('catalog_product_freeShip'), '1');",
                           "});",
-                          "pm.test(\"Check `variant` product caregory sort\", function () {",
+                          "pm.test(\"Check `variant` product category sort\", function () {",
                           "    checkManualCategoryExistence(pm.environment.get('catalog_product_variant'), '4');",
                           "});",
-                          "pm.test(\"Check `prod props` product caregory sort\", function () {",
+                          "pm.test(\"Check `prod props` product category sort\", function () {",
                           "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '2');",
                           "});",
                           "",
@@ -3998,6 +4002,16 @@
                         {
                           "key": "uids[0]",
                           "value": "{{catalog_product_variant}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "debug_log",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "use_errorhandler",
+                          "value": "1",
                           "type": "text"
                         }
                       ]
