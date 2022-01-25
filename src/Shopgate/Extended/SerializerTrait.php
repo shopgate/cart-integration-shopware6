@@ -5,6 +5,11 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 
 use Shopgate_Helper_DataStructure;
 
+/**
+ * Takes the internal_*_info property of an object and
+ * json decodes it to a different property. Also helps
+ * add data seamlessly to the internal_info field.
+ */
 trait SerializerTrait
 {
     protected array $decodedInfo = [];
@@ -15,6 +20,9 @@ trait SerializerTrait
      */
     public function initializeTrait(): void
     {
+        if (null !== $this->jsonHelper) {
+            return;
+        }
         $this->jsonHelper = new Shopgate_Helper_DataStructure();
         $result = $this->jsonHelper->jsonDecode($this->getUtilityInternalInfo(), true) ?? [];
         if (count($result)) {
@@ -34,9 +42,7 @@ trait SerializerTrait
 
     public function addDecodedInfo(array $info): self
     {
-        if (null === $this->jsonHelper) {
-            $this->initializeTrait();
-        }
+        $this->initializeTrait();
         $this->decodedInfo = array_merge($this->decodedInfo, $info);
 
         return $this;
@@ -44,27 +50,36 @@ trait SerializerTrait
 
     public function getDecodedInfo(): array
     {
-        if (null === $this->jsonHelper) {
-            $this->initializeTrait();
-        }
+        $this->initializeTrait();
         return $this->decodedInfo;
     }
 
     public function setDecodedInfo(array $decodedInfo): self
     {
-        if (null === $this->jsonHelper) {
-            $this->initializeTrait();
-        }
+        $this->initializeTrait();
         $this->decodedInfo = $decodedInfo;
 
         return $this;
     }
 
-    public function toArray(): array
+    /**
+     * Since constructor was rewritten, it's the only way to
+     * import array data
+     */
+    public function loadArray(array $data = []): array
     {
-        if (null === $this->jsonHelper) {
+        $unmapped = parent::loadArray($data);
+        // we want to decode only when actual data is coming in
+        if (!empty($data)) {
             $this->initializeTrait();
         }
+
+        return $unmapped;
+    }
+
+    public function toArray(): array
+    {
+        $this->initializeTrait();
         $internalInfo = $this->jsonHelper->jsonDecode($this->getUtilityInternalInfo(), true);
         $encode = array_merge($this->decodedInfo, is_array($internalInfo) ? $internalInfo : []);
         $encoded = $this->jsonHelper->jsonEncode($encode);

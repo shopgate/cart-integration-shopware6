@@ -156,13 +156,16 @@
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart">
             <argument key="$extendedExternalCoupon" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
+            <argument key="$extendedOrderItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrderItem"/>
         </service>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedToArrayVisitor"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrder">
             <argument key="$extendedExternalCoupon" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
+            <argument key="$extendedOrderItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrderItem"/>
             <argument key="$visitor" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedToArrayVisitor"/>
         </service>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrderItem"/>
         <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_order"/>
         </service>

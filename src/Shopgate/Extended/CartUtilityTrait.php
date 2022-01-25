@@ -109,11 +109,42 @@ trait CartUtilityTrait
             }
 
             if (is_array($element)) {
-                $element = new ExtendedOrderItem($element);
+                $class = clone $this->orderItem;
+                $class->loadArray($element);
+                $element = $class;
             }
         }
         unset($element);
 
         $this->items = $value;
+    }
+
+    /**
+     * @param ExtendedExternalCoupon[]|null $value
+     */
+    public function setExternalCoupons($value): void
+    {
+        if (!is_array($value)) {
+            $this->external_coupons = null;
+            return;
+        }
+
+        foreach ($value as $index => &$element) {
+            if ((!is_object($element) || !($element instanceof ShopgateExternalCoupon)) && !is_array($element)) {
+                unset($value[$index]);
+                continue;
+            }
+
+            if (is_array($element)) {
+                $class = clone $this->externalCoupon;
+                $class->loadArray($element);
+                $element = $class;
+            }
+        }
+
+        // safety
+        unset($element);
+
+        $this->external_coupons = $value;
     }
 }

@@ -7,21 +7,25 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 use ShopgateContainerToArrayVisitor;
 use ShopgateExternalCoupon;
 use ShopgateOrder;
+use ShopgateOrderItem;
 
 class ExtendedOrder extends ShopgateOrder
 {
     use CloningTrait;
     use CartUtilityTrait;
 
-    private ShopgateExternalCoupon $externalCoupon;
+    protected ShopgateExternalCoupon $externalCoupon;
+    protected ShopgateOrderItem $orderItem;
     private ShopgateContainerToArrayVisitor $visitor;
 
     public function __construct(
         ShopgateExternalCoupon $extendedExternalCoupon,
+        ShopgateOrderItem $extendedOrderItem,
         ShopgateContainerToArrayVisitor $visitor
     ) {
         parent::__construct([]);
         $this->externalCoupon = $extendedExternalCoupon;
+        $this->orderItem = $extendedOrderItem;
         $this->visitor = $visitor;
     }
 
@@ -36,31 +40,5 @@ class ExtendedOrder extends ShopgateOrder
         $this->dataToEntity($visitor->getArray());
 
         return $this;
-    }
-
-    public function setExternalCoupons($value): void
-    {
-        if (!is_array($value)) {
-            $this->external_coupons = null;
-            return;
-        }
-
-        foreach ($value as $index => &$element) {
-            if ((!is_object($element) || !($element instanceof ShopgateExternalCoupon)) && !is_array($element)) {
-                unset($value[$index]);
-                continue;
-            }
-
-            if (is_array($element)) {
-                $class = clone $this->externalCoupon;
-                $class->loadArray($element);
-                $element = $class;
-            }
-        }
-
-        // safety
-        unset($element);
-
-        $this->external_coupons = $value;
     }
 }
