@@ -4,30 +4,77 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping;
 
+use Shopgate\Shopware\Order\State\StateMapping;
+use Shopgate\Shopware\Order\Taxes\TaxMapping;
+use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
+use Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping;
+use Shopgate\Shopware\System\Formatter;
 use ShopgateDeliveryNote;
+use ShopgateExternalOrderExtraCost;
 use ShopgateShippingMethod;
-use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
+use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 
 class ShippingMapping
 {
-    /**
-     * @param DeliveryCollection $deliveries
-     * @return ShopgateShippingMethod[]
-     */
-    public function mapShippingMethods(DeliveryCollection $deliveries): array
+    private ExtendedClassFactory $classFactory;
+    private TaxMapping $taxMapping;
+    private ShopgateOrderMapping $shopgateOrderMapping;
+    private StateMapping $stateMapping;
+    private Formatter $formatter;
+
+    public function __construct(
+        ExtendedClassFactory $classFactory,
+        TaxMapping $taxMapping,
+        ShopgateOrderMapping $shopgateOrderMapping,
+        StateMapping $stateMapping,
+        Formatter $formatter
+    ) {
+        $this->classFactory = $classFactory;
+        $this->taxMapping = $taxMapping;
+        $this->shopgateOrderMapping = $shopgateOrderMapping;
+        $this->stateMapping = $stateMapping;
+        $this->formatter = $formatter;
+    }
+
+    public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
     {
-        $list = [];
-        foreach ($deliveries->getElements() as $delivery) {
-            $method = $delivery->getShippingMethod();
-            $exportShipping = new ShopgateShippingMethod();
-            $exportShipping->setId($method->getId());
-            $exportShipping->setTitle($method->getName());
-            $exportShipping->setDescription($method->getDescription());
-            $exportShipping->setAmountWithTax($delivery->getShippingCosts()->getTotalPrice());
-            $exportShipping->setShippingGroup(ShopgateDeliveryNote::OTHER);
-            $list[$method->getId()] = $exportShipping;
+        $method = $delivery->getShippingMethod();
+        $exportShipping = $this->classFactory->createShippingMethod();
+        $exportShipping->setId($method->getId());
+        $exportShipping->setTitle($method->getName());
+        $exportShipping->setDescription($method->getDescription());
+        $exportShipping->setAmountWithTax($delivery->getShippingCosts()->getTotalPrice());
+        $exportShipping->setShippingGroup(ShopgateDeliveryNote::OTHER);
+
+        return $exportShipping;
+    }
+
+    public function mapOutOrderShippingMethod(OrderDeliveryEntity $deliveryEntity): ShopgateExternalOrderExtraCost
+    {
+        $price = $deliveryEntity->getShippingCosts()->getTotalPrice();
+        $sgExport = $this->classFactory->createOrderExtraCost();
+        $sgExport->setAmount($price);
+        $sgExport->setType(ShopgateExternalOrderExtraCost::TYPE_SHIPPING);
+        $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($deliveryEntity->getShippingCosts()));
+        $label = $this->formatter->translate('sg-quote.summaryLabelShippingCosts', [], null);
+        $sgExport->setLabel($label);
+
+        return $sgExport;
+    }
+
+    public function mapOutgoingOrderDeliveryNote(OrderDeliveryEntity $deliveryEntity): ShopgateDeliveryNote
+    {
+        $sgDelivery = $this->classFactory->createDeliveryNote();
+        $sgDelivery->setShippingServiceId($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
+        $sgDelivery->setTrackingNumber(implode(', ', $deliveryEntity->getTrackingCodes()));
+
+        if ($state = $deliveryEntity->getStateMachineState()) {
+            $isShipped = $this->stateMapping->isShipped($state);
+            $shippedDate = $this->stateMapping->getShippingTime($state);
+            $sgDelivery->setShippingTime($isShipped ? $shippedDate : null);
         }
 
-        return $list;
+        return $sgDelivery;
     }
 }

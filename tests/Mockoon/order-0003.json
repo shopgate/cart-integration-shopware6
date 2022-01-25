@@ -1,0 +1,107 @@
+{
+  "error_text": null,
+  "error": 0,
+  "sma_version": "1.0",
+  "trace_id": "spa-4f99573d74ae1",
+  "limit": 100,
+  "offset": 0,
+  "has_more_results": false,
+  "orders": [
+    {
+      "order_number": "{{ faker 'random.number' min=1000000000 max=9999999999 }}",
+      "created_time": "2022-01-19T11:14:03+00:00",
+      "is_paid": 0,
+      "payment_time": "2022-01-20T11:14:03+00:00",
+      "payment_transaction_number": null,
+      "payment_infos": {
+        "shopgate_payment_name": "Vorkasse (Eigene Abwicklung)",
+        "purpose": "SG1501511499"
+      },
+      "is_shipping_blocked": 0,
+      "is_shipping_completed": 1,
+      "shipping_completed_time": "2014-08-06T11:57:29+00:00",
+      "is_test": 0,
+      "is_storno": 0,
+      "is_customer_invoice_blocked": "0",
+      "external_customer_id": "6c97534c2c0747f39e8751e43cb2b013",
+      "mail": "customer_test1@example.com",
+      "phone": "+3-111-111-1111",
+      "mobile": null,
+      "shipping_group": "DHL",
+      "shipping_type": "MANUAL",
+      "amount_shipping": "4.90",
+      "shipping_infos": {
+        "name": "DHL Deutschland",
+        "display_name": "DHL Pakte gogreen",
+        "amount": "4.90"
+      },
+      "custom_fields": [
+        {
+          "label": "Customer Comment",
+          "internal_field_name": "customerComment",
+          "value": "My order comment"
+        }
+      ],
+      "payment_method": "PREPAY",
+      "payment_group": "PREPAY",
+      "invoice_address": {
+        "id": null,
+        "is_invoice_address": true,
+        "is_delivery_address": false,
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "gender": "f",
+        "birthday": "2000-01-15",
+        "company": "My Company 1",
+        "street_1": "My Street 1 A",
+        "street_2": "My Street 2 A",
+        "zipcode": "27404",
+        "city": "Phoenix",
+        "country": "US",
+        "state": "US-AZ",
+        "phone": "+1-111-111-1111",
+        "mobile": null,
+        "mail": "customer_test2@example.com",
+        "custom_fields": null
+      },
+      "delivery_address": {
+        "id": null,
+        "is_invoice_address": false,
+        "is_delivery_address": true,
+        "first_name": "Bank",
+        "last_name": "Payment",
+        "gender": "m",
+        "birthday": "2000-01-16",
+        "company": "My Company 2",
+        "street_1": "My Street 1 B",
+        "street_2": "My Street 2 B",
+        "zipcode": "27404",
+        "city": "Frankenbostel",
+        "country": "GB",
+        "state": "GB-ABC",
+        "phone": "+2-111-111-1111",
+        "mobile": null,
+        "mail": "customer_test3@example.com",
+        "custom_fields": null
+      },
+      "external_coupons": [
+        {
+          "code": "API-PROMO-BY_CODE"
+        }
+      ],
+      "shopgate_coupons": [],
+      "items": [
+        {
+          "item_number": "2a88d9b59d474c7e869d8071649be43c",
+          "quantity": 1,
+          "name": "Main Product"
+        },
+        {
+          "item_number": "ff951c236e5b9fca68f186da252aa026",
+          "quantity": 1,
+          "name": "API: Cloned & Altered Variant Child Red-M"
+        }
+      ]
+    }
+  ]
+}

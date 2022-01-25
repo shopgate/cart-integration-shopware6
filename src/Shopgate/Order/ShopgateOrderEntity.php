@@ -152,9 +152,6 @@ class ShopgateOrderEntity extends Entity
         return $this;
     }
 
-    /**
-     * @return object
-     */
     public function getReceivedData(): ShopgateOrder
     {
         return new ShopgateOrder($this->receivedData);

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
-use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
-use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
+use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\RequestPersist;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
@@ -15,6 +14,7 @@ use ShopgateLibraryException;
 use ShopgateMerchantApiException;
 use ShopgateOrder;
 use ShopgatePlugin;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class Plugin extends ShopgatePlugin
 {
@@ -22,6 +22,7 @@ class Plugin extends ShopgatePlugin
     protected ImportService $importService;
     protected LoggerInterface $logger;
     protected RequestPersist $requestPersist;
+    protected ExtendedClassFactory $classFactory;
 
     /**
      * @required
@@ -30,12 +31,14 @@ class Plugin extends ShopgatePlugin
         ExportService $exportService,
         ImportService $importService,
         LoggerInterface $logger,
-        RequestPersist $requestPersist
+        RequestPersist $requestPersist,
+        ExtendedClassFactory $classFactory
     ): void {
         $this->exportService = $exportService;
         $this->importService = $importService;
         $this->logger = $logger;
         $this->requestPersist = $requestPersist;
+        $this->classFactory = $classFactory;
     }
 
     public function startup(): void
@@ -91,7 +94,7 @@ class Plugin extends ShopgatePlugin
     {
         $this->logger->debug('Incoming Add Order');
         $this->logger->debug($order);
-        $newOrder = (new ExtendedOrder())->loadFromShopgateOrder($order);
+        $newOrder = $this->classFactory->createOrder()->loadFromShopgateOrder($order);
         $this->requestPersist->setIncomingOrder($newOrder);
 
         return $this->importService->addOrder($newOrder);
@@ -112,7 +115,7 @@ class Plugin extends ShopgatePlugin
     {
         $this->logger->debug('Incoming Check Cart');
         $this->logger->debug($cart);
-        $newCart = (new ExtendedCart())->loadFromShopgateCart($cart);
+        $newCart = $this->classFactory->createCart()->loadFromShopgateCart($cart);
 
         $result = $this->exportService->checkCart($newCart);
         $this->logger->debug('Check Cart Response');
@@ -135,6 +138,10 @@ class Plugin extends ShopgatePlugin
         return $this->exportService->getSettings();
     }
 
+    /**
+     * @throws ShopgateLibraryException
+     * @throws Exceptions\MissingContextException
+     */
     public function getOrders(
         $customerToken,
         $customerLanguage,
@@ -142,8 +149,11 @@ class Plugin extends ShopgatePlugin
         $offset = 0,
         $orderDateFrom = '',
         $sortOrder = 'created_desc'
-    ) {
-        // TODO: Implement getOrders() method.
+    ): array {
+        if (empty($customerToken) || false === Uuid::isValid($customerToken)) {
+            throw new ShopgateLibraryException(ShopgateLibraryException::PLUGIN_CUSTOMER_TOKEN_INVALID);
+        }
+        return $this->exportService->getOrders($customerToken, (int)$limit, (int)$offset, $sortOrder, $orderDateFrom);
     }
 
     public function syncFavouriteList($customerToken, $items)

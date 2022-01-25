@@ -5,19 +5,25 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 
 use Shopgate_Helper_DataStructure;
 
+/**
+ * Takes the internal_*_info property of an object and
+ * json decodes it to a different property. Also helps
+ * add data seamlessly to the internal_info field.
+ */
 trait SerializerTrait
 {
     protected array $decodedInfo = [];
-    protected Shopgate_Helper_DataStructure $jsonHelper;
+    protected ?Shopgate_Helper_DataStructure $jsonHelper = null;
 
     /**
-     * @param array $data The data the container should be initialized with.
+     * Retrieves existing internal info & applies to cart
      */
-    public function __construct($data = array())
+    public function initializeTrait(): void
     {
-        parent::__construct($data);
+        if (null !== $this->jsonHelper) {
+            return;
+        }
         $this->jsonHelper = new Shopgate_Helper_DataStructure();
-
         $result = $this->jsonHelper->jsonDecode($this->getUtilityInternalInfo(), true) ?? [];
         if (count($result)) {
             $this->setDecodedInfo($result);
@@ -26,8 +32,6 @@ trait SerializerTrait
 
     /**
      * Rewritten method to retrieve the right internal info field
-     *
-     * @return string|null
      */
     public function getUtilityInternalInfo(): ?string
     {
@@ -36,53 +40,63 @@ trait SerializerTrait
         return array_pop($result);
     }
 
-    /**
-     * @param array $info
-     * @return self
-     */
     public function addDecodedInfo(array $info): self
     {
+        $this->initializeTrait();
         $this->decodedInfo = array_merge($this->decodedInfo, $info);
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getDecodedInfo(): array
     {
+        $this->initializeTrait();
         return $this->decodedInfo;
     }
 
-    /**
-     * @param array $decodedInfo
-     * @return self
-     */
     public function setDecodedInfo(array $decodedInfo): self
     {
+        $this->initializeTrait();
         $this->decodedInfo = $decodedInfo;
 
         return $this;
     }
 
     /**
-     * @return array
+     * Since constructor was rewritten, it's the only way to
+     * import array data
      */
+    public function loadArray(array $data = []): array
+    {
+        $unmapped = parent::loadArray($data);
+        // we want to decode only when actual data is coming in
+        if (!empty($data)) {
+            $this->initializeTrait();
+        }
+
+        return $unmapped;
+    }
+
     public function toArray(): array
     {
-        $internalInfo = $this->jsonHelper->jsonDecode($this->getUtilityInternalInfo(), true);
-        $encode = array_merge($this->decodedInfo, is_array($internalInfo) ? $internalInfo : []);
-        $encoded = $this->jsonHelper->jsonEncode($encode);
-        $this->setUtilityInternalInfo($encoded);
+        $this->mergeInternalInfos();
 
         return parent::toArray();
     }
 
     /**
-     * @param string $data
-     * @return self
+     * Merges decodedInfo array with data in internal_*_info,
+     * afterwards json encodes internal_*_info for export
      */
+    public function mergeInternalInfos(): void
+    {
+        $this->initializeTrait();
+        $internalInfo = $this->jsonHelper->jsonDecode($this->getUtilityInternalInfo(), true);
+        $encode = array_merge($this->decodedInfo, is_array($internalInfo) ? $internalInfo : []);
+        $encoded = $this->jsonHelper->jsonEncode($encode);
+        $this->setUtilityInternalInfo($encoded);
+    }
+
     public function setUtilityInternalInfo(string $data): self
     {
         $result = $this->findInternalInfo();
@@ -95,8 +109,6 @@ trait SerializerTrait
 
     /**
      * Get internal_*_info key/value so that we can decode
-     *
-     * @return array|null
      */
     private function findInternalInfo(): ?array
     {

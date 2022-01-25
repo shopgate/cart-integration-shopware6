@@ -6,33 +6,27 @@ namespace Shopgate\Shopware\System;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopware\Core\Framework\Adapter\Translation\Translator;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyFormatter;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Formatter
 {
     private ContextManager $contextManager;
-    private Translator $translator;
+    private TranslatorInterface $translator;
     private AbstractLanguageRoute $languageRoute;
     private ?LanguageCollection $languageCollection = null;
     private CurrencyFormatter $currencyFormatter;
     /** @var string|false|null */
     private $locale = false;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param Translator $translator
-     * @param AbstractLanguageRoute $languageRoute
-     * @param CurrencyFormatter $currencyFormatter
-     */
     public function __construct(
         ContextManager $contextManager,
-        Translator $translator,
+        TranslatorInterface $translator,
         AbstractLanguageRoute $languageRoute,
         CurrencyFormatter $currencyFormatter
     ) {
@@ -43,13 +37,9 @@ class Formatter
     }
 
     /**
-     * @param string $key
-     * @param array $parameters
-     * @param string|null $domain
-     * @return string
      * @throws MissingContextException
      */
-    public function translate(string $key, array $parameters, string $domain = 'storefront'): string
+    public function translate(string $key, array $parameters, ?string $domain = 'storefront'): string
     {
         $result = $this->translator->trans($key, $parameters, $domain, $this->getLocaleCode());
 
@@ -57,7 +47,6 @@ class Formatter
     }
 
     /**
-     * @return string|null
      * @throws MissingContextException
      */
     public function getLocaleCode(): ?string
@@ -75,7 +64,6 @@ class Formatter
     }
 
     /**
-     * @return LanguageCollection
      * @throws MissingContextException
      */
     public function getLanguageCollection(): LanguageCollection
@@ -92,8 +80,6 @@ class Formatter
     }
 
     /**
-     * @param float $price
-     * @return string
      * @throws MissingContextException
      * @see \Shopware\Core\Framework\Adapter\Twig\Filter\CurrencyFilter::formatCurrency()
      */

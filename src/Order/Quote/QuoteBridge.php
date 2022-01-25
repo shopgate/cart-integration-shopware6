@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote;
 
+use Shopgate\Shopware\Order\Quote\Events\AfterGetOrdersLoadEvent;
+use Shopgate\Shopware\Order\Quote\Events\BeforeGetOrdersLoadEvent;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Order\SalesChannel\AbstractOrderRoute;
+use Shopware\Core\Checkout\Order\SalesChannel\OrderRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class QuoteBridge
 {
@@ -22,19 +28,25 @@ class QuoteBridge
     private AbstractCartItemAddRoute $cartItemAddRoute;
     private AbstractCartDeleteRoute $cartDeleteRoute;
     private EntityRepositoryInterface $orderRepository;
+    private AbstractOrderRoute $orderRoute;
+    private EventDispatcherInterface $dispatcher;
 
     public function __construct(
         AbstractCartOrderRoute $cartOrderRoute,
         AbstractCartLoadRoute $cartLoadRoute,
         AbstractCartItemAddRoute $cartItemAddRoute,
         AbstractCartDeleteRoute $cartDeleteRoute,
-        EntityRepositoryInterface $orderRepository
+        AbstractOrderRoute $orderRoute,
+        EntityRepositoryInterface $orderRepository,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->cartOrderRoute = $cartOrderRoute;
         $this->cartLoadRoute = $cartLoadRoute;
         $this->cartItemAddRoute = $cartItemAddRoute;
         $this->cartDeleteRoute = $cartDeleteRoute;
+        $this->orderRoute = $orderRoute;
         $this->orderRepository = $orderRepository;
+        $this->dispatcher = $dispatcher;
     }
 
     public function loadCartFromContext(SalesChannelContext $context): Cart
@@ -56,6 +68,16 @@ class QuoteBridge
     {
         $updateData['id'] = $orderId;
         $this->orderRepository->update([$updateData], $context->getContext());
+    }
+
+    public function getOrders(Request $request, Criteria $criteria, SalesChannelContext $context): OrderRouteResponse
+    {
+        $criteria->setTitle('shopgate::get-orders');
+        $this->dispatcher->dispatch(new BeforeGetOrdersLoadEvent($criteria, $request, $context));
+        $result = $this->orderRoute->load($request, $context, $criteria);
+        $this->dispatcher->dispatch(new AfterGetOrdersLoadEvent($result, $context));
+
+        return $result;
     }
 
     public function deleteCart(SalesChannelContext $context): void

@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class NativeOrderExtension extends EntityExtension
 {
+    public const PROPERTY = 'shopgateOrder';
 
     /**
      * @param FieldCollection $collection
@@ -19,7 +20,7 @@ class NativeOrderExtension extends EntityExtension
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
-            new OneToOneAssociationField('shopgateOrder', 'id', 'sw_order_id', ShopgateOrderDefinition::class, false)
+            new OneToOneAssociationField(self::PROPERTY, 'id', 'sw_order_id', ShopgateOrderDefinition::class, false)
         );
     }
 

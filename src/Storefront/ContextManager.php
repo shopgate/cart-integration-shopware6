@@ -46,10 +46,6 @@ class ContextManager
         return $this;
     }
 
-    /**
-     * Will only throw if developer messes the context system up
-     * @throws MissingContextException
-     */
     public function getSalesContext(): SalesChannelContext
     {
         if (null === $this->salesContext) {

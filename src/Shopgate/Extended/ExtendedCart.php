@@ -6,11 +6,24 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 
 use ShopgateCart;
 use ShopgateExternalCoupon;
+use ShopgateOrderItem;
 
 class ExtendedCart extends ShopgateCart
 {
     use CloningTrait;
     use CartUtilityTrait;
+
+    /** @var ExtendedExternalCoupon|ShopgateExternalCoupon */
+    protected ShopgateExternalCoupon $externalCoupon;
+    /** @var ExtendedOrderItem|ShopgateOrderItem */
+    protected ShopgateOrderItem $orderItem;
+
+    public function __construct(ShopgateExternalCoupon $extendedExternalCoupon, ShopgateOrderItem $extendedOrderItem)
+    {
+        parent::__construct([]);
+        $this->externalCoupon = $extendedExternalCoupon;
+        $this->orderItem = $extendedOrderItem;
+    }
 
     /**
      * @param ShopgateCart $cart

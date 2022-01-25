@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order\LineItem;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
+use Shopgate\Shopware\Storefront\ContextManager;
+use ShopgateExternalOrderItem;
 use ShopgateLibraryException;
 use ShopgateOrderItem;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
 use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
@@ -21,10 +23,17 @@ use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
 class LineItemProductMapping
 {
     private ExtendedClassFactory $extendedClassFactory;
+    private ContextManager $contextManager;
+    private TaxMapping $taxMapping;
 
-    public function __construct(ExtendedClassFactory $extendedClassFactory)
-    {
+    public function __construct(
+        ContextManager $contextManager,
+        ExtendedClassFactory $extendedClassFactory,
+        TaxMapping $taxMapping
+    ) {
+        $this->contextManager = $contextManager;
         $this->extendedClassFactory = $extendedClassFactory;
+        $this->taxMapping = $taxMapping;
     }
 
     /**
@@ -67,21 +76,9 @@ class LineItemProductMapping
         }
         if ($price = $lineItem->getPrice()) {
             $outgoingItem->setQtyBuyable($price->getQuantity());
-            /** @var CalculatedTax $tax */
-            $tax = array_reduce(
-                $price->getCalculatedTaxes()->getElements(),
-                static function (float $carry, CalculatedTax $tax) {
-                    return $carry + $tax->getTax();
-                },
-                0.0
-            );
-            if ($taxStatus === CartPrice::TAX_STATE_GROSS) {
-                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice());
-                $outgoingItem->setUnitAmount($price->getUnitPrice() - ($tax / $price->getQuantity()));
-            } else {
-                $outgoingItem->setUnitAmount($price->getUnitPrice());
-                $outgoingItem->setUnitAmountWithTax($price->getUnitPrice() + ($tax / $price->getQuantity()));
-            }
+            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($price, $taxStatus);
+            $outgoingItem->setUnitAmountWithTax($priceWithTax);
+            $outgoingItem->setUnitAmount($priceWithoutTax);
 
             /**
              * Soft line item errors that do not remove items from the cart
@@ -139,5 +136,37 @@ class LineItemProductMapping
         }
 
         return $errorItem;
+    }
+
+    public function mapOutgoingOrderProduct(
+        OrderLineItemEntity $swLineItem,
+        ?string $taxStatus
+    ): ShopgateExternalOrderItem {
+        $sgLineItem = $this->extendedClassFactory->createOrderLineItem();
+        $sgLineItem->setName($swLineItem->getLabel());
+        $sgLineItem->setUnitAmount($swLineItem->getUnitPrice());
+        $sgLineItem->setQuantity($swLineItem->getQuantity());
+        $sgLineItem->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
+        if ($price = $swLineItem->getPrice()) {
+            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($price, $taxStatus);
+            $sgLineItem->setUnitAmount($priceWithoutTax);
+            $sgLineItem->setUnitAmountWithTax($priceWithTax);
+            $sgLineItem->setTaxPercent($this->taxMapping->getPriceTaxRate($price));
+        }
+
+        /**
+         * Deleted products will not have a 'product' reference
+         */
+        if ($product = $swLineItem->getProduct()) {
+            $sgLineItem->setItemNumberPublic($product->getProductNumber());
+            $sgLineItem->setItemNumber($swLineItem->getProductId());
+            $sgLineItem->setDescription($product->getDescription());
+        } else {
+            $sgLineItem->setItemNumberPublic($swLineItem->getPayload()['productNumber'] ?? $swLineItem->getLabel());
+            $sgLineItem->setItemNumber($swLineItem->getId());
+            $sgLineItem->setDescription($sgLineItem->getDescription());
+        }
+
+        return $sgLineItem;
     }
 }

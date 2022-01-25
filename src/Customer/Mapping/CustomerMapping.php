@@ -40,6 +40,7 @@ class CustomerMapping
             $shopgateCustomer->setNewsletterSubscription((int)$detailedCustomer->getNewsletter());
         }
         $shopgateCustomer->setCustomerId($detailedCustomer->getId());
+        $shopgateCustomer->setCustomerToken($detailedCustomer->getId());
         $shopgateCustomer->setCustomerNumber($detailedCustomer->getCustomerNumber());
         $shopgateCustomer->setMail($detailedCustomer->getEmail());
         $shopgateCustomer->setFirstName($detailedCustomer->getFirstName());
