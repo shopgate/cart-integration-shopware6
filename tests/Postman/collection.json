@@ -6366,43 +6366,43 @@
                 }
               ],
               "request": {
-				  "auth": {
-					  "type": "bearer",
-					  "bearer": [
-						  {
-							  "key": "token",
-							  "value": "{{gen_access_token}}",
-							  "type": "string"
-						  }
-					  ]
-				  },
-				  "method": "POST",
-				  "header": [
-					  {
-						  "key": "Accept",
-						  "value": "application/json",
-						  "type": "text"
-					  }
-				  ],
-				  "body": {
-					  "mode": "raw",
-					  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"orderId\",\r\n                    \"value\": \"{{gen_order_0003_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"shippingCosts.unitPrice\",\r\n                    \"value\": 4.9\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-					  "options": {
-						  "raw": {
-							  "language": "json"
-						  }
-					  }
-				  },
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"orderId\",\r\n                    \"value\": \"{{gen_order_0003_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"shippingCosts.unitPrice\",\r\n                    \"value\": 4.9\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
                 "url": {
-					"raw": "{{sw_endpoint_api}}/search/order-delivery",
-					"host": [
-						"{{sw_endpoint_api}}"
-					],
-					"path": [
-						"search",
-						"order-delivery"
-					]
-				}
+                  "raw": "{{sw_endpoint_api}}/search/order-delivery",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "order-delivery"
+                  ]
+                }
               },
               "response": []
             },
@@ -6455,93 +6455,93 @@
                   ],
                   "path": [
                     "_action",
-					  "order_delivery",
-					  "{{gen_order_0003_delivery_id}}",
-					  "state",
-					  "ship"
-				  ]
-				}
-			  },
-				"response": []
-			},
-			  {
-				  "name": "SW: set tracking codes",
-				  "event": [
-					  {
-						  "listen": "prerequest",
-						  "script": {
-							  "exec": [
-								  ""
-							  ],
-							  "type": "text/javascript"
-						  }
-					  },
-					  {
-						  "listen": "test",
-						  "script": {
-							  "exec": [
-								  "pm.test(\"Status code is 204\", function () {\r",
-								  "    pm.response.to.have.status(204);\r",
-								  "});"
-							  ],
-							  "type": "text/javascript"
-						  }
-					  }
-				  ],
-				  "request": {
-					  "auth": {
-						  "type": "bearer",
-						  "bearer": [
-							  {
-								  "key": "token",
-								  "value": "{{gen_access_token}}",
-								  "type": "string"
-							  }
-						  ]
-					  },
-					  "method": "PATCH",
-					  "header": [
-						  {
-							  "key": "Accept",
-							  "value": "application/json",
-							  "type": "text"
-						  }
-					  ],
-					  "body": {
-						  "mode": "raw",
-						  "raw": "{\r\n    \"trackingCodes\": [\"test-code-1\", \"test-code-2\"]\r\n}",
-						  "options": {
-							  "raw": {
-								  "language": "json"
-							  }
-						  }
-					  },
-					  "url": {
-						  "raw": "{{sw_endpoint_api}}/order/{{gen_order_0003_id}}/deliveries/{{gen_order_0003_delivery_id}}",
-						  "host": [
-							  "{{sw_endpoint_api}}"
-						  ],
-						  "path": [
-							  "order",
-							  "{{gen_order_0003_id}}",
-							  "deliveries",
-							  "{{gen_order_0003_delivery_id}}"
-						  ]
-					  }
-				  },
-				  "response": []
-			  },
-			  {
-				  "name": "SG: check delivery",
-				  "event": [
-					  {
-						  "listen": "test",
-						  "script": {
-							  "exec": [
-								  "const moment = require('moment');",
-								  "",
-								  "pm.test(\"Status code is 200\", function () {",
-								  "    pm.response.to.have.status(200);",
+                    "order_delivery",
+                    "{{gen_order_0003_delivery_id}}",
+                    "state",
+                    "ship"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: set tracking codes",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"trackingCodes\": [\"test-code-1\", \"test-code-2\"]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/order/{{gen_order_0003_id}}/deliveries/{{gen_order_0003_delivery_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "order",
+                    "{{gen_order_0003_id}}",
+                    "deliveries",
+                    "{{gen_order_0003_delivery_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check delivery",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const moment = require('moment');",
+                      "",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
                       "});",
                       "",
                       "const jsonData = pm.response.json();",
