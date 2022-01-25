@@ -1472,14 +1472,14 @@
                 "method": "POST",
                 "header": [],
                 "body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: promo by Billing Country USA\",\r\n    \"code\": null,\r\n    \"exclusive\": false,\r\n    \"useCodes\": false,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"id\": \"{{created_discount_customerUSA_cart_1_id}}\",\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"percentage\",\r\n            \"value\": 10\r\n        },\r\n        {\r\n            \"id\": \"{{created_discount_customerUSA_delivery_1_id}}\",\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"delivery\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 1.5\r\n        },\r\n        {\r\n            \"id\": \"{{created_discount_customerUSA_delivery_2_id}}\",\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"delivery\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 1.0\r\n        }\r\n    ],\r\n    \"salesChannels\": [\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
+                  "mode": "raw",
+                  "raw": "{\r\n    \"id\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: promo by Billing Country USA\",\r\n    \"code\": null,\r\n    \"exclusive\": false,\r\n    \"useCodes\": false,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"id\": \"{{created_discount_customerUSA_cart_1_id}}\",\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"percentage\",\r\n            \"value\": 10\r\n        },\r\n        {\r\n            \"id\": \"{{created_discount_customerUSA_delivery_1_id}}\",\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"delivery\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 1.5\r\n        },\r\n        {\r\n            \"id\": \"{{created_discount_customerUSA_delivery_2_id}}\",\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"delivery\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 1.0\r\n        }\r\n    ],\r\n    \"salesChannels\": [\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
                 "url": {
                   "raw": "{{sw_endpoint_api}}/promotion",
                   "host": [
@@ -5127,51 +5127,51 @@
                       "});",
                       "pm.test(\"General item check\", function () {",
                       "    pm.expect(jsonData.items).length(1, 'Should be 4 items in cart');",
-						"});",
-						"pm.test(\"Check item success\", function () {",
-						"    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
-						"    pm.expect(item.is_buyable).to.eql(1);",
-						"    pm.expect(item.qty_buyable).to.eql(1);",
-						"    pm.expect(item.stock_quantity).to.eql(10);",
-						"    pm.expect(item.unit_amount).to.eql(672.27);",
-						"    pm.expect(item.unit_amount_with_tax).to.eql(800);",
-						"});",
-						"",
-						"pm.test(\"Check USA customer auto rule is handled\", function () {",
-						"    const coupon = getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
-						"    pm.expect(jsonData.external_coupons).length(2);",
-						"    pm.expect(coupon.is_valid).to.eq(1);",
-						"    pm.expect(coupon.not_valid_message).to.eq(null);",
-						"    pm.expect(coupon.code).to.be.a('string').to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
-						"    pm.expect(coupon.amount_net).to.eq(67.23);",
-						"    pm.expect(coupon.amount_gross).to.eq(80);",
-						"    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
-						"    pm.expect(coupon.currency).to.eq('EUR');",
-						"    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
-						"    const internalInfo = JSON.parse(coupon.internal_info);",
-						"    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
-						"    pm.expect(internalInfo.itemType).to.eq('cartRule');",
-						"});",
-						"",
-						"pm.test(\"Check not valid coupon\", function () {",
-						"    const coupon = getByName(jsonData.external_coupons, 'Not valid coupon');",
-						"    pm.expect(coupon.is_valid).to.eq(false);",
-						"    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
-						"    pm.expect(coupon.code).to.eq('NOT-VALID');",
-						"    pm.expect(coupon.amount_net).to.eq(1.0);",
-						"    pm.expect(coupon.amount_gross).to.eq(1.5);",
-						"    pm.expect(coupon.name).to.eq('Not valid coupon');",
-						"    pm.expect(coupon.currency).to.eq('EUR');",
-						"    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
-						"});",
-						"",
-						"function getItemById(id) {",
-						"    return jsonData.items.find(item => item.item_number === id);",
-						"};",
-						"function getByName(list, name) {",
-						"    return list.find(item => item.name === name);",
-						"};"
-					],
+                      "});",
+                      "pm.test(\"Check item success\", function () {",
+                      "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(672.27);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
+                      "});",
+                      "",
+                      "pm.test(\"Check USA customer auto rule is handled\", function () {",
+                      "    const coupon = getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
+                      "    pm.expect(jsonData.external_coupons).length(2);",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.not_valid_message).to.eq(null);",
+                      "    pm.expect(coupon.code).to.be.a('string').to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
+                      "    pm.expect(coupon.amount_net).to.eq(67.23);",
+                      "    pm.expect(coupon.amount_gross).to.eq(80);",
+                      "    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                      "});",
+                      "",
+                      "pm.test(\"Check not valid coupon\", function () {",
+                      "    const coupon = getByName(jsonData.external_coupons, 'Not valid coupon');",
+                      "    pm.expect(coupon.is_valid).to.eq(false);",
+                      "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
+                      "    pm.expect(coupon.code).to.eq('NOT-VALID');",
+                      "    pm.expect(coupon.amount_net).to.eq(1.0);",
+                      "    pm.expect(coupon.amount_gross).to.eq(1.5);",
+                      "    pm.expect(coupon.name).to.eq('Not valid coupon');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
+                      "});",
+                      "",
+                      "function getItemById(id) {",
+                      "    return jsonData.items.find(item => item.item_number === id);",
+                      "};",
+                      "function getByName(list, name) {",
+                      "    return list.find(item => item.name === name);",
+                      "};"
+                    ],
                     "type": "text/javascript"
                   }
                 }
@@ -5299,94 +5299,94 @@
                       "key": "cart[items][0][item_number]",
                       "value": "{{catalog_product_advPrices_id}}",
                       "type": "text"
-					},
-					  {
-						  "key": "cart[items][0][item_number_public]",
-						  "value": "SWDEMO10002",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[items][0][quantity]",
-						  "value": "1",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][0][is_valid]",
-						  "value": "1",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][0][code]",
-						  "value": "NOT-VALID",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][0][name]",
-						  "value": "Not valid coupon",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][0][amount_net]",
-						  "value": "1.0",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][0][amount_gross]",
-						  "value": "1.5",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][0][tax_type]",
-						  "value": "auto",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][0][currency]",
-						  "value": "EUR",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][is_valid]",
-						  "value": "1",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][code]",
-						  "value": "{{created_discount_customerUSA_cart_1_id}}",
-						  "description": "test non-coupon properly handled",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][name]",
-						  "value": "Perfectly valid rule",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][amount_net]",
-						  "value": "2.0",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][amount_gross]",
-						  "value": "2.5",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][tax_type]",
-						  "value": "auto",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][currency]",
-						  "value": "EUR",
-						  "type": "text"
-					  },
-					  {
-						  "key": "cart[external_coupons][1][internal_info]",
-						  "value": "{\"itemType\":\"cartRule\",\"promotionId\":\"3e226aa33c486a291338478679382ab1\",\"discountId\":\"9c9b73c4076e2d8d2926c827598089cb\"}",
-						  "type": "text"
-					  }
-				  ]
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][is_valid]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][code]",
+                      "value": "NOT-VALID",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][name]",
+                      "value": "Not valid coupon",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][amount_net]",
+                      "value": "1.0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][amount_gross]",
+                      "value": "1.5",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][tax_type]",
+                      "value": "auto",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][currency]",
+                      "value": "EUR",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][is_valid]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][code]",
+                      "value": "{{created_discount_customerUSA_cart_1_id}}",
+                      "description": "test non-coupon properly handled",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][name]",
+                      "value": "Perfectly valid rule",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][amount_net]",
+                      "value": "2.0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][amount_gross]",
+                      "value": "2.5",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][tax_type]",
+                      "value": "auto",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][currency]",
+                      "value": "EUR",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][internal_info]",
+                      "value": "{\"itemType\":\"cartRule\",\"promotionId\":\"3e226aa33c486a291338478679382ab1\",\"discountId\":\"9c9b73c4076e2d8d2926c827598089cb\"}",
+                      "type": "text"
+                    }
+                  ]
                 },
                 "url": {
                   "raw": "{{domain}}",
@@ -6008,7 +6008,7 @@
           "name": "Order",
           "item": [
             {
-              "name": "SG: addOrder (coupon)",
+              "name": "SG: addOrder (promos)",
               "event": [
                 {
                   "listen": "test",
@@ -6187,6 +6187,10 @@
                       "    pm.expect(coupon.tax_type).to.eq('auto');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
                       "    pm.expect(coupon.is_free_shipping).to.eq(null);",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "});",
                       "pm.test(\"Auto Promo 10% discount check\", function () {",
                       "    const promoDiscount = getItemByName(order.external_coupons, 'API: promo by Billing Country USA');",
@@ -6198,6 +6202,11 @@
                       "    pm.expect(promoDiscount.tax_type).to.eq('auto');",
                       "    pm.expect(promoDiscount.currency).to.eq('EUR');",
                       "    pm.expect(promoDiscount.is_free_shipping).to.eq(null);",
+                      "    const internalInfo = JSON.parse(promoDiscount.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
+                      "    pm.expect(internalInfo.discountId).to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
                       "});",
                       "    ",
                       "pm.test(\"Shipping discount 1 check\", function () {",

@@ -88,21 +88,23 @@ class LineItemPromoMapping
     {
         $id = $lineItem->getPayload()['promotionId'] ?? $lineItem->getId();
         $code = $lineItem->getReferencedId(); // empty string when automatic cart_rule
-        $sgCoupon = $this->classFactory->createExternalCoupon();
-        $sgCoupon->setIsValid(true);
-        $sgCoupon->setCode(empty($code) ? $id : $code);
-        $sgCoupon->setName($lineItem->getLabel());
-        $sgCoupon->setType(empty($code) ? ExtendedExternalCoupon::TYPE_CART_RULE
-            : ExtendedExternalCoupon::TYPE_COUPON);
-        $sgCoupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
+        $coupon = $this->classFactory->createExternalCoupon();
+        $coupon->setIsValid(true);
+        $coupon->setCode(empty($code) ? $id : $code);
+        $coupon->setName($lineItem->getLabel());
+        $coupon->setType(empty($code) ? ExtendedExternalCoupon::TYPE_CART_RULE : ExtendedExternalCoupon::TYPE_COUPON);
+        $coupon->addDecodedInfo(array_intersect_key($lineItem->getPayload(),
+            array_flip(['discountId', 'promotionId'])));
+        $coupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
 
         if ($price = $lineItem->getPrice()) {
             [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($price, $taxStatus);
-            $sgCoupon->setAmountNet(-($priceWithoutTax));
-            $sgCoupon->setAmountGross(-($priceWithTax));
+            $coupon->setAmountNet(-($priceWithoutTax));
+            $coupon->setAmountGross(-($priceWithTax));
         }
+        $coupon->mergeInternalInfos();
 
-        return $sgCoupon;
+        return $coupon;
     }
 
     public function mapOutgoingOrderShippingPromo(OrderDeliveryEntity $deliveryEntity, ?string $taxStatus)

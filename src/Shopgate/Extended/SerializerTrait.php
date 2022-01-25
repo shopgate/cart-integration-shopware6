@@ -79,13 +79,22 @@ trait SerializerTrait
 
     public function toArray(): array
     {
+        $this->mergeInternalInfos();
+
+        return parent::toArray();
+    }
+
+    /**
+     * Merges decodedInfo array with data in internal_*_info,
+     * afterwards json encodes internal_*_info for export
+     */
+    public function mergeInternalInfos(): void
+    {
         $this->initializeTrait();
         $internalInfo = $this->jsonHelper->jsonDecode($this->getUtilityInternalInfo(), true);
         $encode = array_merge($this->decodedInfo, is_array($internalInfo) ? $internalInfo : []);
         $encoded = $this->jsonHelper->jsonEncode($encode);
         $this->setUtilityInternalInfo($encoded);
-
-        return parent::toArray();
     }
 
     public function setUtilityInternalInfo(string $data): self
