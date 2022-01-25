@@ -3605,20 +3605,28 @@
                           "if (pm.globals.get('verbose')) {",
                           "    console.log(jsonObject);",
                           "}",
-                          "pm.test(\"Check product sort\", function () {",
-                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_advPrices_id'), '4');",
-                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_freeShip'), '2');",
-                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_variant'), '1');",
-                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '3');",
+                          "pm.test(\"Check `adv price` product caregory sort\", function () {",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_advPrices_id'), '3');",
+                          "});",
+                          "pm.test(\"Check `free ship` product caregory sort\", function () {",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_freeShip'), '1');",
+                          "});",
+                          "pm.test(\"Check `variant` product caregory sort\", function () {",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_variant'), '4');",
+                          "});",
+                          "pm.test(\"Check `prod props` product caregory sort\", function () {",
+                          "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '2');",
                           "});",
                           "",
                           "function checkManualCategoryExistence(productId, positionNumber) {",
                           "    const product = getObjectById(productId, jsonObject.items.item);",
-                          "    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
-                          "    const category = getObjectById(pm.environment.get('created_category_manual_id'), product.categories.category);",
                           "    if (pm.globals.get('verbose')) {",
-                          "        console.log(productId, category.$.sort_order);",
+                          "        console.log(product);",
                           "    }",
+                          "    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
+                          "    pm.expect(product.categories.category, 'Product \"' + productId +'\" appears only in one category').to.be.an('array');",
+                          "    const category = getObjectById(pm.environment.get('created_category_manual_id'), product.categories.category);",
+                          "",
                           "    pm.expect(category, 'Could not locate manual category for prod id: ' + productId).to.haveOwnProperty('$').to.haveOwnProperty('sort_order').to.eq(positionNumber);",
                           "}",
                           "",
@@ -3825,38 +3833,45 @@
                           "    pm.response.to.not.have.jsonBody('error');",
                           "});",
                           "",
+                          "const jsonObject = xml2Json(responseBody);",
                           "pm.test(\"Is in the dynamic category\", function () {",
-                          "    const jsonObject = xml2Json(responseBody);",
                           "    if (pm.globals.get('verbose')){",
                           "        console.log(jsonObject);",
                           "    }",
-                          "",
+                          "});",
+                          "pm.test(\"Main Crossell check\", function () {",
                           "    pm.expect(jsonObject.items.item.relations.relation).to.be.an('array', 'Where are the sliders?').length(4, 'Should be 4 sliders max');",
                           "    pm.expect(jsonObject.items.item.relations.relation[0].$.type).to.be.eq('crosssell');",
                           "    pm.expect(jsonObject.items.item.relations.relation[0].uid).to.be.an('array', 'Where be the children 1?').length(2, 'Should be 2. Maybe child displaying?');",
                           "    pm.expect(jsonObject.items.item.relations.relation[0].uid[0]).to.be.eq(pm.environment.get('catalog_product_variant'));",
                           "    pm.expect(jsonObject.items.item.relations.relation[0].uid[1]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                          "});",
                           "",
+                          "pm.test(\"Upsell check\", function () {",
                           "    pm.expect(jsonObject.items.item.relations.relation[1].$.type).to.be.eq('upsell');",
                           "    pm.expect(jsonObject.items.item.relations.relation[1].uid).to.be.an('array', 'Where be the children 2?').length(3, 'All active, 3 limit');",
                           "    pm.expect(jsonObject.items.item.relations.relation[1].uid[0]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
                           "    pm.expect(jsonObject.items.item.relations.relation[1].uid[1]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                          "    pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_variant'));",
                           "",
+                          "});",
+                          "pm.test(\"Custom list check\", function () {",
                           "    pm.expect(jsonObject.items.item.relations.relation[2].$.type).to.be.eq('custom');",
                           "    pm.expect(jsonObject.items.item.relations.relation[2].label).to.be.an('string').to.be.eq('Custom: manual 3');",
                           "    pm.expect(jsonObject.items.item.relations.relation[2].uid).to.be.an('array', 'Where be the children 3?').length(3, '3 manual products');",
                           "    pm.expect(jsonObject.items.item.relations.relation[2].uid[0]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
                           "    pm.expect(jsonObject.items.item.relations.relation[2].uid[1]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
                           "    pm.expect(jsonObject.items.item.relations.relation[2].uid[2]).to.be.eq(pm.environment.get('catalog_product_props'));",
-                          "",
+                          "});",
+                          "pm.test(\"Relation list check\", function () {",
                           "    pm.expect(jsonObject.items.item.relations.relation[3].$.type).to.be.eq('relation');",
                           "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(5, 'All 5 products?');",
-                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
-                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('catalog_product_props'));",
-                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
-                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                          "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                          "",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -4614,7 +4629,7 @@
                       "    pm.expect(jsonData.external_coupons).length(1);",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                      "    pm.expect(coupon.amount_net).to.eq(null);",
+                      "    pm.expect(coupon.amount_net).to.eq(1.89);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -6651,12 +6666,6 @@
                   "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
                   "});",
                   "",
-                  "pm.test('Check Configuration settings', function () {",
-                  "    pm.expect(jsonData.configuration.server).to.be.eq('live');",
-                  "    pm.expect(jsonData.configuration.api_url).to.be.eq('https://api.shopgate.com/merchant/');",
-                  "    pm.expect(jsonData.configuration.enable_set_settings).to.be.eq(1);",
-                  "});",
-                  "",
                   "pm.test(\"Check log paths\", function () {",
                   "    const shopNumber = pm.environment.get('shop_number');",
                   "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
@@ -6792,23 +6801,6 @@
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('Standard customer group');",
                   "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
-                  "});",
-                  "",
-                  "pm.test(\"Check billing address data\", function () {",
-                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
-                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
-                  "    pm.expect(billing.is_delivery_address).to.eql(1);",
-                  "    pm.expect(billing.country).to.eql(pm.environment.get('gen_customer_default_country_iso'));",
-                  "    pm.expect(billing.city).to.eql(pm.environment.get('customer_default_city'));",
-                  "    pm.expect(billing.zipcode).to.eql(pm.environment.get('customer_default_zip'));",
-                  "    pm.expect(billing.state).to.eql(null);",
-                  "    pm.expect(billing.first_name).to.eql(pm.environment.get('customer_default_firstName'));",
-                  "    pm.expect(billing.last_name).to.eql(pm.environment.get('customer_default_lastName'));",
-                  "    pm.expect(billing.company).to.eql(null);",
-                  "    pm.expect(billing.street_2).to.eql(null);",
-                  "    pm.expect(billing.phone).to.eql(null);",
-                  "    pm.expect(billing.gender).to.eql(pm.environment.get('customer_default_gender'));",
-                  "    pm.expect(billing.custom_fields).to.be.an('array').to.be.empty;",
                   "});",
                   ""
                 ],
@@ -7001,6 +6993,72 @@
                 {
                   "key": "log_type",
                   "value": "error",
+                  "description": "access, error, debug, request",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: log for debugging",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Successfull call', function(){",
+                  "    pm.response.to.be.success;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "get_log_file",
+                  "type": "text"
+                },
+                {
+                  "key": "lines",
+                  "value": "500",
+                  "type": "text"
+                },
+                {
+                  "key": "log_type",
+                  "value": "debug",
                   "description": "access, error, debug, request",
                   "type": "text"
                 }
