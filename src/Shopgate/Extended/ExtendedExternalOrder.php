@@ -60,7 +60,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setStatusName($value): void
     {
-        parent::setStatusName($value ? $value->getName() : null);
+        parent::setStatusName($value ? $value->getTranslation('name') : null);
     }
 
     /**
