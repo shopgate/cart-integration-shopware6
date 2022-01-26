@@ -75,6 +75,7 @@ class ProductBridge
                 'seoUrls',
                 'visibilities',
                 'variation',
+                'tags',
 
                 'children',
                 'children.categories',

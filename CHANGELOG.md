@@ -1,3 +1,7 @@
+# 1.8.4
+
+- fixed export of product tags
+
 # 1.8.3
 
 - added decoration possibility to product mapping classes
