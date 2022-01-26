@@ -164,7 +164,7 @@ class OrderComposer
         $criteria->getAssociation('lineItems')->addFilter(new EqualsFilter('parentId', null));
 
         $initContext = $this->contextComposer->getContextByCustomerId($id);
-        $orderResponse = $this->quoteBridge->getOrders(new Request(), $criteria, $initContext);
+        $orderResponse = $this->quoteBridge->getOrdersAsCustomer(new Request(), $criteria, $initContext);
 
         return $orderResponse->getOrders()->map(
             fn(OrderEntity $entity) => $this->orderMapping->mapOutgoingOrder($entity)

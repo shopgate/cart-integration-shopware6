@@ -7,7 +7,7 @@ namespace Shopgate\Shopware\Order\Quote\Events;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderRouteResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class AfterGetOrdersLoadEvent
+class AfterCustomerGetOrdersLoadEvent
 {
     private OrderRouteResponse $response;
     private SalesChannelContext $context;

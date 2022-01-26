@@ -9,7 +9,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class BeforeGetOrdersLoadEvent extends Event
+class BeforeCustomerGetOrdersLoadEvent extends Event
 {
     private Criteria $criteria;
     private Request $request;
