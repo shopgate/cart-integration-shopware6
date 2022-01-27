@@ -263,12 +263,11 @@ class OrderComposer
         /** @var ShopgateOrderEntity $extension */
         $extension = $swOrder->getExtension(NativeOrderExtension::PROPERTY);
 
-        if ($incSgOrder->getUpdatePayment()
-            && $incSgOrder->getIsPaid()
-            && false === $this->paymentComposer->isPaid($swOrder->getTransactions())
-        ) {
-            $this->setOrderPaid($swOrder, $channel);
+        if ($incSgOrder->getUpdatePayment() && $incSgOrder->getIsPaid()) {
             $extension->setIsPaid((bool)$incSgOrder->getIsPaid());
+            if (false === $this->paymentComposer->isPaid($swOrder->getTransactions())) {
+                $this->setOrderPaid($swOrder, $channel);
+            }
         }
 
         // easier to manage deliveries if they are sorted by price
