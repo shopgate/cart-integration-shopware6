@@ -14,30 +14,38 @@ use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
+use Shopgate\Shopware\Shopgate\NativeOrderExtension;
+use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateDeliveryNote;
 use ShopgateExternalOrder;
 use ShopgateLibraryException;
 use ShopgateMerchantApi;
 use ShopgateMerchantApiException;
+use ShopgateOrder;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 class OrderComposer
 {
-    protected const statusesShipped = ['shipped', 'completed'];
-    protected const statusesCancelled = ['refunded', 'cancelled'];
+    protected const statusesShipped = [OrderDeliveryStates::STATE_SHIPPED, OrderStates::STATE_COMPLETED];
+    protected const statusesCancelled = [OrderTransactionStates::STATE_REFUNDED, OrderStates::STATE_CANCELLED];
 
     private ContextComposer $contextComposer;
     private ContextManager $contextManager;
@@ -49,6 +57,7 @@ class OrderComposer
     private PaymentComposer $paymentComposer;
     private OrderCustomerComposer $orderCustomerComposer;
     private OrderMapping $orderMapping;
+    private LoggerInterface $logger;
 
     public function __construct(
         ContextManager $contextManager,
@@ -60,7 +69,8 @@ class OrderComposer
         ShippingComposer $shippingComposer,
         PaymentComposer $paymentComposer,
         OrderCustomerComposer $orderCustomerComposer,
-        OrderMapping $orderMapping
+        OrderMapping $orderMapping,
+        LoggerInterface $logger
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -72,15 +82,16 @@ class OrderComposer
         $this->paymentComposer = $paymentComposer;
         $this->orderCustomerComposer = $orderCustomerComposer;
         $this->orderMapping = $orderMapping;
+        $this->logger = $logger;
     }
 
     /**
-     * @param ExtendedOrder $order
+     * @param ExtendedOrder|ShopgateOrder $order
      * @return array
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function addOrder(ExtendedOrder $order): array
+    public function addOrder(ShopgateOrder $order): array
     {
         $customerId = $order->getExternalCustomerId();
         if ($order->isGuest() && $order->getMail()) {
@@ -147,6 +158,7 @@ class OrderComposer
 
     /**
      * @return ShopgateExternalOrder[]
+     * @throws MissingContextException
      */
     public function getOrders(
         string $id,
@@ -188,7 +200,7 @@ class OrderComposer
                 continue;
             }
             $stateName = $swOrder->getStateMachineState() ? $swOrder->getStateMachineState()->getTechnicalName() : '';
-            if (in_array($stateName, self::statusesShipped)) {
+            if (in_array($stateName, self::statusesShipped, true)) {
                 $merchantApi->addOrderDeliveryNote(
                     $shopgateOrder->getShopgateOrderNumber(),
                     ShopgateDeliveryNote::OTHER,
@@ -218,11 +230,79 @@ class OrderComposer
                 continue;
             }
             $stateName = $swOrder->getStateMachineState() ? $swOrder->getStateMachineState()->getTechnicalName() : '';
-            if (in_array($stateName, self::statusesCancelled)) {
+            if (in_array($stateName, self::statusesCancelled, true)) {
                 $merchantApi->cancelOrder($shopgateOrder->getShopgateOrderNumber());
                 $shopgateOrder->setIsCancelled(true);
                 $this->shopgateOrderBridge->saveEntity($shopgateOrder, $context);
             }
+        }
+    }
+
+    /**
+     * We may need to rethink shipping blocking here
+     *
+     * @throws ShopgateLibraryException
+     * @throws MissingContextException
+     */
+    public function updateOrder(ShopgateOrder $incSgOrder): array
+    {
+        $channel = $this->contextManager->getSalesContext();
+        $criteria = (new GetOrdersCriteria())
+            ->addStateAssociations()
+            ->addAssociations([NativeOrderExtension::PROPERTY])
+            ->addFilter(new EqualsFilter(NativeOrderExtension::PROPERTY . '.shopgateOrderNumber',
+                $incSgOrder->getOrderNumber()));
+        $swOrder = $this->quoteBridge->getOrders($criteria, $channel)->first();
+        if (null === $swOrder) {
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::PLUGIN_ORDER_NOT_FOUND,
+                $incSgOrder->getOrderNumber(),
+                true
+            );
+        }
+        /** @var ShopgateOrderEntity $extension */
+        $extension = $swOrder->getExtension(NativeOrderExtension::PROPERTY);
+
+        if ($incSgOrder->getUpdatePayment()
+            && $incSgOrder->getIsPaid()
+            && false === $this->paymentComposer->isPaid($swOrder->getTransactions())
+        ) {
+            $this->setOrderPaid($swOrder, $channel);
+            $extension->setIsPaid((bool)$incSgOrder->getIsPaid());
+        }
+
+        // easier to manage deliveries if they are sorted by price
+        $this->shippingComposer->sortDeliveries($swOrder->getDeliveries());
+        if ($incSgOrder->getUpdateShipping()
+            && !$incSgOrder->getIsShippingBlocked()
+            && $incSgOrder->getIsShippingCompleted()
+            && false === $this->shippingComposer->isFullyShipped($swOrder->getDeliveries())
+        ) {
+            $this->setOrderShipped($swOrder, $channel);
+        }
+        $this->shopgateOrderBridge->saveEntity($extension, $channel->getContext());
+
+        return [
+            'external_order_id' => $swOrder->getId(),
+            'external_order_number' => $swOrder->getOrderNumber()
+        ];
+    }
+
+    public function setOrderPaid(OrderEntity $swOrder, SalesChannelContext $context): void
+    {
+        $result = $this->paymentComposer->setToPaid($swOrder->getTransactions(), $context);
+        if (!$result) {
+            $this->logger->debug('Could not transition order to "Paid" status');
+            $this->logger->debug($swOrder->getTransactions());
+        }
+    }
+
+    public function setOrderShipped(OrderEntity $swOrder, SalesChannelContext $context): void
+    {
+        $result = $this->shippingComposer->setToShipped($swOrder->getDeliveries(), $context);
+        if (!$result) {
+            $this->logger->debug('Could not transition order to "Shipped" status');
+            $this->logger->debug($swOrder->getDeliveries());
         }
     }
 }

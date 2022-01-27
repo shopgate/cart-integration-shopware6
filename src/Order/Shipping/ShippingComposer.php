@@ -7,6 +7,7 @@ namespace Shopgate\Shopware\Order\Shipping;
 use Shopgate\Shopware\Order\Shipping\Events\AfterShippingMethodMappingEvent;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeDeliveryContextSwitchEvent;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeShippingMethodMappingEvent;
+use Shopgate\Shopware\Order\State\StateComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
@@ -16,10 +17,13 @@ use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -28,30 +32,26 @@ use Throwable;
 
 class ShippingComposer
 {
-    private ShippingMethodBridge $shippingBridge;
+    private ShippingBridge $shippingBridge;
     private CheckoutCartPageLoader $cartPageLoader;
     private ContextManager $contextManager;
     private ShippingMapping $shippingMapping;
     private EventDispatcherInterface $eventDispatcher;
+    private StateComposer $stateComposer;
 
-    /**
-     * @param ShippingMethodBridge $shippingBridge
-     * @param ShippingMapping $shippingMapping
-     * @param CheckoutCartPageLoader $cartPageLoader
-     * @param ContextManager $contextManager
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(
-        ShippingMethodBridge $shippingBridge,
+        ShippingBridge $shippingBridge,
         ShippingMapping $shippingMapping,
         CheckoutCartPageLoader $cartPageLoader,
+        StateComposer $stateComposer,
         ContextManager $contextManager,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->shippingBridge = $shippingBridge;
-        $this->cartPageLoader = $cartPageLoader;
-        $this->contextManager = $contextManager;
         $this->shippingMapping = $shippingMapping;
+        $this->cartPageLoader = $cartPageLoader;
+        $this->stateComposer = $stateComposer;
+        $this->contextManager = $contextManager;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -60,9 +60,6 @@ class ShippingComposer
      * Make sure it's not 0.0 value. There is an issue with setting the
      * manual shipping cost to 0. Hence why we need to use our custom
      * Free Shipping method in this case.
-     *
-     * @param ExtendedOrder $sgOrder
-     * @param Cart $swCart
      */
     public function addShippingFeeToCart(ExtendedOrder $sgOrder, Cart $swCart): void
     {
@@ -78,7 +75,6 @@ class ShippingComposer
     }
 
     /**
-     * @param SalesChannelContext $context
      * @return ShopgateShippingMethod[]
      * @throws ShopgateLibraryException
      */
@@ -95,13 +91,11 @@ class ShippingComposer
     }
 
     /**
-     * @param SalesChannelContext $context
-     * @return DeliveryCollection
      * @throws ShopgateLibraryException
      */
     public function getCalculatedDeliveries(SalesChannelContext $context): DeliveryCollection
     {
-        $shippingMethods = $this->shippingBridge->getDeliveries($context);
+        $shippingMethods = $this->shippingBridge->getShippingMethods($context);
         $list = [];
         $request = new Request();
         $request->setSession(new Session()); // support for 3rd party plugins that do not check session existence
@@ -124,5 +118,47 @@ class ShippingComposer
         }
 
         return new DeliveryCollection($list);
+    }
+
+    public function isFullyShipped(?OrderDeliveryCollection $deliveries): bool
+    {
+        $delivery = $this->getActualShippingDelivery($deliveries);
+
+        return $delivery && $this->stateComposer->isFullyShipped($delivery->getStateMachineState());
+    }
+
+    /**
+     * May not be accurate
+     *
+     * @see sortDeliveries
+     */
+    private function getActualShippingDelivery(?OrderDeliveryCollection $deliveries): ?OrderDeliveryEntity
+    {
+        return $deliveries ? $this->sortDeliveries($deliveries)->first() : null;
+    }
+
+    /**
+     * Sorts deliveries in way where the first delivery is supposedly the
+     * actual "shipping" price (>0 value), the rest are shipping discounts.
+     * NB! This may not be accounting for multi-shipping.
+     */
+    public function sortDeliveries(OrderDeliveryCollection $deliveries): OrderDeliveryCollection
+    {
+        $deliveries->sort(
+            function (OrderDeliveryEntity $one, OrderDeliveryEntity $two) {
+                return $two->getShippingCosts() <=> $one->getShippingCosts();
+            }
+        );
+
+        return $deliveries;
+    }
+
+    public function setToShipped(
+        ?OrderDeliveryCollection $deliveries,
+        SalesChannelContext $context
+    ): ?StateMachineStateEntity {
+        $delivery = $this->getActualShippingDelivery($deliveries);
+
+        return $delivery ? $this->shippingBridge->setOrderToShipped($delivery->getId(), $context) : null;
     }
 }

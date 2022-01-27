@@ -41,6 +41,17 @@ class GetOrdersCriteria extends Criteria
         return $this;
     }
 
+    public function addStateAssociations(): self
+    {
+        $this->addAssociations([
+            'stateMachineState.toStateMachineHistoryEntries',
+            'transactions.stateMachineState.toStateMachineHistoryEntries',
+            'deliveries.stateMachineState.toStateMachineHistoryEntries'
+        ]);
+
+        return $this;
+    }
+
     public function setShopgateFromDate(string $date): self
     {
         if (!empty($date) && ($timestamp = strtotime($date))) {

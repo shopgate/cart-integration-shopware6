@@ -10,6 +10,7 @@ use Shopgate\Shopware\Order\OrderComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use ShopgateCustomer;
 use ShopgateLibraryException;
+use ShopgateOrder;
 
 class ImportService
 {
@@ -40,13 +41,21 @@ class ImportService
     }
 
     /**
-     * @param ExtendedOrder $order
-     * @return array
+     * @param ExtendedOrder|ShopgateOrder $order
      * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
-    public function addOrder(ExtendedOrder $order): array
+    public function addOrder(ShopgateOrder $order): array
     {
         return $this->orderComposer->addOrder($order);
+    }
+
+    /**
+     * @throws ShopgateLibraryException
+     * @throws MissingContextException
+     */
+    public function updateOrder(ShopgateOrder $order): array
+    {
+        return $this->orderComposer->updateOrder($order);
     }
 }
