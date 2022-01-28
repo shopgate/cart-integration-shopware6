@@ -18,7 +18,7 @@
         "purpose": "SG1501511499"
       },
       "is_shipping_blocked": 0,
-      "is_shipping_completed": 1,
+      "is_shipping_completed": 0,
       "shipping_completed_time": "2014-08-06T11:57:29+00:00",
       "is_test": 0,
       "is_storno": 0,

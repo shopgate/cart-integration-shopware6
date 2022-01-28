@@ -132,12 +132,20 @@ class OrderComposer
             $swCart->setErrors($swCart->getErrors()->filter(
                 fn(Error $error) => $error->isPersistent() === false)
             );
-            $swOrder = $this->quoteBridge->createOrder($swCart, $newContext); // creates order & sends email
+            // creates order & sends email
+            $swOrder = $this->quoteBridge->createOrder($swCart, $newContext);
             $this->quoteBridge->updateOrder(
                 $swOrder->getId(),
                 $this->orderMapping->mapIncomingOrder($order),
                 $newContext
             );
+            // order status update
+            if ($order->getIsPaid()) {
+                $this->setOrderPaid($swOrder, $newContext);
+            }
+            if (!$order->getIsShippingBlocked() && $order->getIsShippingCompleted()) {
+                $this->setOrderShipped($swOrder, $newContext);
+            }
         } catch (InvalidCartException $error) {
             throw $this->errorMapping->mapInvalidCartError($error);
         } catch (ConstraintViolationException $exception) {
