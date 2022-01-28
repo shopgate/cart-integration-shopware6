@@ -1493,7 +1493,7 @@
               "response": []
             },
             {
-              "name": "SW: condition to USA promo",
+              "name": "SW: persona condition to USA promo",
               "event": [
                 {
                   "listen": "test",
@@ -1536,6 +1536,55 @@
                   ],
                   "path": [
                     "promotion-persona-rule"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: cart condition to USA promo Copy",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created entity successfully\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"promotionId\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"ruleId\": \"{{gen_rule_isShopgate_id}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/promotion-cart-rule",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "promotion-cart-rule"
                   ]
                 }
               },
@@ -7965,6 +8014,9 @@
           "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
           "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
           "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+          "        } else {",
+          "            pm.environment.set('gen_token_expires', 0);",
+          "            console.log('Invalidated refresh token')",
           "        }",
           "    });",
           "}"
