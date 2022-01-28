@@ -237,7 +237,7 @@
                       "pm.test(\"Is Shopgate rule\", function () {\r",
                       "    const isShopgateRule = getByName('Is Shopgate');\r",
                       "    pm.expect(isShopgateRule).to.have.ownProperty('id');\r",
-                      "    pm.environment.set(\"gen_rule_isShopgate_id\", isShopgateRule.id);\r",
+                      "    pm.expect(isShopgateRule.id,'Is Shopgate rule has correct id').to.eql(pm.environment.get(\"default_rule_isShopgate_id\"));\r",
                       "});\r",
                       "\r",
                       "function getByName(name) {\r",
@@ -1577,7 +1577,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"promotionId\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"ruleId\": \"{{gen_rule_isShopgate_id}}\"\r\n}",
+                  "raw": "{\r\n    \"promotionId\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"ruleId\": \"{{default_rule_isShopgate_id}}\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
