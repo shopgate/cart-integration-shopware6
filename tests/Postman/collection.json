@@ -216,7 +216,7 @@
                       "\r",
                       "const jsonData = pm.response.json();\r",
                       "pm.test(\"AlwaysValid rule\", function () {\r",
-                      "    pm.expect(jsonData.data,'Should find 3 rules only').to.be.length(3);\r",
+                      "    pm.expect(jsonData.data,'Should find 4 rules only').to.be.length(4);\r",
                       "    const alwaysValid = getByName('Always valid (Default)');\r",
                       "    pm.expect(alwaysValid).to.have.ownProperty('id');\r",
                       "    pm.environment.set(\"gen_rule_allValid_id\", alwaysValid.id);\r",
@@ -232,6 +232,12 @@
                       "    const usaRule = getByName('Customers from USA');\r",
                       "    pm.expect(usaRule).to.have.ownProperty('id');\r",
                       "    pm.environment.set(\"gen_rule_usaCustomer_id\", usaRule.id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Is Shopgate rule\", function () {\r",
+                      "    const isShopgateRule = getByName('Is Shopgate');\r",
+                      "    pm.expect(isShopgateRule).to.have.ownProperty('id');\r",
+                      "    pm.expect(isShopgateRule.id,'Is Shopgate rule has correct id').to.eql(pm.environment.get(\"default_rule_isShopgate_id\"));\r",
                       "});\r",
                       "\r",
                       "function getByName(name) {\r",
@@ -266,7 +272,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Always valid (Default)\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Cart >= 0\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Customers from USA\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Always valid (Default)\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Cart >= 0\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Customers from USA\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Is Shopgate\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1493,7 +1499,7 @@
               "response": []
             },
             {
-              "name": "SW: condition to USA promo",
+              "name": "SW: persona condition to USA promo",
               "event": [
                 {
                   "listen": "test",
@@ -1536,6 +1542,55 @@
                   ],
                   "path": [
                     "promotion-persona-rule"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: cart condition to USA promo",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created entity successfully\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"promotionId\": \"{{created_promotion_customerUSA_id}}\",\r\n    \"ruleId\": \"{{default_rule_isShopgate_id}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/promotion-cart-rule",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "promotion-cart-rule"
                   ]
                 }
               },
@@ -7965,6 +8020,9 @@
           "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
           "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
           "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+          "        } else {",
+          "            pm.environment.set('gen_token_expires', 0);",
+          "            console.log('Invalidated refresh token')",
           "        }",
           "    });",
           "}"
