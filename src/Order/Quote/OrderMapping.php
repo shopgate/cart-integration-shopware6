@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote;
 
+use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrder;
 use Shopgate\Shopware\Shopgate\NativeOrderExtension;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\System\CustomFields\CustomFieldMapping;
 use ShopgateContainer;
 use ShopgateOrder;
-use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 
 class OrderMapping
@@ -18,11 +18,16 @@ class OrderMapping
     private CustomFieldMapping $customFieldMapping;
     /** @var ExtendedExternalOrder */
     private ShopgateContainer $sgExternalOrder;
+    private ShippingComposer $shippingComposer;
 
-    public function __construct(CustomFieldMapping $customFieldMapping, ShopgateContainer $sgExternalOrder)
-    {
+    public function __construct(
+        CustomFieldMapping $customFieldMapping,
+        ShopgateContainer $sgExternalOrder,
+        ShippingComposer $shippingComposer
+    ) {
         $this->customFieldMapping = $customFieldMapping;
         $this->sgExternalOrder = $sgExternalOrder;
+        $this->shippingComposer = $shippingComposer;
     }
 
     public function mapIncomingOrder(ShopgateOrder $shopgateOrder): array
@@ -44,13 +49,7 @@ class OrderMapping
             $sgOrder->setPaymentTime($originalOrder->getPaymentTime());
         }
         // sort deliveries to contain shipping cost as first item & the rest discounts
-        if ($swOrder->getDeliveries()) {
-            $swOrder->getDeliveries()->sort(
-                function (OrderDeliveryEntity $one, OrderDeliveryEntity $two) {
-                    return $two->getShippingCosts() <=> $one->getShippingCosts();
-                }
-            );
-        }
+        $this->shippingComposer->sortDeliveries($swOrder->getDeliveries());
         $sgOrder->setCreatedTime($swOrder->getOrderDateTime());
         $sgOrder->setExternalOrderId($swOrder->getId());
         $sgOrder->setExternalOrderNumber($swOrder->getOrderNumber());
@@ -67,6 +66,8 @@ class OrderMapping
         // customer
         $sgOrder->setMail($swOrder->getOrderCustomer());
         $billingId = $shippingId = $swOrder->getBillingAddressId();
+
+        // as you can see, we are not accounting for multi-address shipping here
         if ($swOrder->getDeliveries() && ($shipping = $swOrder->getDeliveries()->getShippingAddress()->first())) {
             $shippingId = $shipping->getId(); // this setter is  important
             $sgOrder->setShippingAddress($shipping, $billingId);

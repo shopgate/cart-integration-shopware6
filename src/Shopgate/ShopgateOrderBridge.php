@@ -9,6 +9,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class ShopgateOrderBridge
@@ -20,22 +21,21 @@ class ShopgateOrderBridge
         $this->shopgateOrderRepository = $shopgateOrderRepository;
     }
 
-    /**
-     * @param string $shopgateOrderNumber
-     * @param Context $context
-     * @return bool
-     */
+    public function getOrderByNumber(string $shopgateOrderNumber, Context $context): EntitySearchResult
+    {
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('shopgateOrderNumber', $shopgateOrderNumber))
+            ->addAssociation('order');
+
+        return $this->shopgateOrderRepository->search($criteria, $context);
+    }
+
     public function orderExists(string $shopgateOrderNumber, Context $context): bool
     {
-        return $this->shopgateOrderRepository
-                ->search((new Criteria())->addFilter(
-                    new EqualsFilter('shopgateOrderNumber', $shopgateOrderNumber)
-                ), $context)
-                ->count() > 0;
+        return $this->getOrderByNumber($shopgateOrderNumber, $context)->count() > 0;
     }
 
     /**
-     * @param Context $context
      * @return ShopgateOrderEntity[]
      */
     public function getOrdersNotSynced(Context $context): array
@@ -50,11 +50,6 @@ class ShopgateOrderBridge
             )->getElements();
     }
 
-    /**
-     * @param ShopgateOrderEntity $orderEntity
-     * @param Context $context
-     * @return EntityWrittenContainerEvent
-     */
     public function saveEntity(ShopgateOrderEntity $orderEntity, Context $context): EntityWrittenContainerEvent
     {
         return $this->shopgateOrderRepository->upsert([$orderEntity->toArray()], $context);

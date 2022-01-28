@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote;
 
+use Shopgate\Shopware\Order\Quote\Events\AfterCustomerGetOrdersLoadEvent;
 use Shopgate\Shopware\Order\Quote\Events\AfterGetOrdersLoadEvent;
+use Shopgate\Shopware\Order\Quote\Events\BeforeCustomerGetOrdersLoadEvent;
 use Shopgate\Shopware\Order\Quote\Events\BeforeGetOrdersLoadEvent;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute;
 use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute;
+use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\SalesChannel\AbstractOrderRoute;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderRouteResponse;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -70,11 +74,26 @@ class QuoteBridge
         $this->orderRepository->update([$updateData], $context->getContext());
     }
 
-    public function getOrders(Request $request, Criteria $criteria, SalesChannelContext $context): OrderRouteResponse
-    {
+    public function getOrdersAsCustomer(
+        Request $request,
+        Criteria $criteria,
+        SalesChannelContext $context
+    ): OrderRouteResponse {
         $criteria->setTitle('shopgate::get-orders');
-        $this->dispatcher->dispatch(new BeforeGetOrdersLoadEvent($criteria, $request, $context));
+        $this->dispatcher->dispatch(new BeforeCustomerGetOrdersLoadEvent($criteria, $request, $context));
         $result = $this->orderRoute->load($request, $context, $criteria);
+        $this->dispatcher->dispatch(new AfterCustomerGetOrdersLoadEvent($result, $context));
+
+        return $result;
+    }
+
+    /**
+     * @return EntityCollection|OrderCollection
+     */
+    public function getOrders(Criteria $criteria, SalesChannelContext $context): EntityCollection
+    {
+        $this->dispatcher->dispatch(new BeforeGetOrdersLoadEvent($criteria, $context));
+        $result = $this->orderRepository->search($criteria, $context->getContext())->getEntities();
         $this->dispatcher->dispatch(new AfterGetOrdersLoadEvent($result, $context));
 
         return $result;

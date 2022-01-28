@@ -8,6 +8,7 @@ use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
@@ -41,24 +42,26 @@ class ShopgateOrderDefinition extends EntityDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-                (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
-                (new FkField('sw_order_id', 'shopwareOrderId', OrderDefinition::class))->addFlags(new Required()),
+                (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required(), new ApiAware()),
+                (new FkField('sw_order_id', 'shopwareOrderId', OrderDefinition::class))->addFlags(new Required(),
+                    new ApiAware()),
                 (new ReferenceVersionField(OrderDefinition::class, 'sw_order_version_id'))->addFlags(new Required()),
-                new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class),
-                new NumberRangeField('shopgate_order_number', 'shopgateOrderNumber'),
-                new BoolField('is_sent', 'isSent'),
-                new BoolField('is_cancellation_sent', 'isCancelled'),
-                new BoolField('is_paid', 'isPaid'),
-                new BoolField('is_test', 'isTest'),
-                new ObjectField('received_data', 'receivedData'),
-                new OneToOneAssociationField('order', 'sw_order_id', 'id', OrderDefinition::class, false),
-                new ManyToOneAssociationField(
+                (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class)),
+                (new NumberRangeField('shopgate_order_number', 'shopgateOrderNumber'))->addFlags(new ApiAware()),
+                (new BoolField('is_sent', 'isSent'))->addFlags(new ApiAware()),
+                (new BoolField('is_cancellation_sent', 'isCancelled'))->addFlags(new ApiAware()),
+                (new BoolField('is_paid', 'isPaid'))->addFlags(new ApiAware()),
+                (new BoolField('is_test', 'isTest'))->addFlags(new ApiAware()),
+                (new ObjectField('received_data', 'receivedData'))->addFlags(new ApiAware()),
+                (new OneToOneAssociationField('order', 'sw_order_id', 'id', OrderDefinition::class,
+                    false))->addFlags(new ApiAware()),
+                (new ManyToOneAssociationField(
                     'salesChannel',
                     'sales_channel_id',
                     SalesChannelDefinition::class,
                     'id',
                     false
-                )
+                ))->addFlags(new ApiAware())
             ] + $this->defaultFields());
     }
 }

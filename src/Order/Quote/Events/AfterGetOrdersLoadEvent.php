@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote\Events;
 
-use Shopware\Core\Checkout\Order\SalesChannel\OrderRouteResponse;
+use Shopware\Core\Checkout\Order\OrderCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\EventDispatcher\Event;
 
-class AfterGetOrdersLoadEvent
+class AfterGetOrdersLoadEvent extends Event
 {
-    private OrderRouteResponse $response;
+    private EntityCollection $result;
     private SalesChannelContext $context;
 
-    public function __construct(OrderRouteResponse $response, SalesChannelContext $context)
+    public function __construct(EntityCollection $result, SalesChannelContext $context)
     {
-        $this->response = $response;
+        $this->result = $result;
         $this->context = $context;
     }
 
-    public function getResponse(): OrderRouteResponse
+    /**
+     * @return EntityCollection|OrderCollection
+     */
+    public function getResult(): EntityCollection
     {
-        return $this->response;
+        return $this->result;
     }
 
     public function getContext(): SalesChannelContext

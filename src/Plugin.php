@@ -100,9 +100,16 @@ class Plugin extends ShopgatePlugin
         return $this->importService->addOrder($newOrder);
     }
 
-    public function updateOrder(ShopgateOrder $order)
+    /**
+     * @throws ShopgateLibraryException
+     * @throws Exceptions\MissingContextException
+     */
+    public function updateOrder(ShopgateOrder $order): array
     {
-        // TODO: Implement updateOrder() method.
+        $this->logger->debug('Incoming Update Order');
+        $this->logger->debug($order);
+
+        return $this->importService->updateOrder($order);
     }
 
     /**

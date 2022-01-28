@@ -5,7 +5,7 @@ namespace Shopgate\Shopware\Tests\Unit\Order\State;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;
-use Shopgate\Shopware\Order\State\StateMapping;
+use Shopgate\Shopware\Order\State\StateComposer;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineHistory\StateMachineHistoryCollection;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineHistory\StateMachineHistoryEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
@@ -28,7 +28,7 @@ class ShippingMappingTest extends TestCase
         }
         $state = new StateMachineStateEntity();
         $state->setToStateMachineHistoryEntries($historyCollection);
-        $time = (new StateMapping())->getShippingTime($state);
+        $time = (new StateComposer())->getStateTime($state);
         self::assertEquals(null === $expected ? $expected : $map[$expected], $time);
     }
 
