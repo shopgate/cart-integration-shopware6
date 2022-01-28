@@ -1,8 +1,8 @@
 {
   "info": {
-	  "_postman_id": "56e981c5-af37-4cb3-a5cf-7c844bfc9175",
-	  "name": "SW6 CI Tests",
-	  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "56e981c5-af37-4cb3-a5cf-7c844bfc9175",
+    "name": "SW6 CI Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -5747,18 +5747,18 @@
     {
       "name": "Order",
       "item": [
-		  {
-			  "name": "1 - 2 - addOrder (status)",
-			  "item": [
-				  {
-					  "name": "SG: addOrder",
-					  "event": [
-						  {
-							  "listen": "test",
-							  "script": {
-								  "exec": [
-									  "const jsonData = pm.response.json();",
-									  "pm.test(\"Order added properly\", function () {",
+        {
+          "name": "1 - 2 - addOrder (status)",
+          "item": [
+            {
+              "name": "SG: addOrder",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
                       "    if (pm.globals.get('verbose')) {",
                       "        console.log(jsonData);",
                       "    }",
@@ -5834,48 +5834,48 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-						"pm.test(\"Status code is 200\", function () {\r",
-						"    pm.response.to.have.status(200);\r",
-						"});\r",
-						"\r",
-						"const jsonData = pm.response.json();\r",
-						"pm.test(\"One order found\", function () {\r",
-						"    pm.expect(jsonData.total).to.eql(1);\r",
-						"});\r",
-						"\r",
-						"const order = jsonData.data[0];\r",
-						"pm.test(\"Status is still open\", function() {    \r",
-						"    pm.expect(order.deliveries).to.have.length(1, 'Should have one delivery');\r",
-						"    pm.expect(Utility.getMachineStateName(order.deliveries[0])).to.eq('open');\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Payment status is still open\", function() {    \r",
-						"    pm.expect(order.transactions).to.have.length(1, 'Should have one payment transaction');\r",
-						"    pm.expect(Utility.getMachineStateName(order.transactions[0])).to.eq('open');\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Check order data\", function () {\r",
-						"    pm.expect(order.shippingTotal).to.eql(4.9);\r",
-						"    pm.expect(order.affiliateCode).to.eql(null);\r",
-						"    pm.expect(order.campaignCode).to.eql(null);\r",
-						"    pm.expect(order.orderCustomer.email).to.eql('test@example.com');\r",
-						"    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Custom Field data for order good\", function () {\r",
-						"    pm.expect(order.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_custom_field');\r",
-						"    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_int_0001').to.eq(13);\r",
-						"    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_float_0001').to.eq(11.5);\r",
-						"    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_bool_0001').to.eq(true);\r",
-						"    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_text_0001').to.eq('mapped string value');\r",
-						"});\r",
-						"pm.test(\"Billing custom field data is good\", function () {\r",
-						"    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_int_0001').to.eq(17);\r",
-						"    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_float_0001').to.eq(3.3);\r",
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"One order found\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eql(1);\r",
+                      "});\r",
+                      "\r",
+                      "const order = jsonData.data[0];\r",
+                      "pm.test(\"Status is still open\", function() {    \r",
+                      "    pm.expect(order.deliveries).to.have.length(1, 'Should have one delivery');\r",
+                      "    pm.expect(Utility.getMachineStateName(order.deliveries[0])).to.eq('open');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Payment status is still open\", function() {    \r",
+                      "    pm.expect(order.transactions).to.have.length(1, 'Should have one payment transaction');\r",
+                      "    pm.expect(Utility.getMachineStateName(order.transactions[0])).to.eq('open');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('test@example.com');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Custom Field data for order good\", function () {\r",
+                      "    pm.expect(order.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_custom_field');\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_int_0001').to.eq(13);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_float_0001').to.eq(11.5);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_bool_0001').to.eq(true);\r",
+                      "    pm.expect(order.customFields).to.haveOwnProperty('api_order_custom_field_text_0001').to.eq('mapped string value');\r",
+                      "});\r",
+                      "pm.test(\"Billing custom field data is good\", function () {\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_int_0001').to.eq(17);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_float_0001').to.eq(3.3);\r",
                       "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_bool_0001').to.eq(false);\r",
                       "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_text_0001').to.eq('mapped string value as well');\r",
                       "    pm.expect(order.billingAddress.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_field');\r",
-						"});"
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -5904,14 +5904,14 @@
                   }
                 ],
                 "body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
                 "url": {
                   "raw": "{{sw_endpoint_api}}/search/order",
                   "host": [
@@ -5925,18 +5925,18 @@
               },
               "response": []
             },
-				  {
-					  "name": "SG: addOrder (status & guest)",
-					  "event": [
-						  {
-							  "listen": "test",
-							  "script": {
-								  "exec": [
-									  "const jsonData = pm.response.json();",
-									  "pm.test(\"Order added properly\", function () {",
-									  "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
-									  "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
-									  "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+            {
+              "name": "SG: addOrder (status & guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
                       "const order_number = getValue(pm.request.body.formdata, 'order_number');",
@@ -5998,39 +5998,39 @@
               },
               "response": []
             },
-				  {
-					  "name": "SW: check order (status & guest)",
-					  "event": [
-						  {
-							  "listen": "test",
-							  "script": {
-								  "exec": [
-									  "pm.test(\"Status code is 200\", function () {\r",
-									  "    pm.response.to.have.status(200);\r",
-									  "});\r",
-									  "\r",
-									  "const jsonData = pm.response.json();\r",
+            {
+              "name": "SW: check order (status & guest)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
                       "const order = jsonData.data[0];\r",
-									  "pm.test(\"Check order data\", function () {\r",
-									  "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
-									  "    pm.expect(order.affiliateCode).to.eql(null);\r",
-									  "    pm.expect(order.campaignCode).to.eql(null);\r",
-									  "    pm.expect(order.orderCustomer.email).to.eql('guest_customer@apite.io');\r",
-									  "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
-									  "    pm.expect(order.customFields).to.eql(null);\r",
-									  "    pm.expect(order.billingAddress.customFields).to.eql(null);\r",
-									  "});\r",
-									  "\r",
-									  "pm.test(\"Shipping status is shipped\", function() {    \r",
-									  "    pm.expect(order.deliveries).to.have.length(1, 'Should have one shipping delivery');\r",
-									  "    pm.expect(Utility.getMachineStateName(order.deliveries[0])).to.eq('shipped');\r",
-									  "});\r",
-									  "\r",
-									  "pm.test(\"Payment status is paid\", function() {    \r",
-									  "    pm.expect(order.transactions).to.have.length(1, 'Should have one payment transaction');\r",
-									  "    pm.expect(Utility.getMachineStateName(order.transactions[0])).to.eq('paid');\r",
-									  "});"
-								  ],
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.affiliateCode).to.eql(null);\r",
+                      "    pm.expect(order.campaignCode).to.eql(null);\r",
+                      "    pm.expect(order.orderCustomer.email).to.eql('guest_customer@apite.io');\r",
+                      "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
+                      "    pm.expect(order.customFields).to.eql(null);\r",
+                      "    pm.expect(order.billingAddress.customFields).to.eql(null);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Shipping status is shipped\", function() {    \r",
+                      "    pm.expect(order.deliveries).to.have.length(1, 'Should have one shipping delivery');\r",
+                      "    pm.expect(Utility.getMachineStateName(order.deliveries[0])).to.eq('shipped');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Payment status is paid\", function() {    \r",
+                      "    pm.expect(order.transactions).to.have.length(1, 'Should have one payment transaction');\r",
+                      "    pm.expect(Utility.getMachineStateName(order.transactions[0])).to.eq('paid');\r",
+                      "});"
+                    ],
                     "type": "text/javascript"
                   }
                 }
@@ -6058,14 +6058,14 @@
                   }
                 ],
                 "body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
                 "url": {
                   "raw": "{{sw_endpoint_api}}/search/order",
                   "host": [
@@ -6081,18 +6081,18 @@
             }
           ]
         },
-		  {
-			  "name": "3 - promo",
-			  "item": [
-				  {
-					  "name": "SG: addOrder (promos)",
-					  "event": [
-						  {
-							  "listen": "test",
-							  "script": {
-								  "exec": [
-									  "const jsonData = pm.response.json();",
-									  "pm.test(\"Order added properly\", function () {",
+        {
+          "name": "3 - promo",
+          "item": [
+            {
+              "name": "SG: addOrder (promos)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
                       "    if (pm.globals.get('verbose')) {",
                       "        console.log(jsonData);",
                       "    }",
@@ -6710,18 +6710,18 @@
             }
           ]
         },
-		  {
-			  "name": "4 - 5 - update",
-			  "item": [
-				  {
-					  "name": "SG: initial order",
-					  "event": [
-						  {
-							  "listen": "test",
-							  "script": {
-								  "exec": [
-									  "const jsonData = pm.response.json();",
-									  "pm.test(\"Order added properly\", function () {",
+        {
+          "name": "4 - 5 - update",
+          "item": [
+            {
+              "name": "SG: initial order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
                       "    if (pm.globals.get('verbose')) {",
                       "        console.log(jsonData);",
                       "    }",
@@ -7000,33 +7000,33 @@
                     "exec": [
                       "pm.test(\"Status code is 200\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
-						"});\r",
-						"\r",
-						"const jsonData = pm.response.json();\r",
-						"pm.test(\"One order found\", function () {\r",
-						"    pm.expect(jsonData.total).to.eql(1);\r",
-						"});\r",
-						"\r",
-						"const swOrder = jsonData.data[0];\r",
-						"pm.test(\"Status is still open\", function() {    \r",
-						"    pm.expect(swOrder.deliveries).to.have.length(1, 'Should have one delivery');\r",
-						"    pm.expect(Utility.getMachineStateName(swOrder.deliveries[0])).to.eq('open');\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Payment status is still open\", function() {    \r",
-						"    pm.expect(swOrder.transactions).to.have.length(1, 'Should have one payment transaction');\r",
-						"    pm.expect(Utility.getMachineStateName(swOrder.transactions[0])).to.eq('open');\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Shopgate order check\", function() {\r",
-						"    pm.expect(swOrder.extensions, 'Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
-						"    const order = swOrder.extensions.shopgateOrder;\r",
-						"    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
-						"    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
-						"    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
-						"    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
-						"    pm.expect(order.shopgateOrderNumber).to.eq('0005', 'Should be an updated SG order to grab 0005 instead of 0004');\r",
-						"});"
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"One order found\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eql(1);\r",
+                      "});\r",
+                      "\r",
+                      "const swOrder = jsonData.data[0];\r",
+                      "pm.test(\"Status is still open\", function() {    \r",
+                      "    pm.expect(swOrder.deliveries).to.have.length(1, 'Should have one delivery');\r",
+                      "    pm.expect(Utility.getMachineStateName(swOrder.deliveries[0])).to.eq('open');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Payment status is still open\", function() {    \r",
+                      "    pm.expect(swOrder.transactions).to.have.length(1, 'Should have one payment transaction');\r",
+                      "    pm.expect(Utility.getMachineStateName(swOrder.transactions[0])).to.eq('open');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Shopgate order check\", function() {\r",
+                      "    pm.expect(swOrder.extensions, 'Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                      "    const order = swOrder.extensions.shopgateOrder;\r",
+                      "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                      "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
+                      "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
+                      "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                      "    pm.expect(order.shopgateOrderNumber).to.eq('0005', 'Should be an updated SG order to grab 0005 instead of 0004');\r",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -7155,33 +7155,33 @@
                     "exec": [
                       "pm.test(\"Status code is 200\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
-						"});\r",
-						"\r",
-						"const jsonData = pm.response.json();\r",
-						"pm.test(\"One order found\", function () {\r",
-						"    pm.expect(jsonData.total).to.eql(1);\r",
-						"});\r",
-						"\r",
-						"const swOrder = jsonData.data[0];\r",
-						"pm.test(\"Shipping status is shipped\", function() {    \r",
-						"    pm.expect(swOrder.deliveries).to.have.length(1, 'Should have one shipping delivery');\r",
-						"    pm.expect(Utility.getMachineStateName(swOrder.deliveries[0])).to.eq('shipped');\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Payment status is paid\", function() {    \r",
-						"    pm.expect(swOrder.transactions).to.have.length(1, 'Should have one payment transaction');\r",
-						"    pm.expect(Utility.getMachineStateName(swOrder.transactions[0])).to.eq('paid');\r",
-						"});\r",
-						"\r",
-						"pm.test(\"Shopgate order check\", function() {\r",
-						"    pm.expect(swOrder.extensions, 'Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
-						"    const order = swOrder.extensions.shopgateOrder;\r",
-						"    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
-						"    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
-						"    pm.expect(order.isPaid, 'Should be paid').to.eq(true);\r",
-						"    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
-						"    pm.expect(order.shopgateOrderNumber).to.eq('0005', 'Should be an updated SG order to grab 0005 instead of 0004');\r",
-						"});"
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"One order found\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eql(1);\r",
+                      "});\r",
+                      "\r",
+                      "const swOrder = jsonData.data[0];\r",
+                      "pm.test(\"Shipping status is shipped\", function() {    \r",
+                      "    pm.expect(swOrder.deliveries).to.have.length(1, 'Should have one shipping delivery');\r",
+                      "    pm.expect(Utility.getMachineStateName(swOrder.deliveries[0])).to.eq('shipped');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Payment status is paid\", function() {    \r",
+                      "    pm.expect(swOrder.transactions).to.have.length(1, 'Should have one payment transaction');\r",
+                      "    pm.expect(Utility.getMachineStateName(swOrder.transactions[0])).to.eq('paid');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Shopgate order check\", function() {\r",
+                      "    pm.expect(swOrder.extensions, 'Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                      "    const order = swOrder.extensions.shopgateOrder;\r",
+                      "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                      "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
+                      "    pm.expect(order.isPaid, 'Should be paid').to.eq(true);\r",
+                      "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                      "    pm.expect(order.shopgateOrderNumber).to.eq('0005', 'Should be an updated SG order to grab 0005 instead of 0004');\r",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -8020,27 +8020,27 @@
           "            console.log('Saving the token and expiry date')",
           "            var responseJson = res.json();",
           "            pm.environment.set('gen_access_token', responseJson.access_token)",
-			"           ",
-			"            var expiryDate = new Date();",
-			"            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
-			"            pm.environment.set('gen_token_expires', expiryDate.getTime());",
-			"            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
-			"        } else {",
-			"            pm.environment.set('gen_token_expires', 0);",
-			"            console.log('Invalidated refresh token')",
-			"        }",
-			"    });",
-			"}",
-			"",
-			"/**",
-			" * Global utility functions",
-			" */",
-			"Utility = {};",
-			"Utility.getMachineStateName = function(machineState) {",
-			"    pm.expect(machineState, 'Object should have StateMachineState').to.haveOwnProperty('stateMachineState');",
-			"    return machineState.stateMachineState.technicalName;",
-			"};"
-		]
+          "           ",
+          "            var expiryDate = new Date();",
+          "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+          "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
+          "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+          "        } else {",
+          "            pm.environment.set('gen_token_expires', 0);",
+          "            console.log('Invalidated refresh token')",
+          "        }",
+          "    });",
+          "}",
+          "",
+          "/**",
+          " * Global utility functions",
+          " */",
+          "Utility = {};",
+          "Utility.getMachineStateName = function(machineState) {",
+          "    pm.expect(machineState, 'Object should have StateMachineState').to.haveOwnProperty('stateMachineState');",
+          "    return machineState.stateMachineState.technicalName;",
+          "};"
+        ]
       }
     },
     {
