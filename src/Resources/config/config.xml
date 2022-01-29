@@ -21,7 +21,15 @@
         </input-field>
     </card>
     <card>
-        <title>Export</title>
+        <title>Catalog</title>
+        <title lang="de-DE">Katalog</title>
+        <input-field type="bool">
+            <name>isLiveShopping</name>
+            <label>Live Shopping</label>
+            <label lang="de-DE">Live-Shopping</label>
+            <helpText>Enables custom prices set on Shopgate side</helpText>
+            <helpText lang="de-DE">Enables custom prices set on Shopgate side</helpText>
+        </input-field>
         <input-field type="bool">
             <name>isFlysystem</name>
             <label>Flysystem writer</label>
