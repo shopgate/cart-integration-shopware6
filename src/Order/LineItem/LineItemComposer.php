@@ -53,7 +53,7 @@ class LineItemComposer
     {
         $this->eventDispatcher->dispatch(new BeforeIncLineItemMappingEvent($cart));
         return array_merge(
-            $this->productMapping->mapIncomingProducts($cart->getItems()),
+            $this->productMapping->mapIncomingItems($cart->getItems()),
             $this->promoMapping->mapIncomingPromos($cart->getExternalCoupons())
         );
     }
@@ -161,6 +161,6 @@ class LineItemComposer
         $request = new Request();
         $request->request->set('items', $lineItems);
 
-        return $this->quoteBridge->addLineItemToQuote($request, $shopwareCart, $context);
+        return $this->quoteBridge->addLineItemsToQuote($request, $shopwareCart, $context);
     }
 }

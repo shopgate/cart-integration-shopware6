@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order\LineItem;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopgate\Shopware\Order\LineItem\Events\AfterIncItemMappingEvent;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
@@ -19,20 +20,25 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
 use Shopware\Core\Content\Product\Cart\ProductStockReachedError;
+use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LineItemProductMapping
 {
     private ExtendedClassFactory $extendedClassFactory;
     private ContextManager $contextManager;
     private TaxMapping $taxMapping;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ContextManager $contextManager,
         ExtendedClassFactory $extendedClassFactory,
+        EventDispatcherInterface $eventDispatcher,
         TaxMapping $taxMapping
     ) {
         $this->contextManager = $contextManager;
         $this->extendedClassFactory = $extendedClassFactory;
+        $this->eventDispatcher = $eventDispatcher;
         $this->taxMapping = $taxMapping;
     }
 
@@ -40,17 +46,19 @@ class LineItemProductMapping
      * @param ShopgateOrderItem[] $items
      * @return array
      */
-    public function mapIncomingProducts(array $items): array
+    public function mapIncomingItems(array $items): array
     {
         $lineItems = [];
         foreach ($items as $item) {
-            $lineItems[] = [
+            $dataBag = new DataBag([
                 'id' => $item->getItemNumber(),
                 'referencedId' => $item->getItemNumber(),
                 'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
                 'quantity' => (int)$item->getQuantity(),
                 'stackable' => true
-            ];
+            ]);
+            $this->eventDispatcher->dispatch(new AfterIncItemMappingEvent($dataBag, $item));
+            $lineItems[] = $dataBag->all();
         }
 
         return $lineItems;
