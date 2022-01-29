@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "56e981c5-af37-4cb3-a5cf-7c844bfc9175",
+    "_postman_id": "f257f8ff-6900-4bf1-b8bf-e5eaee6b1cba",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -5759,24 +5759,15 @@
                     "exec": [
                       "const jsonData = pm.response.json();",
                       "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
                       "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -5939,15 +5930,10 @@
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6093,24 +6079,15 @@
                     "exec": [
                       "const jsonData = pm.response.json();",
                       "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
                       "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6254,7 +6231,7 @@
                       "",
                       "pm.test(\"Promotion by code check\", function () {",
                       "    pm.expect(order.external_coupons).to.be.length(4);",
-                      "    const coupon = getItemByName(order.external_coupons, 'API: promo by code');",
+                      "    const coupon = Utility.getByName(order.external_coupons, 'API: promo by code');",
                       "    pm.expect(coupon, 'Could not locate coupon by code').to.not.be.undefined;",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
@@ -6270,7 +6247,7 @@
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "});",
                       "pm.test(\"Auto Promo 10% discount check\", function () {",
-                      "    const promoDiscount = getItemByName(order.external_coupons, 'API: promo by Billing Country USA');",
+                      "    const promoDiscount = Utility.getByName(order.external_coupons, 'API: promo by Billing Country USA');",
                       "    pm.expect(promoDiscount, 'Could not locate 10% promo discount').to.not.be.undefined;",
                       "    pm.expect(promoDiscount.code).to.not.be.null;",
                       "    pm.expect(promoDiscount.name).to.eq('API: promo by Billing Country USA');",
@@ -6287,7 +6264,7 @@
                       "});",
                       "    ",
                       "pm.test(\"Shipping discount 1 check\", function () {",
-                      "    const shippingDiscount = getItemByName(order.external_coupons, 'discount shipping costs 1');",
+                      "    const shippingDiscount = Utility.getByName(order.external_coupons, 'discount shipping costs 1');",
                       "    pm.expect(shippingDiscount, 'Could not loate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('1');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 1');",
@@ -6299,7 +6276,7 @@
                       "});",
                       "",
                       "pm.test(\"Shipping discount 2 check\", function () {",
-                      "    const shippingDiscount = getItemByName(order.external_coupons, 'discount shipping costs 2');",
+                      "    const shippingDiscount = Utility.getByName(order.external_coupons, 'discount shipping costs 2');",
                       "    pm.expect(shippingDiscount, 'Could not loate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('2');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 2');",
@@ -6312,7 +6289,7 @@
                       "",
                       "pm.test(\"Item check\", function () {",
                       "    pm.expect(order.items).to.be.length(2);",
-                      "    const product = getItemByName(order.items, 'Main product');",
+                      "    const product = Utility.getByName(order.items, 'Main product');",
                       "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
                       "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
                       "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
@@ -6322,7 +6299,7 @@
                       "    pm.expect(product.tax_percent).to.eq(20);",
                       "    pm.expect(product.currency).to.eq('EUR');",
                       "    pm.expect(product.description).to.not.be.empty;",
-                      "    const variantChild = getItemByName(order.items, 'API: Variant Child (Red-M)');",
+                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
                       "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
                       "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
                       "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
@@ -6341,11 +6318,7 @@
                       "    pm.expect(extraCost.tax_percent).to.eq(20);",
                       "    pm.expect(extraCost.amount).to.eq(4.9);",
                       "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
-                      "});",
-                      "",
-                      "function getItemByName(list, name) {",
-                      "    return list.find(item => item.name === name);",
-                      "};"
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6494,7 +6467,7 @@
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
                       "\r",
-                      "pm.test(\"Your test name\", function () {\r",
+                      "pm.test(\"Status is now shipped\", function () {\r",
                       "    var jsonData = pm.response.json();\r",
                       "    pm.expect(jsonData.technicalName).to.eql('shipped');\r",
                       "});"
@@ -6722,24 +6695,15 @@
                     "exec": [
                       "const jsonData = pm.response.json();",
                       "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
                       "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6807,11 +6771,12 @@
                       "    const swOrder = jsonData.data[0];\r",
                       "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
                       "    const order = swOrder.extensions.shopgateOrder;\r",
-                      "   pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                      "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
                       "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
                       "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
                       "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
                       "\r",
+                      "    // rewrite is necessary\r",
                       "    pm.environment.set(\"gen_shopgateOrder_0004_id\", order.id);\r",
                       "});\r",
                       ""
@@ -7223,6 +7188,323 @@
                   "path": [
                     "search",
                     "order"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "6 - live shopping",
+          "item": [
+            {
+              "name": "SW: Enable live-shop",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully enabled LiveShopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e52549984567bf14a0b94fc8e38bfa4a\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isLiveShopping\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: add order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0006",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: get last order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.expect(jsonData.error).to.eq(0);",
+                      "    pm.expect(jsonData.orders).to.be.length(1);",
+                      "});",
+                      "",
+                      "const order = jsonData.orders[0];",
+                      "pm.test(\"Basic order data\", function () {",
+                      "    pm.expect(order.amount_items_gross).to.eq(137);",
+                      "    pm.expect(order.amount_complete_gross).to.eq(142);",
+                      "    pm.expect(order.amount_complete_net).to.eq(114.02);",
+                      "});",
+                      "",
+                      "pm.test(\"Item check\", function () {",
+                      "    pm.expect(order.items).to.be.length(2);",
+                      "    const product = Utility.getByName(order.items, 'Main product');",
+                      "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
+                      "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+                      "    pm.expect(product.quantity).to.eq(1);",
+                      "    pm.expect(product.unit_amount).to.eq(100.00);",
+                      "    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
+                      "    pm.expect(product.tax_percent).to.eq(25);",
+                      "    pm.expect(product.currency).to.eq('EUR');",
+                      "    pm.expect(product.description).to.not.be.empty;",
+                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
+                      "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
+                      "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
+                      "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
+                      "    pm.expect(variantChild.quantity).to.eq(1);",
+                      "    pm.expect(variantChild.unit_amount).to.eq(10.00);",
+                      "    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
+                      "    pm.expect(variantChild.tax_percent).to.eq(20);",
+                      "    pm.expect(variantChild.currency).to.eq('EUR');",
+                      "    pm.expect(variantChild.description).to.be.null;",
+                      "});",
+                      "",
+                      "pm.test(\"Taxes\", function () {",
+                      "    pm.expect(order.order_taxes).to.be.length(2);",
+                      "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
+                      "    pm.expect(taxOne.tax_percent).to.eq(25);",
+                      "    pm.expect(taxOne.amount).to.eq(25.91);",
+                      "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
+                      "    pm.expect(taxTwo.tax_percent).to.eq(20);",
+                      "    pm.expect(taxTwo.amount).to.eq(2.07);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_orders}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_token",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_language",
+                      "value": "",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: Disable live-shop",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully disabled Live Shopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e52549984567bf14a0b94fc8e38bfa4a\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isLiveShopping\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
                   ]
                 }
               },
@@ -8039,6 +8321,18 @@
           "Utility.getMachineStateName = function(machineState) {",
           "    pm.expect(machineState, 'Object should have StateMachineState').to.haveOwnProperty('stateMachineState');",
           "    return machineState.stateMachineState.technicalName;",
+          "};",
+          "// some times request values are calculated, this is how we get them",
+          "Utility.getRequestVariableValue = function(incomingKey) {",
+          "    const found = pm.request.body.formdata.find(function({key}) {",
+          "        return key === incomingKey;",
+          "    });",
+          "    return found && found.hasOwnProperty('value') ? found.value : null;",
+          "}",
+          "Utility.getByLabel = (list, value) => getItemByKey(list, 'label', value);",
+          "Utility.getByName = (list, value) => getItemByKey(list, 'name', value);",
+          "function getItemByKey(list, key, value) {",
+          "    return list.find(item => item[key] === value);",
           "};"
         ]
       }
