@@ -930,7 +930,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_advPriceOne_id}}\",\r\n        \"name\" : \"API: Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ],\r\n        \"visibilities\": [\r\n            {\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n                \"visibility\": 30\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_advPriceOne_id}}\",\r\n        \"name\" : \"API: Headless Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ],\r\n        \"visibilities\": [\r\n            {\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n                \"visibility\": 30\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -4198,6 +4198,7 @@
                   "});",
                   "const items = jsonData.items;",
                   "pm.test(\"Check item success\", function () {",
+                  "    // checking that advanced prices apply to this customer group",
                   "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(12);",
@@ -4483,7 +4484,7 @@
           "response": []
         },
         {
-          "name": "SG: cart (customGrp)",
+          "name": "SG: cart (NET grp)",
           "event": [
             {
               "listen": "test",
@@ -4507,13 +4508,14 @@
                   "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
                   "});",
                   "const items = jsonData.items;",
+                  "// checks that advanced prices do not apply to this customer group",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_advPriceOne_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
-                  "    pm.expect(item.qty_buyable).to.eql(1);",
-                  "    pm.expect(item.stock_quantity).to.eql(500);",
-                  "    pm.expect(item.unit_amount).to.eql(721.29);",
-                  "    pm.expect(item.unit_amount_with_tax).to.eql(858.34);",
+                  "    pm.expect(item.qty_buyable).to.eql(12);",
+                  "    pm.expect(item.stock_quantity).to.eql(10);",
+                  "    pm.expect(item.unit_amount).to.eql(798.32);",
+                  "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
                   "});",
                   "pm.test(\"Check item max purchase\", function () {",
                   "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
@@ -4646,7 +4648,7 @@
                 },
                 {
                   "key": "cart[items][0][item_number]",
-                  "value": "{{created_product_advPriceOne_id}}",
+                  "value": "{{catalog_product_advPrices_id}}",
                   "type": "text"
                 },
                 {
@@ -4656,7 +4658,7 @@
                 },
                 {
                   "key": "cart[items][0][quantity]",
-                  "value": "1",
+                  "value": "12",
                   "type": "text"
                 },
                 {
