@@ -1177,6 +1177,110 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "SW: create no stock prod",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_noStock_id}}\",\r\n        \"name\" : \"API: out of stock product\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART01\",\r\n        \"stock\": 0,\r\n        \"isCloseout\": true\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "clone",
+                    "product",
+                    "{{catalog_product_advPrices_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create max purchse prod",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_maxPurchaseTen_id}}\",\r\n        \"name\" : \"API: max purchase 10 product\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART02\",\r\n        \"stock\": 100,\r\n        \"maxPurchase\": 10\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "clone",
+                    "product",
+                    "{{catalog_product_advPrices_id}}"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -1234,55 +1338,6 @@
                   "path": [
                     "search-ids",
                     "customer-group"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: get address country",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Get country ISO\", function () {\r",
-                      "    const jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.data).be.an('array').to.be.not.empty\r",
-                      "    pm.expect(jsonData.data[0]).to.haveOwnProperty('attributes').to.haveOwnProperty('iso');\r",
-                      "    pm.environment.set(\"gen_customer_default_country_iso\", jsonData.data[0].attributes.iso);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/customer-address/{{customer_default_address_id}}/country",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "customer-address",
-                    "{{customer_default_address_id}}",
-                    "country"
                   ]
                 }
               },
@@ -4186,121 +4241,6 @@
       "name": "Cart",
       "item": [
         {
-          "name": "SW: create out of stock product",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Product created\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Save product id for later use\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                  "    pm.environment.set(\"gen_product_stock_zero_id\", jsonData.id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"overwrites\": {\r\n        \"name\" : \"API: check_cart One\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART01\",\r\n        \"stock\": 0,\r\n        \"isCloseout\": true\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "clone",
-                "product",
-                "{{catalog_product_advPrices_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create max purchse product",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Product created\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Save product id for later use\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_maxPurchaseTen_id}}\",\r\n        \"name\" : \"API: max purchase 10\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART02\",\r\n        \"stock\": 100,\r\n        \"maxPurchase\": 10\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "clone",
-                "product",
-                "{{catalog_product_advPrices_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "SG: cart (main cust)",
           "event": [
             {
@@ -4322,7 +4262,7 @@
                   "    pm.expect(jsonData.items).length(4, 'Should be 4 items in cart');",
                   "});",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                  "    const item = Utility.getByItemNumber(pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(12);",
                   "    pm.expect(item.stock_quantity).to.eql(10);",
@@ -4330,17 +4270,17 @@
                   "    pm.expect(item.unit_amount_with_tax).to.eql(750);",
                   "});",
                   "pm.test(\"Check item not found\", function () {",
-                  "    const item = getItemById('1901dc5e888f4b1ea4168c2c5f005540');",
+                  "    const item = Utility.getByItemNumber('1901dc5e888f4b1ea4168c2c5f005540');",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(301);",
                   "});",
                   "pm.test(\"Check item out of stock\", function () {",
-                  "    const item = getItemById(pm.environment.get('gen_product_stock_zero_id'));",
+                  "    const item = Utility.getByItemNumber(pm.environment.get('created_product_noStock_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(300);",
                   "});",
                   "pm.test(\"Check item max purchase\", function () {",
-                  "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                  "    const item = Utility.getByItemNumber(pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.qty_buyable).to.eql(10);",
                   "    pm.expect(item.stock_quantity).to.eq(50);",
@@ -4362,12 +4302,7 @@
                   "    const internalInfo = JSON.parse(coupon.internal_info);",
                   "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                   "    pm.expect(internalInfo.itemType).to.eq('coupon');",
-                  "});",
-                  "",
-                  "function getItemById(id) {",
-                  "    return jsonData.items.find(item => item.item_number === id);",
-                  "};",
-                  ""
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -4449,7 +4384,7 @@
                 },
                 {
                   "key": "cart[invoice_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -4484,7 +4419,7 @@
                 },
                 {
                   "key": "cart[delivery_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -4543,7 +4478,7 @@
                 },
                 {
                   "key": "cart[items][2][item_number]",
-                  "value": "{{gen_product_stock_zero_id}}",
+                  "value": "{{created_product_noStock_id}}",
                   "type": "text"
                 },
                 {
@@ -4636,7 +4571,7 @@
                   "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
                   "});",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = getItemById(pm.environment.get('gen_product_advPricesOne_id'));",
+                  "    const item = Utility.getByItemNumber(pm.environment.get('gen_product_advPricesOne_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(1);",
                   "    pm.expect(item.stock_quantity).to.eql(500);",
@@ -4644,7 +4579,7 @@
                   "    pm.expect(item.unit_amount_with_tax).to.eql(858.34);",
                   "});",
                   "pm.test(\"Check item max purchase\", function () {",
-                  "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                  "    const item = Utility.getByItemNumber(pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.qty_buyable).to.eql(10);",
                   "    pm.expect(item.stock_quantity).to.eq(50);",
@@ -4652,10 +4587,6 @@
                   "    pm.expect(item.unit_amount).to.eql(798.32);",
                   "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
                   "});",
-                  "",
-                  "function getItemById(id) {",
-                  "    return jsonData.items.find(item => item.item_number === id);",
-                  "};",
                   ""
                 ],
                 "type": "text/javascript"
@@ -4738,7 +4669,7 @@
                 },
                 {
                   "key": "cart[invoice_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -4773,7 +4704,7 @@
                 },
                 {
                   "key": "cart[delivery_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -4869,7 +4800,7 @@
                   "    pm.expect(jsonData.items).length(1, 'Should be 4 items in cart');",
                   "});",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                  "    const item = Utility.getByItemNumber(pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(1);",
                   "    pm.expect(item.stock_quantity).to.eql(10);",
@@ -4878,7 +4809,7 @@
                   "});",
                   "",
                   "pm.test(\"Check USA customer auto rule is handled\", function () {",
-                  "    const coupon = getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
+                  "    const coupon = Utility.getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
                   "    pm.expect(jsonData.external_coupons).length(2);",
                   "    pm.expect(coupon.is_valid).to.eq(1);",
                   "    pm.expect(coupon.not_valid_message).to.eq(null);",
@@ -4894,7 +4825,7 @@
                   "});",
                   "",
                   "pm.test(\"Check not valid coupon\", function () {",
-                  "    const coupon = getByName(jsonData.external_coupons, 'Not valid coupon');",
+                  "    const coupon = Utility.getByName(jsonData.external_coupons, 'Not valid coupon');",
                   "    pm.expect(coupon.is_valid).to.eq(false);",
                   "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
                   "    pm.expect(coupon.code).to.eq('NOT-VALID');",
@@ -4903,14 +4834,7 @@
                   "    pm.expect(coupon.name).to.eq('Not valid coupon');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
                   "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
-                  "});",
-                  "",
-                  "function getItemById(id) {",
-                  "    return jsonData.items.find(item => item.item_number === id);",
-                  "};",
-                  "function getByName(list, name) {",
-                  "    return list.find(item => item.name === name);",
-                  "};"
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -5032,7 +4956,7 @@
                 },
                 {
                   "key": "cart[delivery_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -8331,6 +8255,7 @@
           "}",
           "Utility.getByLabel = (list, value) => getItemByKey(list, 'label', value);",
           "Utility.getByName = (list, value) => getItemByKey(list, 'name', value);",
+          "Utility.getByItemNumber = (list, value) => getItemByKey(list, 'item_number', value);",
           "function getItemByKey(list, key, value) {",
           "    return list.find(item => item[key] === value);",
           "};"
