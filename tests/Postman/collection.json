@@ -898,6 +898,123 @@
           "name": "Catalog",
           "item": [
             {
+              "name": "Multi-Channel",
+              "item": [
+                {
+                  "name": "SW: clone adv prices",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_advPriceOne_id}}\",\r\n        \"name\" : \"API: Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "clone",
+                        "product",
+                        "{{catalog_product_advPrices_id}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: assing to channel",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Successfully added channel visibility to product\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {
+                      "accept": true
+                    }
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"productId\": \"{{created_product_advPriceOne_id}}\",\r\n    \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n    \"visibility\": 30\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/product-visibility",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "product-visibility"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "SW: get all categories",
               "event": [
                 {
@@ -3089,11 +3206,8 @@
                       "});",
                       "",
                       "const jsonObject = xml2Json(responseBody);",
-                      "if (pm.globals.get('verbose')) {",
-                      "    console.log(jsonObject);",
-                      "}",
                       "pm.test(\"General check\", function () {",
-                      "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(5, 'Should have certain amount of products');",
+                      "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(7, 'Should have certain amount of products');",
                       "});",
                       "",
                       "pm.test(\"Check `adv price` product category sort\", function () {",
@@ -3325,11 +3439,6 @@
                       "});",
                       "",
                       "const jsonObject = xml2Json(responseBody);",
-                      "pm.test(\"Is in the dynamic category\", function () {",
-                      "    if (pm.globals.get('verbose')){",
-                      "        console.log(jsonObject);",
-                      "    }",
-                      "});",
                       "pm.test(\"Main Crossell check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation).to.be.an('array', 'Where are the sliders?').length(4, 'Should be 4 sliders max');",
                       "    pm.expect(jsonObject.items.item.relations.relation[0].$.type).to.be.eq('crosssell');",
@@ -3341,9 +3450,9 @@
                       "pm.test(\"Upsell check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation[1].$.type).to.be.eq('upsell');",
                       "    pm.expect(jsonObject.items.item.relations.relation[1].uid).to.be.an('array', 'Where be the children 2?').length(3, 'All active, 3 limit');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[0]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[1]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[0]).to.be.eq(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[1]).to.be.eq(pm.environment.get('created_product_noStock_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
                       "",
                       "});",
                       "pm.test(\"Custom list check\", function () {",
@@ -3356,12 +3465,14 @@
                       "});",
                       "pm.test(\"Relation list check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation[3].$.type).to.be.eq('relation');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(5, 'All 5 products?');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('catalog_product_variant'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_props'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(7, 'All 7 products?');",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('created_product_noStock_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[5]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[6]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
                       "",
                       "});"
                     ],
@@ -3508,6 +3619,90 @@
           "name": "Tier Prices",
           "item": [
             {
+              "name": "Multi-Channel",
+              "item": [
+                {
+                  "name": "SG: check grp tier",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "const jsonObject = xml2Json(responseBody);",
+                          "if (pm.globals.get('verbose')){",
+                          "    console.log(jsonObject);",
+                          "}",
+                          "pm.test(\"Checking regular price options\", function () {",
+                          "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
+                          "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
+                          "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Inhalt: 1'); //check translation ",
+                          "});",
+                          "",
+                          "pm.test('Check tier prices', function() {",
+                          "    const nonGroupTierPrice = jsonObject.items.item.prices.tier_prices.tier_price.find(price => !price.$.hasOwnProperty('customer_group_uid'));",
+                          "    pm.expect(nonGroupTierPrice._).to.be.eq('220');",
+                          "    pm.expect(nonGroupTierPrice.$.threshold).to.be.eq('1');",
+                          "    pm.expect(nonGroupTierPrice.$.max_quantity).to.be.eq('5');",
+                          "    pm.expect(nonGroupTierPrice.$.type).to.be.eq('fixed');",
+                          "    pm.expect(nonGroupTierPrice.$, 'Should not be a customer group tier price').not.haveOwnProperty('customer_group_uid');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number_headless}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_items}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{created_product_advPriceOne_id}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "SG: customer grp tier",
               "event": [
                 {
@@ -3520,9 +3715,6 @@
                       "",
                       "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
                       "    const jsonObject = xml2Json(responseBody);",
-                      "    if (pm.globals.get('verbose')){",
-                      "        console.log(jsonObject);",
-                      "    }",
                       "",
                       "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
                       "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
@@ -3579,203 +3771,6 @@
                     {
                       "key": "uids[0]",
                       "value": "{{catalog_product_advPrices_id}}",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: clone adv prices",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Product created\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Save product id for later use\", function () {\r",
-                      "    const jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                      "    pm.environment.set(\"gen_product_advPricesOne_id\", jsonData.id);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"overwrites\": {\r\n        \"name\" : \"API: Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "_action",
-                    "clone",
-                    "product",
-                    "{{catalog_product_advPrices_id}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: assing to channel",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Successfully added channel visibility to product\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {
-                  "accept": true
-                }
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"productId\": \"{{gen_product_advPricesOne_id}}\",\r\n    \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n    \"visibility\": 30\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/product-visibility",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "product-visibility"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: check tier prices",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Not an error\", function () {",
-                      "    pm.response.to.not.have.jsonBody('error');",
-                      "});",
-                      "",
-                      "const jsonObject = xml2Json(responseBody);",
-                      "if (pm.globals.get('verbose')){",
-                      "    console.log(jsonObject);",
-                      "}",
-                      "pm.test(\"Checking regular price options\", function () {",
-                      "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
-                      "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
-                      "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Inhalt: 1'); //check translation ",
-                      "});",
-                      "",
-                      "pm.test('Check tier prices', function() {",
-                      "    const nonGroupTierPrice = jsonObject.items.item.prices.tier_prices.tier_price.find(price => !price.$.hasOwnProperty('customer_group_uid'));",
-                      "    pm.expect(nonGroupTierPrice._).to.be.eq('220');",
-                      "    pm.expect(nonGroupTierPrice.$.threshold).to.be.eq('1');",
-                      "    pm.expect(nonGroupTierPrice.$.max_quantity).to.be.eq('5');",
-                      "    pm.expect(nonGroupTierPrice.$.type).to.be.eq('fixed');",
-                      "    pm.expect(nonGroupTierPrice.$, 'Should not be a customer group tier price').not.haveOwnProperty('customer_group_uid');",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number_headless}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_get_items}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "uids[0]",
-                      "value": "{{gen_product_advPricesOne_id}}",
                       "type": "text"
                     }
                   ]
@@ -4261,8 +4256,9 @@
                   "pm.test(\"General item check\", function () {",
                   "    pm.expect(jsonData.items).length(4, 'Should be 4 items in cart');",
                   "});",
+                  "const items = jsonData.items;",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = Utility.getByItemNumber(pm.environment.get('catalog_product_advPrices_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(12);",
                   "    pm.expect(item.stock_quantity).to.eql(10);",
@@ -4270,17 +4266,17 @@
                   "    pm.expect(item.unit_amount_with_tax).to.eql(750);",
                   "});",
                   "pm.test(\"Check item not found\", function () {",
-                  "    const item = Utility.getByItemNumber('1901dc5e888f4b1ea4168c2c5f005540');",
+                  "    const item = Utility.getByItemNumber(items, '1901dc5e888f4b1ea4168c2c5f005540');",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(301);",
                   "});",
                   "pm.test(\"Check item out of stock\", function () {",
-                  "    const item = Utility.getByItemNumber(pm.environment.get('created_product_noStock_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_noStock_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(300);",
                   "});",
                   "pm.test(\"Check item max purchase\", function () {",
-                  "    const item = Utility.getByItemNumber(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.qty_buyable).to.eql(10);",
                   "    pm.expect(item.stock_quantity).to.eq(50);",
@@ -4570,8 +4566,9 @@
                   "pm.test(\"General item check\", function () {",
                   "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
                   "});",
+                  "const items = jsonData.items;",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = Utility.getByItemNumber(pm.environment.get('gen_product_advPricesOne_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_advPriceOne_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(1);",
                   "    pm.expect(item.stock_quantity).to.eql(500);",
@@ -4579,7 +4576,7 @@
                   "    pm.expect(item.unit_amount_with_tax).to.eql(858.34);",
                   "});",
                   "pm.test(\"Check item max purchase\", function () {",
-                  "    const item = Utility.getByItemNumber(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.qty_buyable).to.eql(10);",
                   "    pm.expect(item.stock_quantity).to.eq(50);",
@@ -4709,7 +4706,7 @@
                 },
                 {
                   "key": "cart[items][0][item_number]",
-                  "value": "{{gen_product_advPricesOne_id}}",
+                  "value": "{{created_product_advPriceOne_id}}",
                   "type": "text"
                 },
                 {
@@ -4800,7 +4797,7 @@
                   "    pm.expect(jsonData.items).length(1, 'Should be 4 items in cart');",
                   "});",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = Utility.getByItemNumber(pm.environment.get('catalog_product_advPrices_id'));",
+                  "    const item = Utility.getByItemNumber(jsonData.items, pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(1);",
                   "    pm.expect(item.stock_quantity).to.eql(10);",
