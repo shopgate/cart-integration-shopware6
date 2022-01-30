@@ -930,7 +930,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_advPriceOne_id}}\",\r\n        \"name\" : \"API: Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_advPriceOne_id}}\",\r\n        \"name\" : \"API: Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ],\r\n        \"visibilities\": [\r\n            {\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n                \"visibility\": 30\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -947,66 +947,6 @@
                         "clone",
                         "product",
                         "{{catalog_product_advPrices_id}}"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "SW: assing to channel",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Successfully added channel visibility to product\", function () {\r",
-                          "    pm.response.to.have.status(204);\r",
-                          "});"
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "protocolProfileBehavior": {
-                    "disabledSystemHeaders": {
-                      "accept": true
-                    }
-                  },
-                  "request": {
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
-                        {
-                          "key": "token",
-                          "value": "{{gen_access_token}}",
-                          "type": "string"
-                        }
-                      ]
-                    },
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json",
-                        "type": "text"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\r\n    \"productId\": \"{{created_product_advPriceOne_id}}\",\r\n    \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n    \"visibility\": 30\r\n}",
-                      "options": {
-                        "raw": {
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{sw_endpoint_api}}/product-visibility",
-                      "host": [
-                        "{{sw_endpoint_api}}"
-                      ],
-                      "path": [
-                        "product-visibility"
                       ]
                     }
                   },
