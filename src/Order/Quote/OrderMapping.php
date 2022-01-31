@@ -11,6 +11,7 @@ use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\System\CustomFields\CustomFieldMapping;
 use ShopgateContainer;
 use ShopgateOrder;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\OrderEntity;
 
 class OrderMapping
@@ -56,7 +57,11 @@ class OrderMapping
         $sgOrder->setStatusName($swOrder->getStateMachineState());
         $sgOrder->setAmountCompleteNet($swOrder->getAmountNet());
         $sgOrder->setAmountCompleteGross($swOrder->getPrice()->getTotalPrice());
-        $sgOrder->setAmountItemsGross($swOrder->getPositionPrice());
+        if ($swOrder->getTaxStatus() === CartPrice::TAX_STATE_GROSS) {
+            $sgOrder->setAmountItemsGross($swOrder->getPositionPrice());
+        } else {
+            $sgOrder->setAmountItemsNet($swOrder->getPositionPrice());
+        }
         $sgOrder->setCurrency($swOrder->getCurrency());
         $sgOrder->setCustomFields($this->customFieldMapping->mapToShopgateCustomFields($swOrder));
         $sgOrder->setItems($swOrder);
