@@ -102,6 +102,9 @@
         <service id="Shopgate\Shopware\Order\Subscriber\AddSgOrderToCriteriaSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\LiveShoppingSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\Order\CartComposer"/>
         <service id="Shopgate\Shopware\Order\Customer\CustomerMapping"/>
         <service id="Shopgate\Shopware\Order\Customer\OrderCustomerComposer"/>

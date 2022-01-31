@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote;
 
+use Shopgate\Shopware\Order\Quote\Events\AfterAddLineItemsToQuote;
 use Shopgate\Shopware\Order\Quote\Events\AfterCustomerGetOrdersLoadEvent;
 use Shopgate\Shopware\Order\Quote\Events\AfterGetOrdersLoadEvent;
+use Shopgate\Shopware\Order\Quote\Events\BeforeAddLineItemsToQuote;
 use Shopgate\Shopware\Order\Quote\Events\BeforeCustomerGetOrdersLoadEvent;
 use Shopgate\Shopware\Order\Quote\Events\BeforeGetOrdersLoadEvent;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -58,9 +60,13 @@ class QuoteBridge
         return $this->cartLoadRoute->load(new Request(), $context)->getCart();
     }
 
-    public function addLineItemToQuote(Request $request, Cart $cart, SalesChannelContext $context): Cart
+    public function addLineItemsToQuote(Request $request, Cart $cart, SalesChannelContext $context): Cart
     {
-        return $this->cartItemAddRoute->add($request, $cart, $context, null)->getCart();
+        $this->dispatcher->dispatch(new BeforeAddLineItemsToQuote($request, $cart, $context));
+        $newCart = $this->cartItemAddRoute->add($request, $cart, $context, null)->getCart();
+        $this->dispatcher->dispatch(new AfterAddLineItemsToQuote($newCart, $context));
+
+        return $newCart;
     }
 
     public function createOrder(Cart $cart, SalesChannelContext $context, ?RequestDataBag $data = null): OrderEntity

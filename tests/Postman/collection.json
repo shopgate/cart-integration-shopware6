@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "56e981c5-af37-4cb3-a5cf-7c844bfc9175",
+    "_postman_id": "f257f8ff-6900-4bf1-b8bf-e5eaee6b1cba",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -898,6 +898,63 @@
           "name": "Catalog",
           "item": [
             {
+              "name": "Multi-Channel",
+              "item": [
+                {
+                  "name": "SW: clone adv prices",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_advPriceOne_id}}\",\r\n        \"name\" : \"API: Headless Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ],\r\n        \"visibilities\": [\r\n            {\r\n                \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n                \"visibility\": 30\r\n            }\r\n        ],\r\n        \"releaseDate\": \"2022-01-28T11:00:04.389+00:00\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "clone",
+                        "product",
+                        "{{catalog_product_advPrices_id}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "SW: get all categories",
               "event": [
                 {
@@ -1177,6 +1234,110 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "SW: create no stock prod",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_noStock_id}}\",\r\n        \"name\" : \"API: out of stock product\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART01\",\r\n        \"stock\": 0,\r\n        \"isCloseout\": true,\r\n        \"releaseDate\": \"2022-01-29T11:00:04.389+00:00\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "clone",
+                    "product",
+                    "{{catalog_product_advPrices_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create max purchse prod",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Product created\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_maxPurchaseTen_id}}\",\r\n        \"name\" : \"API: max purchase 10 product\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART02\",\r\n        \"stock\": 100,\r\n        \"maxPurchase\": 10,\r\n        \"releaseDate\": \"2022-01-29T11:00:04.389+00:00\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "clone",
+                    "product",
+                    "{{catalog_product_advPrices_id}}"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -1234,55 +1395,6 @@
                   "path": [
                     "search-ids",
                     "customer-group"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: get address country",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Get country ISO\", function () {\r",
-                      "    const jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.data).be.an('array').to.be.not.empty\r",
-                      "    pm.expect(jsonData.data[0]).to.haveOwnProperty('attributes').to.haveOwnProperty('iso');\r",
-                      "    pm.environment.set(\"gen_customer_default_country_iso\", jsonData.data[0].attributes.iso);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/customer-address/{{customer_default_address_id}}/country",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "customer-address",
-                    "{{customer_default_address_id}}",
-                    "country"
                   ]
                 }
               },
@@ -3034,11 +3146,8 @@
                       "});",
                       "",
                       "const jsonObject = xml2Json(responseBody);",
-                      "if (pm.globals.get('verbose')) {",
-                      "    console.log(jsonObject);",
-                      "}",
                       "pm.test(\"General check\", function () {",
-                      "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(5, 'Should have certain amount of products');",
+                      "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(7, 'Should have certain amount of products');",
                       "});",
                       "",
                       "pm.test(\"Check `adv price` product category sort\", function () {",
@@ -3238,7 +3347,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"write-product-cross-selling\": {\r\n        \"entity\": \"product_cross_selling\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Upsell: All active, 3 limit\",\r\n                \"position\": 4,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 3,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"price\",\r\n                \"sortDirection\": \"DESC\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Relations: all active\",\r\n                \"position\": 6,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 10,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"name\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Disabled list\",\r\n                \"position\": 3,\r\n                \"type\": \"productList\",\r\n                \"active\": false,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Cross Sell: manual 2, 1 dis, 1 dupe\",\r\n                \"position\": 2,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_disabled}}\",\r\n                        \"position\": 2\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_variant}}\",\r\n                        \"position\": 4\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Custom: manual 3\",\r\n                \"position\": 5,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_freeShip}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                        \"position\": 2\r\n                    },\r\n\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Not exported\",\r\n                \"position\": 7,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                \"sortBy\": \"name\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"write-product-cross-selling\": {\r\n        \"entity\": \"product_cross_selling\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Upsell: All active, 3 limit\",\r\n                \"position\": 4,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 3,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"name\",\r\n                \"sortDirection\": \"DESC\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Relations: all active\",\r\n                \"position\": 6,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"limit\": 10,\r\n                \"productStreamId\": \"{{created_stream_allActive_id}}\",\r\n                \"sortBy\": \"name\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Disabled list\",\r\n                \"position\": 3,\r\n                \"type\": \"productList\",\r\n                \"active\": false,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Cross Sell: manual 2, 1 dis, 1 dupe\",\r\n                \"position\": 2,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_disabled}}\",\r\n                        \"position\": 2\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_variant}}\",\r\n                        \"position\": 4\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Custom: manual 3\",\r\n                \"position\": 5,\r\n                \"type\": \"productList\",\r\n                \"active\": true,\r\n                \"assignedProducts\": [\r\n                    {\r\n                        \"productId\": \"{{catalog_product_freeShip}}\",\r\n                        \"position\": 1\r\n                    },\r\n                    {\r\n                        \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                        \"position\": 2\r\n                    },\r\n\r\n                    {\r\n                        \"productId\": \"{{catalog_product_props}}\",\r\n                        \"position\": 3\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_main_id}}\",\r\n                \"name\": \"Not exported\",\r\n                \"position\": 7,\r\n                \"type\": \"productStream\",\r\n                \"active\": true,\r\n                \"productStreamId\": \"{{created_stream_noFreeShip_id}}\",\r\n                \"sortBy\": \"name\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3270,11 +3379,6 @@
                       "});",
                       "",
                       "const jsonObject = xml2Json(responseBody);",
-                      "pm.test(\"Is in the dynamic category\", function () {",
-                      "    if (pm.globals.get('verbose')){",
-                      "        console.log(jsonObject);",
-                      "    }",
-                      "});",
                       "pm.test(\"Main Crossell check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation).to.be.an('array', 'Where are the sliders?').length(4, 'Should be 4 sliders max');",
                       "    pm.expect(jsonObject.items.item.relations.relation[0].$.type).to.be.eq('crosssell');",
@@ -3286,10 +3390,9 @@
                       "pm.test(\"Upsell check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation[1].$.type).to.be.eq('upsell');",
                       "    pm.expect(jsonObject.items.item.relations.relation[1].uid).to.be.an('array', 'Where be the children 2?').length(3, 'All active, 3 limit');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[0]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[1]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_variant'));",
-                      "",
+                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[0]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[1]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_props'));",
                       "});",
                       "pm.test(\"Custom list check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation[2].$.type).to.be.eq('custom');",
@@ -3301,12 +3404,14 @@
                       "});",
                       "pm.test(\"Relation list check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation[3].$.type).to.be.eq('relation');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(5, 'All 5 products?');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('catalog_product_variant'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_props'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(7, 'All 7 products?');",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('created_product_noStock_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[5]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[6]).to.be.eq(pm.environment.get('catalog_product_freeShip'));",
                       "",
                       "});"
                     ],
@@ -3453,6 +3558,90 @@
           "name": "Tier Prices",
           "item": [
             {
+              "name": "Multi-Channel",
+              "item": [
+                {
+                  "name": "SG: check grp tier",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.response.to.not.have.jsonBody('error');",
+                          "});",
+                          "",
+                          "const jsonObject = xml2Json(responseBody);",
+                          "if (pm.globals.get('verbose')){",
+                          "    console.log(jsonObject);",
+                          "}",
+                          "pm.test(\"Checking regular price options\", function () {",
+                          "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
+                          "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
+                          "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Inhalt: 1'); //check translation ",
+                          "});",
+                          "",
+                          "pm.test('Check tier prices', function() {",
+                          "    const nonGroupTierPrice = jsonObject.items.item.prices.tier_prices.tier_price.find(price => !price.$.hasOwnProperty('customer_group_uid'));",
+                          "    pm.expect(nonGroupTierPrice._).to.be.eq('220');",
+                          "    pm.expect(nonGroupTierPrice.$.threshold).to.be.eq('1');",
+                          "    pm.expect(nonGroupTierPrice.$.max_quantity).to.be.eq('5');",
+                          "    pm.expect(nonGroupTierPrice.$.type).to.be.eq('fixed');",
+                          "    pm.expect(nonGroupTierPrice.$, 'Should not be a customer group tier price').not.haveOwnProperty('customer_group_uid');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number_headless}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_items}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "uids[0]",
+                          "value": "{{created_product_advPriceOne_id}}",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "SG: customer grp tier",
               "event": [
                 {
@@ -3465,9 +3654,6 @@
                       "",
                       "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
                       "    const jsonObject = xml2Json(responseBody);",
-                      "    if (pm.globals.get('verbose')){",
-                      "        console.log(jsonObject);",
-                      "    }",
                       "",
                       "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
                       "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
@@ -3524,203 +3710,6 @@
                     {
                       "key": "uids[0]",
                       "value": "{{catalog_product_advPrices_id}}",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: clone adv prices",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Product created\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Save product id for later use\", function () {\r",
-                      "    const jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                      "    pm.environment.set(\"gen_product_advPricesOne_id\", jsonData.id);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"overwrites\": {\r\n        \"name\" : \"API: Advanced Prices One\",\r\n        \"productNumber\" : \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 721.29,\r\n                        \"gross\": 730,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "_action",
-                    "clone",
-                    "product",
-                    "{{catalog_product_advPrices_id}}"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: assing to channel",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Successfully added channel visibility to product\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {
-                  "accept": true
-                }
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"productId\": \"{{gen_product_advPricesOne_id}}\",\r\n    \"salesChannelId\": \"{{gen_channel_headless_id}}\",\r\n    \"visibility\": 30\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/product-visibility",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "product-visibility"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SG: check tier prices",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Not an error\", function () {",
-                      "    pm.response.to.not.have.jsonBody('error');",
-                      "});",
-                      "",
-                      "const jsonObject = xml2Json(responseBody);",
-                      "if (pm.globals.get('verbose')){",
-                      "    console.log(jsonObject);",
-                      "}",
-                      "pm.test(\"Checking regular price options\", function () {",
-                      "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
-                      "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
-                      "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Inhalt: 1'); //check translation ",
-                      "});",
-                      "",
-                      "pm.test('Check tier prices', function() {",
-                      "    const nonGroupTierPrice = jsonObject.items.item.prices.tier_prices.tier_price.find(price => !price.$.hasOwnProperty('customer_group_uid'));",
-                      "    pm.expect(nonGroupTierPrice._).to.be.eq('220');",
-                      "    pm.expect(nonGroupTierPrice.$.threshold).to.be.eq('1');",
-                      "    pm.expect(nonGroupTierPrice.$.max_quantity).to.be.eq('5');",
-                      "    pm.expect(nonGroupTierPrice.$.type).to.be.eq('fixed');",
-                      "    pm.expect(nonGroupTierPrice.$, 'Should not be a customer group tier price').not.haveOwnProperty('customer_group_uid');",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number_headless}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_get_items}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "uids[0]",
-                      "value": "{{gen_product_advPricesOne_id}}",
                       "type": "text"
                     }
                   ]
@@ -4186,121 +4175,6 @@
       "name": "Cart",
       "item": [
         {
-          "name": "SW: create out of stock product",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Product created\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Save product id for later use\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                  "    pm.environment.set(\"gen_product_stock_zero_id\", jsonData.id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"overwrites\": {\r\n        \"name\" : \"API: check_cart One\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART01\",\r\n        \"stock\": 0,\r\n        \"isCloseout\": true\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "clone",
-                "product",
-                "{{catalog_product_advPrices_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: create max purchse product",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Product created\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Save product id for later use\", function () {\r",
-                  "    const jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_maxPurchaseTen_id}}\",\r\n        \"name\" : \"API: max purchase 10\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART02\",\r\n        \"stock\": 100,\r\n        \"maxPurchase\": 10\r\n    },\r\n    \"cloneChildren\": false\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_advPrices_id}}",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "clone",
-                "product",
-                "{{catalog_product_advPrices_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "SG: cart (main cust)",
           "event": [
             {
@@ -4321,8 +4195,10 @@
                   "pm.test(\"General item check\", function () {",
                   "    pm.expect(jsonData.items).length(4, 'Should be 4 items in cart');",
                   "});",
+                  "const items = jsonData.items;",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                  "    // checking that advanced prices apply to this customer group",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(12);",
                   "    pm.expect(item.stock_quantity).to.eql(10);",
@@ -4330,17 +4206,17 @@
                   "    pm.expect(item.unit_amount_with_tax).to.eql(750);",
                   "});",
                   "pm.test(\"Check item not found\", function () {",
-                  "    const item = getItemById('1901dc5e888f4b1ea4168c2c5f005540');",
+                  "    const item = Utility.getByItemNumber(items, '1901dc5e888f4b1ea4168c2c5f005540');",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(301);",
                   "});",
                   "pm.test(\"Check item out of stock\", function () {",
-                  "    const item = getItemById(pm.environment.get('gen_product_stock_zero_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_noStock_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(300);",
                   "});",
                   "pm.test(\"Check item max purchase\", function () {",
-                  "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.qty_buyable).to.eql(10);",
                   "    pm.expect(item.stock_quantity).to.eq(50);",
@@ -4362,12 +4238,7 @@
                   "    const internalInfo = JSON.parse(coupon.internal_info);",
                   "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                   "    pm.expect(internalInfo.itemType).to.eq('coupon');",
-                  "});",
-                  "",
-                  "function getItemById(id) {",
-                  "    return jsonData.items.find(item => item.item_number === id);",
-                  "};",
-                  ""
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -4449,7 +4320,7 @@
                 },
                 {
                   "key": "cart[invoice_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -4484,7 +4355,7 @@
                 },
                 {
                   "key": "cart[delivery_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -4543,7 +4414,7 @@
                 },
                 {
                   "key": "cart[items][2][item_number]",
-                  "value": "{{gen_product_stock_zero_id}}",
+                  "value": "{{created_product_noStock_id}}",
                   "type": "text"
                 },
                 {
@@ -4612,7 +4483,7 @@
           "response": []
         },
         {
-          "name": "SG: cart (customGrp)",
+          "name": "SG: cart (NET grp)",
           "event": [
             {
               "listen": "test",
@@ -4635,16 +4506,18 @@
                   "pm.test(\"General item check\", function () {",
                   "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
                   "});",
+                  "const items = jsonData.items;",
+                  "// checks that advanced prices do not apply to this customer group",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = getItemById(pm.environment.get('gen_product_advPricesOne_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
-                  "    pm.expect(item.qty_buyable).to.eql(1);",
-                  "    pm.expect(item.stock_quantity).to.eql(500);",
-                  "    pm.expect(item.unit_amount).to.eql(721.29);",
-                  "    pm.expect(item.unit_amount_with_tax).to.eql(858.34);",
+                  "    pm.expect(item.qty_buyable).to.eql(12);",
+                  "    pm.expect(item.stock_quantity).to.eql(10);",
+                  "    pm.expect(item.unit_amount).to.eql(798.32);",
+                  "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
                   "});",
                   "pm.test(\"Check item max purchase\", function () {",
-                  "    const item = getItemById(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                  "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.qty_buyable).to.eql(10);",
                   "    pm.expect(item.stock_quantity).to.eq(50);",
@@ -4652,10 +4525,6 @@
                   "    pm.expect(item.unit_amount).to.eql(798.32);",
                   "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
                   "});",
-                  "",
-                  "function getItemById(id) {",
-                  "    return jsonData.items.find(item => item.item_number === id);",
-                  "};",
                   ""
                 ],
                 "type": "text/javascript"
@@ -4738,7 +4607,7 @@
                 },
                 {
                   "key": "cart[invoice_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -4773,12 +4642,12 @@
                 },
                 {
                   "key": "cart[delivery_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
                   "key": "cart[items][0][item_number]",
-                  "value": "{{gen_product_advPricesOne_id}}",
+                  "value": "{{catalog_product_advPrices_id}}",
                   "type": "text"
                 },
                 {
@@ -4788,7 +4657,7 @@
                 },
                 {
                   "key": "cart[items][0][quantity]",
-                  "value": "1",
+                  "value": "12",
                   "type": "text"
                 },
                 {
@@ -4869,7 +4738,7 @@
                   "    pm.expect(jsonData.items).length(1, 'Should be 4 items in cart');",
                   "});",
                   "pm.test(\"Check item success\", function () {",
-                  "    const item = getItemById(pm.environment.get('catalog_product_advPrices_id'));",
+                  "    const item = Utility.getByItemNumber(jsonData.items, pm.environment.get('catalog_product_advPrices_id'));",
                   "    pm.expect(item.is_buyable).to.eql(1);",
                   "    pm.expect(item.qty_buyable).to.eql(1);",
                   "    pm.expect(item.stock_quantity).to.eql(10);",
@@ -4878,7 +4747,7 @@
                   "});",
                   "",
                   "pm.test(\"Check USA customer auto rule is handled\", function () {",
-                  "    const coupon = getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
+                  "    const coupon = Utility.getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
                   "    pm.expect(jsonData.external_coupons).length(2);",
                   "    pm.expect(coupon.is_valid).to.eq(1);",
                   "    pm.expect(coupon.not_valid_message).to.eq(null);",
@@ -4894,7 +4763,7 @@
                   "});",
                   "",
                   "pm.test(\"Check not valid coupon\", function () {",
-                  "    const coupon = getByName(jsonData.external_coupons, 'Not valid coupon');",
+                  "    const coupon = Utility.getByName(jsonData.external_coupons, 'Not valid coupon');",
                   "    pm.expect(coupon.is_valid).to.eq(false);",
                   "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
                   "    pm.expect(coupon.code).to.eq('NOT-VALID');",
@@ -4903,14 +4772,7 @@
                   "    pm.expect(coupon.name).to.eq('Not valid coupon');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
                   "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
-                  "});",
-                  "",
-                  "function getItemById(id) {",
-                  "    return jsonData.items.find(item => item.item_number === id);",
-                  "};",
-                  "function getByName(list, name) {",
-                  "    return list.find(item => item.name === name);",
-                  "};"
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -5032,7 +4894,7 @@
                 },
                 {
                   "key": "cart[delivery_address][country]",
-                  "value": "{{gen_customer_default_country_iso}}",
+                  "value": "BD",
                   "type": "text"
                 },
                 {
@@ -5759,24 +5621,15 @@
                     "exec": [
                       "const jsonData = pm.response.json();",
                       "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
                       "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -5939,15 +5792,10 @@
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6093,24 +5941,15 @@
                     "exec": [
                       "const jsonData = pm.response.json();",
                       "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
                       "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6254,7 +6093,7 @@
                       "",
                       "pm.test(\"Promotion by code check\", function () {",
                       "    pm.expect(order.external_coupons).to.be.length(4);",
-                      "    const coupon = getItemByName(order.external_coupons, 'API: promo by code');",
+                      "    const coupon = Utility.getByName(order.external_coupons, 'API: promo by code');",
                       "    pm.expect(coupon, 'Could not locate coupon by code').to.not.be.undefined;",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
@@ -6270,7 +6109,7 @@
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "});",
                       "pm.test(\"Auto Promo 10% discount check\", function () {",
-                      "    const promoDiscount = getItemByName(order.external_coupons, 'API: promo by Billing Country USA');",
+                      "    const promoDiscount = Utility.getByName(order.external_coupons, 'API: promo by Billing Country USA');",
                       "    pm.expect(promoDiscount, 'Could not locate 10% promo discount').to.not.be.undefined;",
                       "    pm.expect(promoDiscount.code).to.not.be.null;",
                       "    pm.expect(promoDiscount.name).to.eq('API: promo by Billing Country USA');",
@@ -6287,7 +6126,7 @@
                       "});",
                       "    ",
                       "pm.test(\"Shipping discount 1 check\", function () {",
-                      "    const shippingDiscount = getItemByName(order.external_coupons, 'discount shipping costs 1');",
+                      "    const shippingDiscount = Utility.getByName(order.external_coupons, 'discount shipping costs 1');",
                       "    pm.expect(shippingDiscount, 'Could not loate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('1');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 1');",
@@ -6299,7 +6138,7 @@
                       "});",
                       "",
                       "pm.test(\"Shipping discount 2 check\", function () {",
-                      "    const shippingDiscount = getItemByName(order.external_coupons, 'discount shipping costs 2');",
+                      "    const shippingDiscount = Utility.getByName(order.external_coupons, 'discount shipping costs 2');",
                       "    pm.expect(shippingDiscount, 'Could not loate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('2');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 2');",
@@ -6312,7 +6151,7 @@
                       "",
                       "pm.test(\"Item check\", function () {",
                       "    pm.expect(order.items).to.be.length(2);",
-                      "    const product = getItemByName(order.items, 'Main product');",
+                      "    const product = Utility.getByName(order.items, 'Main product');",
                       "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
                       "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
                       "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
@@ -6322,7 +6161,7 @@
                       "    pm.expect(product.tax_percent).to.eq(20);",
                       "    pm.expect(product.currency).to.eq('EUR');",
                       "    pm.expect(product.description).to.not.be.empty;",
-                      "    const variantChild = getItemByName(order.items, 'API: Variant Child (Red-M)');",
+                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
                       "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
                       "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
                       "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
@@ -6341,11 +6180,7 @@
                       "    pm.expect(extraCost.tax_percent).to.eq(20);",
                       "    pm.expect(extraCost.amount).to.eq(4.9);",
                       "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
-                      "});",
-                      "",
-                      "function getItemByName(list, name) {",
-                      "    return list.find(item => item.name === name);",
-                      "};"
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6494,7 +6329,7 @@
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
                       "\r",
-                      "pm.test(\"Your test name\", function () {\r",
+                      "pm.test(\"Status is now shipped\", function () {\r",
                       "    var jsonData = pm.response.json();\r",
                       "    pm.expect(jsonData.technicalName).to.eql('shipped');\r",
                       "});"
@@ -6722,24 +6557,15 @@
                     "exec": [
                       "const jsonData = pm.response.json();",
                       "pm.test(\"Order added properly\", function () {",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(jsonData);",
-                      "    }",
-                      "",
                       "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
                       "});",
                       "",
-                      "const order_number = getValue(pm.request.body.formdata, 'order_number');",
-                      "pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
-                      "",
-                      "function getValue(data, incomingKey) {",
-                      "    const found = data.find(function({key}) {",
-                      "        return key === incomingKey;",
-                      "    });",
-                      "    return found && found.hasOwnProperty('value') ? found.value : null;",
-                      "}"
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
                     ],
                     "type": "text/javascript"
                   }
@@ -6807,11 +6633,12 @@
                       "    const swOrder = jsonData.data[0];\r",
                       "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
                       "    const order = swOrder.extensions.shopgateOrder;\r",
-                      "   pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                      "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
                       "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
                       "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
                       "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
                       "\r",
+                      "    // rewrite is necessary\r",
                       "    pm.environment.set(\"gen_shopgateOrder_0004_id\", order.id);\r",
                       "});\r",
                       ""
@@ -7223,6 +7050,523 @@
                   "path": [
                     "search",
                     "order"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "6 - 7 - live shopping",
+          "item": [
+            {
+              "name": "SW: Enable live-shop",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully enabled LiveShopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e52549984567bf14a0b94fc8e38bfa4a\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isLiveShopping\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: add order (gross)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0006",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check last order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.expect(jsonData.error).to.eq(0);",
+                      "    pm.expect(jsonData.orders).to.be.length(1);",
+                      "});",
+                      "",
+                      "const order = jsonData.orders[0];",
+                      "pm.test(\"Basic order data\", function () {",
+                      "    /**",
+                      "     * 137 just items Gross - 125+12",
+                      "     * 142 for items & shipping Gross - 125+12+5",
+                      "     * 114.02 for item + shipping GROSS 100 + 10 + (5 - 0.07 - 0.91)",
+                      "     */",
+                      "    pm.expect(order.amount_items_gross).to.eq(137);",
+                      "    pm.expect(order.amount_complete_gross).to.eq(142);",
+                      "    pm.expect(order.amount_complete_net).to.eq(114.02);",
+                      "});",
+                      "",
+                      "pm.test(\"Item check\", function () {",
+                      "    pm.expect(order.items).to.be.length(2);",
+                      "    const product = Utility.getByName(order.items, 'Main product');",
+                      "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
+                      "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+                      "    pm.expect(product.quantity).to.eq(1);",
+                      "    pm.expect(product.unit_amount).to.eq(100.00);",
+                      "    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
+                      "    pm.expect(product.tax_percent).to.eq(25);",
+                      "    pm.expect(product.currency).to.eq('EUR');",
+                      "    pm.expect(product.description).to.not.be.empty;",
+                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
+                      "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
+                      "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
+                      "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
+                      "    pm.expect(variantChild.quantity).to.eq(1);",
+                      "    pm.expect(variantChild.unit_amount).to.eq(10.00);",
+                      "    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
+                      "    pm.expect(variantChild.tax_percent).to.eq(20);",
+                      "    pm.expect(variantChild.currency).to.eq('EUR');",
+                      "    pm.expect(variantChild.description).to.be.null;",
+                      "});",
+                      "",
+                      "pm.test(\"Taxes\", function () {",
+                      "    pm.expect(order.order_taxes).to.be.length(2);",
+                      "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
+                      "    pm.expect(taxOne.tax_percent).to.eq(25);",
+                      "    pm.expect(taxOne.amount).to.eq(25.91);",
+                      "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
+                      "    pm.expect(taxTwo.tax_percent).to.eq(20);",
+                      "    pm.expect(taxTwo.amount).to.eq(2.07);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_orders}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_token",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_language",
+                      "value": "",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: add order (net)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0007",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check last order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.expect(jsonData.error).to.eq(0);",
+                      "    pm.expect(jsonData.orders).to.be.length(1);",
+                      "});",
+                      "",
+                      "const order = jsonData.orders[0];",
+                      "pm.test(\"Basic order data\", function () {",
+                      "    /**",
+                      "     * 110 just items NET - 100+10",
+                      "     * 115 for items & shipping NET - 100+10+5",
+                      "     * 143.23 for item + shipping GROSS 100+25% + 10+20% + 5+25%+20%",
+                      "     */",
+                      "    pm.expect(order.amount_items_net).to.eq(110);",
+                      "    pm.expect(order.amount_complete_gross).to.eq(143.23);",
+                      "    pm.expect(order.amount_complete_net).to.eq(115.00);",
+                      "});",
+                      "",
+                      "pm.test(\"Item check\", function () {",
+                      "    pm.expect(order.items).to.be.length(2);",
+                      "    const product = Utility.getByName(order.items, 'Main product');",
+                      "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
+                      "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+                      "    pm.expect(product.quantity).to.eq(1);",
+                      "    pm.expect(product.unit_amount).to.eq(100.00);",
+                      "    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
+                      "    pm.expect(product.tax_percent).to.eq(25);",
+                      "    pm.expect(product.currency).to.eq('EUR');",
+                      "    pm.expect(product.description).to.not.be.empty;",
+                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
+                      "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
+                      "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
+                      "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
+                      "    pm.expect(variantChild.quantity).to.eq(1);",
+                      "    pm.expect(variantChild.unit_amount).to.eq(10.00);",
+                      "    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
+                      "    pm.expect(variantChild.tax_percent).to.eq(20);",
+                      "    pm.expect(variantChild.currency).to.eq('EUR');",
+                      "    pm.expect(variantChild.description).to.be.null;",
+                      "});",
+                      "",
+                      "pm.test(\"Taxes\", function () {",
+                      "    pm.expect(order.order_taxes).to.be.length(2);",
+                      "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
+                      "    pm.expect(taxOne.tax_percent).to.eq(25);",
+                      "    pm.expect(taxOne.amount).to.eq(26.14);",
+                      "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
+                      "    pm.expect(taxTwo.tax_percent).to.eq(20);",
+                      "    pm.expect(taxTwo.amount).to.eq(2.09);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_orders}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_token",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_language",
+                      "value": "",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: Disable live-shop",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully disabled Live Shopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e52549984567bf14a0b94fc8e38bfa4a\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isLiveShopping\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
                   ]
                 }
               },
@@ -8039,6 +8383,19 @@
           "Utility.getMachineStateName = function(machineState) {",
           "    pm.expect(machineState, 'Object should have StateMachineState').to.haveOwnProperty('stateMachineState');",
           "    return machineState.stateMachineState.technicalName;",
+          "};",
+          "// some times request values are calculated, this is how we get them",
+          "Utility.getRequestVariableValue = function(incomingKey) {",
+          "    const found = pm.request.body.formdata.find(function({key}) {",
+          "        return key === incomingKey;",
+          "    });",
+          "    return found && found.hasOwnProperty('value') ? found.value : null;",
+          "}",
+          "Utility.getByLabel = (list, value) => getItemByKey(list, 'label', value);",
+          "Utility.getByName = (list, value) => getItemByKey(list, 'name', value);",
+          "Utility.getByItemNumber = (list, value) => getItemByKey(list, 'item_number', value);",
+          "function getItemByKey(list, key, value) {",
+          "    return list.find(item => item[key] === value);",
           "};"
         ]
       }
