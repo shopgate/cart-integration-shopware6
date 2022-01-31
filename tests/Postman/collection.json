@@ -7058,7 +7058,7 @@
           ]
         },
         {
-          "name": "6 - live shopping",
+          "name": "6 - 7 - live shopping",
           "item": [
             {
               "name": "SW: Enable live-shop",
@@ -7122,7 +7122,7 @@
               "response": []
             },
             {
-              "name": "SG: add order",
+              "name": "SG: add order (gross)",
               "event": [
                 {
                   "listen": "test",
@@ -7190,7 +7190,7 @@
               "response": []
             },
             {
-              "name": "SG: get last order",
+              "name": "SG: check last order",
               "event": [
                 {
                   "listen": "test",
@@ -7208,6 +7208,11 @@
                       "",
                       "const order = jsonData.orders[0];",
                       "pm.test(\"Basic order data\", function () {",
+                      "    /**",
+                      "     * 137 just items Gross - 125+12",
+                      "     * 142 for items & shipping Gross - 125+12+5",
+                      "     * 114.02 for item + shipping GROSS 100 + 10 + (5 - 0.07 - 0.91)",
+                      "     */",
                       "    pm.expect(order.amount_items_gross).to.eq(137);",
                       "    pm.expect(order.amount_complete_gross).to.eq(142);",
                       "    pm.expect(order.amount_complete_net).to.eq(114.02);",
@@ -7283,6 +7288,201 @@
                     {
                       "key": "customer_token",
                       "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_language",
+                      "value": "",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: add order (net)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0007",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check last order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.expect(jsonData.error).to.eq(0);",
+                      "    pm.expect(jsonData.orders).to.be.length(1);",
+                      "});",
+                      "",
+                      "const order = jsonData.orders[0];",
+                      "pm.test(\"Basic order data\", function () {",
+                      "    /**",
+                      "     * 110 just items NET - 100+10",
+                      "     * 115 for items & shipping NET - 100+10+5",
+                      "     * 143.23 for item + shipping GROSS 100+25% + 10+20% + 5+25%+20%",
+                      "     */",
+                      "    pm.expect(order.amount_items_net).to.eq(110);",
+                      "    pm.expect(order.amount_complete_gross).to.eq(143.23);",
+                      "    pm.expect(order.amount_complete_net).to.eq(115.00);",
+                      "});",
+                      "",
+                      "pm.test(\"Item check\", function () {",
+                      "    pm.expect(order.items).to.be.length(2);",
+                      "    const product = Utility.getByName(order.items, 'Main product');",
+                      "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
+                      "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+                      "    pm.expect(product.quantity).to.eq(1);",
+                      "    pm.expect(product.unit_amount).to.eq(100.00);",
+                      "    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
+                      "    pm.expect(product.tax_percent).to.eq(25);",
+                      "    pm.expect(product.currency).to.eq('EUR');",
+                      "    pm.expect(product.description).to.not.be.empty;",
+                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
+                      "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
+                      "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
+                      "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
+                      "    pm.expect(variantChild.quantity).to.eq(1);",
+                      "    pm.expect(variantChild.unit_amount).to.eq(10.00);",
+                      "    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
+                      "    pm.expect(variantChild.tax_percent).to.eq(20);",
+                      "    pm.expect(variantChild.currency).to.eq('EUR');",
+                      "    pm.expect(variantChild.description).to.be.null;",
+                      "});",
+                      "",
+                      "pm.test(\"Taxes\", function () {",
+                      "    pm.expect(order.order_taxes).to.be.length(2);",
+                      "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
+                      "    pm.expect(taxOne.tax_percent).to.eq(25);",
+                      "    pm.expect(taxOne.amount).to.eq(26.14);",
+                      "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
+                      "    pm.expect(taxTwo.tax_percent).to.eq(20);",
+                      "    pm.expect(taxTwo.amount).to.eq(2.09);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_orders}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "customer_token",
+                      "value": "{{created_customer_withCustomGrp_id}}",
                       "type": "text"
                     },
                     {
