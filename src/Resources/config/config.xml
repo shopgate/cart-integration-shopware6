@@ -27,8 +27,10 @@
             <name>isLiveShopping</name>
             <label>Live Shopping</label>
             <label lang="de-DE">Live-Shopping</label>
-            <helpText>Enables custom prices set on Shopgate side</helpText>
-            <helpText lang="de-DE">Enables custom prices set on Shopgate side</helpText>
+            <helpText>This will apply custom prices from the App to the cart and order to allow the Shopgate Live Shopping feature</helpText>
+            <helpText lang="de-DE">Überschreibt Produktpreise aus der App im Warenkorb und Bestellung, um abweichende Produktpreise für Shopgate Live Shopping
+                zu ermöglichen
+            </helpText>
         </input-field>
         <input-field type="bool">
             <name>isFlysystem</name>
