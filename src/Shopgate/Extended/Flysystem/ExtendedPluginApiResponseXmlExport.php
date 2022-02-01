@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopgate\Shopware\Shopgate\Extended\Core;
+namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
 use ShopgatePluginApiResponseExport;
 

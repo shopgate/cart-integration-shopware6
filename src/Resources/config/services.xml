@@ -128,18 +128,36 @@
             <!-- if Flysystem config is enabled we route to the Extended Builder class, otherwise use default -->
             <argument key="$builder" type="expression">
                 service('shopgate.config_bridge').get('isFlysystem') === true
-                ? service('shopgate.extended_builder')
-                : service('shopgate.sdk.builder')
+                ? service('shopgate.flysystem.extended_builder')
+                : service('shopgate.core.extended_builder')
             </argument>
         </service>
-        <service id="shopgate.extended_builder" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedBuilder">
-            <argument type="service" id="sgate_shopgate_plugin_s_w6.filesystem.private"/>
+        <service id="shopgate.flysystem.extended_builder" class="Shopgate\Shopware\Shopgate\Extended\Flysystem\ExtendedBuilder">
+            <argument key="$privateFileSystem" type="service" id="sgate_shopgate_plugin_s_w6.filesystem.private"/>
+            <argument key="$merchantApi" type="service" id="shopgate.core.extended.merchant_api"/>
+            <argument key="$authService" type="service" id="shopgate.sdk.shopgate_auth_service"/>
             <call method="initConstruct">
                 <argument type="service" id="shopgate.config_mapping"/>
             </call>
         </service>
-        <service id="shopgate.sdk.builder" class="\ShopgateBuilder">
-            <argument type="service" id="shopgate.config_mapping"/>
+        <service id="shopgate.core.extended_builder" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedBuilder">
+            <argument key="$merchantApi" type="service" id="shopgate.core.extended.merchant_api"/>
+            <argument key="$authService" type="service" id="shopgate.sdk.shopgate_auth_service"/>
+            <call method="initConstruct">
+                <argument type="service" id="shopgate.config_mapping"/>
+            </call>
+        </service>
+        <service id="shopgate.sdk.shopgate_auth_service" class="\ShopgateAuthenticationServiceShopgate">
+            <argument key="$apiKey" type="expression">service('shopgate.config_bridge').get('apiKey')</argument>
+            <argument key="$customerNumber" type="expression">service('shopgate.config_bridge').get('customerNumber')</argument>
+            <call method="setup">
+                <argument key="$config" type="service" id="shopgate.config_mapping"/>
+            </call>
+        </service>
+        <service id="shopgate.core.extended.merchant_api" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedMerchantApi">
+            <argument key="$authService" type="service" id="shopgate.sdk.shopgate_auth_service"/>
+            <argument key="$apiUrl" type="expression">service('shopgate.config_bridge').get('apiUrl')</argument>
+            <argument key="$shopNumber" type="expression">service('shopgate.config_bridge').get('shopNumber')</argument>
         </service>
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>

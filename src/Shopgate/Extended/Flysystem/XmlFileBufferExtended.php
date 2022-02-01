@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Shopgate\Extended\Core;
+namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
@@ -12,7 +12,6 @@ use ShopgateFileBufferXml;
 
 class XmlFileBufferExtended extends ShopgateFileBufferXml
 {
-
     private FilesystemInterface $privateFilesystem;
 
     public function __construct(
