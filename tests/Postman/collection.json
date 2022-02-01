@@ -4175,6 +4175,1241 @@
       "name": "Cart",
       "item": [
         {
+          "name": "Live shopping",
+          "item": [
+            {
+              "name": "SW: Enable live-shopping",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully enabled LiveShopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e52549984567bf14a0b94fc8e38bfa4a\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isLiveShopping\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart (main cust) live shopping",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(4, 'Should be 4 items in cart');",
+                      "});",
+                      "const items = jsonData.items;",
+                      "pm.test(\"Check item success\", function () {",
+                      "    // checking that advanced prices apply to this customer group",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(12);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(100);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(119);",
+                      "});",
+                      "pm.test(\"Check item not found\", function () {",
+                      "    const item = Utility.getByItemNumber(items, '1901dc5e888f4b1ea4168c2c5f005540');",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.error).to.eql(301);",
+                      "});",
+                      "pm.test(\"Check item out of stock\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_noStock_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.error).to.eql(300);",
+                      "});",
+                      "pm.test(\"Check item max purchase\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.qty_buyable).to.eql(10);",
+                      "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.unit_amount).to.eql(200);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(238);",
+                      "    pm.expect(item.error).to.eql(302);",
+                      "});",
+                      "",
+                      "pm.test(\"Check basic coupon code\", function () {",
+                      "    const coupon = jsonData.external_coupons[0];",
+                      "    pm.expect(jsonData.external_coupons).length(1);",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
+                      "    pm.expect(coupon.amount_net).to.eq(1.89);",
+                      "    pm.expect(coupon.amount_gross).to.eq(2.25);",
+                      "    pm.expect(coupon.name).to.eq('API: promo by code');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "12",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "100",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "119",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][tax_percent]",
+                      "value": "19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "1901dc5e888f4b1ea4168c2c5f005540",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number_public]",
+                      "value": "SWDEMO10006",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "100",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "16.8067",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount_with_tax]",
+                      "value": "20",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][tax_percent]",
+                      "value": "19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][item_number]",
+                      "value": "{{created_product_noStock_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][item_number_public]",
+                      "value": "SGDEMOCHECKCART01",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][unit_amount]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][unit_amount_with_tax]",
+                      "value": "1.19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][2][tax_percent]",
+                      "value": "19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][item_number]",
+                      "value": "{{created_product_maxPurchaseTen_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][item_number_public]",
+                      "value": "SGDEMOCHECKCART02",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][unit_amount]",
+                      "value": "200",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][unit_amount_with_tax]",
+                      "value": "238",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][3][tax_percent]",
+                      "value": "19",
+                      "type": "text"
+                    },
+                    {
+											"key": "cart[external_coupons][0][code]",
+											"value": "{{created_promotion_byCode_code}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SG: cart( different tax rates) live shopping",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Check default customer group set for customer\", function () {",
+											"    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+											"});",
+											"pm.test(\"Check shipping methods\", function () {",
+											"    pm.expect(jsonData.shipping_methods).length(2);",
+											"    jsonData.shipping_methods.map(method => {",
+											"        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+											"    });",
+											"});",
+											"pm.test(\"General item check\", function () {",
+											"    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
+											"});",
+											"const items = jsonData.items;",
+											"pm.test(\"Check item success, specific tax was used\", function () {",
+											"    // checking that advanced prices apply to this customer group",
+											"    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+											"    pm.expect(item.is_buyable).to.eql(1);",
+											"    pm.expect(item.qty_buyable).to.eql(12);",
+											"    pm.expect(item.stock_quantity).to.eql(10);",
+											"    pm.expect(item.unit_amount).to.eql(100);",
+											"    pm.expect(item.unit_amount_with_tax).to.eql(110);",
+											"});",
+											"pm.test(\"Check item max purchase, no tax\", function () {",
+											"    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
+											"    pm.expect(item.is_buyable).to.eql(0);",
+											"    pm.expect(item.qty_buyable).to.eql(10);",
+											"    pm.expect(item.stock_quantity).to.eq(50);",
+											"    pm.expect(item.unit_amount).to.eql(10);",
+											"    pm.expect(item.unit_amount_with_tax).to.eql(10);",
+											"    pm.expect(item.error).to.eql(302);",
+											"});",
+											"",
+											"pm.test(\"Check basic coupon code\", function () {",
+											"    const coupon = jsonData.external_coupons[0];",
+											"    pm.expect(jsonData.external_coupons).length(1);",
+											"    pm.expect(coupon.is_valid).to.eq(1);",
+											"    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
+											"    pm.expect(coupon.amount_net).to.eq(2.06);",
+											"    pm.expect(coupon.amount_gross).to.eq(2.25);",
+											"    pm.expect(coupon.name).to.eq('API: promo by code');",
+											"    pm.expect(coupon.currency).to.eq('EUR');",
+											"    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+											"    const internalInfo = JSON.parse(coupon.internal_info);",
+											"    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+											"    pm.expect(internalInfo.itemType).to.eq('coupon');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "action",
+											"value": "{{framework_action_check_cart}}",
+											"type": "text"
+										},
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[external_customer_id]",
+											"value": "{{customer_default_id}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[payment_group]",
+											"value": "COD",
+											"type": "text"
+										},
+										{
+											"key": "cart[payment_method]",
+											"value": "COD",
+											"type": "text"
+										},
+										{
+											"key": "cart[invoice_address][gender]",
+											"value": "{{customer_default_gender}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[invoice_address][first_name]",
+											"value": "{{customer_default_firstName}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[invoice_address][last_name]",
+											"value": "{{customer_default_lastName}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[invoice_address][street_1]",
+											"value": "{{customer_default_street1}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[invoice_address][city]",
+											"value": "{{customer_default_city}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[invoice_address][zipcode]",
+											"value": "{{customer_default_zip}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[invoice_address][country]",
+											"value": "BD",
+											"type": "text"
+										},
+										{
+											"key": "cart[delivery_address][gender]",
+											"value": "{{customer_default_gender}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[delivery_address][first_name]",
+											"value": "{{customer_default_firstName}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[delivery_address][last_name]",
+											"value": "{{customer_default_lastName}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[delivery_address][street_1]",
+											"value": "{{customer_default_street1}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[delivery_address][city]",
+											"value": "{{customer_default_city}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[delivery_address][zipcode]",
+											"value": "{{customer_default_zip}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[delivery_address][country]",
+											"value": "BD",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][0][item_number]",
+											"value": "{{catalog_product_advPrices_id}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][0][item_number_public]",
+											"value": "SWDEMO10002",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][0][quantity]",
+											"value": "12",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][0][unit_amount]",
+											"value": "100",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][0][unit_amount_with_tax]",
+											"value": "110",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][0][tax_percent]",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][1][item_number]",
+											"value": "{{created_product_maxPurchaseTen_id}}",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][1][item_number_public]",
+											"value": "SGDEMOCHECKCART01",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][1][quantity]",
+											"value": "50",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][1][unit_amount]",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][1][unit_amount_with_tax]",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "cart[items][1][tax_percent]",
+											"value": "0",
+											"type": "text",
+											"disabled": true
+										},
+										{
+                      "key": "cart[external_coupons][0][code]",
+                      "value": "{{created_promotion_byCode_code}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart (NET grp) live shopping",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "if (pm.globals.get('verbose')) {",
+                      "    console.log(jsonData);",
+                      "}",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_gross_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
+                      "});",
+                      "const items = jsonData.items;",
+                      "// checks that advanced prices do not apply to this customer group",
+                      "pm.test(\"Check item success\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(12);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(721.29);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(858.34 );",
+                      "});",
+                      "pm.test(\"Check item max purchase\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.qty_buyable).to.eql(10);",
+                      "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.error).to.eql(302);",
+                      "    pm.expect(item.unit_amount).to.eql(798.32);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "12",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "721.29",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "858.34",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][tax_percent]",
+                      "value": "19.00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "{{created_product_maxPurchaseTen_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number_public]",
+                      "value": "SGDEMOCHECKCART02",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "798.32",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount_with_tax]",
+                      "value": "950",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][tax_percent]",
+                      "value": "19.00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][currency]",
+                      "value": "EUR",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart USA ship promo live shopping",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(1, 'Should be 4 items in cart');",
+                      "});",
+                      "pm.test(\"Check item success\", function () {",
+                      "    const item = Utility.getByItemNumber(jsonData.items, pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(672.27);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(800);",
+                      "});",
+                      "",
+                      "pm.test(\"Check USA customer auto rule is handled\", function () {",
+                      "    const coupon = Utility.getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
+                      "    pm.expect(jsonData.external_coupons).length(2);",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.not_valid_message).to.eq(null);",
+                      "    pm.expect(coupon.code).to.be.a('string').to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
+                      "    pm.expect(coupon.amount_net).to.eq(67.23);",
+                      "    pm.expect(coupon.amount_gross).to.eq(80);",
+                      "    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                      "});",
+                      "",
+                      "pm.test(\"Check not valid coupon\", function () {",
+                      "    const coupon = Utility.getByName(jsonData.external_coupons, 'Not valid coupon');",
+                      "    pm.expect(coupon.is_valid).to.eq(false);",
+                      "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
+                      "    pm.expect(coupon.code).to.eq('NOT-VALID');",
+                      "    pm.expect(coupon.amount_net).to.eq(1.0);",
+                      "    pm.expect(coupon.amount_gross).to.eq(1.5);",
+                      "    pm.expect(coupon.name).to.eq('Not valid coupon');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "Phoenix",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "US",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][state]",
+                      "value": "US-AZ",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "672.27",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "800",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][tax_percent]",
+                      "value": "19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][is_valid]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][code]",
+                      "value": "NOT-VALID",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][name]",
+                      "value": "Not valid coupon",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][amount_net]",
+                      "value": "1.0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][amount_gross]",
+                      "value": "1.5",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][tax_type]",
+                      "value": "auto",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][currency]",
+                      "value": "EUR",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][is_valid]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][code]",
+                      "value": "{{created_discount_customerUSA_cart_1_id}}",
+                      "description": "test non-coupon properly handled",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][name]",
+                      "value": "Perfectly valid rule",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][amount_net]",
+                      "value": "2.0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][amount_gross]",
+                      "value": "2.5",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][tax_type]",
+                      "value": "auto",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][currency]",
+                      "value": "EUR",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][1][internal_info]",
+                      "value": "{\"itemType\":\"cartRule\",\"promotionId\":\"3e226aa33c486a291338478679382ab1\",\"discountId\":\"9c9b73c4076e2d8d2926c827598089cb\"}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: Disable live-shopping",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully disabled Live Shopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e52549984567bf14a0b94fc8e38bfa4a\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isLiveShopping\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "SG: cart (main cust)",
           "event": [
             {
