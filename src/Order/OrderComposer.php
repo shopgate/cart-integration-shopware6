@@ -54,6 +54,8 @@ class OrderComposer
     private OrderCustomerComposer $orderCustomerComposer;
     private OrderMapping $orderMapping;
     private LoggerInterface $logger;
+    /** @var ExtendedMerchantApi */
+    private ShopgateMerchantApiInterface $merchantApi;
 
     public function __construct(
         ContextManager $contextManager,
@@ -67,7 +69,8 @@ class OrderComposer
         PaymentComposer $paymentComposer,
         OrderCustomerComposer $orderCustomerComposer,
         OrderMapping $orderMapping,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ShopgateMerchantApiInterface $merchantApi
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -81,6 +84,7 @@ class OrderComposer
         $this->orderMapping = $orderMapping;
         $this->logger = $logger;
         $this->stateComposer = $stateComposer;
+        $this->merchantApi = $merchantApi;
     }
 
     /**
@@ -191,10 +195,9 @@ class OrderComposer
     }
 
     /**
-     * @param ExtendedMerchantApi $merchantApi
      * @throws MissingContextException
      */
-    public function setShippingCompleted(ShopgateMerchantApiInterface $merchantApi): void
+    public function setShippingCompleted(): void
     {
         $context = $this->contextManager->getSalesContext();
         $criteria = (new GetOrdersCriteria())
@@ -202,7 +205,7 @@ class OrderComposer
             ->addStateAssociations()
             ->addFilter(new EqualsFilter(NativeOrderExtension::PROPERTY . '.isSent', 0));
         $this->quoteBridge->getOrders($criteria, $context)->map(
-            function (OrderEntity $swOrder) use ($merchantApi, $context) {
+            function (OrderEntity $swOrder) use ($context) {
                 // we do not handle partial shipping
                 if ($this->shippingComposer->isFullyShipped($swOrder->getDeliveries())
                     || $this->stateComposer->isComplete($swOrder->getStateMachineState())
@@ -210,7 +213,7 @@ class OrderComposer
                     /** @var ShopgateOrderEntity $sgOrder */
                     $sgOrder = $swOrder->getExtension(NativeOrderExtension::PROPERTY);
                     $delivery = $this->shippingComposer->getFirstShippingDelivery($swOrder->getDeliveries());
-                    if ($merchantApi->addOrderDeliveryNote(
+                    if ($this->merchantApi->addOrderDeliveryNote(
                         $sgOrder->getShopgateOrderNumber(),
                         ShopgateDeliveryNote::OTHER,
                         $delivery ? implode(',', $delivery->getTrackingCodes()) : '',
@@ -226,10 +229,9 @@ class OrderComposer
     }
 
     /**
-     * @param ExtendedMerchantApi $merchantApi
      * @throws MissingContextException
      */
-    public function cancelOrders(ShopgateMerchantApiInterface $merchantApi): void
+    public function cancelOrders(): void
     {
         $context = $this->contextManager->getSalesContext();
         $criteria = (new GetOrdersCriteria())
@@ -237,11 +239,11 @@ class OrderComposer
             ->addStateAssociations()
             ->addFilter(new EqualsFilter(NativeOrderExtension::PROPERTY . '.isCancelled', 0));
         $this->quoteBridge->getOrders($criteria, $context)->map(
-            function (OrderEntity $swOrder) use ($merchantApi, $context) {
+            function (OrderEntity $swOrder) use ($context) {
                 if ($this->stateComposer->isCancelled($swOrder->getStateMachineState())) {
                     /** @var ShopgateOrderEntity $sgOrder */
                     $sgOrder = $swOrder->getExtension(NativeOrderExtension::PROPERTY);
-                    if ($merchantApi->cancelOrder(
+                    if ($this->merchantApi->cancelOrder(
                         $sgOrder->getShopgateOrderNumber(),
                         true,
                         [],

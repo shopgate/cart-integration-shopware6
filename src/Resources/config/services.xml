@@ -113,7 +113,9 @@
         <service id="Shopgate\Shopware\Order\LineItem\LineItemProductMapping"/>
         <service id="Shopgate\Shopware\Order\LineItem\LineItemPromoMapping"/>
         <service id="Shopgate\Shopware\Order\Quote\QuoteErrorMapping"/>
-        <service id="Shopgate\Shopware\Order\OrderComposer"/>
+        <service id="Shopgate\Shopware\Order\OrderComposer">
+            <argument key="$merchantApi" type="service" id="shopgate.core.extended.merchant_api"/>
+        </service>
         <service id="Shopgate\Shopware\Order\Payment\PaymentBridge"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentComposer"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentMapping"/>
@@ -154,7 +156,7 @@
                 <argument key="$config" type="service" id="shopgate.config_mapping"/>
             </call>
         </service>
-        <service id="shopgate.core.extended.merchant_api" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedMerchantApi">
+        <service id="shopgate.core.extended.merchant_api" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedMerchantApi" shared="true">
             <argument key="$authService" type="service" id="shopgate.sdk.shopgate_auth_service"/>
             <argument key="$apiUrl" type="expression">service('shopgate.config_bridge').get('apiUrl')</argument>
             <argument key="$shopNumber" type="expression">service('shopgate.config_bridge').get('shopNumber')</argument>
