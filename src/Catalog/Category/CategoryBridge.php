@@ -48,15 +48,15 @@ class CategoryBridge
     {
         $criteria = (new Criteria())
             ->addAssociation('media')
-            ->addAssociation('seoUrls');
-        $criteria->addFilter(
-            new ContainsFilter('path', '|' . $parentId . '|'),
-            new RangeFilter('level', [
-                RangeFilter::GT => 1,
-                RangeFilter::LTE => 99,
-            ])
-        );
-        $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_NONE);
+            ->addAssociation('seoUrls')
+            ->addFilter(
+                new ContainsFilter('path', '|' . $parentId . '|'),
+                new RangeFilter('level', [
+                    RangeFilter::GT => 1,
+                    RangeFilter::LTE => 99,
+                ])
+            );
+        $criteria->setTitle('shopgate::category::parent-id');
         $list = $this->categoryListRoute->load($criteria, $this->contextManager->getSalesContext())->getCategories();
         $tree = $this->buildTree($parentId, $list->getElements());
         $flatten = $this->flattenTree($tree->getElements());

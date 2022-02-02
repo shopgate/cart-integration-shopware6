@@ -78,8 +78,10 @@ class SortTree
             if ($orderKey = $this->getSortOrderKey($category)) {
                 $request->request->set('order', $orderKey);
             }
+            $criteria = new Criteria();
+            $criteria->setTitle('shopgate::category::child-id');
             $result = $this->listingRoute
-                ->load($category->getId(), $request, $this->contextManager->getSalesContext(), new Criteria())
+                ->load($category->getId(), $request, $this->contextManager->getSalesContext(), $criteria)
                 ->getResult();
             $products = $result->getEntities();
             $maxProducts = $products->count();

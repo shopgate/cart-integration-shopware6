@@ -54,8 +54,10 @@ class CustomerBridge
      */
     public function getGroups()
     {
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::customer-group');
         return $this->customerGroupRepository
-            ->search(new Criteria(), $this->contextManager->getSalesContext()->getContext())
+            ->search($criteria, $this->contextManager->getSalesContext()->getContext())
             ->getEntities();
     }
 
@@ -104,18 +106,16 @@ class CustomerBridge
     {
         $customer = new CustomerEntity();
         $customer->setId($context->getCustomer() ? $context->getCustomer()->getId() : null);
-        return $this->customerRoute->load(
-            new Request(),
-            $context,
-            (new Criteria())->setLimit(1)
-                ->addAssociation('group')
-                ->addAssociation('salutation')
-                ->addAssociation('addresses')
-                ->addAssociation('addresses.country')
-                ->addAssociation('addresses.countryState')
-                ->addAssociation('addresses.salutation'),
-            $customer
-        )->getCustomer();
+        $criteria = (new Criteria())->setLimit(1)
+            ->addAssociation('group')
+            ->addAssociation('salutation')
+            ->addAssociation('addresses')
+            ->addAssociation('addresses.country')
+            ->addAssociation('addresses.countryState')
+            ->addAssociation('addresses.salutation');
+        $criteria->setTitle('shopgate::customer::detailed');
+
+        return $this->customerRoute->load(new Request(), $context, $criteria, $customer)->getCustomer();
     }
 
     /**
@@ -128,6 +128,7 @@ class CustomerBridge
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('email', $email))
             ->addFilter(new EqualsFilter('guest', 1));
+        $criteria->setTitle('shopgate::customer::guest');
         $results = $this->customerRepository->search($criteria, $context->getContext());
 
         return $results->getEntities()->first();

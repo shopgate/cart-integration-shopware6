@@ -15,6 +15,7 @@ use Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -81,7 +82,7 @@ class ProductBridge
                 'children.unit'
             ])
             ->addSorting(...$this->productSorting->getDefaultSorting());
-
+        $criteria->setTitle('shopgate::products::complex');
         // Simple products have child_count = 0, Children have 'null', Variants have 0+
         $types = $this->configReader->get('productTypesToExport');
         if (count($types) < 2) {
@@ -92,13 +93,11 @@ class ProductBridge
             if (!in_array(ConfigBridge::PROD_EXPORT_TYPE_VARIANT, $types, true)) {
                 $filter[] = new RangeFilter('childCount', [RangeFilter::GT => 0]);
             }
-            $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_OR, $filter));
+            $criteria->addFilter(new NotFilter(MultiFilter::CONNECTION_OR, $filter));
         }
 
         $this->eventDispatcher->dispatch(new BeforeProductLoadEvent($criteria, $context));
-
         $result = $this->productListRoute->load($criteria, $context)->getProducts();
-
         $this->eventDispatcher->dispatch(new AfterProductLoadEvent($result, $criteria, $context));
 
         return $result;

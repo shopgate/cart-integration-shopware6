@@ -50,7 +50,9 @@ trait EntityActivateTrait
             return false;
         }
 
-        $result = $this->entityRepo->search(new Criteria([$id]), $context);
+        $criteria = new Criteria([$id]);
+        $criteria->setTitle('shopgate::' . $this->entityName . '::id');
+        $result = $this->entityRepo->search($criteria, $context);
 
         return $result->getTotal() !== 0;
     }

@@ -33,15 +33,15 @@ class CustomFieldBridge
      */
     public function getAllProductFieldSets(): CustomFieldCollection
     {
+        $criteria = (new Criteria())
+            ->addAssociation('customFieldSet')
+            ->addAssociation('customFieldSet.relations')
+            ->addFilter(new EqualsFilter('active', 1))
+            ->addFilter(new EqualsFilter('customFieldSet.active', 1))
+            ->addFilter(new EqualsFilter('customFieldSet.relations.entityName', 'product'));
+        $criteria->setTitle('shopgate::custom-field::all');
         return $this->customFieldRepository->search(
-            (new Criteria())
-                ->addAssociation('customFieldSet')
-                ->addAssociation('customFieldSet.relations')
-                ->addFilter(new EqualsFilter('active', 1))
-                ->addFilter(new EqualsFilter('customFieldSet.active', 1))
-                ->addFilter(new EqualsFilter('customFieldSet.relations.entityName', 'product'))
-            ,
-            $this->contextManager->getSalesContext()->getContext()
+            $criteria, $this->contextManager->getSalesContext()->getContext()
         )->getEntities();
     }
 }

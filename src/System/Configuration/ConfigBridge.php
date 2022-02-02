@@ -78,8 +78,8 @@ class ConfigBridge
     public function getShopgatePluginVersion(): string
     {
         try {
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsFilter('name', self::PLUGIN_NAMESPACE));
+            $criteria = (new Criteria())->addFilter(new EqualsFilter('name', self::PLUGIN_NAMESPACE));
+            $criteria->setTitle('shopgate::plugin::shopgate');
             $result = $this->pluginRepository->search(
                 $criteria,
                 $this->contextManager->getSalesContext()->getContext()
@@ -134,23 +134,19 @@ class ConfigBridge
      */
     public function getSalesChannelId(string $shopNumber): ?string
     {
-        $values = $this->systemConfigRepo->search(
-            (new Criteria())
-                ->addFilter(
-                    new EqualsFilter(
-                        'configurationKey',
-                        self::SYSTEM_CONFIG_DOMAIN . 'shopNumber'
-                    )
-                )->addFilter(new EqualsFilter(
-                    'configurationValue',
-                    $shopNumber
-                ))
-                ->addFilter(new NotFilter(
-                    MultiFilter::CONNECTION_AND,
-                    [new EqualsFilter('salesChannelId', null)]
-                )),
-            new Context(new SalesChannelApiSource(''))
-        );
+        $criteria = (new Criteria())
+            ->addFilter(
+                new EqualsFilter(
+                    'configurationKey',
+                    self::SYSTEM_CONFIG_DOMAIN . 'shopNumber'
+                )
+            )->addFilter(new EqualsFilter('configurationValue', $shopNumber))
+            ->addFilter(new NotFilter(
+                MultiFilter::CONNECTION_AND,
+                [new EqualsFilter('salesChannelId', null)]
+            ));
+        $criteria->setTitle('shopgate::system-config::sales-channel-id');
+        $values = $this->systemConfigRepo->search($criteria, new Context(new SalesChannelApiSource('')));
         if ($values->getTotal() === 1) {
             /** @var SystemConfigEntity $value */
             $value = $values->first();

@@ -68,7 +68,9 @@ abstract class EntityInstaller
      */
     protected function findEntity(string $id, Context $context): ?object
     {
-        return $this->entityRepo->search(new Criteria([$id]), $context)->first();
+        $criteria = new Criteria([$id]);
+        $criteria->setTitle('shopgate::' . $this->entityName . '::id');
+        return $this->entityRepo->search($criteria, $context)->first();
     }
 
     /**

@@ -69,10 +69,12 @@ class Formatter
     public function getLanguageCollection(): LanguageCollection
     {
         if (null === $this->languageCollection) {
+            $criteria = (new Criteria())->addAssociation('language');
+            $criteria->setTitle('shopgate::sales-channel-language');
             $this->languageCollection = $this->languageRoute->load(
                 new Request(),
                 $this->contextManager->getSalesContext(),
-                (new Criteria())->addAssociation('language')
+                $criteria
             )->getLanguages();
         }
 

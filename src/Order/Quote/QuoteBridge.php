@@ -85,7 +85,7 @@ class QuoteBridge
         Criteria $criteria,
         SalesChannelContext $context
     ): OrderRouteResponse {
-        $criteria->setTitle('shopgate::get-orders');
+        $criteria->setTitle('shopgate::orders::as-customer');
         $this->dispatcher->dispatch(new BeforeCustomerGetOrdersLoadEvent($criteria, $request, $context));
         $result = $this->orderRoute->load($request, $context, $criteria);
         $this->dispatcher->dispatch(new AfterCustomerGetOrdersLoadEvent($result, $context));
@@ -98,6 +98,7 @@ class QuoteBridge
      */
     public function getOrders(Criteria $criteria, SalesChannelContext $context): EntityCollection
     {
+        $criteria->setTitle('shopgate::orders');
         $this->dispatcher->dispatch(new BeforeGetOrdersLoadEvent($criteria, $context));
         $result = $this->orderRepository->search($criteria, $context->getContext())->getEntities();
         $this->dispatcher->dispatch(new AfterGetOrdersLoadEvent($result, $context));
