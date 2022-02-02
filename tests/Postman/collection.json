@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "f257f8ff-6900-4bf1-b8bf-e5eaee6b1cba",
+    "_postman_id": "6c1e512e-b8fd-4cf2-9e09-24349cc3c946",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -764,7 +764,7 @@
                       "function checkDelivery(shippingMethod) {\r",
                       "    pm.expect(shippingMethod.deliveryTimeId).to.eq(\r",
                       "        pm.environment.get('default_deliveryTime_sg_id'),\r",
-                      "        `Incorect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
+                      "        `Incorrect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
                       "    );\r",
                       "}\r",
                       "\r",
@@ -772,7 +772,7 @@
                       "    pm.expect(shippingMethod, 'Rule not present in shipping method: ' + shippingMethod.name).has.ownProperty('availabilityRule').has.ownProperty('id')\r",
                       "    .to.eq(\r",
                       "        pm.environment.get('gen_rule_cartGreaterThan0_id'),\r",
-                      "        `Incorect rule by name '${shippingMethod.availabilityRule.name}' for shipMethod: '${shippingMethod.name}' >>>` \r",
+                      "        `Incorrect rule by name '${shippingMethod.availabilityRule.name}' for shipMethod: '${shippingMethod.name}' >>>` \r",
                       "    );\r",
                       "}"
                     ],
@@ -1288,7 +1288,7 @@
               "response": []
             },
             {
-              "name": "SW: create max purchse prod",
+              "name": "SW: create max purchase prod",
               "event": [
                 {
                   "listen": "test",
@@ -4542,257 +4542,257 @@
                       "type": "text"
                     },
                     {
-											"key": "cart[external_coupons][0][code]",
-											"value": "{{created_promotion_byCode_code}}",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{domain}}",
-									"host": [
-										"{{domain}}"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "SG: cart( different tax rates) live shopping",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Check default customer group set for customer\", function () {",
-											"    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
-											"});",
-											"pm.test(\"Check shipping methods\", function () {",
-											"    pm.expect(jsonData.shipping_methods).length(2);",
-											"    jsonData.shipping_methods.map(method => {",
-											"        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
-											"    });",
-											"});",
-											"pm.test(\"General item check\", function () {",
-											"    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
-											"});",
-											"const items = jsonData.items;",
-											"pm.test(\"Check item success, specific tax was used\", function () {",
-											"    // checking that advanced prices apply to this customer group",
-											"    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
-											"    pm.expect(item.is_buyable).to.eql(1);",
-											"    pm.expect(item.qty_buyable).to.eql(12);",
-											"    pm.expect(item.stock_quantity).to.eql(10);",
-											"    pm.expect(item.unit_amount).to.eql(100);",
-											"    pm.expect(item.unit_amount_with_tax).to.eql(110);",
-											"});",
-											"pm.test(\"Check item max purchase, no tax\", function () {",
-											"    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
-											"    pm.expect(item.is_buyable).to.eql(0);",
-											"    pm.expect(item.qty_buyable).to.eql(10);",
-											"    pm.expect(item.stock_quantity).to.eq(50);",
-											"    pm.expect(item.unit_amount).to.eql(10);",
-											"    pm.expect(item.unit_amount_with_tax).to.eql(10);",
-											"    pm.expect(item.error).to.eql(302);",
-											"});",
-											"",
-											"pm.test(\"Check basic coupon code\", function () {",
-											"    const coupon = jsonData.external_coupons[0];",
-											"    pm.expect(jsonData.external_coupons).length(1);",
-											"    pm.expect(coupon.is_valid).to.eq(1);",
-											"    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-											"    pm.expect(coupon.amount_net).to.eq(2.06);",
-											"    pm.expect(coupon.amount_gross).to.eq(2.25);",
-											"    pm.expect(coupon.name).to.eq('API: promo by code');",
-											"    pm.expect(coupon.currency).to.eq('EUR');",
-											"    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
-											"    const internalInfo = JSON.parse(coupon.internal_info);",
-											"    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
-											"    pm.expect(internalInfo.itemType).to.eq('coupon');",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "*/*"
-									},
-									{
-										"key": "X-Shopgate-Auth-User",
-										"value": "{{gen_sg_header_auth_user}}"
-									},
-									{
-										"key": "X-Shopgate-Auth-Token",
-										"value": "{{gen_sg_header_auth_token}}"
-									}
-								],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "action",
-											"value": "{{framework_action_check_cart}}",
-											"type": "text"
-										},
-										{
-											"key": "shop_number",
-											"value": "{{shop_number}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[external_customer_id]",
-											"value": "{{customer_default_id}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[payment_group]",
-											"value": "COD",
-											"type": "text"
-										},
-										{
-											"key": "cart[payment_method]",
-											"value": "COD",
-											"type": "text"
-										},
-										{
-											"key": "cart[invoice_address][gender]",
-											"value": "{{customer_default_gender}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[invoice_address][first_name]",
-											"value": "{{customer_default_firstName}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[invoice_address][last_name]",
-											"value": "{{customer_default_lastName}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[invoice_address][street_1]",
-											"value": "{{customer_default_street1}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[invoice_address][city]",
-											"value": "{{customer_default_city}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[invoice_address][zipcode]",
-											"value": "{{customer_default_zip}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[invoice_address][country]",
-											"value": "BD",
-											"type": "text"
-										},
-										{
-											"key": "cart[delivery_address][gender]",
-											"value": "{{customer_default_gender}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[delivery_address][first_name]",
-											"value": "{{customer_default_firstName}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[delivery_address][last_name]",
-											"value": "{{customer_default_lastName}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[delivery_address][street_1]",
-											"value": "{{customer_default_street1}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[delivery_address][city]",
-											"value": "{{customer_default_city}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[delivery_address][zipcode]",
-											"value": "{{customer_default_zip}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[delivery_address][country]",
-											"value": "BD",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][0][item_number]",
-											"value": "{{catalog_product_advPrices_id}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][0][item_number_public]",
-											"value": "SWDEMO10002",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][0][quantity]",
-											"value": "12",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][0][unit_amount]",
-											"value": "100",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][0][unit_amount_with_tax]",
-											"value": "110",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][0][tax_percent]",
-											"value": "10",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][1][item_number]",
-											"value": "{{created_product_maxPurchaseTen_id}}",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][1][item_number_public]",
-											"value": "SGDEMOCHECKCART01",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][1][quantity]",
-											"value": "50",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][1][unit_amount]",
-											"value": "10",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][1][unit_amount_with_tax]",
-											"value": "10",
-											"type": "text"
-										},
-										{
-											"key": "cart[items][1][tax_percent]",
-											"value": "0",
-											"type": "text",
-											"disabled": true
-										},
-										{
+                      "key": "cart[external_coupons][0][code]",
+                      "value": "{{created_promotion_byCode_code}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart( different tax rates) live shopping",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                      "});",
+                      "pm.test(\"Check shipping methods\", function () {",
+                      "    pm.expect(jsonData.shipping_methods).length(2);",
+                      "    jsonData.shipping_methods.map(method => {",
+                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
+                      "    });",
+                      "});",
+                      "pm.test(\"General item check\", function () {",
+                      "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
+                      "});",
+                      "const items = jsonData.items;",
+                      "pm.test(\"Check item success, specific tax was used\", function () {",
+                      "    // checking that advanced prices apply to this customer group",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(12);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(100);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(110);",
+                      "});",
+                      "pm.test(\"Check item max purchase, no tax\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.qty_buyable).to.eql(10);",
+                      "    pm.expect(item.stock_quantity).to.eq(50);",
+                      "    pm.expect(item.unit_amount).to.eql(10);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(10);",
+                      "    pm.expect(item.error).to.eql(302);",
+                      "});",
+                      "",
+                      "pm.test(\"Check basic coupon code\", function () {",
+                      "    const coupon = jsonData.external_coupons[0];",
+                      "    pm.expect(jsonData.external_coupons).length(1);",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
+                      "    pm.expect(coupon.amount_net).to.eq(2.06);",
+                      "    pm.expect(coupon.amount_gross).to.eq(2.25);",
+                      "    pm.expect(coupon.name).to.eq('API: promo by code');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "12",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "100",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "110",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][tax_percent]",
+                      "value": "10",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "{{created_product_maxPurchaseTen_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number_public]",
+                      "value": "SGDEMOCHECKCART01",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "50",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "10",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount_with_tax]",
+                      "value": "10",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][tax_percent]",
+                      "value": "0",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
                       "key": "cart[external_coupons][0][code]",
                       "value": "{{created_promotion_byCode_code}}",
                       "type": "text"
@@ -7361,7 +7361,7 @@
                       "    ",
                       "pm.test(\"Shipping discount 1 check\", function () {",
                       "    const shippingDiscount = Utility.getByName(order.external_coupons, 'discount shipping costs 1');",
-                      "    pm.expect(shippingDiscount, 'Could not loate shipping discount').to.not.be.undefined;",
+                      "    pm.expect(shippingDiscount, 'Could not locate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('1');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 1');",
                       "    pm.expect(shippingDiscount.amount_net).to.eq(0.83);",
@@ -8807,6 +8807,1717 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "8 - Cron",
+          "item": [
+            {
+              "name": "8 - Partial & Full ship",
+              "item": [
+                {
+                  "name": "SG: add order (unshipped)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "0008",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: get deliveryId",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "pm.test(\"Save delivery ID\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "    const delivery = jsonData.data[0];\r",
+                          "    pm.expect(delivery.trackingCodes, 'Tracking codes should be empty').to.be.a('array').to.be.length(0);\r",
+                          "    pm.environment.set(\"gen_order_0008_delivery_id\", delivery.id);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"orderId\",\r\n                    \"value\": \"{{gen_order_0008_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"shippingCosts.unitPrice\",\r\n                    \"value\": 5.0\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order-delivery",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order-delivery"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: ship partially",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now shipped\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('shipped_partially');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order_delivery/{{gen_order_0008_delivery_id}}/state/ship_partially",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order_delivery",
+                        "{{gen_order_0008_delivery_id}}",
+                        "state",
+                        "ship_partially"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG cron: ship",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_cron}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_name]",
+                          "value": "set_shipping_completed",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_params]",
+                          "value": "0",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check not sent",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"Test validity of data\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "    const swOrder = jsonData.data[0];\r",
+                          "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                          "    const order = swOrder.extensions.shopgateOrder;\r",
+                          "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                          "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
+                          "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
+                          "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                          "    // we do not care about this flag with crons\r",
+                          "    pm.expect(order.receivedData.is_shipping_blocked, 'Should be blocked').to.eq(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0008_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {}\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: ship fully",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now shipped\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('shipped');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order_delivery/{{gen_order_0008_delivery_id}}/state/ship",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order_delivery",
+                        "{{gen_order_0008_delivery_id}}",
+                        "state",
+                        "ship"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG cron: ship",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_cron}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_name]",
+                          "value": "set_shipping_completed",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_params]",
+                          "value": "0",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check is sent",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"Test validity of data\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "    const swOrder = jsonData.data[0];\r",
+                          "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                          "    const order = swOrder.extensions.shopgateOrder;\r",
+                          "    pm.expect(order.isSent, 'Should not be sent').to.eq(true);\r",
+                          "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
+                          "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
+                          "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                          "    // we do not care about this flag with crons\r",
+                          "    pm.expect(order.receivedData.is_shipping_blocked, 'Should be blocked').to.eq(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0008_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {}\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "description": "Check if partial shipping is not honored as \"sent\".\n\nCheck is full shipping is honored as \"sent\""
+            },
+            {
+              "name": "9 - Ship Already complete",
+              "item": [
+                {
+                  "name": "SG: add order (unshipped)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "0009",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: process order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now in process\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('in_progress');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order/{{gen_order_0009_id}}/state/process",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order",
+                        "{{gen_order_0009_id}}",
+                        "state",
+                        "process"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: complete order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now complete\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('completed');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order/{{gen_order_0009_id}}/state/complete",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order",
+                        "{{gen_order_0009_id}}",
+                        "state",
+                        "complete"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG cron: ship",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_cron}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_name]",
+                          "value": "set_shipping_completed",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_params]",
+                          "value": "0",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check is sent",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"Test validity of data\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "    const swOrder = jsonData.data[0];\r",
+                          "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                          "    const order = swOrder.extensions.shopgateOrder;\r",
+                          "    pm.expect(order.isSent, 'Should not be sent').to.eq(true);\r",
+                          "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
+                          "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
+                          "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                          "    // we do not care about this flag with crons\r",
+                          "    pm.expect(order.receivedData.is_shipping_blocked, 'Should be blocked').to.eq(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0009_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {}\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "description": "Check if order is already marked as \"completed\" on SG end, and marks internally as \"sent\" to not repeat calling SG."
+            },
+            {
+              "name": "10 - Cancel",
+              "item": [
+                {
+                  "name": "SG: add order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "0010",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: process order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now in process\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('in_progress');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order/{{gen_order_0010_id}}/state/process",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order",
+                        "{{gen_order_0010_id}}",
+                        "state",
+                        "process"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: complete order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now complete\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('completed');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order/{{gen_order_0010_id}}/state/complete",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order",
+                        "{{gen_order_0010_id}}",
+                        "state",
+                        "complete"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG cron: cancel",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_cron}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_name]",
+                          "value": "cancel_orders",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_params]",
+                          "value": "0",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check not sent",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"Test validity of data\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "    const swOrder = jsonData.data[0];\r",
+                          "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                          "    const order = swOrder.extensions.shopgateOrder;\r",
+                          "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                          "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(false);\r",
+                          "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
+                          "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                          "    // we do not care about this flag with crons\r",
+                          "    pm.expect(order.receivedData.is_shipping_blocked, 'Should be blocked').to.eq(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0010_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {}\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: open order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now in process\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('open');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order/{{gen_order_0010_id}}/state/reopen",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order",
+                        "{{gen_order_0010_id}}",
+                        "state",
+                        "reopen"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: cancel order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now complete\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('cancelled');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order/{{gen_order_0010_id}}/state/cancel",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order",
+                        "{{gen_order_0010_id}}",
+                        "state",
+                        "cancel"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG cron: cancel",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_cron}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_name]",
+                          "value": "cancel_orders",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_params]",
+                          "value": "0",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check is sent",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"Test validity of data\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "    const swOrder = jsonData.data[0];\r",
+                          "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                          "    const order = swOrder.extensions.shopgateOrder;\r",
+                          "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                          "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(true);\r",
+                          "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
+                          "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                          "    // we do not care about this flag with crons\r",
+                          "    pm.expect(order.receivedData.is_shipping_blocked, 'Should be blocked').to.eq(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0010_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {}\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "description": "Check if order's complete status does not trigger cancellation\n\nCheck that \"cancelled\" status triggers cancellation"
+            },
+            {
+              "name": "11 - Already cancelled",
+              "item": [
+                {
+                  "name": "SG: add order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "0011",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: cancel order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Status is now complete\", function () {\r",
+                          "    var jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.technicalName).to.eql('cancelled');\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"sendMail\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/order/{{gen_order_0011_id}}/state/cancel",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "order",
+                        "{{gen_order_0011_id}}",
+                        "state",
+                        "cancel"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG cron: cancel",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_cron}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_name]",
+                          "value": "cancel_orders",
+                          "type": "text"
+                        },
+                        {
+                          "key": "jobs[0][job_params]",
+                          "value": "0",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check is sent",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"Test validity of data\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "    const swOrder = jsonData.data[0];\r",
+                          "    pm.expect(swOrder.extensions, ' Should have a Shopgate order attached').to.haveOwnProperty('shopgateOrder');\r",
+                          "    const order = swOrder.extensions.shopgateOrder;\r",
+                          "    pm.expect(order.isSent, 'Should not be sent').to.eq(false);\r",
+                          "    pm.expect(order.isCancelled, 'Should not be cancelled').to.eq(true);\r",
+                          "    pm.expect(order.isPaid, 'Should not be paid').to.eq(false);\r",
+                          "    pm.expect(order.isTest, 'Should not be test').to.eq(false);\r",
+                          "    // we do not care about this flag with crons\r",
+                          "    pm.expect(order.receivedData.is_shipping_blocked, 'Should be blocked').to.eq(1);\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0011_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {}\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "description": "Checks that response from merchant API that order is already cancelled prevents it from sending this order again."
+            }
+          ]
         }
       ]
     },
@@ -9590,23 +11301,22 @@
           "    // set body depending on type of request needed",
           "    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
           "    pm.sendRequest(authRequest, function (err, res) {",
-          "        if (pm.globals.get('verbose')){",
-          "            console.log(err ? err : res.json());",
+          "        if (res.code !== 200) {",
+          "            pm.environment.unset('gen_access_token');",
+          "            pm.environment.unset('gen_token_expires');",
+          "            pm.environment.unset('gen_refresh_token');",
+          "            console.log('Invalidated refresh token');",
+          "            return;",
           "        }",
           "        ",
-          "        if (err === null) {",
-          "            console.log('Saving the token and expiry date')",
-          "            var responseJson = res.json();",
-          "            pm.environment.set('gen_access_token', responseJson.access_token)",
-          "           ",
-          "            var expiryDate = new Date();",
-          "            expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
-          "            pm.environment.set('gen_token_expires', expiryDate.getTime());",
-          "            pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
-          "        } else {",
-          "            pm.environment.set('gen_token_expires', 0);",
-          "            console.log('Invalidated refresh token')",
-          "        }",
+          "        var responseJson = res.json();",
+          "        pm.environment.set('gen_access_token', responseJson.access_token)",
+          "",
+          "        var expiryDate = new Date();",
+          "        expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+          "        pm.environment.set('gen_token_expires', expiryDate.getTime());",
+          "        pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+          "        console.log('Saved the token and expiry date');",
           "    });",
           "}",
           "",
@@ -9639,7 +11349,13 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          ""
+          "// remove generated token data if not authorized",
+          "if (pm.response.code === 401) {",
+          "    console.log('Removing tokens due to 401 response. Please try again.');",
+          "    pm.environment.unset('gen_access_token');",
+          "    pm.environment.unset('gen_token_expires');",
+          "    pm.environment.unset('gen_refresh_token');",
+          "}"
         ]
       }
     }

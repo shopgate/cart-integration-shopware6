@@ -21,7 +21,6 @@ use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;
 use ShopgateExternalOrder;
 use ShopgateLibraryException;
-use ShopgateMerchantApi;
 use ShopgateMerchantApiException;
 use ShopgatePluginApi;
 
@@ -151,17 +150,17 @@ class ExportService
      * @throws ShopgateLibraryException
      * @throws ShopgateMerchantApiException
      */
-    public function cron(string $jobname, ShopgateMerchantApi $merchantApi): void
+    public function cron(string $jobname): void
     {
         $this->log->debug('Start cronjob ' . $jobname);
         switch ($jobname) {
             case ShopgatePluginApi::JOB_SET_SHIPPING_COMPLETED:
                 $this->log->debug('Start setShippingCompleted');
-                $this->orderComposer->setShippingCompleted($merchantApi);
+                $this->orderComposer->setShippingCompleted();
                 break;
             case ShopgatePluginApi::JOB_CANCEL_ORDERS:
                 $this->log->debug('Start cancelOrders');
-                $this->orderComposer->cancelOrders($merchantApi);
+                $this->orderComposer->cancelOrders();
                 break;
             default:
                 $this->log->debug('Cronjob name could not be mapped');

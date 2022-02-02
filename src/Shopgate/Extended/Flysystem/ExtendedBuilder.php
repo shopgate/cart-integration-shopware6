@@ -2,61 +2,67 @@
 
 declare(strict_types=1);
 
-namespace Shopgate\Shopware\Shopgate\Extended\Core;
+namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
 use Exception;
+use League\Flysystem\FilesystemInterface;
+use Shopgate\Shopware\Plugin;
 use Shopgate_Model_AbstractExport;
+use Shopgate_Model_Catalog_Category;
+use Shopgate_Model_Catalog_Product;
+use Shopgate_Model_Catalog_Review;
 use Shopgate_Model_XmlResultObject;
 use ShopgateAuthenticationServiceInterface;
 use ShopgateBuilder;
 use ShopgateConfigInterface;
 use ShopgateFileBufferJson;
-use ShopgateFileBufferXml;
 use ShopgateMerchantApiInterface;
 use ShopgateObject;
 use ShopgatePlugin;
-use ShopgatePluginApi;
 
 class ExtendedBuilder extends ShopgateBuilder
 {
-    private ShopgateAuthenticationServiceInterface $authService;
+    private FilesystemInterface $privateFileSystem;
     private ShopgateMerchantApiInterface $merchantApi;
+    private ShopgateAuthenticationServiceInterface $authService;
 
     /**
      * @noinspection MagicMethodsValidityInspection
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
+        FilesystemInterface $privateFileSystem,
         ShopgateMerchantApiInterface $merchantApi,
         ShopgateAuthenticationServiceInterface $authService
     ) {
+        $this->privateFileSystem = $privateFileSystem;
         $this->merchantApi = $merchantApi;
         $this->authService = $authService;
     }
 
     /**
-     * Primary way of initializing the original config
+     * @required
      */
     public function initConstruct(ShopgateConfigInterface $config): ExtendedBuilder
     {
+        $config->setExportFolderPath('export');
         parent::__construct($config);
 
         return $this;
     }
 
     /**
-     * Rewriting the original to initialize some classes with
-     * own extended versions
+     * @param Plugin $plugin
      * @throws Exception
      */
-    public function buildLibraryFor(ShopgatePlugin $plugin)
+    public function buildLibraryFor(ShopgatePlugin $plugin): void
     {
         // set error handler if configured
         if ($this->config->getUseCustomErrorHandler()) {
             set_error_handler('ShopgateErrorHandler');
         }
 
-        $pluginApi = new ShopgatePluginApi(
+        $pluginApi = new ExtendedPluginApi(
             $this->config, $this->authService, $this->merchantApi, $plugin, null,
             $this->buildStackTraceGenerator(), $this->logging
         );
@@ -70,24 +76,24 @@ class ExtendedBuilder extends ShopgateBuilder
             ShopgateObject::$sourceEncodings = array($this->config->getEncoding());
         }
 
-        $xmlModelNames = array(
-            'get_items' => 'Shopgate_Model_Catalog_Product',
-            'get_categories' => 'Shopgate_Model_Catalog_Category',
-            'get_reviews' => 'Shopgate_Model_Review',
-        );
+        $xmlModelNames = [
+            'get_items' => Shopgate_Model_Catalog_Product::class,
+            'get_categories' => Shopgate_Model_Catalog_Category::class,
+            'get_reviews' => Shopgate_Model_Catalog_Review::class,
+        ];
         if (isset($xmlModelNames[$_REQUEST['action']])) {
             /* @var $xmlModel Shopgate_Model_AbstractExport */
             $xmlModel = new $xmlModelNames[$_REQUEST['action']]();
             /** @noinspection PhpComposerExtensionStubsInspection */
             $xmlNode = new Shopgate_Model_XmlResultObject($xmlModel->getItemNodeIdentifier());
-            $fileBuffer = new ShopgateFileBufferXml(
+            $fileBuffer = new XmlFileBufferExtended(
                 $xmlModel,
                 $xmlNode,
                 $this->config->getExportBufferCapacity(),
+                $this->privateFileSystem,
                 $this->config->getExportConvertEncoding(),
                 ShopgateObject::$sourceEncodings
             );
-
         } else {
             $fileBuffer = new ShopgateFileBufferJson(
                 $this->config->getExportBufferCapacity(),
@@ -95,8 +101,9 @@ class ExtendedBuilder extends ShopgateBuilder
                 ShopgateObject::$sourceEncodings
             );
         }
-
         // inject apis into plugin
+        $pluginApi->setPrivateFileSystem($this->privateFileSystem);
+        $pluginApi->setBuffer($fileBuffer);
         $plugin->setConfig($this->config);
         $plugin->setMerchantApi($this->merchantApi);
         $plugin->setPluginApi($pluginApi);

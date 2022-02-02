@@ -6,6 +6,7 @@
 - added support for categories with `dynamic product groups`
 - added support for product `CrossSell` sliders (max 4)
 - added product tax calculations to `cart`
+- fixed cron logic to accurately cancel orders & mark orders shipped
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
 
 # 1.8.0

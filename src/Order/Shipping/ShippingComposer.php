@@ -122,17 +122,24 @@ class ShippingComposer
 
     public function isFullyShipped(?OrderDeliveryCollection $deliveries): bool
     {
-        $delivery = $this->getActualShippingDelivery($deliveries);
+        $delivery = $this->getFirstShippingDelivery($deliveries);
 
         return $delivery && $this->stateComposer->isFullyShipped($delivery->getStateMachineState());
     }
 
+    public function isCancelled(?OrderDeliveryCollection $deliveries): bool
+    {
+        $delivery = $this->getFirstShippingDelivery($deliveries);
+
+        return $delivery && $this->stateComposer->isCancelled($delivery->getStateMachineState());
+    }
+
     /**
-     * May not be accurate
+     * We assume that it's not multi-shipping
      *
      * @see sortDeliveries
      */
-    private function getActualShippingDelivery(?OrderDeliveryCollection $deliveries): ?OrderDeliveryEntity
+    public function getFirstShippingDelivery(?OrderDeliveryCollection $deliveries): ?OrderDeliveryEntity
     {
         return $deliveries ? $this->sortDeliveries($deliveries)->first() : null;
     }
@@ -157,7 +164,7 @@ class ShippingComposer
         ?OrderDeliveryCollection $deliveries,
         SalesChannelContext $context
     ): ?StateMachineStateEntity {
-        $delivery = $this->getActualShippingDelivery($deliveries);
+        $delivery = $this->getFirstShippingDelivery($deliveries);
 
         return $delivery ? $this->shippingBridge->setOrderToShipped($delivery->getId(), $context) : null;
     }

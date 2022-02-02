@@ -35,21 +35,6 @@ class ShopgateOrderBridge
         return $this->getOrderByNumber($shopgateOrderNumber, $context)->count() > 0;
     }
 
-    /**
-     * @return ShopgateOrderEntity[]
-     */
-    public function getOrdersNotSynced(Context $context): array
-    {
-        return $this->shopgateOrderRepository
-            ->search(
-                (new Criteria())
-                    ->addFilter(new EqualsFilter('isSent', 0))
-                    ->addFilter(new EqualsFilter('isCancelled', 0))
-                    ->addAssociation('order'),
-                $context
-            )->getElements();
-    }
-
     public function saveEntity(ShopgateOrderEntity $orderEntity, Context $context): EntityWrittenContainerEvent
     {
         return $this->shopgateOrderRepository->upsert([$orderEntity->toArray()], $context);
