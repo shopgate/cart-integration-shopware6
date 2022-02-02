@@ -4,8 +4,57 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Core;
 
+use Shopgate\Shopware\System\Log\LoggerInterface;
+use ShopgateAuthenticationServiceInterface;
 use ShopgateMerchantApi;
+use ShopgateMerchantApiException;
+use Throwable;
 
 class ExtendedMerchantApi extends ShopgateMerchantApi
 {
+    private LoggerInterface $logger;
+
+    public function __construct(
+        ShopgateAuthenticationServiceInterface $authService,
+        ?string $shopNumber,
+        ?string $apiUrl,
+        LoggerInterface $logger
+    ) {
+        parent::__construct($authService, $shopNumber, $apiUrl);
+        $this->logger = $logger;
+    }
+
+    public function addOrderDeliveryNote(
+        $orderNumber,
+        $shippingServiceId,
+        $trackingNumber = '',
+        $markAsCompleted = false,
+        $sendCustomerEmail = false
+    ): bool {
+        $isSent = true;
+        try {
+            parent::addOrderDeliveryNote(
+                $orderNumber, $shippingServiceId, $trackingNumber, $markAsCompleted, $sendCustomerEmail
+            );
+        } catch (Throwable $e) {
+            // set status to "sent" if it's a soft error
+            if (!$this->isSoftOrderStatusError($e)) {
+                $this->logger->error(
+                    "(#{$orderNumber}) SMA-Error on add delivery note! Message: {$e->getCode()} - {$e->getMessage()}"
+                );
+                $isSent = false;
+            }
+        }
+
+        return $isSent;
+    }
+
+    private function isSoftOrderStatusError(Throwable $throwable): bool
+    {
+        return in_array($throwable->getCode(), [
+            ShopgateMerchantApiException::ORDER_SHIPPING_STATUS_ALREADY_COMPLETED,
+            ShopgateMerchantApiException::ORDER_ALREADY_COMPLETED
+        ], false
+        );
+    }
 }

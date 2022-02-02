@@ -22,7 +22,7 @@ class GetOrdersCriteria extends Criteria
         return $this;
     }
 
-    public function addShopgateAssociations(): self
+    public function addDetailedAssociations(): self
     {
         $this->addAssociations([
             'currency',
@@ -30,13 +30,21 @@ class GetOrdersCriteria extends Criteria
             'lineItems.product',
             'billingAddress',
             'deliveries.shippingOrderAddress',
-            'deliveries.order.' . NativeOrderExtension::PROPERTY,
             'deliveries.stateMachineState.toStateMachineHistoryEntries',
-            NativeOrderExtension::PROPERTY
         ]);
         $addressAssociations = ['country', 'countryState', 'salutation'];
         $this->getAssociation('deliveries.shippingOrderAddress')->addAssociations($addressAssociations);
         $this->getAssociation('billingAddress')->addAssociations($addressAssociations);
+
+        return $this;
+    }
+
+    public function addShopgateAssociations(): self
+    {
+        $this->addAssociations([
+            'deliveries.order.' . NativeOrderExtension::PROPERTY,
+            NativeOrderExtension::PROPERTY
+        ]);
 
         return $this;
     }

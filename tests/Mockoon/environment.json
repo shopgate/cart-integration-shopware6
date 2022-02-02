@@ -47,6 +47,60 @@
           "rulesOperator": "AND",
           "disableTemplating": false,
           "fallbackTo404": false
+        },
+        {
+          "uuid": "2ee27da4-a09d-41d6-8872-aa565d05fda1",
+          "body": "{\"error\": 204, \"errorText\": \"Delivery status is already complete\"}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Delivery Already completed",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "action",
+              "value": "add_order_delivery_note",
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "order_number",
+              "value": "0009",
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false
+        },
+        {
+          "uuid": "e30a7e1a-8931-4ace-8ae0-e8620a460e28",
+          "body": "{\"data\":[]}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Delivery & Cancellation Cron",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "action",
+              "value": "add_order_delivery_note",
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "action",
+              "value": "cancel_order",
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false
         }
       ],
       "enabled": true,

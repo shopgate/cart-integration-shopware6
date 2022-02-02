@@ -21,8 +21,8 @@ use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;
 use ShopgateExternalOrder;
 use ShopgateLibraryException;
-use ShopgateMerchantApi;
 use ShopgateMerchantApiException;
+use ShopgateMerchantApiInterface;
 use ShopgatePluginApi;
 
 class ExportService
@@ -151,7 +151,7 @@ class ExportService
      * @throws ShopgateLibraryException
      * @throws ShopgateMerchantApiException
      */
-    public function cron(string $jobname, ShopgateMerchantApi $merchantApi): void
+    public function cron(string $jobname, ShopgateMerchantApiInterface $merchantApi): void
     {
         $this->log->debug('Start cronjob ' . $jobname);
         switch ($jobname) {

@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\Order\State;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryStates;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineHistory\StateMachineHistoryCollection;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineHistory\StateMachineHistoryEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
@@ -27,6 +28,11 @@ class StateComposer
     public function isFullyShipped(?StateMachineStateEntity $state): bool
     {
         return $state && $state->getTechnicalName() === OrderDeliveryStates::STATE_SHIPPED;
+    }
+
+    public function isOrderComplete(?StateMachineStateEntity $state): bool
+    {
+        return $state && $state->getTechnicalName() === OrderStates::STATE_COMPLETED;
     }
 
     /**

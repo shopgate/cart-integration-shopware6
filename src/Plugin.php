@@ -57,7 +57,7 @@ class Plugin extends ShopgatePlugin
      */
     public function cron($jobname, $params, &$message, &$errorcount): void
     {
-        $this->exportService->cron($jobname, $this->builder->buildMerchantApi());
+        $this->exportService->cron($jobname, $this->merchantApi);
     }
 
     /**
