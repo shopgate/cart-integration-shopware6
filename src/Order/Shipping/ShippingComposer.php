@@ -127,6 +127,13 @@ class ShippingComposer
         return $delivery && $this->stateComposer->isFullyShipped($delivery->getStateMachineState());
     }
 
+    public function isCancelled(?OrderDeliveryCollection $deliveries): bool
+    {
+        $delivery = $this->getFirstShippingDelivery($deliveries);
+
+        return $delivery && $this->stateComposer->isCancelled($delivery->getStateMachineState());
+    }
+
     /**
      * We assume that it's not multi-shipping
      *

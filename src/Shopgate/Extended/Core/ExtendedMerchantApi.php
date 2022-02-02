@@ -49,11 +49,36 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
         return $isSent;
     }
 
+    public function cancelOrder(
+        $orderNumber,
+        $cancelCompleteOrder = true,
+        $cancellationItems = array(),
+        $cancelShipping = false,
+        $cancellationNote = ''
+    ): bool {
+        $isCancelled = true;
+        try {
+            parent::cancelOrder(
+                $orderNumber, $cancelCompleteOrder, $cancellationItems, $cancelShipping, $cancellationNote
+            );
+        } catch (Throwable $e) {
+            if (!$this->isSoftOrderStatusError($e)) {
+                $this->logger->error(
+                    "! (#{$orderNumber})  SMA-Error on cancel order! Message: {$e->getCode()} - {$e->getMessage()}"
+                );
+                $isCancelled = false;
+            }
+        }
+
+        return $isCancelled;
+    }
+
     private function isSoftOrderStatusError(Throwable $throwable): bool
     {
         return in_array($throwable->getCode(), [
             ShopgateMerchantApiException::ORDER_SHIPPING_STATUS_ALREADY_COMPLETED,
-            ShopgateMerchantApiException::ORDER_ALREADY_COMPLETED
+            ShopgateMerchantApiException::ORDER_ALREADY_COMPLETED,
+            ShopgateMerchantApiException::ORDER_ALREADY_CANCELLED
         ], false
         );
     }

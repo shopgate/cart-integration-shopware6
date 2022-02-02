@@ -26,14 +26,11 @@ use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateDeliveryNote;
 use ShopgateExternalOrder;
 use ShopgateLibraryException;
-use ShopgateMerchantApiException;
 use ShopgateMerchantApiInterface;
 use ShopgateOrder;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -45,8 +42,6 @@ use Throwable;
 
 class OrderComposer
 {
-    protected const statusesCancelled = [OrderTransactionStates::STATE_REFUNDED, OrderStates::STATE_CANCELLED];
-
     private ContextComposer $contextComposer;
     private ContextManager $contextManager;
     private LineItemComposer $lineItemComposer;
@@ -210,7 +205,7 @@ class OrderComposer
             function (OrderEntity $swOrder) use ($merchantApi, $context) {
                 // we do not handle partial shipping
                 if ($this->shippingComposer->isFullyShipped($swOrder->getDeliveries())
-                    || $this->stateComposer->isOrderComplete($swOrder->getStateMachineState())
+                    || $this->stateComposer->isComplete($swOrder->getStateMachineState())
                 ) {
                     /** @var ShopgateOrderEntity $sgOrder */
                     $sgOrder = $swOrder->getExtension(NativeOrderExtension::PROPERTY);
@@ -231,28 +226,34 @@ class OrderComposer
     }
 
     /**
-     * @throws ShopgateLibraryException
-     * @throws ShopgateMerchantApiException
+     * @param ExtendedMerchantApi $merchantApi
+     * @throws MissingContextException
      */
     public function cancelOrders(ShopgateMerchantApiInterface $merchantApi): void
     {
-        $context = $this->contextManager->getSalesContext()->getContext();
-        $shopgateOrders = $this->shopgateOrderBridge->getOrdersNotSynced($context);
-        foreach ($shopgateOrders as $shopgateOrder) {
-            $swOrder = $shopgateOrder->getOrder();
-            if ($swOrder === null) {
-                // should not happen, but in this case the order shouldn't be handled again
-                $shopgateOrder->setIsCancelled(true);
-                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $context);
-                continue;
+        $context = $this->contextManager->getSalesContext();
+        $criteria = (new GetOrdersCriteria())
+            ->addShopgateAssociations()
+            ->addStateAssociations()
+            ->addFilter(new EqualsFilter(NativeOrderExtension::PROPERTY . '.isCancelled', 0));
+        $this->quoteBridge->getOrders($criteria, $context)->map(
+            function (OrderEntity $swOrder) use ($merchantApi, $context) {
+                if ($this->stateComposer->isCancelled($swOrder->getStateMachineState())) {
+                    /** @var ShopgateOrderEntity $sgOrder */
+                    $sgOrder = $swOrder->getExtension(NativeOrderExtension::PROPERTY);
+                    if ($merchantApi->cancelOrder(
+                        $sgOrder->getShopgateOrderNumber(),
+                        true,
+                        [],
+                        $this->shippingComposer->isCancelled($swOrder->getDeliveries())
+                    )) {
+                        $sgOrder->setIsCancelled(true);
+                        $this->shopgateOrderBridge->saveEntity($sgOrder, $context->getContext());
+                    }
+                }
+                return $swOrder;
             }
-            $stateName = $swOrder->getStateMachineState() ? $swOrder->getStateMachineState()->getTechnicalName() : '';
-            if (in_array($stateName, self::statusesCancelled, true)) {
-                $merchantApi->cancelOrder($shopgateOrder->getShopgateOrderNumber());
-                $shopgateOrder->setIsCancelled(true);
-                $this->shopgateOrderBridge->saveEntity($shopgateOrder, $context);
-            }
-        }
+        );
     }
 
     /**

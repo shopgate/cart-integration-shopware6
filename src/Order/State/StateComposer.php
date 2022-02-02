@@ -30,9 +30,14 @@ class StateComposer
         return $state && $state->getTechnicalName() === OrderDeliveryStates::STATE_SHIPPED;
     }
 
-    public function isOrderComplete(?StateMachineStateEntity $state): bool
+    public function isComplete(?StateMachineStateEntity $state): bool
     {
         return $state && $state->getTechnicalName() === OrderStates::STATE_COMPLETED;
+    }
+
+    public function isCancelled(?StateMachineStateEntity $state): bool
+    {
+        return $state && $state->getTechnicalName() === OrderStates::STATE_CANCELLED;
     }
 
     /**

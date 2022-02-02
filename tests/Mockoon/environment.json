@@ -50,7 +50,7 @@
         },
         {
           "uuid": "2ee27da4-a09d-41d6-8872-aa565d05fda1",
-          "body": "{\"error\": 204, \"errorText\": \"Delivery status is already complete\"}",
+          "body": "{\"error\": 204, \"error_text\": \"Delivery status is already complete\"}",
           "latency": 0,
           "statusCode": 200,
           "label": "Delivery Already completed",
@@ -68,6 +68,33 @@
               "target": "body",
               "modifier": "order_number",
               "value": "0009",
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false
+        },
+        {
+          "uuid": "5d1cf899-04da-48cb-acb5-c59a5f285981",
+          "body": "{\"error\": 222, \"error_text\": \"Order already cancelled.\"}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Already cancelled",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "action",
+              "value": "cancel_order",
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "order_number",
+              "value": "0011",
               "operator": "equals"
             }
           ],
