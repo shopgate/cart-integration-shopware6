@@ -8,15 +8,18 @@ use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\DomainBridge;
 use ShopgateLibraryException;
-use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
@@ -36,18 +39,10 @@ class ConfigBridge
     private ContextManager $contextManager;
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $systemConfigRepo;
-    private array $config = [];
+    private ?SystemConfigCollection $config = null;
     private DomainBridge $domainBridge;
     private array $error = [];
 
-    /**
-     * @param EntityRepositoryInterface $pluginRepository
-     * @param string $shopwareVersion
-     * @param ContextManager $contextManager
-     * @param SystemConfigService $systemConfigService
-     * @param EntityRepositoryInterface $systemConfigRepo
-     * @param DomainBridge $domainBridge
-     */
     public function __construct(
         EntityRepositoryInterface $pluginRepository,
         string $shopwareVersion,
@@ -64,17 +59,11 @@ class ConfigBridge
         $this->domainBridge = $domainBridge;
     }
 
-    /**
-     * @return string
-     */
     public function getShopwareVersion(): string
     {
         return $this->shopwareVersion;
     }
 
-    /**
-     * @return string
-     */
     public function getShopgatePluginVersion(): string
     {
         try {
@@ -114,7 +103,7 @@ class ConfigBridge
             ];
             return;
         }
-
+        $this->contextManager->createAndLoadByChannelId($channel);
         $this->load($channel);
         if ($this->get(self::SYSTEM_CONFIG_IS_ACTIVE) !== true) {
             $this->error = [
@@ -158,25 +147,24 @@ class ConfigBridge
 
     /**
      * Creates a persistent cache of configurations by channel ID
-     *
-     * @param string $salesChannelId
-     * @param bool $fallback
      */
-    public function load(string $salesChannelId, bool $fallback = true): void
+    public function load(string $salesChannelId): void
     {
-        $values = $this->systemConfigService->getDomain(
-            self::SYSTEM_CONFIG_DOMAIN,
-            $salesChannelId,
-            $fallback
-        );
+        $criteria = (new Criteria())
+            ->addFilter(new AndFilter([
+                new OrFilter([
+                    new EqualsFilter('salesChannelId', $salesChannelId),
+                    new EqualsFilter('salesChannelId', null)
+                ]),
+                new ContainsFilter('configurationKey', self::SYSTEM_CONFIG_DOMAIN)
+            ]));
+        /** @var SystemConfigCollection $collection */
+        $collection = $this->systemConfigRepo->search(
+            $criteria,
+            $this->contextManager->getSalesContext()->getContext()
+        )->getEntities();
 
-        $config = ['salesChannelId' => $salesChannelId];
-        foreach ($values as $key => $value) {
-            $property = substr($key, strlen(self::SYSTEM_CONFIG_DOMAIN));
-            $config[$property] = $value;
-        }
-
-        $this->config = $config;
+        $this->config = $collection;
     }
 
     /**
@@ -188,15 +176,14 @@ class ConfigBridge
      */
     public function get(string $key, $fallback = '')
     {
-        if (!array_key_exists($key, $this->config)) {
+        // the only time this happens is when an incorrect shop_number is not provided in the request
+        if (null === $this->config) {
             return $fallback;
         }
+        /** @var ?SystemConfigEntity $config */
+        $config = $this->config->filterByProperty('configurationKey', self::SYSTEM_CONFIG_DOMAIN . $key)->first();
 
-        if (empty($this->config[$key])) {
-            return $fallback;
-        }
-
-        return $this->config[$key];
+        return $config && !empty($config->getConfigurationValue()) ? $config->getConfigurationValue() : $fallback;
     }
 
     /**
@@ -213,11 +200,6 @@ class ConfigBridge
                 : $this->contextManager->getSalesContext()->getSalesChannelId());
     }
 
-    /**
-     * @param SalesChannelContext $context
-     * @return string
-     * @throws SalesChannelDomainNotFoundException
-     */
     public function getCustomerOptInConfirmUrl(SalesChannelContext $context): string
     {
         /** @var string $domainUrl */
@@ -230,9 +212,6 @@ class ConfigBridge
         return $domainUrl;
     }
 
-    /**
-     * @return array
-     */
     public function getError(): array
     {
         return $this->error;

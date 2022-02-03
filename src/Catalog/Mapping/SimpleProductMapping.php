@@ -99,8 +99,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     }
 
     /**
-     * @param ProductEntity $productEntity
-     * @return string
      * @throws MissingContextException
      */
     private function getDeepLinkUrl(ProductEntity $productEntity): string
@@ -448,5 +446,10 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $export[] = $relation;
         }
         parent::setRelations($export);
+    }
+
+    public function getItem(): SalesChannelProductEntity
+    {
+        return $this->item;
     }
 }
