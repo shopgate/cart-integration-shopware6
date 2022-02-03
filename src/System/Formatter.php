@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyFormatter;
@@ -36,9 +35,6 @@ class Formatter
         $this->currencyFormatter = $currencyFormatter;
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function translate(string $key, array $parameters, ?string $domain = 'storefront'): string
     {
         $result = $this->translator->trans($key, $parameters, $domain, $this->getLocaleCode());
@@ -46,9 +42,6 @@ class Formatter
         return $result === $key ? '' : $result;
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function getLocaleCode(): ?string
     {
         if (false === $this->locale) {
@@ -63,9 +56,6 @@ class Formatter
         return $this->locale;
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function getLanguageCollection(): LanguageCollection
     {
         if (null === $this->languageCollection) {
@@ -82,7 +72,6 @@ class Formatter
     }
 
     /**
-     * @throws MissingContextException
      * @see \Shopware\Core\Framework\Adapter\Twig\Filter\CurrencyFilter::formatCurrency()
      */
     public function formatCurrency(float $price): string
@@ -101,9 +90,6 @@ class Formatter
 
     /**
      * Converts 'packUnit' to 'Pack Unit'
-     *
-     * @param string $property
-     * @return null|string
      */
     public function camelCaseToSpaced(string $property): ?string
     {

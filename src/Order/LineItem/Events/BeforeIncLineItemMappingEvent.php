@@ -11,17 +11,11 @@ class BeforeIncLineItemMappingEvent extends Event
 {
     private ShopgateCartBase $cart;
 
-    /**
-     * @param ShopgateCartBase $cart
-     */
     public function __construct(ShopgateCartBase $cart)
     {
         $this->cart = $cart;
     }
 
-    /**
-     * @return ShopgateCartBase
-     */
     public function getCart(): ShopgateCartBase
     {
         return $this->cart;

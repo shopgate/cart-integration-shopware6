@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product\Property;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -17,10 +16,6 @@ class CustomFieldBridge
     private EntityRepositoryInterface $customFieldRepository;
     private ContextManager $contextManager;
 
-    /**
-     * @param EntityRepositoryInterface $customFieldRepository
-     * @param ContextManager $contextManager
-     */
     public function __construct(EntityRepositoryInterface $customFieldRepository, ContextManager $contextManager)
     {
         $this->customFieldRepository = $customFieldRepository;
@@ -29,7 +24,6 @@ class CustomFieldBridge
 
     /**
      * @return CustomFieldCollection|EntityCollection
-     * @throws MissingContextException
      */
     public function getAllProductFieldSets(): CustomFieldCollection
     {

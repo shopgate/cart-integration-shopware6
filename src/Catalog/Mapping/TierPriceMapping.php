@@ -7,7 +7,6 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use ReflectionClass;
 use ReflectionException;
 use Shopgate\Shopware\Customer\CustomerBridge;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_TierPrice;
 use Shopware\Core\Checkout\Cart\Rule\AlwaysValidRule;
@@ -26,10 +25,6 @@ class TierPriceMapping
     private CustomerBridge $customerBridge;
     private ContextManager $contextManager;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param CustomerBridge $customerBridge
-     */
     public function __construct(ContextManager $contextManager, CustomerBridge $customerBridge)
     {
         $this->contextManager = $contextManager;
@@ -40,7 +35,6 @@ class TierPriceMapping
      * @param ProductPriceCollection $priceCollection
      * @param Price $mainPrice
      * @return Shopgate_Model_Catalog_TierPrice[]
-     * @throws MissingContextException
      * @throws ReflectionException
      */
     public function mapTierPrices(ProductPriceCollection $priceCollection, Price $mainPrice): array
@@ -87,10 +81,6 @@ class TierPriceMapping
         return $validRules;
     }
 
-    /**
-     * @param RuleEntity $rule
-     * @return bool
-     */
     private function validateRule(RuleEntity $rule): bool
     {
         $payload = $rule->getPayload();
@@ -122,12 +112,6 @@ class TierPriceMapping
         return $rule instanceof AlwaysValidRule || $rule instanceof CustomerGroupRule;
     }
 
-    /**
-     * @param ProductPriceEntity $priceEntity
-     * @param Price $normalPrice
-     * @return null|Shopgate_Model_Catalog_TierPrice
-     * @throws MissingContextException
-     */
     private function mapProductTier(
         ProductPriceEntity $priceEntity,
         Price $normalPrice
@@ -196,12 +180,6 @@ class TierPriceMapping
         return $carry;
     }
 
-    /**
-     * @param ProductPriceCollection $priceCollection
-     * @param Price $basePrice
-     * @return Price
-     * @throws MissingContextException
-     */
     public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice): Price
     {
         $currencyId = $this->contextManager->getSalesContext()->getSalesChannel()->getCurrencyId();

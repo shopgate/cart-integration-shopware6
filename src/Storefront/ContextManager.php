@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopware\Core\Framework\Routing\SalesChannelRequestContextResolver;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -50,9 +49,6 @@ class ContextManager
 
     public function getSalesContext(): SalesChannelContext
     {
-        if (null === $this->salesContext) {
-            throw new MissingContextException('Context not initialized');
-        }
         return $this->salesContext;
     }
 

@@ -15,17 +15,12 @@ class DomainBridge
 {
     private EntityRepositoryInterface $domainRepository;
 
-    /**
-     * @param EntityRepositoryInterface $domainRepository
-     */
     public function __construct(EntityRepositoryInterface $domainRepository)
     {
         $this->domainRepository = $domainRepository;
     }
 
     /**
-     * @param SalesChannelContext $context
-     * @return string
      * @throws SalesChannelDomainNotFoundException
      */
     public function getDomain(SalesChannelContext $context): string

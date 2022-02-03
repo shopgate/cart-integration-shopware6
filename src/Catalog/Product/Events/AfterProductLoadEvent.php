@@ -15,11 +15,6 @@ class AfterProductLoadEvent extends Event
     private Criteria $criteria;
     private SalesChannelContext $context;
 
-    /**
-     * @param ProductCollection $productCollection
-     * @param Criteria $criteria
-     * @param SalesChannelContext $context
-     */
     public function __construct(ProductCollection $productCollection, Criteria $criteria, SalesChannelContext $context)
     {
         $this->productCollection = $productCollection;
@@ -27,25 +22,16 @@ class AfterProductLoadEvent extends Event
         $this->context = $context;
     }
 
-    /**
-     * @return ProductCollection
-     */
     public function getProductCollection(): ProductCollection
     {
         return $this->productCollection;
     }
 
-    /**
-     * @return Criteria
-     */
     public function getCriteria(): Criteria
     {
         return $this->criteria;
     }
 
-    /**
-     * @return SalesChannelContext
-     */
     public function getSaleChannelContext(): SalesChannelContext
     {
         return $this->context;

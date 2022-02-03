@@ -13,27 +13,17 @@ class BeforeProductLoadEvent extends Event
     private Criteria $criteria;
     private SalesChannelContext $context;
 
-    /**
-     * @param Criteria $criteria
-     * @param SalesChannelContext $context
-     */
     public function __construct(Criteria $criteria, SalesChannelContext $context)
     {
         $this->criteria = $criteria;
         $this->context = $context;
     }
 
-    /**
-     * @return Criteria
-     */
     public function getCriteria(): Criteria
     {
         return $this->criteria;
     }
 
-    /**
-     * @return SalesChannelContext
-     */
     public function getContext(): SalesChannelContext
     {
         return $this->context;

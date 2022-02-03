@@ -7,7 +7,6 @@ namespace Shopgate\Shopware\Catalog\Product;
 use Shopgate\Shopware\Catalog\Product\Events\AfterProductLoadEvent;
 use Shopgate\Shopware\Catalog\Product\Events\BeforeProductLoadEvent;
 use Shopgate\Shopware\Catalog\Product\Sort\SortBridge;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopware\Core\Content\Product\ProductCollection;
@@ -47,7 +46,6 @@ class ProductBridge
      * @param int|null $offset
      * @param array $uids
      * @return ProductCollection
-     * @throws MissingContextException
      */
     public function getProductList(?int $limit, ?int $offset, array $uids = []): ProductCollection
     {

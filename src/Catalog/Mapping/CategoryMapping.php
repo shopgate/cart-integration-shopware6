@@ -2,7 +2,6 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Media_Image;
@@ -18,9 +17,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     /** @var ContextManager */
     private ContextManager $contextManager;
 
-    /**
-     * @param ContextManager $contextManager
-     */
     public function __construct(ContextManager $contextManager)
     {
         $this->contextManager = $contextManager;
@@ -29,8 +25,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     /**
      * Generate data dom object by firing a method array
-     *
-     * @return $this
      */
     public function generateData(): CategoryMapping
     {
@@ -67,7 +61,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     /**
      * Set parent category id
-     * @throws MissingContextException
      */
     public function setParentUid(): void
     {
@@ -77,18 +70,12 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     /**
      * Category link in shop
-     * @throws MissingContextException
      */
     public function setDeeplink(): void
     {
         parent::setDeeplink($this->getDeepLinkUrl($this->item));
     }
 
-    /**
-     * @param CategoryEntity $category
-     * @return string
-     * @throws MissingContextException
-     */
     private function getDeepLinkUrl(CategoryEntity $category): string
     {
         $channel = $this->contextManager->getSalesContext()->getSalesChannel();
@@ -104,11 +91,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
         parent::setIsAnchor($this->item->getDisplayNestedProducts());
     }
 
-    /**
-     * @param string $parentId
-     *
-     * @return $this
-     */
     public function setParentId(string $parentId): CategoryMapping
     {
         $this->parentId = $parentId;

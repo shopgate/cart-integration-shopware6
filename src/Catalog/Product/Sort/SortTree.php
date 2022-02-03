@@ -7,7 +7,6 @@ namespace Shopgate\Shopware\Catalog\Product\Sort;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\InvalidArgumentException;
 use Shopgate\Shopware\Catalog\Category\CategoryBridge;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\FileCache;
 use Shopgate\Shopware\System\Log\LoggerInterface;
@@ -44,7 +43,6 @@ class SortTree
     /**
      * @param string|null $rootCategoryId
      * @return array
-     * @throws MissingContextException
      * @throws InvalidArgumentException
      */
     public function getSortTree(?string $rootCategoryId = null): array
@@ -62,7 +60,6 @@ class SortTree
     /**
      * @param null|string $rootCategoryId - provide category id to build from
      * @return array - ['categoryId' => ['productId' => sortNumber]]
-     * @throws MissingContextException
      */
     private function build(?string $rootCategoryId): array
     {

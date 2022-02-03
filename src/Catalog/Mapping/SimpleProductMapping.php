@@ -4,10 +4,10 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Exception;
 use Psr\Cache\InvalidArgumentException;
+use ReflectionException;
 use Shopgate\Shopware\Catalog\Product\ProductExportExtension;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_CategoryPath;
@@ -22,6 +22,7 @@ use Shopgate_Model_Catalog_Stock;
 use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
+use ShopgateLibraryException;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -75,9 +76,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         }
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function setCurrency(): void
     {
         if ($currency = $this->contextManager->getSalesContext()->getSalesChannel()->getCurrency()) {
@@ -90,17 +88,11 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         parent::setDescription($this->item->getDescription());
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function setDeeplink(): void
     {
         parent::setDeeplink($this->getDeepLinkUrl($this->item));
     }
 
-    /**
-     * @throws MissingContextException
-     */
     private function getDeepLinkUrl(ProductEntity $productEntity): string
     {
         $channel = $this->contextManager->getSalesContext()->getSalesChannel();
@@ -117,14 +109,17 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     }
 
     /**
-     * @throws MissingContextException
-     * @throws Exception
+     * @throws ShopgateLibraryException
+     * @throws ReflectionException
      */
     public function setPrice(): void
     {
         $currencyId = $this->contextManager->getSalesContext()->getCurrency()->getId();
         if (!$shopwarePrice = $this->item->getCurrencyPrice($currencyId)) {
-            throw new MissingContextException('Could not find price for currency: ' . $currencyId);
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                'Could not find price for currency: ' . $currencyId
+            );
         }
         $shopgatePrice = new Shopgate_Model_Catalog_Price();
         $shopgatePrice->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
@@ -190,7 +185,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     /**
      * Setting the same sort order for every category as supposedly
      * we have a sort order for the whole catalog.
-     * @throws MissingContextException
      * @throws InvalidArgumentException
      */
     public function setCategoryPaths(): void
@@ -211,10 +205,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     /**
      * Check if provided category is a root category
-     *
-     * @param string $id
-     * @return bool
-     * @throws MissingContextException
      */
     private function isRootCategory(string $id): bool
     {
@@ -249,9 +239,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         parent::setManufacturer($manufacturer);
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function setProperties(): void
     {
         $properties = [];
@@ -329,9 +316,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         return $value === false ? '0' : (string)$value;
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function setStock(): void
     {
         $stock = new Shopgate_Model_Catalog_Stock();
@@ -405,8 +389,6 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     /**
      * We export only 4 sliders per SG limitations
-     *
-     * @throws MissingContextException
      */
     public function setRelations(): void
     {

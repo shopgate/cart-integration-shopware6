@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
@@ -50,9 +49,8 @@ class CustomerBridge
 
     /**
      * @return CustomerGroupCollection|EntityCollection
-     * @throws MissingContextException
      */
-    public function getGroups()
+    public function getGroups(): EntityCollection
     {
         $criteria = new Criteria();
         $criteria->setTitle('shopgate::customer-group');
@@ -62,10 +60,6 @@ class CustomerBridge
     }
 
     /**
-     * @param string $email
-     * @param string $password
-     * @return ContextTokenResponse
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     public function authenticate(string $email, string $password): ?ContextTokenResponse
@@ -98,10 +92,6 @@ class CustomerBridge
         }
     }
 
-    /**
-     * @param SalesChannelContext $context
-     * @return CustomerEntity
-     */
     public function getDetailedContextCustomer(SalesChannelContext $context): CustomerEntity
     {
         $customer = new CustomerEntity();
@@ -118,11 +108,6 @@ class CustomerBridge
         return $this->customerRoute->load(new Request(), $context, $criteria, $customer)->getCustomer();
     }
 
-    /**
-     * @param string $email
-     * @param SalesChannelContext $context
-     * @return CustomerEntity|null
-     */
     public function getGuestByEmail(string $email, SalesChannelContext $context): ?CustomerEntity
     {
         $criteria = (new Criteria())

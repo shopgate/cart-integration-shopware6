@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer\Mapping;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\CustomFields\CustomFieldMapping;
 use ShopgateAddress;
 use ShopgateCustomer;
@@ -32,11 +31,6 @@ class AddressMapping
         $this->customFieldMapping = $customFieldMapping;
     }
 
-    /**
-     * @param ShopgateAddress $shopgateAddress
-     * @return RequestDataBag
-     * @throws MissingContextException
-     */
     public function mapToShopwareAddress(ShopgateAddress $shopgateAddress): RequestDataBag
     {
         $address = [];
@@ -61,8 +55,6 @@ class AddressMapping
     }
 
     /**
-     * @param ShopgateCustomer $customer
-     * @return ShopgateAddress
      * @throws ShopgateLibraryException
      */
     public function getBillingAddress(ShopgateCustomer $customer): ShopgateAddress
@@ -100,10 +92,6 @@ class AddressMapping
         return false;
     }
 
-    /**
-     * @param CustomerAddressCollection $collection
-     * @return string|null
-     */
     public function getWorkingPhone(CustomerAddressCollection $collection): ?string
     {
         foreach ($collection as $addressEntity) {
@@ -114,11 +102,6 @@ class AddressMapping
         return null;
     }
 
-    /**
-     * @param ShopgateAddress $address
-     * @param CustomerEntity $customer
-     * @return string|null
-     */
     public function getSelectedAddressId(ShopgateAddress $address, CustomerEntity $customer): ?string
     {
         $addresses = $this->mapFromShopware($customer);
@@ -148,9 +131,6 @@ class AddressMapping
 
     /**
      * @param CustomerAddressEntity|OrderAddressEntity $addressEntity
-     * @param string $defaultBillingId
-     * @param string $defaultShippingId
-     * @return int
      */
     public function mapAddressType(Entity $addressEntity, string $defaultBillingId, string $defaultShippingId): int
     {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer\Mapping;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCustomer;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -23,11 +22,6 @@ class SalutationMapping
         $this->contextManager = $contextManager;
     }
 
-    /**
-     * @param string $gender
-     * @return string
-     * @throws MissingContextException
-     */
     public function getSalutationIdByGender(string $gender): string
     {
         switch ($gender) {
@@ -40,10 +34,6 @@ class SalutationMapping
         }
     }
 
-    /**
-     * @return string
-     * @throws MissingContextException
-     */
     public function getMaleSalutationId(): string
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'mr'));
@@ -56,10 +46,6 @@ class SalutationMapping
         return $result ? $result->getId() : $this->getUnspecifiedSalutationId();
     }
 
-    /**
-     * @return string
-     * @throws MissingContextException
-     */
     public function getUnspecifiedSalutationId(): string
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'not_specified'));
@@ -75,9 +61,6 @@ class SalutationMapping
     /**
      * This is the last fallback and should not be needed
      * Return any SalutationId as it is required to register customers
-     *
-     * @return string
-     * @throws MissingContextException
      */
     public function getAnySalutationId(): string
     {
@@ -91,10 +74,6 @@ class SalutationMapping
         return $result->getId();
     }
 
-    /**
-     * @return string
-     * @throws MissingContextException
-     */
     public function getFemaleSalutationId(): string
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'mrs'));
@@ -107,10 +86,6 @@ class SalutationMapping
         return $result ? $result->getId() : $this->getUnspecifiedSalutationId();
     }
 
-    /**
-     * @param SalutationEntity $entity
-     * @return string|null
-     */
     public function toShopgateGender(SalutationEntity $entity): ?string
     {
         switch ($entity->getSalutationKey()) {

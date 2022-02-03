@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Configuration;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\DomainBridge;
 use ShopgateLibraryException;
@@ -190,7 +189,6 @@ class ConfigBridge
 
     /**
      * @param array|bool|float|int|string|null $value
-     * @throws MissingContextException
      */
     public function set(string $key, $value, SalesChannelContext $salesChannelContext = null): void
     {

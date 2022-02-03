@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Category;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -32,7 +31,6 @@ class CategoryBridge
 
     /**
      * @return string
-     * @throws MissingContextException
      */
     public function getRootCategoryId(): string
     {
@@ -42,7 +40,6 @@ class CategoryBridge
     /**
      * @param string $parentId
      * @return CategoryCollection
-     * @throws MissingContextException
      */
     public function getChildCategories(string $parentId): CategoryCollection
     {

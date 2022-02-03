@@ -9,7 +9,6 @@ use Shopgate\Shopware\Catalog\Product\ProductComposer;
 use Shopgate\Shopware\Catalog\Review\ReviewComposer;
 use Shopgate\Shopware\Catalog\Review\ReviewMapping;
 use Shopgate\Shopware\Customer\CustomerComposer;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\CartComposer;
 use Shopgate\Shopware\Order\OrderComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
@@ -63,7 +62,6 @@ class ExportService
      * @param null | int $offset
      * @param string[] $ids
      * @return Shopgate_Model_Catalog_Category[]
-     * @throws MissingContextException
      */
     public function getCategories(int $limit = null, int $offset = null, array $ids = []): array
     {
@@ -79,9 +77,8 @@ class ExportService
     /**
      * @param int|null $limit
      * @param int|null $offset
-     * @param array $ids
+     * @param string[] $ids
      * @return Shopgate_Model_Catalog_Product[]
-     * @throws MissingContextException
      */
     public function getProducts(int $limit = null, int $offset = null, array $ids = []): array
     {
@@ -93,10 +90,6 @@ class ExportService
     }
 
     /**
-     * @param string $user
-     * @param string $password
-     * @return ShopgateCustomer
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     public function getCustomer(string $user, string $password): ShopgateCustomer
@@ -122,9 +115,6 @@ class ExportService
         return $this->orderComposer->getOrders($token, $limit, $offset, $sortOrder, $orderDateFrom);
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function getSettings(): array
     {
         return [
@@ -137,7 +127,6 @@ class ExportService
     }
 
     /**
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     public function checkCart(ExtendedCart $cart): array
@@ -146,9 +135,7 @@ class ExportService
     }
 
     /**
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
-     * @throws ShopgateMerchantApiException
      */
     public function cron(string $jobname): void
     {
@@ -170,7 +157,6 @@ class ExportService
 
     /**
      * @return ReviewMapping[]
-     * @throws MissingContextException
      */
     public function getReviews(?int $limit, ?int $offset, array $uids): array
     {

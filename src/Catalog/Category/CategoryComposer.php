@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Catalog\Category;
 
 use Shopgate\Shopware\Catalog\Mapping\CategoryMapping;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_Category;
@@ -33,7 +32,6 @@ class CategoryComposer
      * @param int|null $limit
      * @param int|null $offset
      * @return Shopgate_Model_Catalog_Category[]
-     * @throws MissingContextException
      */
     public function buildCategoryTree(?array $ids, ?int $limit, ?int $offset): array
     {

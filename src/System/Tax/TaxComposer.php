@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\System\Tax;
 
 use Shopgate\Shopware\Customer\Mapping\LocationMapping;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopware\Core\System\Tax\TaxRuleType\EntireCountryRuleTypeFilter as EntireCountry;
 use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as IndividualStates;
 
@@ -14,10 +13,6 @@ class TaxComposer
     private LocationMapping $locationMapping;
     private TaxBridge $taxBridge;
 
-    /**
-     * @param LocationMapping $locationMapping
-     * @param TaxBridge $taxBridge
-     */
     public function __construct(LocationMapping $locationMapping, TaxBridge $taxBridge)
     {
         $this->locationMapping = $locationMapping;
@@ -26,7 +21,6 @@ class TaxComposer
 
     /**
      * @return array
-     * @throws MissingContextException
      */
     public function getTaxSettings(): array
     {

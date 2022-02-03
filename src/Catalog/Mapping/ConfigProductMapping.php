@@ -5,7 +5,6 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_AbstractExport;
@@ -36,9 +35,6 @@ class ConfigProductMapping extends SimpleProductMapping
         $this->childProductMapping = $childProductMapping;
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function setAttributeGroups(): void
     {
         /** @noinspection NullPointerExceptionInspection */
