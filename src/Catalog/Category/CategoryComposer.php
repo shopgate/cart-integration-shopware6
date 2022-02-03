@@ -6,8 +6,8 @@ namespace Shopgate\Shopware\Catalog\Category;
 
 use Shopgate\Shopware\Catalog\Mapping\CategoryMapping;
 use Shopgate\Shopware\Exceptions\MissingContextException;
-use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Log\LoggerInterface;
+use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_Category;
 use Shopware\Core\Content\Category\CategoryEntity;
 
@@ -15,18 +15,17 @@ class CategoryComposer
 {
     private LoggerInterface $log;
     private CategoryBridge $categoryBridge;
-    private ContextManager $contextManager;
+    /** @var CategoryMapping */
+    private Shopgate_Model_AbstractExport $categoryMapping;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param CategoryBridge $categoryBridge
-     * @param ContextManager $contextManager
-     */
-    public function __construct(LoggerInterface $logger, CategoryBridge $categoryBridge, ContextManager $contextManager)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        CategoryBridge $categoryBridge,
+        Shopgate_Model_AbstractExport $categoryMapping
+    ) {
         $this->log = $logger;
         $this->categoryBridge = $categoryBridge;
-        $this->contextManager = $contextManager;
+        $this->categoryMapping = $categoryMapping;
     }
 
     /**
@@ -61,7 +60,7 @@ class CategoryComposer
         $export = [];
         foreach ($collection as $entity) {
             $this->log->debug('Loading category with ID: ' . $entity->getId());
-            $categoryExportModel = new CategoryMapping($this->contextManager);
+            $categoryExportModel = clone $this->categoryMapping;
             $categoryExportModel->setItem($entity);
             $categoryExportModel->setParentId($entity->getParentId());
             $export[] = $categoryExportModel->generateData();

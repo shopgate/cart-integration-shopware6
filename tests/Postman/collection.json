@@ -2026,6 +2026,87 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "SG: cart no address error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Check error\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql(999);",
+                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error localtion')",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "action",
+                  "value": "{{framework_action_check_cart}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[external_customer_id]",
+                  "value": "{{customer_default_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[payment_group]",
+                  "value": "COD",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[payment_method]",
+                  "value": "COD",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[invoice_address][]",
+                  "value": "null",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -11184,6 +11265,7 @@
               "",
               "pm.test(\"Body matches string\", function () {",
               "    pm.expect(pm.response.text()).to.include(\"authentication failed\");",
+              "    pm.expect(pm.response.text()).to.include(\"Uncaught error was thrown\");",
               "});"
             ],
             "type": "text/javascript"

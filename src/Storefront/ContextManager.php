@@ -5,22 +5,24 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Storefront;
 
 use Shopgate\Shopware\Exceptions\MissingContextException;
+use Shopware\Core\Framework\Routing\SalesChannelRequestContextResolver;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\PlatformRequest;
+use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Holds our context for DI usage
  */
 class ContextManager
 {
-    private SalesChannelContextServiceInterface $contextService;
+    private SalesChannelRequestContextResolver $contextResolver;
     private ?SalesChannelContext $salesContext = null;
     private AbstractSalesChannelContextFactory $channelContextFactory;
     private SalesChannelContextRestorer $contextRestorer;
@@ -28,11 +30,11 @@ class ContextManager
 
     public function __construct(
         AbstractSalesChannelContextFactory $channelContextFactory,
-        SalesChannelContextServiceInterface $contextService,
+        SalesChannelRequestContextResolver $contextResolver,
         SalesChannelContextRestorer $contextRestorer,
         AbstractContextSwitchRoute $contextSwitchRoute
     ) {
-        $this->contextService = $contextService;
+        $this->contextResolver = $contextResolver;
         $this->contextRestorer = $contextRestorer;
         $this->contextSwitchRoute = $contextSwitchRoute;
         $this->channelContextFactory = $channelContextFactory;
@@ -89,12 +91,13 @@ class ContextManager
 
     public function loadByCustomerToken(string $token): SalesChannelContext
     {
-        $context = $this->contextService->get(new SalesChannelContextServiceParameters(
-            $this->salesContext->getSalesChannel()->getId(),
-            $token,
-            $this->salesContext->getSalesChannel()->getLanguageId(),
-            $this->salesContext->getSalesChannel()->getCurrencyId()
-        ));
+        $channel = $this->salesContext->getSalesChannel();
+        $request = new Request();
+        $request->headers->set(PlatformRequest::HEADER_LANGUAGE_ID, $channel->getLanguageId());
+        $request->attributes->set(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID, $channel->getCurrencyId());
+        $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
+        // resolver is intended to be used as an API, therefore it returns context in request
+        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
 
         return $this->salesContext = $context;
     }

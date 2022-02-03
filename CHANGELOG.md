@@ -9,6 +9,25 @@
 - fixed cron logic to accurately cancel orders & mark orders shipped
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
 
+# 1.8.4
+
+- fixed export of product tags
+
+# 1.8.3
+
+- added decoration possibility to product mapping classes
+- added decoration possibility to category mapping class
+- changed translation service to use abstract class
+
+# 1.8.2
+
+- added translations to configurations
+- changed uncaught errors to be converted into json
+
+# 1.8.1
+
+- fixed rules not honoring customer/guest address mapping
+
 # 1.8.0
 
 - changed generated file location to use `var/cache` and `var/log` folders instead of our SDK in vendor

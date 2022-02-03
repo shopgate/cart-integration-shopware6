@@ -8,6 +8,7 @@ use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
+use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
@@ -17,7 +18,7 @@ class ConfigProductMapping extends SimpleProductMapping
     protected ContextManager $contextManager;
     protected SortTree $sortTree;
     private PropertyBridge $productProperties;
-    private ChildProductMapping $childProductMapping;
+    private Shopgate_Model_AbstractExport $childProductMapping;
 
     public function __construct(
         ContextManager $contextManager,
@@ -26,7 +27,7 @@ class ConfigProductMapping extends SimpleProductMapping
         TierPriceMapping $tierPriceMapping,
         Formatter $translation,
         PropertyBridge $productProperties,
-        ChildProductMapping $childProductMapping,
+        Shopgate_Model_AbstractExport $childProductMapping,
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
         parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation,

@@ -47,7 +47,9 @@
         <service id="shopgate.sdk.external_order" class="\ShopgateExternalOrder"/>
         <service id="shopgate.sdk.external_order_extra_cost" class="\ShopgateExternalOrderExtraCost"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge"/>
-        <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer"/>
+        <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer">
+            <argument key="$categoryMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge"/>
         <service id="Shopgate\Shopware\Catalog\Product\ProductComposer"/>
         <service id="Shopgate\Shopware\Catalog\Review\ReviewComposer"/>
@@ -60,9 +62,15 @@
             <argument key="$addressRepository" type="service" id="customer_address.repository"/>
         </service>
         <service id="Shopgate\Shopware\Customer\CustomerBridge"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
-        <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
-        <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping">
+            <argument key="$childProductMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
+        </service>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory">
+            <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
+            <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\TierPriceMapping"/>
         <service id="Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge">
@@ -265,10 +273,10 @@
             <argument key="$translator" id="translator"/>
         </service>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
-        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager">
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+        <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
+            <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <!-- Interfaces & aliases-->
@@ -293,5 +301,6 @@
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractUpsertAddressRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\UpsertAddressRoute"/>
         <service id="Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute" alias="Shopware\Core\Content\Category\SalesChannel\CategoryListRoute"/>
         <service id="Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute" alias="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"/>
+        <service id="Shopware\Core\Framework\Adapter\Translation\AbstractTranslator" alias="Shopware\Core\Framework\Adapter\Translation\Translator"/>
     </services>
 </container>
