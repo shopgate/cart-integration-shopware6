@@ -21,7 +21,6 @@ abstract class EntityChannelInstaller extends EntityInstaller
 
     /**
      * @param ContainerInterface $container
-     * @noinspection MissingService
      */
     public function __construct(ContainerInterface $container)
     {
@@ -46,7 +45,9 @@ abstract class EntityChannelInstaller extends EntityInstaller
         ClassCastInterface $method,
         Context $context
     ): void {
-        $channels = $this->salesChannelRepo->searchIds(new Criteria(), $context);
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::' . $this->entityName);
+        $channels = $this->salesChannelRepo->searchIds($criteria, $context);
         $tableKey = $this->snakeToCamel($this->entityName . 'Id');
         foreach ($channels->getIds() as $channel) {
             $data = [

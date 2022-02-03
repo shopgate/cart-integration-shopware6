@@ -46,8 +46,8 @@ class SalutationMapping
      */
     public function getMaleSalutationId(): string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salutationKey', 'mr'));
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'mr'));
+        $criteria->setTitle('shopgate::salutation::male');
         $result = $this->salutationRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
@@ -62,8 +62,8 @@ class SalutationMapping
      */
     public function getUnspecifiedSalutationId(): string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salutationKey', 'not_specified'));
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'not_specified'));
+        $criteria->setTitle('shopgate::salutation::unspecified');
         $result = $this->salutationRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
@@ -81,8 +81,10 @@ class SalutationMapping
      */
     public function getAnySalutationId(): string
     {
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::salutation::any');
         $result = $this->salutationRepository->search(
-            new Criteria(),
+            $criteria,
             $this->contextManager->getSalesContext()->getContext()
         )->first();
 
@@ -95,8 +97,8 @@ class SalutationMapping
      */
     public function getFemaleSalutationId(): string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salutationKey', 'mrs'));
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'mrs'));
+        $criteria->setTitle('shopgate::salutation::female');
         $result = $this->salutationRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()

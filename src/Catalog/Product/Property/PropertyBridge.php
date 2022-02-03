@@ -32,9 +32,11 @@ class PropertyBridge
      */
     public function getGroupOptions(array $uids = []): ?PropertyGroupCollection
     {
+        $criteria = new Criteria($uids);
+        $criteria->setTitle('shopgate::property-group-option::ids');
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->propertyGroupOptionRepo->search(
-            new Criteria($uids),
+            $criteria,
             $this->contextManager->getSalesContext()->getContext()
         )->getEntities();
     }

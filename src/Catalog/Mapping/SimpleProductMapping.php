@@ -416,11 +416,13 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             return;
         }
 
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::cross-selling::product-id');
         $crossSellings = $this->crossSellingRoute->load(
             $this->item->getId(),
             new Request(),
             $this->contextManager->getSalesContext(),
-            new Criteria()
+            $criteria
         )->getResult();
         $typeList = [
             Shopgate_Model_Catalog_Relation::DEFAULT_RELATION_TYPE_CROSSSELL,

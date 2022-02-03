@@ -30,15 +30,17 @@ class ShippingBridge
 
     public function getShippingMethods(SalesChannelContext $initContext): ShippingMethodCollection
     {
+        $criteria = (new Criteria())->addFilter(
+            new NotFilter(
+                MultiFilter::CONNECTION_OR,
+                [new EqualsAnyFilter('id', [GenericShippingMethod::UUID, FreeShippingMethod::UUID])]
+            )
+        );
+        $criteria->setTitle('shopgate::shipping-method::not-shopgate');
         return $this->shippingMethodRoute->load(
             new Request(['onlyAvailable' => true]),
             $initContext,
-            (new Criteria())->addFilter(
-                new NotFilter(
-                    MultiFilter::CONNECTION_OR,
-                    [new EqualsAnyFilter('id', [GenericShippingMethod::UUID, FreeShippingMethod::UUID])]
-                )
-            )
+            $criteria
         )->getShippingMethods();
     }
 

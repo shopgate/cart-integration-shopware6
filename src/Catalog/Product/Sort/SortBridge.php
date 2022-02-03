@@ -41,6 +41,7 @@ class SortBridge
     public function getDefaultSorting(): array
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('key', $this->getSystemDefaultSorting()));
+        $criteria->setTitle('shopgate::product-sort::default');
         /** @var ProductSortingCollection $collection */
         $collection = $this->productSortingRepository->search(
             $criteria,

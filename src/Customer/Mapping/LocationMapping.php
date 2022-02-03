@@ -40,6 +40,7 @@ class LocationMapping
     public function getCountryIsoById(string $id): ?string
     {
         $criteria = new Criteria([$id]);
+        $criteria->setTitle('shopgate::country::id');
         /** @var CountryEntity|null $result */
         $result = $this->countryRepository->search(
             $criteria,
@@ -57,6 +58,7 @@ class LocationMapping
     public function getStateIsoById(string $id): ?string
     {
         $criteria = new Criteria([$id]);
+        $criteria->setTitle('shopgate::state::id');
         $result = $this->stateRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
@@ -72,8 +74,8 @@ class LocationMapping
      */
     public function getCountryIdByIso(string $code): string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('iso', $code));
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('iso', $code));
+        $criteria->setTitle('shopgate::country::iso');
         $result = $this->countryRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
@@ -92,8 +94,8 @@ class LocationMapping
         if (empty($code)) {
             return '';
         }
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('shortCode', $code));
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('shortCode', $code));
+        $criteria->setTitle('shopgate::state::iso');
         $result = $this->stateRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
@@ -108,8 +110,8 @@ class LocationMapping
      */
     public function getTaxFreeCountries(): array
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('taxFree', 1));
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('taxFree', 1));
+        $criteria->setTitle('shopgate::country::tax-free');
 
         return $this->countryRepository->search($criteria, $this->contextManager->getSalesContext()->getContext())
             ->getEntities()

@@ -30,10 +30,10 @@ class DomainBridge
      */
     public function getDomain(SalesChannelContext $context): string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $context->getSalesChannel()->getId()));
-        $criteria->setLimit(1);
-
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('salesChannelId', $context->getSalesChannel()->getId()))
+            ->setLimit(1);
+        $criteria->setTitle('shopgate::domain::sales-channel-id');
         /** @var SalesChannelDomainEntity $domain */
         $domain = $this->domainRepository
             ->search($criteria, $context->getContext())

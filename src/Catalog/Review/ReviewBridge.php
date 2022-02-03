@@ -37,6 +37,7 @@ class ReviewBridge
             ->addFilter(new EqualsFilter('salesChannelId', $channel->getSalesChannelId()))
             ->addAssociation('customer')
             ->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
+        $criteria->setTitle('shopgate::product-review::detailed');
 
         return $this->reviewRepository->search($criteria, $channel->getContext());
     }

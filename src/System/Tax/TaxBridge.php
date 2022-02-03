@@ -43,7 +43,9 @@ class TaxBridge
      */
     public function getTaxClasses(): array
     {
-        return $this->taxRepository->search(new Criteria(), $this->contextManager->getSalesContext()->getContext())
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::tax');
+        return $this->taxRepository->search($criteria, $this->contextManager->getSalesContext()->getContext())
             ->getEntities()
             ->getElements();
     }
@@ -57,10 +59,10 @@ class TaxBridge
     public function getTaxRulesByTaxId(string $id, string $type): array
     {
         $typeId = $this->getTaxRuleTypeIdByTechnicalName($type);
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('taxId', $id));
-        $criteria->addFilter(new EqualsFilter('taxRuleTypeId', $typeId));
-
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('taxId', $id))
+            ->addFilter(new EqualsFilter('taxRuleTypeId', $typeId));
+        $criteria->setTitle('shopgate::tax-rule::tax-id-and-type');
         return $this->taxRuleRepository->search($criteria, $this->contextManager->getSalesContext()->getContext())
             ->getEntities()
             ->getElements();
@@ -73,8 +75,8 @@ class TaxBridge
      */
     public function getTaxRuleTypeIdByTechnicalName(string $technicalName): string
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('technicalName', $technicalName));
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('technicalName', $technicalName));
+        $criteria->setTitle('shopgate::tax-rule::technical-name');
         $result = $this->taxRuleTypeRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()

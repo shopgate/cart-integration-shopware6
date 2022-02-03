@@ -26,6 +26,7 @@ class ShopgateOrderBridge
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('shopgateOrderNumber', $shopgateOrderNumber))
             ->addAssociation('order');
+        $criteria->setTitle('shopgate::shopgate-order::order-number');
 
         return $this->shopgateOrderRepository->search($criteria, $context);
     }

@@ -32,8 +32,10 @@ class PaymentBridge
         $request = new Request();
         $request->query->set('onlyAvailable', true);
 
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::payment-method::available');
         return $this->paymentMethodRoute
-            ->load($request, $context, new Criteria())
+            ->load($request, $context, $criteria)
             ->getPaymentMethods();
     }
 
