@@ -27,14 +27,13 @@ trait MapTrait
         if (null !== $urlEntity->get('url')) {
             return $urlEntity->getUrl();
         }
-        if (null !== $channel->getDomains()) {
-            $domainCollection = $channel->getDomains()->filterByProperty('salesChannelId', $channel->getId());
-            /** @var null|SalesChannelDomainEntity $domain */
-            $domain = $domainCollection->first();
-            $seoPath = ltrim($urlEntity->getSeoPathInfo() ?: $urlEntity->getPathInfo(), '/');
-            return $domain && $domain->get('url') ? "{$domain->getUrl()}/{$seoPath}" : '';
+        if (null === $channel->getDomains()) {
+            return '';
         }
-
-        return '';
+        $domainCollection = $channel->getDomains()->filterByProperty('languageId', $channel->getLanguageId());
+        /** @var null|SalesChannelDomainEntity $domain */
+        $domain = $domainCollection->count() ? $domainCollection->first() : $channel->getDomains()->first();
+        $seoPath = ltrim($urlEntity->getSeoPathInfo() ?: $urlEntity->getPathInfo(), '/');
+        return $domain && $domain->get('url') ? "{$domain->getUrl()}/{$seoPath}" : '';
     }
 }
