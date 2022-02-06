@@ -198,80 +198,80 @@
     },
     {
       "key": "created_discount_customerUSA_delivery_2_id",
-		"value": "3ac8e9825cb87f1eb81f7b6a99185bae",
-		"type": "default",
-		"enabled": true
-	},
-	  {
-		  "key": "created_order_customFieldSet_id",
-		  "value": "247b3a83846c6774ec120d4edb655594",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_product_headless_advPriceOne_id",
-		  "value": "c5c346f6a30c689fc862d43655702136",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_product_maxPurchaseTen_id",
-		  "value": "e01bd9c71f4e4eebad39b64dd58d34fe",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_product_noStock_id",
-		  "value": "bf82e769582b433a13a63b7583c5ec88",
-		  "type": "default",
-		  "enabled": true
+      "value": "3ac8e9825cb87f1eb81f7b6a99185bae",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_order_customFieldSet_id",
+      "value": "247b3a83846c6774ec120d4edb655594",
+      "enabled": true
+    },
+    {
+      "key": "created_product_headless_advPriceOne_id",
+      "value": "c5c346f6a30c689fc862d43655702136",
+      "enabled": true
+    },
+    {
+      "key": "created_product_maxPurchaseTen_id",
+      "value": "e01bd9c71f4e4eebad39b64dd58d34fe",
+      "enabled": true
+    },
+    {
+      "key": "created_product_noStock_id",
+      "value": "bf82e769582b433a13a63b7583c5ec88",
+      "type": "default",
+      "enabled": true
     },
     {
       "key": "created_product_variant_child_id",
       "value": "ff951c236e5b9fca68f186da252aa026",
-		"type": "default",
-		"enabled": true
-	},
-	  {
-		  "key": "created_promotion_byCode_code",
-		  "value": "API-PROMO-BY_CODE",
-		  "type": "default",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_promotion_byCode_id",
-		  "value": "a10923e207367d25ee81511ae40b473c",
-		  "type": "default",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_promotion_customerUSA_id",
-		  "value": "3e226aa33c486a291338478679382ab1",
-		  "type": "default",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_review_headless_advPriceOne_id",
-		  "value": "3e226aa33c486a291338478679382ab1",
-		  "type": "default",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_stream_noFreeShip_id",
-		  "value": "4d25454578dc3c6fbadb60804e649b6e",
-		  "enabled": true
-	  },
-	  {
-		  "key": "created_stream_allActive_id",
-		  "value": "5c95c0421f832b16ae99d0a295d2deb0",
-		  "enabled": true
-	  },
-	  {
-		  "key": "product_review_disabled_id",
-		  "value": "efc3860674f0a32b13293983fd03d26b",
-		  "enabled": true
-	  },
-	  {
-		  "key": "product_review_props_id",
-		  "value": "7bdc212ae9d2bece80d82b7914b50a21",
-		  "enabled": true
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_promotion_byCode_code",
+      "value": "API-PROMO-BY_CODE",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_promotion_byCode_id",
+      "value": "a10923e207367d25ee81511ae40b473c",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_promotion_customerUSA_id",
+      "value": "3e226aa33c486a291338478679382ab1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_review_headless_advPriceOne_id",
+      "value": "3e226aa33c486a291338478679382ab1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_stream_noFreeShip_id",
+      "value": "4d25454578dc3c6fbadb60804e649b6e",
+      "enabled": true
+    },
+    {
+      "key": "created_stream_allActive_id",
+      "value": "5c95c0421f832b16ae99d0a295d2deb0",
+      "enabled": true
+    },
+    {
+      "key": "product_review_disabled_id",
+      "value": "efc3860674f0a32b13293983fd03d26b",
+      "enabled": true
+    },
+    {
+      "key": "product_review_props_id",
+      "value": "7bdc212ae9d2bece80d82b7914b50a21",
+      "enabled": true
     },
     {
       "key": "product_review_props_customer_id",
@@ -315,26 +315,26 @@
     },
     {
       "key": "default_rule_isShopgate_id",
-		"value": "7d24818ee04546d797cb6fc1a604a379",
-		"enabled": true
-	},
-	  {
-		  "key": "default_shipMethod_sgDefault_id",
-		  "value": "368e891dbec442c2892f82edd6f4a7dc",
-		  "enabled": true
-	  },
-	  {
-		  "key": "default_shipMethod_sgFree_id",
-		  "value": "92929e3cb97141f1b70ab9a8616df6a7",
-		  "enabled": true
-	  },
-	  {
-		  "key": "default_payMethod_sgDefault_id",
-		  "value": "7046c79435a7410fb90a8b82f13d30a9",
-		  "enabled": true
-	  }
+      "value": "7d24818ee04546d797cb6fc1a604a379",
+      "enabled": true
+    },
+    {
+      "key": "default_shipMethod_sgDefault_id",
+      "value": "368e891dbec442c2892f82edd6f4a7dc",
+      "enabled": true
+    },
+    {
+      "key": "default_shipMethod_sgFree_id",
+      "value": "92929e3cb97141f1b70ab9a8616df6a7",
+      "enabled": true
+    },
+    {
+      "key": "default_payMethod_sgDefault_id",
+      "value": "7046c79435a7410fb90a8b82f13d30a9",
+      "enabled": true
+    }
   ],
-	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2022-02-06T17:44:57.826Z",
-	"_postman_exported_using": "Postman/9.13.0"
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2022-02-06T17:44:57.826Z",
+  "_postman_exported_using": "Postman/9.13.0"
 }
