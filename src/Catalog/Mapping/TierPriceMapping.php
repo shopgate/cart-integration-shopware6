@@ -7,7 +7,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use ReflectionClass;
 use ReflectionException;
 use Shopgate\Shopware\Customer\CustomerBridge;
-use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate_Model_Catalog_TierPrice;
 use Shopware\Core\Checkout\Cart\Rule\AlwaysValidRule;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
@@ -23,12 +23,14 @@ use Shopware\Core\Framework\Rule\Rule;
 class TierPriceMapping
 {
     private CustomerBridge $customerBridge;
-    private ContextManager $contextManager;
+    private CurrencyComposer $currencyComposer;
 
-    public function __construct(ContextManager $contextManager, CustomerBridge $customerBridge)
-    {
-        $this->contextManager = $contextManager;
+    public function __construct(
+        CustomerBridge $customerBridge,
+        CurrencyComposer $currencyComposer
+    ) {
         $this->customerBridge = $customerBridge;
+        $this->currencyComposer = $currencyComposer;
     }
 
     /**
@@ -116,14 +118,11 @@ class TierPriceMapping
         ProductPriceEntity $priceEntity,
         Price $normalPrice
     ): ?Shopgate_Model_Catalog_TierPrice {
-        $currencyId = $this->contextManager->getSalesContext()->getSalesChannel()->getCurrencyId();
         $tierPrice = new Shopgate_Model_Catalog_TierPrice();
         $tierPrice->setFromQuantity($priceEntity->getQuantityStart());
         $tierPrice->setToQuantity($priceEntity->getQuantityEnd());
         $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
-        if ($priceEntity->getPrice()
-            && ($reducedPrice = $priceEntity->getPrice()->getCurrencyPrice($currencyId, true))
-        ) {
+        if ($reducedPrice = $this->currencyComposer->extractCalculatedPrice($priceEntity->getPrice())) {
             $tierPrice->setReduction($normalPrice->getGross() - $reducedPrice->getGross());
             return $tierPrice;
         }
@@ -182,12 +181,14 @@ class TierPriceMapping
 
     public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice): Price
     {
-        $currencyId = $this->contextManager->getSalesContext()->getSalesChannel()->getCurrencyId();
         return array_reduce(
             $this->getValidTiers($priceCollection),
-            static function (Price $carry, ProductPriceEntity $entity) use ($currencyId) {
-                $curPrice = $entity->getPrice()->getCurrencyPrice($currencyId);
-                return $carry > $curPrice ? $carry : $curPrice;
+            function (Price $carry, ProductPriceEntity $entity) {
+                $curPrice = $this->currencyComposer->extractCalculatedPrice($entity->getPrice());
+                if (!$curPrice) {
+                    return $carry;
+                }
+                return $carry->getGross() > $curPrice->getGross() ? $carry : $curPrice;
             },
             $basePrice
         );

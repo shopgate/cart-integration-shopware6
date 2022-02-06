@@ -2,13 +2,13 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Exception;
 use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
 use Shopgate\Shopware\Catalog\Product\ProductExportExtension;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_CategoryPath;
 use Shopgate_Model_Catalog_Identifier;
@@ -22,7 +22,6 @@ use Shopgate_Model_Catalog_Stock;
 use Shopgate_Model_Catalog_Tag;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
-use ShopgateLibraryException;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -39,8 +38,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected SortTree $sortTree;
     protected TierPriceMapping $tierPriceMapping;
     protected Formatter $formatter;
-    private CustomFieldBridge $customFieldSetBridge;
-    private AbstractProductCrossSellingRoute $crossSellingRoute;
+    protected CustomFieldBridge $customFieldSetBridge;
+    protected AbstractProductCrossSellingRoute $crossSellingRoute;
+    protected CurrencyComposer $currencyComposer;
 
     public function __construct(
         ContextManager $contextManager,
@@ -48,6 +48,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
         Formatter $formatter,
+        CurrencyComposer $currencyComposer,
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
         $this->contextManager = $contextManager;
@@ -56,6 +57,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         $this->tierPriceMapping = $tierPriceMapping;
         $this->formatter = $formatter;
         $this->crossSellingRoute = $crossSellingRoute;
+        $this->currencyComposer = $currencyComposer;
         parent::__construct();
     }
 
@@ -66,7 +68,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setName(): void
     {
-        parent::setName($this->item->getName());
+        parent::setName($this->item->getTranslation('name') ?: $this->item->getName());
     }
 
     public function setTaxClass(): void
@@ -85,7 +87,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setDescription(): void
     {
-        parent::setDescription($this->item->getDescription());
+        parent::setDescription($this->item->getTranslation('description') ?: $this->item->getDescription());
     }
 
     public function setDeeplink(): void
@@ -109,34 +111,30 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     }
 
     /**
-     * @throws ShopgateLibraryException
      * @throws ReflectionException
      */
     public function setPrice(): void
     {
-        $currencyId = $this->contextManager->getSalesContext()->getCurrency()->getId();
-        if (!$shopwarePrice = $this->item->getCurrencyPrice($currencyId)) {
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                'Could not find price for currency: ' . $currencyId
-            );
-        }
         $shopgatePrice = new Shopgate_Model_Catalog_Price();
         $shopgatePrice->setType(Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS);
-        $shopgatePrice->setPrice($shopwarePrice->getGross());
-        $shopgatePrice->setMsrp($shopwarePrice->getListPrice() ? $shopwarePrice->getListPrice()->getGross() : 0);
+        if ($shopwarePrice = $this->currencyComposer->extractCalculatedPrice($this->item->getPrice())) {
+            $shopgatePrice->setPrice($shopwarePrice->getGross());
+            if ($listPrice = $shopwarePrice->getListPrice()) {
+                $shopgatePrice->setMsrp($this->currencyComposer->toCalculatedPrice($listPrice)->getGross());
+            }
 
-        if ($priceCollection = $this->item->getPrices()) {
-            $priceCollection->sortByQuantity();
-            $highestPrice = $this->tierPriceMapping->getHighestPrice($priceCollection, $shopwarePrice);
-            $shopgatePrice->setPrice($highestPrice->getGross());
-            $shopgatePrice->setTierPricesGroup(
-                $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice)
-            );
+            if ($priceCollection = $this->item->getPrices()) {
+                $priceCollection->sortByQuantity();
+                $highestPrice = $this->tierPriceMapping->getHighestPrice($priceCollection, $shopwarePrice);
+                $shopgatePrice->setPrice($highestPrice->getGross());
+                $shopgatePrice->setTierPricesGroup(
+                    $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice)
+                );
+            }
         }
 
         if ($this->item->getPurchasePrices()
-            && $cost = $this->item->getPurchasePrices()->getCurrencyPrice($currencyId)) {
+            && $cost = $this->currencyComposer->extractCalculatedPrice($this->item->getPurchasePrices())) {
             $shopgatePrice->setCost($cost->getGross());
         }
 
@@ -151,7 +149,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         }
         // if 'basic unit' is not missing
         if ($refPrice = $this->item->getCalculatedPrice()->getReferencePrice()) {
-            $formatted = $this->formatter->formatCurrency($refPrice->getPrice());
+            $formatted = $this->currencyComposer->formatCurrency($refPrice->getPrice());
             $basePrice .= "($formatted / {$refPrice->getReferenceUnit()} {$refPrice->getUnitName()})"; // ($10 / 100 ml)
         }
         $shopgatePrice->setBasePrice($basePrice);

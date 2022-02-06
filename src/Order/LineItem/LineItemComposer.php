@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotEligibleError;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductNotFoundError;
 use Shopware\Core\Content\Product\Cart\ProductOutOfStockError;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,8 +67,8 @@ class LineItemComposer
          * Handle line items that are still in cart after all validations
          */
         foreach ($cart->getLineItems() as $id => $lineItem) {
-            if (!$this->isValidUuid($id)) {
-                $this->logger->debug('Invalid line item id provided: ' . $id);
+            if (false === Uuid::isValid($id)) {
+                $this->logger->error('Invalid line item id provided: ' . $id);
                 break;
             }
             switch ($lineItem->getType()) {
@@ -141,15 +142,6 @@ class LineItemComposer
         $this->eventDispatcher->dispatch(new AfterOutLineItemMappingEvent($dataBag));
 
         return $dataBag->all();
-    }
-
-    /**
-     * Safety check for strange cart cases with duplicate
-     * line items without proper ID's
-     */
-    private function isValidUuid(string $uuid): bool
-    {
-        return ctype_xdigit($uuid);
     }
 
     public function addLineItemsToCart(Cart $shopwareCart, SalesChannelContext $context, array $lineItems): Cart
