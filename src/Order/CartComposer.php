@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
-
 use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
