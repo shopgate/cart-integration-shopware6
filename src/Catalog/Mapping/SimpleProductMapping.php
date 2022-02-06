@@ -170,8 +170,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             }
             $image = new Shopgate_Model_Media_Image();
             $image->setUid($media->getId());
-            $image->setAlt($media->getAlt());
-            $image->setTitle($media->getTitle());
+            $image->setAlt($media->getTranslation('alt') ?: $media->getAlt());
+            $image->setTitle($media->getTranslation('title') ?: $media->getTitle());
             $image->setUrl($media->getUrl());
             $image->setSortOrder($productMedia->getPosition());
             $image->setIsCover(
@@ -231,8 +231,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setManufacturer(): void
     {
         $manufacturer = new Shopgate_Model_Catalog_Manufacturer();
-        if ($this->item->getManufacturer()) {
-            $manufacturer->setTitle($this->item->getManufacturer()->getName());
+        if ($swEntity = $this->item->getManufacturer()) {
+            $manufacturer->setTitle($swEntity->getTranslation('name') ?: $swEntity->getName());
         }
         $manufacturer->setUid($this->item->getManufacturerId());
         $manufacturer->setItemNumber($this->item->getManufacturerNumber());
@@ -253,10 +253,11 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 $property = new Shopgate_Model_Catalog_Property();
                 $property->setUid($uid);
                 $property->setValue($this->translateEntityValue($value));
-                $label = $shopwareProp->getGroup()
-                    ? $shopwareProp->getGroup()->getTranslation('name')
-                    : $shopwareProp->getGroup()->getName();
-                $property->setLabel($label ?: $uid);
+                if ($group = $shopwareProp->getGroup()) {
+                    $property->setLabel($group->getTranslation('name') ?: $group->getName());
+                } else {
+                    $property->setLabel($uid);
+                }
                 $properties[$uid] = $property;
             }
         }
@@ -374,7 +375,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         foreach ($shopwareTags as $shopwareTag) {
             $tag = new Shopgate_Model_Catalog_Tag();
             $tag->setUid($shopwareTag->getId());
-            $tag->setValue($shopwareTag->getName());
+            $tag->setValue($shopwareTag->getTranslation('name') ?: $shopwareTag->getName());
             $tags[] = $tag;
         }
         parent::setTags($tags);

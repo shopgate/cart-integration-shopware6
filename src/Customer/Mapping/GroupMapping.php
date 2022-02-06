@@ -17,8 +17,9 @@ class GroupMapping
     public function toShopgateGroup(CustomerGroupEntity $entity): ShopgateCustomerGroup
     {
         $grp = new ShopgateCustomerGroup();
-        $grp->setName($entity->getName());
+        $grp->setName($entity->getTranslation('name') ?: $entity->getName());
         $grp->setId($entity->getId());
+
         return $grp;
     }
 }

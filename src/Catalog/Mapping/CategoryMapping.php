@@ -56,7 +56,7 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setName(): void
     {
-        parent::setName($this->item->getName());
+        parent::setName($this->item->getTranslation('name'));
     }
 
     /**
@@ -103,14 +103,13 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setImage(): void
     {
-        if ($this->item->getMediaId()) {
+        if ($media = $this->item->getMedia()) {
             $imageItem = new Shopgate_Model_Media_Image();
-            $media = $this->item->getMedia();
-            $imageItem->setUid($media ? $media->getId() : 1);
+            $imageItem->setUid($media->getId());
             $imageItem->setSortOrder(1);
-            $imageItem->setUrl($media ? $media->getUrl() : '');
-            $imageItem->setTitle($media && $media->getTitle() ? $media->getTitle() : $this->item->getName());
-            $imageItem->setAlt($media && $media->getAlt() ? $media->getAlt() : '');
+            $imageItem->setUrl($media->getUrl());
+            $imageItem->setTitle($media->getTitle() ?: $this->item->getName());
+            $imageItem->setAlt($media->getAlt());
 
             parent::setImage($imageItem);
         }

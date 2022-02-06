@@ -33,7 +33,7 @@ class PaymentComposer
         $this->logger->debug(print_r(array_map(static function (PaymentMethodEntity $entity) {
             return [
                 'id' => $entity->getId(),
-                'name' => $entity->getName(),
+                'name' => $entity->getTranslation('name') ?: $entity->getName(),
                 'handler' => $entity->getHandlerIdentifier()
             ];
         }, $methods->getElements()), true));

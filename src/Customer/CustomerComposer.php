@@ -106,7 +106,7 @@ class CustomerComposer
         $result = [];
         foreach ($customerGroups as $id => $customerGroup) {
             $result[] = [
-                'name' => $customerGroup->getTranslated()['name'] ?? $customerGroup->getName(),
+                'name' => $customerGroup->getTranslation('name') ?: $customerGroup->getName(),
                 'id' => $id,
                 'is_default' => $id === $defaultCustomerGroupId ? '1' : '0',
                 'customer_tax_class_key' => 'default',

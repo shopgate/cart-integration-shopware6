@@ -42,8 +42,8 @@ class ShippingMapping
         $method = $delivery->getShippingMethod();
         $exportShipping = $this->classFactory->createShippingMethod();
         $exportShipping->setId($method->getId());
-        $exportShipping->setTitle($method->getName());
-        $exportShipping->setDescription($method->getDescription());
+        $exportShipping->setTitle($method->getTranslation('name') ?: $method->getName());
+        $exportShipping->setDescription($method->getTranslation('description') ?: $method->getDescription());
         $exportShipping->setAmountWithTax($delivery->getShippingCosts()->getTotalPrice());
         $exportShipping->setShippingGroup(ShopgateDeliveryNote::OTHER);
 
