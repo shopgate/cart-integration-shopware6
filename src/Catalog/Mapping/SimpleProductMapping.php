@@ -187,7 +187,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
      */
     public function setCategoryPaths(): void
     {
-        $sortTree = $this->sortTree->getSortTree()[$this->item->getId()] ?? [];
+        $rootCategoryId = $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
+        $sortTree = $this->sortTree->getSortTree($rootCategoryId)[$this->item->getId()] ?? [];
         $paths = [];
         foreach ($sortTree as $item) {
             if ($this->isRootCategory($item['categoryId'])) {

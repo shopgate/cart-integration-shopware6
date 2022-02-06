@@ -41,14 +41,12 @@ class SortTree
     }
 
     /**
-     * @param string|null $rootCategoryId
-     * @return array
      * @throws InvalidArgumentException
      */
-    public function getSortTree(?string $rootCategoryId = null): array
+    public function getSortTree(string $rootCategoryId): array
     {
         /** @var CacheItemInterface $tree */
-        $tree = $this->cache->getItem(self::CACHE_KEY);
+        $tree = $this->cache->getItem(self::CACHE_KEY . '.' . $rootCategoryId);
         if (!$tree->isHit()) {
             $this->logger->debug('Building new sort order cache');
             $build = $this->build($rootCategoryId);
@@ -58,15 +56,12 @@ class SortTree
     }
 
     /**
-     * @param null|string $rootCategoryId - provide category id to build from
+     * @param string $rootCategoryId - provide category id to build from
      * @return array - ['categoryId' => ['productId' => sortNumber]]
      */
-    private function build(?string $rootCategoryId): array
+    private function build(string $rootCategoryId): array
     {
         $tree = [];
-        if (null === $rootCategoryId) {
-            $rootCategoryId = $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
-        }
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
         foreach ($categories as $category) {
             $request = new Request();
@@ -76,7 +71,7 @@ class SortTree
                 $request->request->set('order', $orderKey);
             }
             $criteria = new Criteria();
-            $criteria->setTitle('shopgate::category::child-id');
+            $criteria->setTitle('shopgate::product::category-id');
             $result = $this->listingRoute
                 ->load($category->getId(), $request, $this->contextManager->getSalesContext(), $criteria)
                 ->getResult();
