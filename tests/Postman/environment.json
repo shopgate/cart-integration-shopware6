@@ -160,26 +160,31 @@
       "enabled": true
     },
     {
-      "key": "created_category_noFreeShip_id",
-      "value": "756340dd497a0a7d5177f1bbd554ddab",
-      "enabled": true
-    },
-    {
-      "key": "created_customer_customFieldSet_id",
-      "value": "f5d45e2679d66386aeb584ada3f79267",
-      "enabled": true
-    },
-    {
-      "key": "created_customer_withCustomGrp_id",
-      "value": "56b861af79034c7fa1e9158dbe62be16",
-      "enabled": true
-    },
-    {
-      "key": "created_customerGroup_gross_id",
-      "value": "7ed46ba83b40423284938fbc98697aa7",
-      "enabled": true
-    },
-    {
+		"key": "created_category_noFreeShip_id",
+		"value": "756340dd497a0a7d5177f1bbd554ddab",
+		"enabled": true
+	},
+	  {
+		  "key": "created_customer_customFieldSet_id",
+		  "value": "f5d45e2679d66386aeb584ada3f79267",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_customer_headless_net_email",
+		  "value": "example+1@apite.io",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_customer_withCustomGrp_id",
+		  "value": "56b861af79034c7fa1e9158dbe62be16",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_customerGroup_net_id",
+		  "value": "7ed46ba83b40423284938fbc98697aa7",
+		  "enabled": true
+	  },
+	  {
       "key": "created_discount_customerUSA_cart_1_id",
       "value": "9c9b73c4076e2d8d2926c827598089cb",
       "type": "default",
@@ -202,11 +207,11 @@
       "value": "247b3a83846c6774ec120d4edb655594",
       "enabled": true
     },
-    {
-      "key": "created_product_advPriceOne_id",
-      "value": "c6851c8182288e71a9e7a0fbb8f5f86d",
-      "enabled": true
-    },
+	  {
+		  "key": "created_product_headless_advPriceOne_id",
+		  "value": "c6851c8182288e71a9e7a0fbb8f5f86d",
+		  "enabled": true
+	  },
     {
       "key": "created_product_maxPurchaseTen_id",
       "value": "e01bd9c71f4e4eebad39b64dd58d34fe",
@@ -283,42 +288,47 @@
       "enabled": true
     },
     {
-      "key": "system_default_language",
-      "value": "2fbb5fe2e29a4d70aa5854ce7ce3e20b",
-      "enabled": true
-    },
-    {
-      "key": "system_default_currency_id",
-      "value": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
-      "enabled": true
-    },
-    {
-      "key": "default_deliveryTime_sg_id",
-      "value": "49dd403eea0b4ca69e5c14894263cf2e",
-      "enabled": true
-    },
-    {
-      "key": "default_rule_isShopgate_id",
-      "value": "7d24818ee04546d797cb6fc1a604a379",
-      "enabled": true
-    },
-    {
+		"key": "system_default_language",
+		"value": "2fbb5fe2e29a4d70aa5854ce7ce3e20b",
+		"enabled": true
+	},
+	  {
+		  "key": "system_default_currency_id",
+		  "value": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
+		  "enabled": true
+	  },
+	  {
+		  "key": "default_category_fTimeAndElectronics_id",
+		  "value": "251448b91bc742de85643f5fccd89051",
+		  "enabled": true
+	  },
+	  {
+		  "key": "default_deliveryTime_sg_id",
+		  "value": "49dd403eea0b4ca69e5c14894263cf2e",
+		  "enabled": true
+	  },
+	  {
+		  "key": "default_rule_isShopgate_id",
+		  "value": "7d24818ee04546d797cb6fc1a604a379",
+		  "enabled": true
+	  },
+	  {
       "key": "default_shipMethod_sgDefault_id",
       "value": "368e891dbec442c2892f82edd6f4a7dc",
       "enabled": true
     },
     {
       "key": "default_shipMethod_sgFree_id",
-      "value": "92929e3cb97141f1b70ab9a8616df6a7",
-      "enabled": true
-    },
-    {
-      "key": "default_payMethod_sgDefault_id",
-      "value": "7046c79435a7410fb90a8b82f13d30a9",
-      "enabled": true
-    }
+		"value": "92929e3cb97141f1b70ab9a8616df6a7",
+		"enabled": true
+	},
+	  {
+		  "key": "default_payMethod_sgDefault_id",
+		  "value": "7046c79435a7410fb90a8b82f13d30a9",
+		  "enabled": true
+	  }
   ],
-  "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-01-30T10:46:47.527Z",
-  "_postman_exported_using": "Postman/9.11.0"
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2022-02-06T15:56:08.040Z",
+	"_postman_exported_using": "Postman/9.13.0"
 }
