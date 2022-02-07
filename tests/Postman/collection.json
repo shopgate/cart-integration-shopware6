@@ -407,6 +407,260 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "SW: get German lang ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Test finding german lang:\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(1);\r",
+                      "    pm.environment.set(`gen_language_german_id`, jsonData.data[0].id);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"name\",\r\n            \"value\": \"Deutsch\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/language",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "language"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get USD currency ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Finding USD currency: \", function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(1);\r",
+                      "    pm.environment.set(`gen_currency_usd_id`, jsonData.data[0]);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"isoCode\",\r\n                    \"value\": \"USD\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search-ids/currency",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search-ids",
+                    "currency"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get USA country",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Finding USA country: \", function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(1);\r",
+                      "    pm.environment.set(`gen_country_usa_id`, jsonData.data[0].id);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"iso\",\r\n            \"value\": \"US\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/country",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "country"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get DE snippet set",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Finding snippet-set data: \", function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(1);\r",
+                      "    pm.environment.set(`gen_snippetSet_de`, jsonData.data[0].id);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"iso\",\r\n                    \"value\": \"de-DE\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/snippet-set",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "snippet-set"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -1816,260 +2070,6 @@
                       "response": []
                     },
                     {
-                      "name": "SW: get non default lang ID",
-                      "event": [
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test(\"Status code is 200\", function () {\r",
-                              "    pm.response.to.have.status(200);\r",
-                              "});\r",
-                              "\r",
-                              "const jsonData = pm.response.json();\r",
-                              "\r",
-                              "pm.test(\"Test finding german lang:\", function () {\r",
-                              "    pm.expect(jsonData.total).to.eq(1);\r",
-                              "    pm.environment.set(`gen_language_german_id`, jsonData.data[0].id);\r",
-                              "});\r",
-                              "\r",
-                              ""
-                            ],
-                            "type": "text/javascript"
-                          }
-                        }
-                      ],
-                      "request": {
-                        "auth": {
-                          "type": "bearer",
-                          "bearer": [
-                            {
-                              "key": "token",
-                              "value": "{{gen_access_token}}",
-                              "type": "string"
-                            }
-                          ]
-                        },
-                        "method": "POST",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json",
-                            "type": "text"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"name\",\r\n            \"value\": \"Deutsch\"\r\n        }\r\n    ]\r\n}",
-                          "options": {
-                            "raw": {
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{sw_endpoint_api}}/search/language",
-                          "host": [
-                            "{{sw_endpoint_api}}"
-                          ],
-                          "path": [
-                            "search",
-                            "language"
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
-                      "name": "SW: get USD currency ID",
-                      "event": [
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test(\"Status code is 200\", function () {\r",
-                              "    pm.response.to.have.status(200);\r",
-                              "});\r",
-                              "\r",
-                              "const jsonData = pm.response.json();\r",
-                              "\r",
-                              "pm.test(\"Finding USD currency: \", function () {\r",
-                              "    pm.expect(jsonData.total).to.eq(1);\r",
-                              "    pm.environment.set(`gen_currency_usd_id`, jsonData.data[0]);\r",
-                              "});\r",
-                              "\r",
-                              ""
-                            ],
-                            "type": "text/javascript"
-                          }
-                        }
-                      ],
-                      "request": {
-                        "auth": {
-                          "type": "bearer",
-                          "bearer": [
-                            {
-                              "key": "token",
-                              "value": "{{gen_access_token}}",
-                              "type": "string"
-                            }
-                          ]
-                        },
-                        "method": "POST",
-                        "header": [],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"isoCode\",\r\n                    \"value\": \"USD\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-                          "options": {
-                            "raw": {
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{sw_endpoint_api}}/search-ids/currency",
-                          "host": [
-                            "{{sw_endpoint_api}}"
-                          ],
-                          "path": [
-                            "search-ids",
-                            "currency"
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
-                      "name": "SW: get USA country",
-                      "event": [
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test(\"Status code is 200\", function () {\r",
-                              "    pm.response.to.have.status(200);\r",
-                              "});\r",
-                              "\r",
-                              "const jsonData = pm.response.json();\r",
-                              "\r",
-                              "pm.test(\"Finding USA country: \", function () {\r",
-                              "    pm.expect(jsonData.total).to.eq(1);\r",
-                              "    pm.environment.set(`gen_country_usa_id`, jsonData.data[0].id);\r",
-                              "});\r",
-                              "\r",
-                              ""
-                            ],
-                            "type": "text/javascript"
-                          }
-                        }
-                      ],
-                      "request": {
-                        "auth": {
-                          "type": "bearer",
-                          "bearer": [
-                            {
-                              "key": "token",
-                              "value": "{{gen_access_token}}",
-                              "type": "string"
-                            }
-                          ]
-                        },
-                        "method": "POST",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json",
-                            "type": "text"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"iso\",\r\n            \"value\": \"US\"\r\n        }\r\n    ]\r\n}",
-                          "options": {
-                            "raw": {
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{sw_endpoint_api}}/search/country",
-                          "host": [
-                            "{{sw_endpoint_api}}"
-                          ],
-                          "path": [
-                            "search",
-                            "country"
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
-                      "name": "SW: get DE snippet set",
-                      "event": [
-                        {
-                          "listen": "test",
-                          "script": {
-                            "exec": [
-                              "pm.test(\"Status code is 200\", function () {\r",
-                              "    pm.response.to.have.status(200);\r",
-                              "});\r",
-                              "\r",
-                              "const jsonData = pm.response.json();\r",
-                              "\r",
-                              "pm.test(\"Finding snippet-set data: \", function () {\r",
-                              "    pm.expect(jsonData.total).to.eq(1);\r",
-                              "    pm.environment.set(`gen_snippetSet_de`, jsonData.data[0].id);\r",
-                              "});\r",
-                              "\r",
-                              ""
-                            ],
-                            "type": "text/javascript"
-                          }
-                        }
-                      ],
-                      "request": {
-                        "auth": {
-                          "type": "bearer",
-                          "bearer": [
-                            {
-                              "key": "token",
-                              "value": "{{gen_access_token}}",
-                              "type": "string"
-                            }
-                          ]
-                        },
-                        "method": "POST",
-                        "header": [
-                          {
-                            "key": "Accept",
-                            "value": "application/json",
-                            "type": "text"
-                          }
-                        ],
-                        "body": {
-                          "mode": "raw",
-                          "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"iso\",\r\n                    \"value\": \"de-DE\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-                          "options": {
-                            "raw": {
-                              "language": "json"
-                            }
-                          }
-                        },
-                        "url": {
-                          "raw": "{{sw_endpoint_api}}/search/snippet-set",
-                          "host": [
-                            "{{sw_endpoint_api}}"
-                          ],
-                          "path": [
-                            "search",
-                            "snippet-set"
-                          ]
-                        }
-                      },
-                      "response": []
-                    },
-                    {
                       "name": "SW: update headless",
                       "event": [
                         {
@@ -3417,9 +3417,6 @@
                       "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
                       "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
-                      "});",
-                      "",
-                      "pm.test(\"Save order id\", function () {",
                       "    const order_number = Utility.getRequestVariableValue('order_number');",
                       "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
                       "});"
