@@ -1,15 +1,16 @@
 # Pre-version
 
-- added `set_settings`
-- added `get_reviews`
+- added ability to add settings via `set_settings`
+- added `live shopping` for cart & orders
+- added multi-store/currency support
+- added order export for customers to view in the App
+- added product tax calculations to `cart`
+- added review export via `get_reviews`
 - added Shopgate `custom_fields` support to customer & customer addresses (see [README](README.md))
 - added support for categories with `dynamic product groups`
 - added support for product `CrossSell` sliders (max 4)
-- added product tax calculations to `cart`
-- added multi-store/currency support
-- fixed cron logic to accurately cancel orders & mark orders shipped
+- fixed cron logic to accurately cancel orders & mark orders shipped in Shopgate Panel
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
-- fixed
 
 # 1.8.4
 
