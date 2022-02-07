@@ -1948,7 +1948,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"product_review\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                \"id\": \"{{product_review_disabled_id}}\",\r\n                \"productId\": \"{{catalog_product_disabled}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"{{$randomLoremWords}}\",\r\n                \"content\": \"{{$randomLoremSentence}}\",\r\n                \"points\": \"2\",\r\n                \"status\": true\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_props_id}}\",\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"Main product review\",\r\n                \"content\": \"Main product long content\",\r\n                \"points\": 4.4,\r\n                \"status\": true\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_child_id}}\",\r\n                \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"German Title\",\r\n                \"content\": \"German Content\",\r\n                \"points\": 3.7,\r\n                \"status\": true\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_freeShip_id}}\",\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"Secondary channel review\",\r\n                \"content\": \"German Content too\",\r\n                \"points\": 1.1,\r\n                \"status\": true\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_freeShip_disabled_id}}\",\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"Disabled review\",\r\n                \"content\": \"Not approved by merchant\",\r\n                \"points\": 3,\r\n                \"status\": false,\r\n                \"customerId\": \"{{customer_default_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"product_review\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                \"id\": \"{{product_review_disabled_id}}\",\r\n                \"productId\": \"{{catalog_product_disabled}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"{{$randomLoremWords}}\",\r\n                \"content\": \"{{$randomLoremSentence}}\",\r\n                \"points\": \"2\",\r\n                \"status\": true\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_props_id}}\",\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"Main product review\",\r\n                \"content\": \"Main product long content\",\r\n                \"points\": 4.4,\r\n                \"status\": true\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_child_id}}\",\r\n                \"productId\": \"{{gen_product_variant_child_id}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"German Title\",\r\n                \"content\": \"German Content\",\r\n                \"points\": 3.7,\r\n                \"status\": true\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_freeShip_disabled_id}}\",\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"Disabled review\",\r\n                \"content\": \"Not approved by merchant\",\r\n                \"points\": 3,\r\n                \"status\": false,\r\n                \"customerId\": \"{{customer_default_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1989,6 +1989,384 @@
               ""
             ]
           }
+        }
+      ]
+    },
+    {
+      "name": "General Errors",
+      "item": [
+        {
+          "name": "SG: incorrect login error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Your test name\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error_text).to.eq('authentication failed');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}",
+                "disabled": true
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                },
+                {
+                  "key": "debug_log",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "use_errorhandler",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "use_shutdown_handler",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: incorrect shop",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Shop number does not exist\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eq(24);",
+                  "    pm.expect(jsonData.error_text).to.eq('No shop_number exists in the Shopgate configuration. Configure a specific channel.');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "1234",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: no shop_number",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Shop number does not exist\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eq(24);",
+                  "    pm.expect(jsonData.error_text).to.eq('No shop_number property provided in the API call.');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: get_orders bad token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Has error\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql(73);",
+                  "    pm.expect(jsonData.error_text).to.eql('invalid customer token');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_orders}}",
+                  "type": "text"
+                },
+                {
+                  "key": "customer_token",
+                  "value": "124",
+                  "type": "text"
+                },
+                {
+                  "key": "limit",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "customer_language",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "M: mock server check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Mockoon is enabled\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{mock_server_merchant_uri}}",
+              "host": [
+                "{{mock_server_merchant_uri}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: cart no address error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Check error\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql(999);",
+                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error localtion')",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "action",
+                  "value": "{{framework_action_check_cart}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[external_customer_id]",
+                  "value": "{{customer_default_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[payment_group]",
+                  "value": "COD",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[payment_method]",
+                  "value": "COD",
+                  "type": "text"
+                },
+                {
+                  "key": "cart[invoice_address][]",
+                  "value": "null",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -2433,7 +2811,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"product_review\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{product_review_props_customer_id}}\",\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"Customer attached review\",\r\n                \"content\": \"Customer attached review description\",\r\n                \"points\": 4,\r\n                \"status\": true,\r\n                \"customerId\": \"{{customer_default_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{created_review_headless_advPriceOne_id}}\",\r\n                \"productId\": \"{{created_product_headless_advPriceOne_id}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"API: Review title 2 (DE)\",\r\n                \"content\": \"API: Review content 2 (DE)\",\r\n                \"points\": 10,\r\n                \"status\": true,\r\n                \"customerId\": \"{{created_customer_withCustomGrp_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"product_review\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{product_review_props_customer_id}}\",\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"Customer attached review\",\r\n                \"content\": \"Customer attached review description\",\r\n                \"points\": 4,\r\n                \"status\": true,\r\n                \"customerId\": \"{{customer_default_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{created_review_headless_advPriceOne_id}}\",\r\n                \"productId\": \"{{created_product_headless_advPriceOne_id}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"API: Review title 2 (DE)\",\r\n                \"content\": \"API: Review content 2 (DE)\",\r\n                \"points\": 10,\r\n                \"status\": true,\r\n                \"customerId\": \"{{created_customer_withCustomGrp_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_freeShip_id}}\",\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"Secondary channel review\",\r\n                \"content\": \"German Content too\",\r\n                \"points\": 1.1,\r\n                \"status\": true\r\n            }\r\n        ]\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -3503,14 +3881,6 @@
                       "    pm.expect(order.campaignCode).to.eql(null);\r",
                       "    pm.expect(order.orderCustomer.email).to.eql('test_customGrp@example.com');\r",
                       "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Billing custom field data is good\", function () {\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_int_0001').to.eq(17);\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_float_0001').to.eq(3.3);\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_bool_0001').to.eq(false);\r",
-                      "    pm.expect(order.billingAddress.customFields).to.haveOwnProperty('api_address_custom_field_text_0001').to.eq('mapped string value as well');\r",
-                      "    pm.expect(order.billingAddress.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_field');\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -3605,7 +3975,7 @@
                       "    pm.expect(address.zipcode).to.eq('27404');",
                       "    pm.expect(address.city).to.eq('Frankenbostel');",
                       "    pm.expect(address.country).to.eq('DE');",
-                      "    pm.expect(address.state).to.eq('DE-BE');",
+                      "    pm.expect(address.state).to.eq('DE-BB');",
                       "    pm.expect(address.phone).to.eq('+1-111-111-1111');",
                       "});",
                       "",
@@ -3623,7 +3993,7 @@
                       "    pm.expect(address.zipcode).to.eq('27404');",
                       "    pm.expect(address.city).to.eq('Frankenbostel');",
                       "    pm.expect(address.country).to.eq('DE');",
-                      "    pm.expect(address.state).to.eq('DE-BE');",
+                      "    pm.expect(address.state).to.eq('DE-BB');",
                       "    pm.expect(address.phone).to.eq('+2-111-111-1111');",
                       "});",
                       "",
@@ -3972,84 +4342,6 @@
           ]
         },
         {
-          "name": "Settings",
-          "item": [
-            {
-              "name": "SG: get_settings",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "const jsonData = pm.response.json();",
-                      "pm.test(\"Check issues with payload\", function () {",
-                      "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
-                      "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
-                      "});",
-                      "",
-                      "pm.test(\"Check custom NET group\", function () {",
-                      "    const nonDefaultGroup = findByName('API: A custom NET group');",
-                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_net_id'));",
-                      "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
-                      "});",
-                      "",
-                      "pm.test(\"Check other group\", function () {",
-                      "    const defaultGroup = findByName('Standard-Kundengruppe');",
-                      "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
-                      "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
-                      "});",
-                      "",
-                      "function findByName(name) {",
-                      "    return jsonData.customer_groups.find(group => group.name === name);",
-                      "};"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "*/*"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-User",
-                    "value": "{{gen_sg_header_auth_user}}"
-                  },
-                  {
-                    "key": "X-Shopgate-Auth-Token",
-                    "value": "{{gen_sg_header_auth_token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "shop_number",
-                      "value": "{{shop_number_headless}}",
-                      "type": "text"
-                    },
-                    {
-                      "key": "action",
-                      "value": "{{framework_action_get_settings}}",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "url": {
-                  "raw": "{{domain}}",
-                  "host": [
-                    "{{domain}}"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
           "name": "Reviews",
           "item": [
             {
@@ -4066,25 +4358,37 @@
                       "    pm.response.to.not.have.jsonBody('error');",
                       "});",
                       "",
-                      "pm.test(\"have reviews\", function () {",
-                      "    const jsonObject = xml2Json(responseBody);",
-                      "",
-                      "    pm.expect(jsonObject.reviews.review).length(2, 'Expecting only 2 reviews');",
-                      "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('created_review_headless_advPriceOne_id'));",
-                      "    pm.expect(jsonObject.reviews.review[0]).to.have.property('item_uid').to.eq(pm.environment.get('created_product_headless_advPriceOne_id'));",
-                      "    pm.expect(jsonObject.reviews.review[0].score).to.eq('10');",
-                      "    pm.expect(jsonObject.reviews.review[0].reviewer_name).to.eq('API Created C.');",
-                      "    pm.expect(jsonObject.reviews.review[0].title).to.eq('API: Review title 2 (DE)');",
-                      "    pm.expect(jsonObject.reviews.review[0].text).to.eq('API: Review content 2 (DE)');",
-                      "    pm.expect(jsonObject.reviews.review[0]).to.haveOwnProperty('date').to.eq(now);",
-                      "",
-                      "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_props_customer_id'));",
-                      "    pm.expect(jsonObject.reviews.review[1]).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
-                      "    pm.expect(jsonObject.reviews.review[1].score).to.eq('4');",
-                      "    pm.expect(jsonObject.reviews.review[1].title).to.eq('Customer attached review');",
-                      "    pm.expect(jsonObject.reviews.review[1].reviewer_name).to.eq('Max M.');",
-                      "    pm.expect(jsonObject.reviews.review[1].text).to.eq('Customer attached review description');",
-                      "    pm.expect(jsonObject.reviews.review[1]).to.haveOwnProperty('date').to.eq(now);",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "const reviews = jsonObject.reviews.review;",
+                      "pm.test(\"general check\", function () {",
+                      "    pm.expect(reviews).length(3, 'Expecting only 3 reviews');",
+                      "});",
+                      "pm.test(\"advanced price one reviews\", function () {",
+                      "    const advPriceOneReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('created_review_headless_advPriceOne_id'));",
+                      "    pm.expect(advPriceOneReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('created_product_headless_advPriceOne_id'));",
+                      "    pm.expect(advPriceOneReviewOne.score).to.eq('10');",
+                      "    pm.expect(advPriceOneReviewOne.reviewer_name).to.eq('API Created C.');",
+                      "    pm.expect(advPriceOneReviewOne.title).to.eq('API: Review title 2 (DE)');",
+                      "    pm.expect(advPriceOneReviewOne.text).to.eq('API: Review content 2 (DE)');",
+                      "    pm.expect(advPriceOneReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                      "});",
+                      "pm.test(\"freeShip reviews\", function () {",
+                      "    const freeShipReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_freeShip_id'));",
+                      "    pm.expect(freeShipReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_freeShip'));",
+                      "    pm.expect(freeShipReviewOne.score).to.eq('1');",
+                      "    pm.expect(freeShipReviewOne.reviewer_name).to.eq('*****');",
+                      "    pm.expect(freeShipReviewOne.title).to.eq('Secondary channel review');",
+                      "    pm.expect(freeShipReviewOne.text).to.eq('German Content too');",
+                      "    pm.expect(freeShipReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                      "});",
+                      "pm.test(\"properties product reviews\", function () {",
+                      "    const propertyProductReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_customer_id'));",
+                      "    pm.expect(propertyProductReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
+                      "    pm.expect(propertyProductReviewOne.score).to.eq('4');",
+                      "    pm.expect(propertyProductReviewOne.title).to.eq('Customer attached review');",
+                      "    pm.expect(propertyProductReviewOne.reviewer_name).to.eq('Max M.');",
+                      "    pm.expect(propertyProductReviewOne.text).to.eq('Customer attached review description');",
+                      "    pm.expect(propertyProductReviewOne).to.haveOwnProperty('date').to.eq(now);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -4132,208 +4436,35 @@
               "response": []
             }
           ]
-        }
-      ],
-      "description": "Preparation for multi-channel tests"
-    },
-    {
-      "name": "General Errors",
-      "item": [
-        {
-          "name": "SG: incorrect login error",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "",
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test(\"Your test name\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.error_text).to.eq('authentication failed');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}",
-                "disabled": true
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_ping}}",
-                  "type": "text"
-                },
-                {
-                  "key": "debug_log",
-                  "value": "1",
-                  "type": "text"
-                },
-                {
-                  "key": "use_errorhandler",
-                  "value": "1",
-                  "type": "text"
-                },
-                {
-                  "key": "use_shutdown_handler",
-                  "value": "1",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
         },
         {
-          "name": "SG: incorrect shop",
+          "name": "SG: get_settings",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Check issues with payload\", function () {",
+                  "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
+                  "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
                   "});",
                   "",
-                  "pm.test(\"Shop number does not exist\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.error).to.eq(24);",
-                  "    pm.expect(jsonData.error_text).to.eq('No shop_number exists in the Shopgate configuration. Configure a specific channel.');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "1234",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_ping}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: no shop_number",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
+                  "pm.test(\"Check custom NET group\", function () {",
+                  "    const nonDefaultGroup = findByName('API: A custom NET group');",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_net_id'));",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
                   "});",
                   "",
-                  "pm.test(\"Shop number does not exist\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.error).to.eq(24);",
-                  "    pm.expect(jsonData.error_text).to.eq('No shop_number property provided in the API call.');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "action",
-                  "value": "{{framework_action_ping}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: get_orders bad token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Has error\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.error).to.eql(73);",
-                  "    pm.expect(jsonData.error_text).to.eql('invalid customer token');",
-                  "});"
+                  "pm.test(\"Check other group\", function () {",
+                  "    const defaultGroup = findByName('Standard-Kundengruppe');",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                  "});",
+                  "",
+                  "function findByName(name) {",
+                  "    return jsonData.customer_groups.find(group => group.name === name);",
+                  "};"
                 ],
                 "type": "text/javascript"
               }
@@ -4360,32 +4491,12 @@
               "formdata": [
                 {
                   "key": "shop_number",
-                  "value": "{{shop_number}}",
+                  "value": "{{shop_number_headless}}",
                   "type": "text"
                 },
                 {
                   "key": "action",
-                  "value": "{{framework_action_get_orders}}",
-                  "type": "text"
-                },
-                {
-                  "key": "customer_token",
-                  "value": "124",
-                  "type": "text"
-                },
-                {
-                  "key": "limit",
-                  "value": "1",
-                  "type": "text"
-                },
-                {
-                  "key": "offset",
-                  "value": "0",
-                  "type": "text"
-                },
-                {
-                  "key": "customer_language",
-                  "value": "",
+                  "value": "{{framework_action_get_settings}}",
                   "type": "text"
                 }
               ]
@@ -4400,52 +4511,28 @@
           "response": []
         },
         {
-          "name": "M: mock server check",
+          "name": "SG: ping (Headless)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 404\", function () {\r",
-                  "    pm.response.to.have.status(404);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Mockoon is enabled\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.error_text).to.eql('No Mockoon route found');\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{mock_server_merchant_uri}}",
-              "host": [
-                "{{mock_server_merchant_uri}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: cart no address error",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
                   "});",
                   "",
-                  "pm.test(\"Check error\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.error).to.eql(999);",
-                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error localtion')",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_number_headless');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -4455,10 +4542,6 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "*/*"
-              },
               {
                 "key": "X-Shopgate-Auth-User",
                 "value": "{{gen_sg_header_auth_user}}"
@@ -4472,33 +4555,13 @@
               "mode": "formdata",
               "formdata": [
                 {
-                  "key": "action",
-                  "value": "{{framework_action_check_cart}}",
-                  "type": "text"
-                },
-                {
                   "key": "shop_number",
-                  "value": "{{shop_number}}",
+                  "value": "{{shop_number_headless}}",
                   "type": "text"
                 },
                 {
-                  "key": "cart[external_customer_id]",
-                  "value": "{{customer_default_id}}",
-                  "type": "text"
-                },
-                {
-                  "key": "cart[payment_group]",
-                  "value": "COD",
-                  "type": "text"
-                },
-                {
-                  "key": "cart[payment_method]",
-                  "value": "COD",
-                  "type": "text"
-                },
-                {
-                  "key": "cart[invoice_address][]",
-                  "value": "null",
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
                   "type": "text"
                 }
               ]
@@ -4512,7 +4575,8 @@
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Preparation for multi-channel tests"
     },
     {
       "name": "Flysystem",
@@ -6150,87 +6214,6 @@
               "response": []
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "Settings",
-      "item": [
-        {
-          "name": "SG: get_settings (EN)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "const jsonData = pm.response.json();",
-                  "pm.test(\"Check issues with payload\", function () {",
-                  "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
-                  "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
-                  "});",
-                  "",
-                  "pm.test(\"Check custom gross group\", function () {",
-                  "    const nonDefaultGroup = findByName('API: A custom NET group');",
-                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_net_id'));",
-                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
-                  "});",
-                  "pm.test(\"Check default group\", function () {",
-                  "    const defaultGroup = findByName('Standard customer group');",
-                  "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
-                  "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
-                  "});",
-                  "",
-                  "function findByName(name) {",
-                  "    return jsonData.customer_groups.find(group => group.name === name);",
-                  "};"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_settings}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
         }
       ]
     },
@@ -8315,37 +8298,38 @@
                   "pm.test(\"Not an error\", function () {",
                   "    pm.response.to.not.have.jsonBody('error');",
                   "});",
+                  "const jsonObject = xml2Json(responseBody);",
+                  "const reviews = jsonObject.reviews.review;",
+                  "pm.test(\"general check\", function () {",
+                  "    pm.expect(reviews).length(3, 'Expecting only 3 reviews');",
+                  "});",
                   "",
-                  "pm.test(\"have reviews\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "",
-                  "    pm.expect(jsonObject.reviews.review).length(3, 'Expecting only 3 reviews');",
-                  "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('product_review_child_id'));",
-                  "    pm.expect(jsonObject.reviews.review[0]).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
-                  "    pm.expect(jsonObject.reviews.review[0].score).to.eq('4');",
-                  "    pm.expect(jsonObject.reviews.review[0].reviewer_name).to.eq('*****');",
-                  "    pm.expect(jsonObject.reviews.review[0].title).to.eq('German Title');",
-                  "    pm.expect(jsonObject.reviews.review[0].text).to.eq('German Content');",
-                  "    pm.expect(jsonObject.reviews.review[0]).to.haveOwnProperty('date').to.eq(now);",
-                  "",
-                  "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_props_id'));",
-                  "    pm.expect(jsonObject.reviews.review[1]).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
-                  "    pm.expect(jsonObject.reviews.review[1].score).to.eq('4');",
-                  "    pm.expect(jsonObject.reviews.review[1].title).to.eq('Main product review');",
-                  "    pm.expect(jsonObject.reviews.review[1].reviewer_name).to.eq('*****');",
-                  "    pm.expect(jsonObject.reviews.review[1].text).to.eq('Main product long content');",
-                  "    pm.expect(jsonObject.reviews.review[1]).to.haveOwnProperty('date').to.eq(now);",
-                  "",
-                  "    pm.expect(jsonObject.reviews.review[2].$.uid).to.eq(pm.environment.get('product_review_disabled_id'));",
-                  "    pm.expect(jsonObject.reviews.review[2]).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
-                  "    pm.expect(jsonObject.reviews.review[2].score).to.eq('2');",
-                  "    pm.expect(jsonObject.reviews.review[2].reviewer_name).to.eq('*****');",
-                  "    pm.expect(jsonObject.reviews.review[2].title).to.be.a('string').to.not.be.empty;",
-                  "    pm.expect(jsonObject.reviews.review[2].text).to.be.a('string').to.not.be.empty;",
-                  "    pm.expect(jsonObject.reviews.review[2]).to.haveOwnProperty('date').to.eq(now);",
+                  "pm.test(\"childReviewOne\", function () {",
+                  "    const childReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_child_id'));",
+                  "    pm.expect(childReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
+                  "    pm.expect(childReviewOne.score).to.eq('4');",
+                  "    pm.expect(childReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(childReviewOne.title).to.eq('German Title');",
+                  "    pm.expect(childReviewOne.text).to.eq('German Content');",
+                  "    pm.expect(childReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});",
+                  "pm.test(\"propReviewOne\", function () {",
+                  "    const propReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_id'));",
+                  "    pm.expect(propReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
+                  "    pm.expect(propReviewOne.score).to.eq('4');",
+                  "    pm.expect(propReviewOne.title).to.eq('Main product review');",
+                  "    pm.expect(propReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(propReviewOne.text).to.eq('Main product long content');",
+                  "    pm.expect(propReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});",
+                  "pm.test(\"disabledReviewOne\", function () {",
+                  "    const disabledReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_disabled_id'));",
+                  "    pm.expect(disabledReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
+                  "    pm.expect(disabledReviewOne.score).to.eq('2');",
+                  "    pm.expect(disabledReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(disabledReviewOne.title).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledReviewOne.text).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledReviewOne).to.haveOwnProperty('date').to.eq(now);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -8393,117 +8377,18 @@
           "response": []
         },
         {
-          "name": "SG: reviews (headless)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const moment = require('moment');",
-                  "const now = moment().format('YYYY-MM-DD');",
-                  "",
-                  "pm.test(\"Not an error\", function () {",
-                  "    pm.response.to.not.have.jsonBody('error');",
-                  "});",
-                  "",
-                  "pm.test(\"have reviews\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "    ",
-                  "    pm.expect(jsonObject.reviews.review).length(2, 'Expecting only 2 reviews');",
-                  "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('product_review_props_customer_id'));",
-                  "    pm.expect(jsonObject.reviews.review[0]).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
-                  "    pm.expect(jsonObject.reviews.review[0].score).to.eq('10');",
-                  "    pm.expect(jsonObject.reviews.review[0].reviewer_name).to.eq('Max M.');",
-                  "    pm.expect(jsonObject.reviews.review[0].title).to.eq('Customer attached review');",
-                  "    pm.expect(jsonObject.reviews.review[0].text).to.eq('Customer attached review description');",
-                  "    pm.expect(jsonObject.reviews.review[0]).to.haveOwnProperty('date').to.eq(now);",
-                  "",
-                  "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_freeShip_id'));",
-                  "    pm.expect(jsonObject.reviews.review[1]).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_freeShip'));",
-                  "    pm.expect(jsonObject.reviews.review[1].score).to.eq('1');",
-                  "    pm.expect(jsonObject.reviews.review[1].reviewer_name).to.eq('*****');",
-                  "    pm.expect(jsonObject.reviews.review[1].title).to.eq('Secondary channel review');",
-                  "    pm.expect(jsonObject.reviews.review[1].text).to.eq('German Content too');",
-                  "    pm.expect(jsonObject.reviews.review[1]).to.haveOwnProperty('date').to.eq(now);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number_headless}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_reviews}}",
-                  "type": "text"
-                },
-                {
-                  "key": "limit",
-                  "value": "5",
-                  "type": "text"
-                },
-                {
-                  "key": "offset",
-                  "value": "0",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "SG: reviews (uids main)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "const moment = require('moment');",
-                  "const now = moment().format('YYYY-MM-DD');",
-                  "",
                   "pm.test(\"Not an error\", function () {",
                   "    pm.response.to.not.have.jsonBody('error');",
                   "});",
                   "",
                   "pm.test(\"have reviews\", function () {",
                   "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "",
                   "    pm.expect(jsonObject.reviews.review).length(2, 'Expecting only 2 reviews');",
                   "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('product_review_disabled_id'));",
                   "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_child_id'));",
@@ -8588,19 +8473,12 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const moment = require('moment');",
-                  "const now = moment().format('YYYY-MM-DD');",
-                  "",
                   "pm.test(\"Not an error\", function () {",
                   "    pm.response.to.not.have.jsonBody('error');",
                   "});",
                   "",
                   "pm.test(\"have reviews\", function () {",
                   "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "",
                   "    pm.expect(jsonObject.reviews.review).length(2, 'Expecting only 2 reviews');",
                   "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('product_review_freeShip_id'));",
                   "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_props_customer_id'));",
@@ -8679,29 +8557,29 @@
                   "pm.test(\"Not an error\", function () {",
                   "    pm.response.to.not.have.jsonBody('error');",
                   "});",
+                  "const jsonObject = xml2Json(responseBody);",
+                  "const reviews = jsonObject.reviews.review;",
+                  "pm.test(\"general check\", function () {",
+                  "    pm.expect(reviews).length(2, 'Expecting only 2 reviews');",
+                  "});",
                   "",
-                  "pm.test(\"have reviews\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "",
-                  "    pm.expect(jsonObject.reviews.review).length(2, 'Expecting only 2 reviews');",
-                  "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('product_review_child_id'));",
-                  "    pm.expect(jsonObject.reviews.review[0]).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
-                  "    pm.expect(jsonObject.reviews.review[0].score).to.eq('4');",
-                  "    pm.expect(jsonObject.reviews.review[0].reviewer_name).to.eq('*****');",
-                  "    pm.expect(jsonObject.reviews.review[0].title).to.eq('German Title');",
-                  "    pm.expect(jsonObject.reviews.review[0].text).to.eq('German Content');",
-                  "    pm.expect(jsonObject.reviews.review[0]).to.haveOwnProperty('date').to.eq(now);",
-                  "",
-                  "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_props_id'));",
-                  "    pm.expect(jsonObject.reviews.review[1]).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
-                  "    pm.expect(jsonObject.reviews.review[1].score).to.eq('4');",
-                  "    pm.expect(jsonObject.reviews.review[1].title).to.eq('Main product review');",
-                  "    pm.expect(jsonObject.reviews.review[1].reviewer_name).to.eq('*****');",
-                  "    pm.expect(jsonObject.reviews.review[1].text).to.eq('Main product long content');",
-                  "    pm.expect(jsonObject.reviews.review[1]).to.haveOwnProperty('date').to.eq(now);",
+                  "pm.test(\"childReviewOne\", function () {",
+                  "    const childReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_child_id'));",
+                  "    pm.expect(childReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
+                  "    pm.expect(childReviewOne.score).to.eq('4');",
+                  "    pm.expect(childReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(childReviewOne.title).to.eq('German Title');",
+                  "    pm.expect(childReviewOne.text).to.eq('German Content');",
+                  "    pm.expect(childReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});",
+                  "pm.test(\"propReviewOne\", function () {",
+                  "    const propReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_id'));",
+                  "    pm.expect(propReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
+                  "    pm.expect(propReviewOne.score).to.eq('4');",
+                  "    pm.expect(propReviewOne.title).to.eq('Main product review');",
+                  "    pm.expect(propReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(propReviewOne.text).to.eq('Main product long content');",
+                  "    pm.expect(propReviewOne).to.haveOwnProperty('date').to.eq(now);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -8774,10 +8652,6 @@
                   "",
                   "pm.test(\"have reviews\", function () {",
                   "    const jsonObject = xml2Json(responseBody);",
-                  "    if (pm.globals.get('verbose')){",
-                  "        console.log(jsonObject);",
-                  "    }",
-                  "",
                   "    pm.expect(jsonObject.reviews.review.$.uid).to.eq(pm.environment.get('product_review_disabled_id'));",
                   "    pm.expect(jsonObject.reviews.review).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
                   "    pm.expect(jsonObject.reviews.review.score).to.eq('2');",
@@ -12525,725 +12399,746 @@
       ]
     },
     {
-      "name": "SG: ping",
-      "event": [
+      "name": "Customer",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const jsonData = pm.response.json();",
-              "pm.test(\"Ping Pong\", function () {",
-              "    pm.expect(jsonData.pong).to.eql('OK');",
-              "});",
-              "",
-              "pm.test('Plugin Versions', function () {",
-              "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
-              "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
-              "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
-              "});",
-              "",
-              "pm.test(\"Check log paths\", function () {",
-              "    const shopNumber = pm.environment.get('shop_number');",
-              "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
-              "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
-              "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{gen_sg_header_auth_user}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{gen_sg_header_auth_token}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
+          "name": "SG: register_customer",
+          "event": [
             {
-              "key": "shop_number",
-              "value": "{{shop_number}}",
-              "type": "text"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Check customer data\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (pm.globals.get('verbose')) {",
+                  "        console.log(jsonData);",
+                  "    }",
+                  "    const firstName = pm.environment.get('temp-first-name');",
+                  "    const lastName = pm.environment.get('temp-last-name');",
+                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
+                  "    pm.expect(jsonData.user_data.gender).to.eql('f');",
+                  "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
+                  "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
+                  "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
+                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
+                  "    ",
+                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
+                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
+                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
+                  "    pm.expect(billing.country).to.eql('DE');",
+                  "    pm.expect(billing.zipcode).to.eql('54321');",
+                  "    pm.expect(billing.state).to.eql('DE-SH');",
+                  "    pm.expect(billing.first_name).to.eql(firstName);",
+                  "    pm.expect(billing.last_name).to.eql(lastName);",
+                  "    pm.expect(billing.company).to.eql('My Company');",
+                  "    pm.expect(billing.street_2).to.eql('Street2');",
+                  "    pm.expect(billing.phone).to.eql('12345');",
+                  "    pm.expect(billing.gender).to.eql('f');",
+                  "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
+                  "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
+                  "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
+                  "",
+                  "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
+                  "    pm.expect(shipping.country).to.eql('DE');",
+                  "    pm.expect(shipping.zipcode).to.eql('12340');",
+                  "    pm.expect(shipping.state).to.be.null;",
+                  "    pm.expect(shipping.first_name).to.not.eql(firstName);",
+                  "    pm.expect(shipping.last_name).to.not.eql(lastName);",
+                  "    pm.expect(shipping.gender).to.eql('m');",
+                  "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
+                  "});",
+                  "",
+                  "// unset temp variables",
+                  "pm.environment.unset(\"temp-email\");",
+                  "pm.environment.unset(\"temp-first-name\");",
+                  "pm.environment.unset(\"temp-last-name\");"
+                ],
+                "type": "text/javascript"
+              }
             },
             {
-              "key": "action",
-              "value": "{{framework_action_ping}}",
-              "type": "text"
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
+                ],
+                "type": "text/javascript"
+              }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_register_customer}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "pass",
+                  "value": "{{userPass}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[registration_date]",
+                  "value": "2021-01-27T13:07:38+0000",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[first_name]",
+                  "value": "{{temp-first-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[last_name]",
+                  "value": "{{temp-last-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[gender]",
+                  "value": "f",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[mail]",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[birthday]",
+                  "value": "1987-05-19",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_invoice_address]",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_delivery_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][first_name]",
+                  "value": "{{$randomFirstName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][last_name]",
+                  "value": "{{$randomLastName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][gender]",
+                  "value": "m",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][zipcode]",
+                  "value": "12340",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_invoice_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_delivery_address]",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][first_name]",
+                  "value": "rewritten_first_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][last_name]",
+                  "value": "rewritten_last_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][gender]",
+                  "value": "m",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][zipcode]",
+                  "value": "54321",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][state]",
+                  "value": "DE-SH",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][company]",
+                  "value": "My Company",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_2]",
+                  "value": "Street2",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][phone]",
+                  "value": "12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][name]",
+                  "value": "VAT IDs",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][internal_field_name]",
+                  "value": "vatIds",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][value]",
+                  "value": "1234,12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][internal_field_name]",
+                  "value": "affiliateCode",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][value]",
+                  "value": "AFFILIATE_CODE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][value]",
+                  "value": "Big Boss",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][internal_field_name]",
+                  "value": "accountType",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][value]",
+                  "value": "business",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][internal_field_name]",
+                  "value": "cannotMap",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][value]",
+                  "value": "not mapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][value]",
+                  "value": "Mr.",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
+                  "value": "notMapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][value]",
+                  "value": "not mapped either",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
+                  "value": "department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][value]",
+                  "value": "Some department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][value]",
+                  "value": "Mrs.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
+        {
+          "name": "SG: get_customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Check customer data\", function () {",
+                  "    if (pm.globals.get('verbose')) {",
+                  "        console.log(jsonData);",
+                  "    }",
+                  "",
+                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('userEmail'));",
+                  "    pm.expect(jsonData.user_data.gender).to.eql('m');",
+                  "    pm.expect(jsonData.user_data.first_name).to.eql('Max');",
+                  "    pm.expect(jsonData.user_data.last_name).to.eql('Mustermann');",
+                  "    pm.expect(jsonData.user_data.customer_number).to.eql('SWDEMO10000');",
+                  "    pm.expect(jsonData.user_data.birthday).to.eql('1996-06-06');",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.not.be.empty;",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                  "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('Standard customer group');",
+                  "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_customer}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user",
+                  "value": "{{userEmail}}",
+                  "type": "text"
+                },
+                {
+                  "key": "pass",
+                  "value": "{{userPass}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "SG: ping (Headless)",
-      "event": [
+      "name": "Misc",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const jsonData = pm.response.json();",
-              "pm.test(\"Ping Pong\", function () {",
-              "    pm.expect(jsonData.pong).to.eql('OK');",
-              "});",
-              "",
-              "pm.test('Plugin Versions', function () {",
-              "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
-              "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
-              "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
-              "});",
-              "",
-              "pm.test(\"Check log paths\", function () {",
-              "    const shopNumber = pm.environment.get('shop_number_headless');",
-              "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
-              "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
-              "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{gen_sg_header_auth_user}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{gen_sg_header_auth_token}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
+          "name": "SG: get_settings (EN)",
+          "event": [
             {
-              "key": "shop_number",
-              "value": "{{shop_number_headless}}",
-              "type": "text"
-            },
-            {
-              "key": "action",
-              "value": "{{framework_action_ping}}",
-              "type": "text"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Check issues with payload\", function () {",
+                  "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
+                  "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
+                  "});",
+                  "",
+                  "pm.test(\"Check custom gross group\", function () {",
+                  "    const nonDefaultGroup = findByName('API: A custom NET group');",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_net_id'));",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                  "});",
+                  "pm.test(\"Check default group\", function () {",
+                  "    const defaultGroup = findByName('Standard customer group');",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
+                  "});",
+                  "",
+                  "function findByName(name) {",
+                  "    return jsonData.customer_groups.find(group => group.name === name);",
+                  "};"
+                ],
+                "type": "text/javascript"
+              }
             }
-          ]
-        },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "SG: register_customer",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Check customer data\", function () {",
-              "    const jsonData = pm.response.json();",
-              "    if (pm.globals.get('verbose')) {",
-              "        console.log(jsonData);",
-              "    }",
-              "    const firstName = pm.environment.get('temp-first-name');",
-              "    const lastName = pm.environment.get('temp-last-name');",
-              "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
-              "    pm.expect(jsonData.user_data.gender).to.eql('f');",
-              "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
-              "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
-              "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
-              "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
-              "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
-              "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
-              "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
-              "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
-              "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
-              "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
-              "    ",
-              "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
-              "    pm.expect(billing.is_invoice_address).to.eql(1);",
-              "    pm.expect(billing.is_delivery_address).to.eql(0);",
-              "    pm.expect(billing.country).to.eql('DE');",
-              "    pm.expect(billing.zipcode).to.eql('54321');",
-              "    pm.expect(billing.state).to.eql('DE-SH');",
-              "    pm.expect(billing.first_name).to.eql(firstName);",
-              "    pm.expect(billing.last_name).to.eql(lastName);",
-              "    pm.expect(billing.company).to.eql('My Company');",
-              "    pm.expect(billing.street_2).to.eql('Street2');",
-              "    pm.expect(billing.phone).to.eql('12345');",
-              "    pm.expect(billing.gender).to.eql('f');",
-              "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
-              "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
-              "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
-              "",
-              "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
-              "    pm.expect(shipping.country).to.eql('DE');",
-              "    pm.expect(shipping.zipcode).to.eql('12340');",
-              "    pm.expect(shipping.state).to.be.null;",
-              "    pm.expect(shipping.first_name).to.not.eql(firstName);",
-              "    pm.expect(shipping.last_name).to.not.eql(lastName);",
-              "    pm.expect(shipping.gender).to.eql('m');",
-              "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
-              "});",
-              "",
-              "// unset temp variables",
-              "pm.environment.unset(\"temp-email\");",
-              "pm.environment.unset(\"temp-first-name\");",
-              "pm.environment.unset(\"temp-last-name\");"
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
             ],
-            "type": "text/javascript"
-          }
-        },
-        {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
-              "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
-              "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "*/*"
-          },
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{gen_sg_header_auth_user}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{gen_sg_header_auth_token}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            {
-              "key": "shop_number",
-              "value": "{{shop_number}}",
-              "type": "text"
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_settings}}",
+                  "type": "text"
+                }
+              ]
             },
-            {
-              "key": "action",
-              "value": "{{framework_action_register_customer}}",
-              "type": "text"
-            },
-            {
-              "key": "user",
-              "value": "{{temp-email}}",
-              "type": "text"
-            },
-            {
-              "key": "pass",
-              "value": "{{userPass}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[registration_date]",
-              "value": "2021-01-27T13:07:38+0000",
-              "type": "text"
-            },
-            {
-              "key": "user_data[first_name]",
-              "value": "{{temp-first-name}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[last_name]",
-              "value": "{{temp-last-name}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[gender]",
-              "value": "f",
-              "type": "text"
-            },
-            {
-              "key": "user_data[mail]",
-              "value": "{{temp-email}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[birthday]",
-              "value": "1987-05-19",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][is_invoice_address]",
-              "value": "0",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][is_delivery_address]",
-              "value": "1",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][first_name]",
-              "value": "{{$randomFirstName}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][last_name]",
-              "value": "{{$randomLastName}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][gender]",
-              "value": "m",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][street_1]",
-              "value": "{{$randomStreetAddress}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][zipcode]",
-              "value": "12340",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][city]",
-              "value": "{{$randomCity}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][country]",
-              "value": "DE",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][is_invoice_address]",
-              "value": "1",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][is_delivery_address]",
-              "value": "0",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][first_name]",
-              "value": "rewritten_first_name",
-              "description": "Seems like this field get rewritten no matter what we set",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][last_name]",
-              "value": "rewritten_last_name",
-              "description": "Seems like this field get rewritten no matter what we set",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][gender]",
-              "value": "m",
-              "description": "Seems like this field get rewritten no matter what we set",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][street_1]",
-              "value": "{{$randomStreetAddress}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][zipcode]",
-              "value": "54321",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][city]",
-              "value": "{{$randomCity}}",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][country]",
-              "value": "DE",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][state]",
-              "value": "DE-SH",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][company]",
-              "value": "My Company",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][street_2]",
-              "value": "Street2",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][phone]",
-              "value": "12345",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][0][name]",
-              "value": "VAT IDs",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][0][internal_field_name]",
-              "value": "vatIds",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][0][value]",
-              "value": "1234,12345",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][1][internal_field_name]",
-              "value": "affiliateCode",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][1][value]",
-              "value": "AFFILIATE_CODE",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][2][internal_field_name]",
-              "value": "title",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][2][value]",
-              "value": "Big Boss",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][3][internal_field_name]",
-              "value": "accountType",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][3][value]",
-              "value": "business",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][4][internal_field_name]",
-              "value": "cannotMap",
-              "type": "text"
-            },
-            {
-              "key": "user_data[custom_fields][4][value]",
-              "value": "not mapped",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
-              "value": "title",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][custom_fields][0][value]",
-              "value": "Mr.",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
-              "value": "notMapped",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][custom_fields][1][value]",
-              "value": "not mapped either",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
-              "value": "department",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][1][custom_fields][2][value]",
-              "value": "Some department",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
-              "value": "title",
-              "type": "text"
-            },
-            {
-              "key": "user_data[addresses][0][custom_fields][0][value]",
-              "value": "Mrs.",
-              "type": "text"
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
             }
-          ]
-        },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "SG: get_customer",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const jsonData = pm.response.json();",
-              "pm.test(\"Check customer data\", function () {",
-              "    if (pm.globals.get('verbose')) {",
-              "        console.log(jsonData);",
-              "    }",
-              "",
-              "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('userEmail'));",
-              "    pm.expect(jsonData.user_data.gender).to.eql('m');",
-              "    pm.expect(jsonData.user_data.first_name).to.eql('Max');",
-              "    pm.expect(jsonData.user_data.last_name).to.eql('Mustermann');",
-              "    pm.expect(jsonData.user_data.customer_number).to.eql('SWDEMO10000');",
-              "    pm.expect(jsonData.user_data.birthday).to.eql('1996-06-06');",
-              "    pm.expect(jsonData.user_data.customer_groups[0]).to.not.be.empty;",
-              "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
-              "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('Standard customer group');",
-              "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
-              "});",
-              ""
-            ],
-            "type": "text/javascript"
-          }
+          },
+          "response": []
         },
         {
-          "listen": "prerequest",
-          "script": {
-            "exec": [
-              ""
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "*/*"
-          },
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{gen_sg_header_auth_user}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{gen_sg_header_auth_token}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
+          "name": "SG: ping",
+          "event": [
             {
-              "key": "shop_number",
-              "value": "{{shop_number}}",
-              "type": "text"
-            },
-            {
-              "key": "action",
-              "value": "{{framework_action_get_customer}}",
-              "type": "text"
-            },
-            {
-              "key": "user",
-              "value": "{{userEmail}}",
-              "type": "text"
-            },
-            {
-              "key": "pass",
-              "value": "{{userPass}}",
-              "type": "text"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_number');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
             }
-          ]
-        },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "SG: log (debug)",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Successful call', function(){",
-              "    pm.response.to.be.success;",
-              "});",
-              "",
-              "pm.test(\"Body matches string\", function () {",
-              "    pm.expect(pm.response.text()).to.include(\"Finished Product Export\");",
-              "});"
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
             ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "*/*"
-          },
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{gen_sg_header_auth_user}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{gen_sg_header_auth_token}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            {
-              "key": "shop_number",
-              "value": "{{shop_number}}",
-              "type": "text"
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
             },
-            {
-              "key": "action",
-              "value": "get_log_file",
-              "type": "text"
-            },
-            {
-              "key": "lines",
-              "value": "100",
-              "type": "text"
-            },
-            {
-              "key": "log_type",
-              "value": "debug",
-              "description": "access, error, debug, request",
-              "type": "text"
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
             }
-          ]
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "SG: log (error)",
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test('Successful call', function(){",
-              "    pm.response.to.be.success;",
-              "});",
-              "",
-              "pm.test(\"Body matches string\", function () {",
-              "    pm.expect(pm.response.text()).to.include(\"authentication failed\");",
-              "    pm.expect(pm.response.text()).to.include(\"Uncaught error was thrown\");",
-              "});"
-            ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "*/*"
-          },
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{gen_sg_header_auth_user}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{gen_sg_header_auth_token}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
+          "name": "SG: log (debug)",
+          "event": [
             {
-              "key": "shop_number",
-              "value": "{{shop_number}}",
-              "type": "text"
-            },
-            {
-              "key": "action",
-              "value": "get_log_file",
-              "type": "text"
-            },
-            {
-              "key": "lines",
-              "value": "100",
-              "type": "text"
-            },
-            {
-              "key": "log_type",
-              "value": "error",
-              "description": "access, error, debug, request",
-              "type": "text"
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Successful call', function(){",
+                  "    pm.response.to.be.success;",
+                  "});",
+                  "",
+                  "pm.test(\"Body matches string\", function () {",
+                  "    pm.expect(pm.response.text()).to.include(\"Finished Product Export\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "get_log_file",
+                  "type": "text"
+                },
+                {
+                  "key": "lines",
+                  "value": "100",
+                  "type": "text"
+                },
+                {
+                  "key": "log_type",
+                  "value": "debug",
+                  "description": "access, error, debug, request",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
+        {
+          "name": "SG: log (error)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Successful call', function(){",
+                  "    pm.response.to.be.success;",
+                  "});",
+                  "",
+                  "pm.test(\"Body matches string\", function () {",
+                  "    pm.expect(pm.response.text()).to.include(\"Delivery status is already complete\");",
+                  "    pm.expect(pm.response.text()).to.include(\"Order already cancelled.\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "get_log_file",
+                  "type": "text"
+                },
+                {
+                  "key": "lines",
+                  "value": "100",
+                  "type": "text"
+                },
+                {
+                  "key": "log_type",
+                  "value": "error",
+                  "description": "access, error, debug, request",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     }
   ],
   "event": [
@@ -13339,11 +13234,17 @@
           "    });",
           "    return found && found.hasOwnProperty('value') ? found.value : null;",
           "}",
+          "// JSON handlers",
           "Utility.getByLabel = (list, value) => getItemByKey(list, 'label', value);",
           "Utility.getByName = (list, value) => getItemByKey(list, 'name', value);",
           "Utility.getByItemNumber = (list, value) => getItemByKey(list, 'item_number', value);",
           "function getItemByKey(list, key, value) {",
           "    return list.find(item => item[key] === value);",
+          "};",
+          "// XML handlers",
+          "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value)",
+          "function getXmlByAttributeKey(list, key, value) {",
+          "    return list.find(item => item.$[key] === value);",
           "};"
         ]
       }
