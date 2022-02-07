@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\Order\Shipping;
 
 use Shopgate\Shopware\Order\Shipping\Events\AfterShippingMethodMappingEvent;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeDeliveryContextSwitchEvent;
+use Shopgate\Shopware\Order\Shipping\Events\BeforeManualShippingPriceSet;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeShippingMethodMappingEvent;
 use Shopgate\Shopware\Order\State\StateComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
@@ -13,12 +14,14 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\Delivery\DeliveryCalculator;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -58,19 +61,26 @@ class ShippingComposer
     /**
      * Adds manual shipping fee.
      * Make sure it's not 0.0 value. There is an issue with setting the
-     * manual shipping cost to 0. Hence why we need to use our custom
+     * manual shipping cost to 0. This is why we need to use our custom
      * Free Shipping method in this case.
+     *
+     * @see DeliveryCalculator::calculateDelivery
      */
     public function addShippingFeeToCart(ExtendedOrder $sgOrder, Cart $swCart): void
     {
-        // overwrite shipping cost when creating an order
         $shippingCost = $sgOrder->getShippingCost();
+        $shopCurrency = $this->contextManager->getSalesContext()->getCurrencyId();
+        // for some reason manual shipping cost calculator uses default shop currency
+        if ($shopCurrency !== Defaults::CURRENCY) {
+            $shippingCost /= $this->contextManager->getSalesContext()->getCurrency()->getFactor();
+        }
         $price = new CalculatedPrice(
             $shippingCost,
             $shippingCost,
             $swCart->getShippingCosts()->getCalculatedTaxes(),
             $swCart->getShippingCosts()->getTaxRules()
         );
+        $this->eventDispatcher->dispatch(new BeforeManualShippingPriceSet($price, $swCart, $sgOrder));
         $swCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
     }
 

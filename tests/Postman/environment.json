@@ -170,12 +170,17 @@
       "enabled": true
     },
     {
+      "key": "created_customer_headless_net_email",
+      "value": "example+1@apite.io",
+      "enabled": true
+    },
+    {
       "key": "created_customer_withCustomGrp_id",
       "value": "56b861af79034c7fa1e9158dbe62be16",
       "enabled": true
     },
     {
-      "key": "created_customerGroup_gross_id",
+      "key": "created_customerGroup_net_id",
       "value": "7ed46ba83b40423284938fbc98697aa7",
       "enabled": true
     },
@@ -203,8 +208,8 @@
       "enabled": true
     },
     {
-      "key": "created_product_advPriceOne_id",
-      "value": "c6851c8182288e71a9e7a0fbb8f5f86d",
+      "key": "created_product_headless_advPriceOne_id",
+      "value": "c5c346f6a30c689fc862d43655702136",
       "enabled": true
     },
     {
@@ -238,6 +243,12 @@
     },
     {
       "key": "created_promotion_customerUSA_id",
+      "value": "3e226aa33c486a291338478679382ab1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_review_headless_advPriceOne_id",
       "value": "3e226aa33c486a291338478679382ab1",
       "type": "default",
       "enabled": true
@@ -293,6 +304,11 @@
       "enabled": true
     },
     {
+      "key": "default_category_fTimeAndElectronics_id",
+      "value": "251448b91bc742de85643f5fccd89051",
+      "enabled": true
+    },
+    {
       "key": "default_deliveryTime_sg_id",
       "value": "49dd403eea0b4ca69e5c14894263cf2e",
       "enabled": true
@@ -319,6 +335,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-01-30T10:46:47.527Z",
-  "_postman_exported_using": "Postman/9.11.0"
+  "_postman_exported_at": "2022-02-06T17:44:57.826Z",
+  "_postman_exported_using": "Postman/9.13.0"
 }

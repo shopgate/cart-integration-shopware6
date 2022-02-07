@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Review;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopware\Core\Content\Product\Aggregate\ProductReview\ProductReviewEntity;
 
 class ReviewComposer
@@ -23,7 +22,6 @@ class ReviewComposer
      * @param int|null $offset
      * @param array $uids
      * @return ReviewMapping[]
-     * @throws MissingContextException
      */
     public function getReviews(?int $limit, ?int $offset, array $uids): array
     {

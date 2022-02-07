@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product\Sort;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -36,7 +35,6 @@ class SortBridge
 
     /**
      * @return FieldSorting[]
-     * @throws MissingContextException
      */
     public function getDefaultSorting(): array
     {
@@ -62,7 +60,6 @@ class SortBridge
 
     /**
      * @return string
-     * @throws MissingContextException
      */
     private function getSystemDefaultSorting(): string
     {

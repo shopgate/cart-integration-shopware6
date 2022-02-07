@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\LineItem\Events\AfterIncItemMappingEvent;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
@@ -67,7 +66,6 @@ class LineItemProductMapping
     /**
      * Valid products are the ones that are still in Shopware cart
      * after all validation checks are made
-     * @throws MissingContextException
      */
     public function mapValidProduct(
         LineItem $lineItem,
@@ -168,11 +166,10 @@ class LineItemProductMapping
         if ($product = $swLineItem->getProduct()) {
             $sgLineItem->setItemNumberPublic($product->getProductNumber());
             $sgLineItem->setItemNumber($swLineItem->getProductId());
-            $sgLineItem->setDescription($product->getDescription());
+            $sgLineItem->setDescription($product->getTranslation('description') ?: $product->getDescription());
         } else {
             $sgLineItem->setItemNumberPublic($swLineItem->getPayload()['productNumber'] ?? $swLineItem->getLabel());
             $sgLineItem->setItemNumber($swLineItem->getId());
-            $sgLineItem->setDescription($sgLineItem->getDescription());
         }
 
         return $sgLineItem;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Customer;
 
 use Shopgate\Shopware\Customer\Mapping\CustomerMapping;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use ShopgateCustomer;
@@ -15,9 +14,6 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Throwable;
 
-/**
- * Customer endpoint specific composer
- */
 class CustomerComposer
 {
     private ContextManager $contextManager;
@@ -41,20 +37,18 @@ class CustomerComposer
     }
 
     /**
-     * @param string $user
-     * @param string $password
-     * @return ShopgateCustomer
-     * @throws MissingContextException|ShopgateLibraryException
+     * @throws ShopgateLibraryException
      */
     public function getCustomer(string $user, string $password): ShopgateCustomer
     {
         $token = $this->customerBridge->authenticate($user, $password);
         if (null === $token) {
-            throw new MissingContextException('User token not found');
+            throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, 'User token not found');
         }
         $shopwareCustomer = $this->contextManager->loadByCustomerToken($token->getToken())->getCustomer();
         if (null === $shopwareCustomer) {
-            throw new MissingContextException('User logged in context missing');
+            throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                'User logged in context missing');
         }
         $detailedCustomer = $this->customerBridge->getDetailedContextCustomer($this->contextManager->getSalesContext());
 
@@ -65,7 +59,6 @@ class CustomerComposer
      * @param string|null $password - pass null for guest customer
      * @param ShopgateCustomer $customer
      * @return CustomerEntity
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     public function registerCustomer(?string $password, ShopgateCustomer $customer): CustomerEntity
@@ -105,10 +98,6 @@ class CustomerComposer
         }
     }
 
-    /**
-     * @return array
-     * @throws MissingContextException
-     */
     public function getCustomerGroups(): array
     {
         $defaultCustomerGroupId = $this->contextManager->getSalesContext()->getCurrentCustomerGroup()->getId();
@@ -117,7 +106,7 @@ class CustomerComposer
         $result = [];
         foreach ($customerGroups as $id => $customerGroup) {
             $result[] = [
-                'name' => $customerGroup->getTranslated()['name'] ?? $customerGroup->getName(),
+                'name' => $customerGroup->getTranslation('name') ?: $customerGroup->getName(),
                 'id' => $id,
                 'is_default' => $id === $defaultCustomerGroupId ? '1' : '0',
                 'customer_tax_class_key' => 'default',

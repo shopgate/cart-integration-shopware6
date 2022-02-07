@@ -6,7 +6,6 @@ namespace Shopgate\Shopware\System\Configuration;
 
 use ReflectionException;
 use ReflectionProperty;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use ShopgateConfig;
 use ShopgateLibraryException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -126,7 +125,6 @@ class ConfigMapping extends ShopgateConfig
      * @param array $fieldList
      * @param boolean $validate
      *
-     * @throws MissingContextException
      * @throws ReflectionException
      * @throws ShopgateLibraryException
      */

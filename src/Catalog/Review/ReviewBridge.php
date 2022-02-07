@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Review;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -24,9 +23,6 @@ class ReviewBridge
         $this->contextManager = $contextManager;
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function getReviews(?int $limit, ?int $offset, array $uids): EntitySearchResult
     {
         $channel = $this->contextManager->getSalesContext();

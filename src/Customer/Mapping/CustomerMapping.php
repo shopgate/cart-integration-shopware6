@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer\Mapping;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\CustomFields\CustomFieldMapping;
 use ShopgateCustomer;
 use ShopgateLibraryException;
@@ -77,7 +76,6 @@ class CustomerMapping
      * @param string|null $password - set to null for guest
      * @return RequestDataBag
      * @throws ShopgateLibraryException
-     * @throws MissingContextException
      */
     public function mapToShopwareEntity(ShopgateCustomer $customer, ?string $password): RequestDataBag
     {

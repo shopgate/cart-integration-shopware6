@@ -58,6 +58,7 @@ class LineItemPromoMapping
 
     /**
      * A rule or coupon can have multiple discounts, and therefore we use discount ID as true identifier
+     * @returns ExtendedExternalCoupon
      */
     public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ShopgateExternalCoupon
     {

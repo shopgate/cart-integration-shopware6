@@ -5,8 +5,8 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_AttributeGroup;
@@ -26,19 +26,19 @@ class ConfigProductMapping extends SimpleProductMapping
         SortTree $sortTree,
         TierPriceMapping $tierPriceMapping,
         Formatter $translation,
+        CurrencyComposer $currencyComposer,
         PropertyBridge $productProperties,
         Shopgate_Model_AbstractExport $childProductMapping,
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
-        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation,
-            $crossSellingRoute);
+        parent::__construct(
+            $contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation, $currencyComposer,
+            $crossSellingRoute
+        );
         $this->productProperties = $productProperties;
         $this->childProductMapping = $childProductMapping;
     }
 
-    /**
-     * @throws MissingContextException
-     */
     public function setAttributeGroups(): void
     {
         /** @noinspection NullPointerExceptionInspection */
@@ -49,7 +49,7 @@ class ConfigProductMapping extends SimpleProductMapping
             foreach ($optionGroups as $optionGroup) {
                 $attributeGroup = new Shopgate_Model_Catalog_AttributeGroup();
                 $attributeGroup->setUid($optionGroup->getId());
-                $attributeGroup->setLabel($optionGroup->getName());
+                $attributeGroup->setLabel($optionGroup->getTranslation('name') ?: $optionGroup->getName());
                 $result[] = $attributeGroup;
             }
             parent::setAttributeGroups($result);

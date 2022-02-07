@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\System\Tax;
 
 use Shopgate\Shopware\Customer\Mapping\LocationMapping;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopware\Core\System\Tax\TaxRuleType\EntireCountryRuleTypeFilter as EntireCountry;
 use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as IndividualStates;
 
@@ -14,10 +13,6 @@ class TaxComposer
     private LocationMapping $locationMapping;
     private TaxBridge $taxBridge;
 
-    /**
-     * @param LocationMapping $locationMapping
-     * @param TaxBridge $taxBridge
-     */
     public function __construct(LocationMapping $locationMapping, TaxBridge $taxBridge)
     {
         $this->locationMapping = $locationMapping;
@@ -26,7 +21,6 @@ class TaxComposer
 
     /**
      * @return array
-     * @throws MissingContextException
      */
     public function getTaxSettings(): array
     {
@@ -70,7 +64,7 @@ class TaxComposer
             $taxRateKey = 'rate_' . $productTaxClassId . '_default';
             $taxRates[] = [
                 'key' => $taxRateKey,
-                'display_name' => $shopwareTaxRate->getName(),
+                'display_name' => $shopwareTaxRate->getTranslation('name') ?: $shopwareTaxRate->getName(),
                 'tax_percent' => $shopwareTaxRate->getTaxRate(),
                 'country' => '',
                 'state' => '',
@@ -93,9 +87,10 @@ class TaxComposer
                 }
 
                 $taxRateKey = implode('_', ['rate', $productTaxClassId, $countryIso]);
+                $name = ($shopwareTaxRate->getTranslation('name') ?: $shopwareTaxRate->getName()) . ' ' . $countryIso;
                 $taxRates[] = [
                     'key' => $taxRateKey,
-                    'display_name' => $shopwareTaxRate->getName() . ' ' . $countryIso,
+                    'display_name' => $name,
                     'tax_percent' => $shopwareTaxRule->getTaxRate(),
                     'country' => $countryIso,
                     'state' => '',
@@ -121,9 +116,11 @@ class TaxComposer
                 foreach ($stateIds as $stateId) {
                     $stateIso = $this->locationMapping->getStateIsoById($stateId);
                     $taxRateKey = 'rate_' . $productTaxClassId . '_' . $countryIso . '_' . $stateIso;
+                    $name = ($shopwareTaxRate->getTranslation('name') ?: $shopwareTaxRate->getName())
+                        . ' ' . $countryIso . '_' . $stateIso;
                     $taxRates[] = [
                         'key' => $taxRateKey,
-                        'display_name' => $shopwareTaxRate->getName() . ' ' . $countryIso . '_' . $stateIso,
+                        'display_name' => $name,
                         'tax_percent' => $shopwareTaxRule->getTaxRate(),
                         'country' => $countryIso,
                         'state' => $stateIso,
@@ -139,7 +136,7 @@ class TaxComposer
             $taxRule = [
                 'id' => $productTaxClassId,
                 'key' => 'rule_' . $productTaxClassId,
-                'name' => $shopwareTaxRate->getName(),
+                'name' => $shopwareTaxRate->getTranslation('name') ?: $shopwareTaxRate->getName(),
                 'priority' => 0,
                 'product_tax_classes' => [['key' => $productTaxClassKey]],
                 'customer_tax_classes' => [$CustomerTaxClass],

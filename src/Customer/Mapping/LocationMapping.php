@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer\Mapping;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -17,11 +16,6 @@ class LocationMapping
     private EntityRepositoryInterface $stateRepository;
     private ContextManager $contextManager;
 
-    /**
-     * @param EntityRepositoryInterface $countryRepository
-     * @param EntityRepositoryInterface $stateRepository
-     * @param ContextManager $contextManager
-     */
     public function __construct(
         EntityRepositoryInterface $countryRepository,
         EntityRepositoryInterface $stateRepository,
@@ -32,11 +26,6 @@ class LocationMapping
         $this->contextManager = $contextManager;
     }
 
-    /**
-     * @param string $id
-     * @return string|null
-     * @throws MissingContextException
-     */
     public function getCountryIsoById(string $id): ?string
     {
         $criteria = new Criteria([$id]);
@@ -50,11 +39,6 @@ class LocationMapping
         return $result ? $result->getIso() : null;
     }
 
-    /**
-     * @param string $id
-     * @return string|null
-     * @throws MissingContextException
-     */
     public function getStateIsoById(string $id): ?string
     {
         $criteria = new Criteria([$id]);
@@ -67,11 +51,6 @@ class LocationMapping
         return $result ? $result->getShortCode() : null;
     }
 
-    /**
-     * @param string $code
-     * @return string
-     * @throws MissingContextException
-     */
     public function getCountryIdByIso(string $code): string
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('iso', $code));
@@ -84,11 +63,6 @@ class LocationMapping
         return $result ? $result->getId() : '';
     }
 
-    /**
-     * @param string|null $code
-     * @return string
-     * @throws MissingContextException
-     */
     public function getStateIdByIso(?string $code): string
     {
         if (empty($code)) {
@@ -106,7 +80,6 @@ class LocationMapping
 
     /**
      * @return CountryEntity[]
-     * @throws MissingContextException
      */
     public function getTaxFreeCountries(): array
     {

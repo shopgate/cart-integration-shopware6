@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Tax;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -19,12 +18,6 @@ class TaxBridge
     private EntityRepositoryInterface $taxRuleTypeRepository;
     private ContextManager $contextManager;
 
-    /**
-     * @param EntityRepositoryInterface $taxRepository
-     * @param EntityRepositoryInterface $taxRuleRepository
-     * @param EntityRepositoryInterface $taxRuleTypeRepository
-     * @param ContextManager $contextManager
-     */
     public function __construct(
         EntityRepositoryInterface $taxRepository,
         EntityRepositoryInterface $taxRuleRepository,
@@ -39,7 +32,6 @@ class TaxBridge
 
     /**
      * @return TaxEntity[]
-     * @throws MissingContextException
      */
     public function getTaxClasses(): array
     {
@@ -54,7 +46,6 @@ class TaxBridge
      * @param string $id
      * @param string $type
      * @return TaxRuleEntity[]
-     * @throws MissingContextException
      */
     public function getTaxRulesByTaxId(string $id, string $type): array
     {
@@ -68,11 +59,6 @@ class TaxBridge
             ->getElements();
     }
 
-    /**
-     * @param string $technicalName
-     * @return string
-     * @throws MissingContextException
-     */
     public function getTaxRuleTypeIdByTechnicalName(string $technicalName): string
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('technicalName', $technicalName));

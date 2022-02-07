@@ -2,7 +2,6 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate_Model_Catalog_Category;
 use Shopgate_Model_Media_Image;
@@ -18,9 +17,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     /** @var ContextManager */
     private ContextManager $contextManager;
 
-    /**
-     * @param ContextManager $contextManager
-     */
     public function __construct(ContextManager $contextManager)
     {
         $this->contextManager = $contextManager;
@@ -29,8 +25,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     /**
      * Generate data dom object by firing a method array
-     *
-     * @return $this
      */
     public function generateData(): CategoryMapping
     {
@@ -62,12 +56,11 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setName(): void
     {
-        parent::setName($this->item->getName());
+        parent::setName($this->item->getTranslation('name'));
     }
 
     /**
      * Set parent category id
-     * @throws MissingContextException
      */
     public function setParentUid(): void
     {
@@ -77,18 +70,12 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     /**
      * Category link in shop
-     * @throws MissingContextException
      */
     public function setDeeplink(): void
     {
         parent::setDeeplink($this->getDeepLinkUrl($this->item));
     }
 
-    /**
-     * @param CategoryEntity $category
-     * @return string
-     * @throws MissingContextException
-     */
     private function getDeepLinkUrl(CategoryEntity $category): string
     {
         $channel = $this->contextManager->getSalesContext()->getSalesChannel();
@@ -104,11 +91,6 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
         parent::setIsAnchor($this->item->getDisplayNestedProducts());
     }
 
-    /**
-     * @param string $parentId
-     *
-     * @return $this
-     */
     public function setParentId(string $parentId): CategoryMapping
     {
         $this->parentId = $parentId;
@@ -121,14 +103,13 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
      */
     public function setImage(): void
     {
-        if ($this->item->getMediaId()) {
+        if ($media = $this->item->getMedia()) {
             $imageItem = new Shopgate_Model_Media_Image();
-            $media = $this->item->getMedia();
-            $imageItem->setUid($media ? $media->getId() : 1);
+            $imageItem->setUid($media->getId());
             $imageItem->setSortOrder(1);
-            $imageItem->setUrl($media ? $media->getUrl() : '');
-            $imageItem->setTitle($media && $media->getTitle() ? $media->getTitle() : $this->item->getName());
-            $imageItem->setAlt($media && $media->getAlt() ? $media->getAlt() : '');
+            $imageItem->setUrl($media->getUrl());
+            $imageItem->setTitle($media->getTitle() ?: $this->item->getName());
+            $imageItem->setAlt($media->getAlt());
 
             parent::setImage($imageItem);
         }

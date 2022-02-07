@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Catalog\Product;
 
 use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
 use Throwable;
@@ -16,11 +15,6 @@ class ProductComposer
     private ProductMapFactory $productMapFactory;
     private ProductBridge $productBridge;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param ProductMapFactory $productMapFactory
-     * @param ProductBridge $productBridge
-     */
     public function __construct(
         LoggerInterface $logger,
         ProductMapFactory $productMapFactory,
@@ -36,7 +30,6 @@ class ProductComposer
      * @param int|null $offset
      * @param array $uids
      * @return Shopgate_Model_Catalog_Product[]
-     * @throws MissingContextException
      */
     public function loadProducts(?int $limit, ?int $offset, array $uids = []): array
     {

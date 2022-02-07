@@ -269,6 +269,7 @@
         <service id="Shopgate\Shopware\System\PaymentHandler\PaymentLoaderSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Shopgate\Shopware\System\CurrencyComposer"/>
         <service id="Shopgate\Shopware\System\Formatter">
             <argument key="$translator" id="translator"/>
         </service>

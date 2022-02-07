@@ -51,9 +51,7 @@ class Plugin extends ShopgatePlugin
      * @param $params
      * @param string $message
      * @param int $errorcount
-     * @throws Exceptions\MissingContextException
      * @throws ShopgateLibraryException
-     * @throws ShopgateMerchantApiException
      */
     public function cron($jobname, $params, &$message, &$errorcount): void
     {
@@ -64,7 +62,6 @@ class Plugin extends ShopgatePlugin
      * @param string $user
      * @param string $pass
      * @return ShopgateCustomer
-     * @throws Exceptions\MissingContextException
      * @throws ShopgateLibraryException
      */
     public function getCustomer($user, $pass): ShopgateCustomer
@@ -76,7 +73,6 @@ class Plugin extends ShopgatePlugin
      * @param string $user
      * @param string $pass
      * @param ShopgateCustomer $customer
-     * @throws Exceptions\MissingContextException
      * @throws ShopgateLibraryException
      */
     public function registerCustomer($user, $pass, ShopgateCustomer $customer): void
@@ -87,7 +83,6 @@ class Plugin extends ShopgatePlugin
     /**
      * @param ShopgateOrder $order
      * @return array
-     * @throws Exceptions\MissingContextException
      * @throws ShopgateLibraryException
      */
     public function addOrder(ShopgateOrder $order): array
@@ -102,7 +97,6 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @throws ShopgateLibraryException
-     * @throws Exceptions\MissingContextException
      */
     public function updateOrder(ShopgateOrder $order): array
     {
@@ -115,7 +109,6 @@ class Plugin extends ShopgatePlugin
     /**
      * @param ShopgateCart $cart
      * @return array
-     * @throws Exceptions\MissingContextException
      * @throws ShopgateLibraryException
      */
     public function checkCart(ShopgateCart $cart): array
@@ -138,7 +131,6 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @return array[]
-     * @throws Exceptions\MissingContextException
      */
     public function getSettings(): array
     {
@@ -147,7 +139,6 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @throws ShopgateLibraryException
-     * @throws Exceptions\MissingContextException
      */
     public function getOrders(
         $customerToken,
@@ -183,7 +174,6 @@ class Plugin extends ShopgatePlugin
      * @param null $offset
      * @param array $uids
      * @return Shopgate_Model_Catalog_Product[]
-     * @throws Exceptions\MissingContextException
      */
     protected function createItems($limit = null, $offset = null, array $uids = array()): array
     {
@@ -203,7 +193,6 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @inheritdoc
-     * @throws Exceptions\MissingContextException
      */
     protected function createCategories($limit = null, $offset = null, array $uids = []): array
     {
@@ -222,7 +211,6 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @inerhitDoc
-     * @throws Exceptions\MissingContextException
      */
     protected function createReviews($limit = null, $offset = null, array $uids = array()): array
     {

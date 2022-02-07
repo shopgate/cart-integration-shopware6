@@ -81,7 +81,7 @@ newman:
   rules:
     - if: '$CI_COMMIT_TAG == null'
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra newman-reporter-junitfull @mockoon/cli > /dev/null
+    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --activate SwagPlatformDemoData
     - |-
@@ -90,8 +90,8 @@ newman:
       fi
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junitfull
-      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junitfull-export ${PROJECT_ROOT}/newman.junit.xml
+    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
+      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
       --color on --insecure --no-insecure-file-read
       --env-var "host=$APP_URL" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:

@@ -6,7 +6,6 @@ namespace Shopgate\Shopware\Order\Customer;
 
 use Shopgate\Shopware\Customer\CustomerBridge;
 use Shopgate\Shopware\Customer\CustomerComposer;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;
 use ShopgateCartCustomer;
@@ -46,11 +45,6 @@ class OrderCustomerComposer
     }
 
     /**
-     * @param string $email
-     * @param ShopgateCartBase $cart
-     * @param SalesChannelContext $salesChannelContext
-     * @return CustomerEntity
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     public function getOrCreateGuestCustomerByEmail(

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
@@ -90,7 +89,6 @@ class OrderComposer
     /**
      * @param ExtendedOrder|ShopgateOrder $order
      * @return array
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     public function addOrder(ShopgateOrder $order): array
@@ -168,7 +166,6 @@ class OrderComposer
 
     /**
      * @return ShopgateExternalOrder[]
-     * @throws MissingContextException
      */
     public function getOrders(
         string $id,
@@ -195,7 +192,7 @@ class OrderComposer
     }
 
     /**
-     * @throws MissingContextException
+     * @throws ShopgateMerchantApiException
      */
     public function setShippingCompleted(): void
     {
@@ -229,7 +226,7 @@ class OrderComposer
     }
 
     /**
-     * @throws MissingContextException
+     * @throws ShopgateMerchantApiException
      */
     public function cancelOrders(): void
     {
@@ -262,7 +259,6 @@ class OrderComposer
      * We may need to rethink shipping blocking here
      *
      * @throws ShopgateLibraryException
-     * @throws MissingContextException
      */
     public function updateOrder(ShopgateOrder $incSgOrder): array
     {

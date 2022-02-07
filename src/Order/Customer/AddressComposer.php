@@ -7,7 +7,6 @@ namespace Shopgate\Shopware\Order\Customer;
 use Shopgate\Shopware\Customer\AddressBridge;
 use Shopgate\Shopware\Customer\CustomerBridge;
 use Shopgate\Shopware\Customer\Mapping\AddressMapping;
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use ShopgateAddress;
 use ShopgateCartBase;
 use ShopgateLibraryException;
@@ -21,11 +20,6 @@ class AddressComposer
     private AddressBridge $addressBridge;
     private CustomerBridge $customerBridge;
 
-    /**
-     * @param CustomerBridge $customerBridge
-     * @param AddressMapping $addressMapping
-     * @param AddressBridge $addressBridge
-     */
     public function __construct(
         CustomerBridge $customerBridge,
         AddressMapping $addressMapping,
@@ -41,8 +35,7 @@ class AddressComposer
      *
      * @param ShopgateCartBase $order
      * @param SalesChannelContext $context
-     * @return array
-     * @throws MissingContextException
+     * @return string[]
      * @throws ShopgateLibraryException
      */
     public function createAddressSwitchData(ShopgateCartBase $order, SalesChannelContext $context): array
@@ -64,10 +57,6 @@ class AddressComposer
      * In case we cannot find or create address, shopware order creation will use
      * the default shopware customer addresses. This is why we throw.
      *
-     * @param ShopgateAddress $address
-     * @param SalesChannelContext $context
-     * @return string|null
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     private function getOrCreateAddress(ShopgateAddress $address, SalesChannelContext $context): ?string

@@ -16,9 +16,6 @@ class ProductUpdateSubscriber implements EventSubscriberInterface
 {
     private FileCache $fileCache;
 
-    /**
-     * @param FileCache $fileCache
-     */
     public function __construct(FileCache $fileCache)
     {
         $this->fileCache = $fileCache;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
-use Shopgate\Shopware\Exceptions\MissingContextException;
 use Shopgate\Shopware\Order\Customer\AddressComposer;
 use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -22,11 +21,6 @@ class ContextComposer
     private AddressComposer $addressComposer;
     private QuoteErrorMapping $errorMapping;
 
-    /**
-     * @param ContextManager $contextManager
-     * @param AddressComposer $addressComposer
-     * @param QuoteErrorMapping $errorMapping
-     */
     public function __construct(
         ContextManager $contextManager,
         AddressComposer $addressComposer,
@@ -37,11 +31,6 @@ class ContextComposer
         $this->errorMapping = $errorMapping;
     }
 
-    /**
-     * @param string $customerId
-     * @return SalesChannelContext
-     * @throws MissingContextException
-     */
     public function getContextByCustomerId(string $customerId): SalesChannelContext
     {
         try {
@@ -54,19 +43,15 @@ class ContextComposer
     /**
      * Will not do anything if cart is missing customer external ID
      *
-     * @param ShopgateCartBase $base
-     * @param SalesChannelContext $channel
-     * @return SalesChannelContext
-     * @throws MissingContextException
      * @throws ShopgateLibraryException
      */
     public function addCustomerAddress(ShopgateCartBase $base, SalesChannelContext $channel): SalesChannelContext
     {
         $addressBag = $this->addressComposer->createAddressSwitchData($base, $channel);
         try {
-            // making sure that 2 address ID's are different from each other
+            // making sure that 2 address IDs are different from each other
             if (count(array_unique($addressBag)) === 2) {
-                // dirty hack because of some validation bug that causes to keep billing address ID in search criteria
+                // dirty hack because of some validations bug that causes to keep billing address ID in search criteria
                 $this->contextManager->switchContext(
                     new RequestDataBag(
                         [SalesChannelContextService::BILLING_ADDRESS_ID => $addressBag[SalesChannelContextService::BILLING_ADDRESS_ID]]
@@ -89,11 +74,6 @@ class ContextComposer
         return $newContext;
     }
 
-    /**
-     * @param string $uid
-     * @param SalesChannelContext $context
-     * @return SalesChannelContext
-     */
     public function addActivePayment(string $uid, SalesChannelContext $context): SalesChannelContext
     {
         $dataBag = [SalesChannelContextService::PAYMENT_METHOD_ID => $uid];
