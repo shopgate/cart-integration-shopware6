@@ -39,13 +39,19 @@ class ShippingMapping
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
     {
+        $costs = $delivery->getShippingCosts();
         $method = $delivery->getShippingMethod();
         $exportShipping = $this->classFactory->createShippingMethod();
         $exportShipping->setId($method->getId());
         $exportShipping->setTitle($method->getTranslation('name') ?: $method->getName());
         $exportShipping->setDescription($method->getTranslation('description') ?: $method->getDescription());
-        $exportShipping->setAmountWithTax($delivery->getShippingCosts()->getTotalPrice());
+        $exportShipping->setAmountWithTax($costs->getTotalPrice());
         $exportShipping->setShippingGroup(ShopgateDeliveryNote::OTHER);
+        if ($highestRate = $costs->getTaxRules()->highestRate()) {
+            $exportShipping->setTaxPercent($highestRate->getTaxRate());
+        } elseif ($anyTax = $costs->getCalculatedTaxes()->sortByTax()->first()) {
+            $exportShipping->setTaxPercent($anyTax->getTaxRate());
+        }
 
         return $exportShipping;
     }
