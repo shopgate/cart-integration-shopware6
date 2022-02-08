@@ -115,7 +115,14 @@ class ShippingComposer
                 $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
                 $resultContext = $this->contextManager->switchContext($dataBag, $context);
                 $cart = $this->cartPageLoader->load($request, $resultContext)->getCart();
-                foreach ($cart->getDeliveries()->getElements() as $delivery) {
+                $deliveries = $this->sortCartDeliveries($cart->getDeliveries());
+                $delivery = $deliveries->first();
+                // we have shipping discounts
+                if ($delivery && $deliveries->count() > 1) {
+                    $cost = $this->combineShippingCost($deliveries);
+                    $delivery->setShippingCosts($cost);
+                }
+                if ($delivery) {
                     $list[$delivery->getShippingMethod()->getId()] = $delivery;
                 }
             }
@@ -128,6 +135,25 @@ class ShippingComposer
         }
 
         return new DeliveryCollection($list);
+    }
+
+    /**
+     * Combines shipping discounts into one price.
+     * Note that we do not combine tax numbers well.
+     */
+    private function combineShippingCost(DeliveryCollection $deliveries): CalculatedPrice
+    {
+        /** @noinspection NullPointerExceptionInspection */
+        return new CalculatedPrice(
+            $deliveries->reduce(static function (float $result, Delivery $delivery) {
+                return $result + $delivery->getShippingCosts()->getUnitPrice();
+            }, 0.0),
+            $deliveries->reduce(static function (float $result, Delivery $delivery) {
+                return $result + $delivery->getShippingCosts()->getTotalPrice();
+            }, 0.0),
+            $deliveries->first()->getShippingCosts()->getCalculatedTaxes(),
+            $deliveries->first()->getShippingCosts()->getTaxRules()
+        );
     }
 
     public function isFullyShipped(?OrderDeliveryCollection $deliveries): bool
@@ -163,6 +189,20 @@ class ShippingComposer
     {
         $deliveries->sort(
             function (OrderDeliveryEntity $one, OrderDeliveryEntity $two) {
+                return $two->getShippingCosts() <=> $one->getShippingCosts();
+            }
+        );
+
+        return $deliveries;
+    }
+
+    /**
+     * @see sortOrderDeliveries for detailed explanation
+     */
+    public function sortCartDeliveries(DeliveryCollection $deliveries): DeliveryCollection
+    {
+        $deliveries->sort(
+            function (Delivery $one, Delivery $two) {
                 return $two->getShippingCosts() <=> $one->getShippingCosts();
             }
         );
