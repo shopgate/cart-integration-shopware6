@@ -75,8 +75,8 @@ class LineItemPromoMapping
         $coupon->setName($lineItem->getLabel());
         $coupon->setIsFreeShipping(false);
         if ($lineItem->getPrice()) {
-            // might need to pass cart status instead
-            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($lineItem->getPrice(), 'gross');
+            $status = $this->contextManager->getSalesContext()->getTaxState();
+            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($lineItem->getPrice(), $status);
             $coupon->setAmountNet(-($priceWithoutTax));
             $coupon->setAmountGross(-($priceWithTax));
         }
