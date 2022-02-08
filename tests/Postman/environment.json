@@ -224,6 +224,12 @@
       "enabled": true
     },
     {
+      "key": "created_product_reducedTax_id",
+      "value": "d78d1157ab89ec13a84c8dcbeccb7b75",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "created_product_variant_child_id",
       "value": "ff951c236e5b9fca68f186da252aa026",
       "type": "default",
@@ -250,6 +256,36 @@
     {
       "key": "created_review_headless_advPriceOne_id",
       "value": "3e226aa33c486a291338478679382ab1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_rule_shippingUSA",
+      "value": "e5c1f8e86fd57b0102d40f345db5b9cd",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_rule_shippingGB",
+      "value": "2f74f1c17fde1fceefa67a5d445e0cc4",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_shipping_taxAuto",
+      "value": "aad2e5c1ef53d4e89e302bb919a1a112",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_shipping_taxHighest",
+      "value": "7ded7c2f4494eecf6c796c282d57a57b",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_shipping_taxFixed",
+      "value": "406c461fd6bba681026257bc2488bafc",
       "type": "default",
       "enabled": true
     },
@@ -335,6 +371,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-02-06T17:44:57.826Z",
+  "_postman_exported_at": "2022-02-08T15:49:16.486Z",
   "_postman_exported_using": "Postman/9.13.0"
 }
