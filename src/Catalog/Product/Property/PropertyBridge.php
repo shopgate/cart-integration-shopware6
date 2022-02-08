@@ -22,11 +22,10 @@ class PropertyBridge
 
     /**
      * @param string[] $uids
-     * @return PropertyGroupCollection|null
      */
     public function getGroupOptions(array $uids = []): ?PropertyGroupCollection
     {
-        $criteria = new Criteria($uids);
+        $criteria = new Criteria(!empty($uids) ? $uids : null);
         $criteria->setTitle('shopgate::property-group-option::ids');
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->propertyGroupOptionRepo->search(

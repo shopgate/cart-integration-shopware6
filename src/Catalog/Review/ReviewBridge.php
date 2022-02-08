@@ -26,7 +26,7 @@ class ReviewBridge
     public function getReviews(?int $limit, ?int $offset, array $uids): EntitySearchResult
     {
         $channel = $this->contextManager->getSalesContext();
-        $criteria = (new Criteria($uids))
+        $criteria = (new Criteria(!empty($uids) ? $uids : null))
             ->setLimit($limit)
             ->setOffset($offset)
             ->addFilter(new EqualsFilter('status', true))
