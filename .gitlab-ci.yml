@@ -21,6 +21,8 @@ variables:
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
   MOCK_SERVER_URL: 'http://127.0.0.1:3000'
   VERBOSE: ''
+  # throws an exception when Criteria class has empty ids passed to it
+  FEATURE_NEXT_16710: 1
 
 # Cache libraries in between PR commits
 cache:
