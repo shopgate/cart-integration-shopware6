@@ -58,9 +58,8 @@ class LineItemPromoMapping
 
     /**
      * A rule or coupon can have multiple discounts, and therefore we use discount ID as true identifier
-     * @returns ExtendedExternalCoupon
      */
-    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ShopgateExternalCoupon
+    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ExtendedExternalCoupon
     {
         $discountId = $lineItem->getPayload()['discountId'] ?? $lineItem->getId();
         $couponCode = $lineItem->getReferencedId(); // empty string when automatic cart_rule

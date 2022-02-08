@@ -147,11 +147,11 @@ class ShippingComposer
     /**
      * We assume that it's not multi-shipping
      *
-     * @see sortDeliveries
+     * @see sortOrderDeliveries
      */
     public function getFirstShippingDelivery(?OrderDeliveryCollection $deliveries): ?OrderDeliveryEntity
     {
-        return $deliveries ? $this->sortDeliveries($deliveries)->first() : null;
+        return $deliveries ? $this->sortOrderDeliveries($deliveries)->first() : null;
     }
 
     /**
@@ -159,7 +159,7 @@ class ShippingComposer
      * actual "shipping" price (>0 value), the rest are shipping discounts.
      * NB! This may not be accounting for multi-shipping.
      */
-    public function sortDeliveries(OrderDeliveryCollection $deliveries): OrderDeliveryCollection
+    public function sortOrderDeliveries(OrderDeliveryCollection $deliveries): OrderDeliveryCollection
     {
         $deliveries->sort(
             function (OrderDeliveryEntity $one, OrderDeliveryEntity $two) {
