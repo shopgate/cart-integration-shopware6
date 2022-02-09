@@ -32,7 +32,7 @@ class PaymentLoaderSubscriber implements EventSubscriberInterface
     {
         /** @var AccountPaymentMethodPage $page */
         $page = $event->getPage();
-        if ($paymentMethods = $page->getSalesChannelPaymentMethods()) {
+        if ($paymentMethods = $page->getPaymentMethods()) {
             $paymentMethods->remove(GenericPayment::UUID);
             $page->setPaymentMethods($paymentMethods);
         }
