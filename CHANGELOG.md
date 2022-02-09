@@ -1,3 +1,7 @@
+# 1.8.5
+
+- fixed customer registration
+
 # 1.8.4
 
 - fixed export of product tags

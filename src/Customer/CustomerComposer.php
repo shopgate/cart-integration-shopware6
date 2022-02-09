@@ -75,6 +75,10 @@ class CustomerComposer
             'storefrontUrl',
             $this->configBridge->getCustomerOptInConfirmUrl($this->contextManager->getSalesContext())
         );
+        $dataBag->set(
+            'acceptedDataProtection',
+            true
+        );
         try {
             return $this->registerRoute
                 ->register($dataBag, $this->contextManager->getSalesContext(), false)
