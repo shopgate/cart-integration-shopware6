@@ -2,6 +2,12 @@
   "id": "ce246018-7c1a-47cc-8e02-6ab28741465b",
   "values": [
     {
+      "key": "system_port",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "framework_action_ping",
       "value": "ping",
       "enabled": true
@@ -57,13 +63,13 @@
       "enabled": true
     },
     {
-      "key": "sw_endpoint_auth",
-      "value": "{{host}}/api/oauth/token",
+      "key": "mock_server_merchant_uri",
+      "value": "{{host}}:3000",
       "enabled": true
     }
   ],
   "name": "Globals",
   "_postman_variable_scope": "globals",
-  "_postman_exported_at": "2021-11-12T10:47:28.185Z",
-  "_postman_exported_using": "Postman/9.1.3"
+  "_postman_exported_at": "2022-02-09T17:21:39.040Z",
+  "_postman_exported_using": "Postman/9.13.0"
 }
