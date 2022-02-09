@@ -1,6 +1,7 @@
 # 1.8.5
 
 - added support to customer registration configuration - `Data protection checkbox`
+- fixed customer account page > payment method loading
 
 # 1.8.4
 
