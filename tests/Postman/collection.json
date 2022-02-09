@@ -389,6 +389,67 @@
           "response": []
         },
         {
+          "name": "SW: Set data protection acceptance to required",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully enabled LiveShopping\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"cf48550d5969465e9754b964e1837943\",\r\n                \"configurationKey\": \"core.loginRegistration.requireDataProtectionCheckbox\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "SW: change channel lang",
           "event": [
             {
@@ -2280,15 +2341,15 @@
               "listen": "test",
               "script": {
                 "exec": [
-					"pm.test('Successfull call', function(){",
-					"    pm.response.to.be.success;",
-					"});",
-					"",
-					"pm.test(\"Body matches string\", function () {",
-					"    pm.expect(pm.response.text()).to.include(\"authentication failed\");",
-					"    pm.expect(pm.response.text()).to.include(\"Uncaught error was thrown\");",
-					"});"
-				],
+          "pm.test('Successfull call', function(){",
+          "    pm.response.to.be.success;",
+          "});",
+          "",
+          "pm.test(\"Body matches string\", function () {",
+          "    pm.expect(pm.response.text()).to.include(\"authentication failed\");",
+          "    pm.expect(pm.response.text()).to.include(\"Uncaught error was thrown\");",
+          "});"
+        ],
                 "type": "text/javascript"
               }
             }
@@ -2322,11 +2383,11 @@
                   "value": "get_log_file",
                   "type": "text"
                 },
-				  {
-					  "key": "lines",
-					  "value": "100",
-					  "type": "text"
-				  },
+          {
+            "key": "lines",
+            "value": "100",
+            "type": "text"
+          },
                 {
                   "key": "log_type",
                   "value": "error",
