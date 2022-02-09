@@ -1,6 +1,6 @@
 # 1.8.5
 
-- fixed customer registration
+- added support to customer registration configuration - `Data protection checkbox`
 
 # 1.8.4
 
