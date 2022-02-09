@@ -157,9 +157,6 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <tag name="shopware.payment.method.sync"/>
         </service>
-        <service id="Shopgate\Shopware\System\PaymentHandler\PaymentLoaderSubscriber">
-            <tag name="kernel.event_subscriber"/>
-        </service>
         <service id="Shopgate\Shopware\System\Formatter"/>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
         <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
