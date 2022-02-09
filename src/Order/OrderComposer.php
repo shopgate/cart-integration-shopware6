@@ -191,9 +191,6 @@ class OrderComposer
         );
     }
 
-    /**
-     * @throws ShopgateMerchantApiException
-     */
     public function setShippingCompleted(): void
     {
         $context = $this->contextManager->getSalesContext();
@@ -225,9 +222,6 @@ class OrderComposer
         );
     }
 
-    /**
-     * @throws ShopgateMerchantApiException
-     */
     public function cancelOrders(): void
     {
         $context = $this->contextManager->getSalesContext();
@@ -287,7 +281,7 @@ class OrderComposer
         }
 
         // easier to manage deliveries if they are sorted by price
-        $this->shippingComposer->sortDeliveries($swOrder->getDeliveries());
+        $this->shippingComposer->sortOrderDeliveries($swOrder->getDeliveries());
         if ($incSgOrder->getUpdateShipping()
             && !$incSgOrder->getIsShippingBlocked()
             && $incSgOrder->getIsShippingCompleted()

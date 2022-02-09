@@ -6,12 +6,10 @@ namespace Shopgate\Shopware\Tests\Unit\Shopgate\Extended;
 use PHPUnit\Framework\TestCase;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
 use Shopgate\Shopware\Shopgate\Extended\SerializerTrait;
-use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCart;
 use ShopgateExternalCoupon;
 use ShopgateOrder;
 use ShopgateOrderItem;
-use Shopware\Core\Checkout\Cart\Price\CashRounding;
 
 class SerializerTraitTest extends TestCase
 {
@@ -44,17 +42,6 @@ class SerializerTraitTest extends TestCase
         $coupon2 = $this->createTraitMock();
         $coupon2->addDecodedInfo([]);
         $this->assertEquals([], $coupon2->getDecodedInfo());
-    }
-
-    public function testExtendedClass()
-    {
-        $coupon = new ExtendedExternalCoupon(
-            $this->getMockBuilder(CashRounding::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(ContextManager::class)->disableOriginalConstructor()->getMock()
-        );
-        $coupon->setInternalInfo('test2');
-        $this->assertEquals('test2', $coupon->getUtilityInternalInfo());
-
     }
 
     /**
@@ -115,6 +102,10 @@ class SerializerTraitTest extends TestCase
                 'class' => new class (['internal_order_info' => 'test3']) extends ShopgateOrderItem {
                     use SerializerTrait;
                 }
+            ],
+            'extended coupon' => [
+                'expected' => 'test2',
+                'class' => new ExtendedExternalCoupon(['internal_info' => 'test2'])
             ]
         ];
     }

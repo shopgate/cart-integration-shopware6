@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order\Taxes;
 
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
+use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use ShopgateExternalOrderTax;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -15,11 +16,16 @@ class TaxMapping
 {
     private ExtendedClassFactory $classFactory;
     private Formatter $formatter;
+    private CurrencyComposer $currencyComposer;
 
-    public function __construct(ExtendedClassFactory $classFactory, Formatter $formatter)
-    {
+    public function __construct(
+        ExtendedClassFactory $classFactory,
+        CurrencyComposer $currencyComposer,
+        Formatter $formatter
+    ) {
         $this->classFactory = $classFactory;
         $this->formatter = $formatter;
+        $this->currencyComposer = $currencyComposer;
     }
 
     public function calculatePrices(
@@ -35,7 +41,10 @@ class TaxMapping
             $priceWithTax = $price->getUnitPrice() + ($tax / $price->getQuantity());
         }
 
-        return [$priceWithTax, $priceWithoutTax];
+        return [
+            $this->currencyComposer->roundAsItem($priceWithTax),
+            $this->currencyComposer->roundAsItem($priceWithoutTax)
+        ];
     }
 
     public function mapOutgoingOrderTaxes(CalculatedTax $swTax): ShopgateExternalOrderTax

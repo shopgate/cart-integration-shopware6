@@ -50,7 +50,7 @@ class OrderMapping
             $sgOrder->setPaymentTime($originalOrder->getPaymentTime());
         }
         // sort deliveries to contain shipping cost as first item & the rest discounts
-        $this->shippingComposer->sortDeliveries($swOrder->getDeliveries());
+        $this->shippingComposer->sortOrderDeliveries($swOrder->getDeliveries());
         $sgOrder->setCreatedTime($swOrder->getOrderDateTime());
         $sgOrder->setExternalOrderId($swOrder->getId());
         $sgOrder->setExternalOrderNumber($swOrder->getOrderNumber());

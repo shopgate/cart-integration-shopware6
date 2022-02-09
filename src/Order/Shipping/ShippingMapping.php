@@ -8,6 +8,7 @@ use Shopgate\Shopware\Order\State\StateComposer;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping;
+use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
 use ShopgateDeliveryNote;
 use ShopgateExternalOrderExtraCost;
@@ -22,12 +23,14 @@ class ShippingMapping
     private ShopgateOrderMapping $shopgateOrderMapping;
     private StateComposer $stateMapping;
     private Formatter $formatter;
+    private ContextManager $contextManager;
 
     public function __construct(
         ExtendedClassFactory $classFactory,
         TaxMapping $taxMapping,
         ShopgateOrderMapping $shopgateOrderMapping,
         StateComposer $stateMapping,
+        ContextManager $contextManager,
         Formatter $formatter
     ) {
         $this->classFactory = $classFactory;
@@ -35,17 +38,27 @@ class ShippingMapping
         $this->shopgateOrderMapping = $shopgateOrderMapping;
         $this->stateMapping = $stateMapping;
         $this->formatter = $formatter;
+        $this->contextManager = $contextManager;
     }
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
     {
+        $costs = $delivery->getShippingCosts();
         $method = $delivery->getShippingMethod();
+        $taxStatus = $this->contextManager->getSalesContext()->getTaxState();
         $exportShipping = $this->classFactory->createShippingMethod();
         $exportShipping->setId($method->getId());
         $exportShipping->setTitle($method->getTranslation('name') ?: $method->getName());
         $exportShipping->setDescription($method->getTranslation('description') ?: $method->getDescription());
-        $exportShipping->setAmountWithTax($delivery->getShippingCosts()->getTotalPrice());
+        [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($costs, $taxStatus);
+        $exportShipping->setAmount($priceWithoutTax);
+        $exportShipping->setAmountWithTax($priceWithTax);
         $exportShipping->setShippingGroup(ShopgateDeliveryNote::OTHER);
+        if ($highestRate = $costs->getTaxRules()->highestRate()) {
+            $exportShipping->setTaxPercent($highestRate->getTaxRate());
+        } elseif ($anyTax = $costs->getCalculatedTaxes()->sortByTax()->first()) {
+            $exportShipping->setTaxPercent($anyTax->getTaxRate());
+        }
 
         return $exportShipping;
     }

@@ -1,4 +1,4 @@
-# Pre-version
+# 2.0.0
 
 - added ability to add settings via `set_settings`
 - added `live shopping` for cart & orders

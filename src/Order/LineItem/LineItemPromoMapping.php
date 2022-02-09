@@ -58,9 +58,8 @@ class LineItemPromoMapping
 
     /**
      * A rule or coupon can have multiple discounts, and therefore we use discount ID as true identifier
-     * @returns ExtendedExternalCoupon
      */
-    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ShopgateExternalCoupon
+    public function mapValidCoupon(LineItem $lineItem, ExtendedCart $sgCart): ExtendedExternalCoupon
     {
         $discountId = $lineItem->getPayload()['discountId'] ?? $lineItem->getId();
         $couponCode = $lineItem->getReferencedId(); // empty string when automatic cart_rule
@@ -76,8 +75,8 @@ class LineItemPromoMapping
         $coupon->setName($lineItem->getLabel());
         $coupon->setIsFreeShipping(false);
         if ($lineItem->getPrice()) {
-            // might need to pass cart status instead
-            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($lineItem->getPrice(), 'gross');
+            $status = $this->contextManager->getSalesContext()->getTaxState();
+            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($lineItem->getPrice(), $status);
             $coupon->setAmountNet(-($priceWithoutTax));
             $coupon->setAmountGross(-($priceWithTax));
         }

@@ -50,7 +50,7 @@ class ProductBridge
     public function getProductList(?int $limit, ?int $offset, array $uids = []): ProductCollection
     {
         $context = $this->contextManager->getSalesContext();
-        $criteria = (new Criteria($uids))
+        $criteria = (new Criteria(!empty($uids) ? $uids : null))
             ->setLimit($limit)
             ->setOffset($offset)
             ->addFilter(new ProductAvailableFilter($context->getSalesChannel()->getId()))
