@@ -12,6 +12,11 @@
 - fixed cron logic to accurately cancel orders & mark orders shipped in Shopgate Panel
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
 
+# 1.8.5
+
+- added support to customer registration configuration - `Data protection checkbox`
+- fixed customer account page > payment method loading
+
 # 1.8.4
 
 - fixed export of product tags
