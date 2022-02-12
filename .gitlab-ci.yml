@@ -165,7 +165,7 @@ build zip:
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
     name: '${PLUGIN_NAME}'
-    expire_in: 6 mos
+    expire_in: never
     paths:
       - '${PLUGIN_NAME}.zip'
 
