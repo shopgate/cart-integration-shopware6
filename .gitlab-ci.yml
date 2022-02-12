@@ -98,8 +98,7 @@ newman:
       --env-var "host=$APP_URL" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
-    expire_in: 3 days
-    expose_as: 'Newman HTML Report'
+    expire_in: 7 days
     reports:
       junit: newman.junit.xml
     paths:
@@ -107,7 +106,8 @@ newman:
 
 phpunit:
   stage: test
-  needs: [ ]
+  needs:
+    - newman
   rules:
     - exists:
         - phpunit.xml*
@@ -143,9 +143,9 @@ build zip:
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
-    name: '${PLUGIN_NAME}.zip'
+    name: '${PLUGIN_NAME}'
     paths:
-      - '*.zip'
+      - '${PLUGIN_NAME}.zip'
 
 upload zip to store:
   stage: deploy
