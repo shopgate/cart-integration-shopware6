@@ -52,12 +52,14 @@ default:
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
     - >
       [ -d vendor ] && mv vendor /tmp/
+      [ -d .cache ] && mv .cache /tmp/
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
     - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
     - >
       [ -d /tmp/vendor ] && mv /tmp/vendor ./
+      [ -d /tmp/.cache ] && mv /tmp/.cache ./
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
@@ -86,10 +88,6 @@ newman:
     - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --activate SwagPlatformDemoData
-    - |-
-      if [[ $VERBOSE != "" ]]; then
-          mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
-      fi
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
@@ -132,11 +130,13 @@ phpunit:
 
 publish package:
   image: curlimages/curl:latest
+  services: [ ]
   stage: build
   only:
     - tags
   variables:
     URL: "$CI_SERVER_PROTOCOL://$CI_SERVER_HOST:$CI_SERVER_PORT/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
+  before_script: [ ]
   script:
     - version=$([[ -z "$CI_COMMIT_TAG" ]] && echo "branch=$CI_COMMIT_REF_NAME" || echo "tag=$CI_COMMIT_TAG")
     - insecure=$([ "$CI_SERVER_PROTOCOL" = "http" ] && echo "--insecure" || echo "")
@@ -165,7 +165,7 @@ build zip:
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
     name: '${PLUGIN_NAME}'
-    expire_in: never
+    expire_in: 6 mos
     paths:
       - '${PLUGIN_NAME}.zip'
 
