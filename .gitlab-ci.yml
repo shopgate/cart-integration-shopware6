@@ -26,7 +26,8 @@ variables:
 
 # Cache libraries in between PR commits
 cache:
-  key: $PLATFORM_BRANCH
+  key: $PLUGIN_NAME-$PLATFORM_BRANCH
+  policy: pull
   paths:
     - .cache/npm
     - vendor/
@@ -52,6 +53,7 @@ default:
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
     - >
       [ -d vendor ] && mv vendor /tmp/
+    - >
       [ -d .cache ] && mv .cache /tmp/
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
@@ -59,6 +61,7 @@ default:
     - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
     - >
       [ -d /tmp/vendor ] && mv /tmp/vendor ./
+    - >
       [ -d /tmp/.cache ] && mv /tmp/.cache ./
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
@@ -82,6 +85,8 @@ default:
 
 newman:
   stage: test
+  cache:
+    policy: pull-push
   rules:
     - if: '$CI_COMMIT_TAG == null'
   script:
