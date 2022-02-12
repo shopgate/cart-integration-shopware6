@@ -132,8 +132,8 @@ phpunit:
 
 build zip:
   stage: build
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_TAG !~ /beta|alpha/i
   script:
     - composer require frosh/plugin-uploader:0.3.19
     - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
@@ -160,8 +160,8 @@ upload zip to store:
     GIT_STRATEGY: none
   needs:
     - build zip
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_TAG !~ /beta|alpha/i
   before_script: [ ]
   script:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
