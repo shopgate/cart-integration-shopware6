@@ -198,3 +198,15 @@ upload zip to store:
   script:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
+
+downstream replyCert:
+  rules:
+    - if: '$CI_COMMIT_TAG == null'
+  inherit:
+    variables: false
+  variables:
+    UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
+    UPSTREAM_REF: $CI_COMMIT_SHA
+  trigger:
+    project: shopgate/reply-certificate-shopware6
+    branch: SGSW6-54-downstream-work
