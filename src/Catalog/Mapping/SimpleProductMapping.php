@@ -319,23 +319,24 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setStock(): void
     {
         $stock = new Shopgate_Model_Catalog_Stock();
+        $availableStock = $this->item->getAvailableStock();
         $allowBackorders = !$this->item->getIsCloseout();
-        $stock->setUseStock(true);
-        $stock->setIsSaleable($this->item->getAvailableStock() > 0 || $allowBackorders);
-        $stock->setStockQuantity($this->item->getAvailableStock());
+        $stock->setUseStock(!$allowBackorders);
+        $stock->setIsSaleable($availableStock > 0 || $allowBackorders);
+        $stock->setStockQuantity($availableStock);
         $stock->setMinimumOrderQuantity($this->item->getMinPurchase());
         $stock->setMaximumOrderQuantity($this->item->getMaxPurchase());
         $stock->setBackorders($allowBackorders);
         // availability text
         $text = null;
         $deliveryTime = $this->item->getDeliveryTime();
-        if ($deliveryTime && $this->item->getAvailableStock() >= $this->item->getMinPurchase()) {
+        if ($deliveryTime && $availableStock >= $this->item->getMinPurchase()) {
             //e.g. Available, delivery time 2-5 days
             $text = $this->formatter->translate('detail.deliveryTimeAvailable',
                 ['%name%' => $deliveryTime->getTranslation('name')]);
         } elseif ($deliveryTime
             && ($restockTime = $this->item->getRestockTime())
-            && $this->item->getAvailableStock() < $this->item->getMinPurchase()) {
+            && $availableStock < $this->item->getMinPurchase()) {
             // e.g. Available in 3 days, delivery time 2-5 days
             $text = $this->formatter->translate('detail.deliveryTimeRestock', [
                 '%count%' => $restockTime,

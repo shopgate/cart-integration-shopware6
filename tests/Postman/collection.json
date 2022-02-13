@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "5f82b418-497b-4b19-8823-8c52e3fdcc5d",
+    "_postman_id": "be85d917-55ad-4119-a50f-3851da4c5dfc",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -556,12 +556,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/sync",
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "sync"
                   ]
@@ -1599,6 +1598,58 @@
                         "clone",
                         "product",
                         "{{catalog_product_advPrices_id}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: create no stock backorder prod",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_noStock_backorder_id}}\",\r\n        \"name\" : \"API: out of stock backorder product\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART03\",\r\n        \"stock\": 0,\r\n        \"isCloseout\": false,\r\n        \"releaseDate\": \"2022-01-29T11:00:04.389+00:00\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{created_product_noStock_id}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "clone",
+                        "product",
+                        "{{created_product_noStock_id}}"
                       ]
                     }
                   },
@@ -5884,7 +5935,7 @@
                       "",
                       "const jsonObject = xml2Json(responseBody);",
                       "pm.test(\"General check\", function () {",
-                      "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(8, 'Should have certain amount of products');",
+                      "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(9, 'Should have certain number of products');",
                       "});",
                       "",
                       "pm.test(\"Check `adv price` product category sort\", function () {",
@@ -5900,20 +5951,28 @@
                       "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '2');",
                       "});",
                       "",
+                      "pm.test(\"Backorder Product is saleable\", function () {",
+                      "    const backOrderProduct = Utility.getXmlByUid(jsonObject.items.item, pm.environment.get('created_product_noStock_backorder_id'));",
+                      "    pm.expect(backOrderProduct.stock.is_saleable).to.be.eq('1');",
+                      "    pm.expect(backOrderProduct.stock.backorders).to.be.eq('1');",
+                      "    pm.expect(backOrderProduct.stock.use_stock).to.be.eq('0');",
+                      "    pm.expect(backOrderProduct.stock.stock_quantity).to.be.eq('0');",
+                      "});",
+                      "",
+                      "pm.test(\"Closeout Product is not saleable\", function () {",
+                      "    const closeOutProduct = Utility.getXmlByUid(jsonObject.items.item, pm.environment.get('created_product_noStock_id'));",
+                      "    pm.expect(closeOutProduct.stock.is_saleable).to.be.eq('0');",
+                      "    pm.expect(closeOutProduct.stock.backorders).to.be.eq('0');",
+                      "    pm.expect(closeOutProduct.stock.use_stock).to.be.eq('1');",
+                      "    pm.expect(closeOutProduct.stock.stock_quantity).to.be.eq('0');",
+                      "});",
                       "function checkManualCategoryExistence(productId, positionNumber) {",
-                      "    const product = getObjectById(productId, jsonObject.items.item);",
-                      "    if (pm.globals.get('verbose')) {",
-                      "        console.log(product);",
-                      "    }",
+                      "    const product = Utility.getXmlByUid(jsonObject.items.item, productId);",
                       "    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
                       "    pm.expect(product.categories.category, 'Product \"' + productId +'\" appears only in one category').to.be.an('array');",
-                      "    const category = getObjectById(pm.environment.get('created_category_manual_id'), product.categories.category);",
                       "",
+                      "    const category = Utility.getXmlByUid(product.categories.category, pm.environment.get('created_category_manual_id'));",
                       "    pm.expect(category, 'Could not locate manual category for prod id: ' + productId).to.haveOwnProperty('$').to.haveOwnProperty('sort_order').to.eq(positionNumber);",
-                      "}",
-                      "",
-                      "function getObjectById(id, object) {",
-                      "    return object.find(item => item.$.uid === id);",
                       "}"
                     ],
                     "type": "text/javascript"
@@ -6141,15 +6200,16 @@
                       "});",
                       "pm.test(\"Relation list check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation[3].$.type).to.be.eq('relation');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(8, 'All 8 products?');",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(9, 'All 9 products?');",
                       "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('created_product_maxPurchaseTen_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('created_product_noStock_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('created_product_reducedTax_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('catalog_product_variant'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[5]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[6]).to.be.eq(pm.environment.get('catalog_product_props'));",
-                      "    ",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('created_product_noStock_backorder_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('created_product_noStock_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('created_product_reducedTax_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[5]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[6]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[7]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[8]).to.be.eq(pm.environment.get('catalog_product_freeShip'));    ",
                       "});"
                     ],
                     "type": "text/javascript"

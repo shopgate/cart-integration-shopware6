@@ -224,6 +224,12 @@
       "enabled": true
     },
     {
+      "key": "created_product_noStock_backorder_id",
+      "value": "5997d91dc0784997bdef68dfc5a08912",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "created_product_reducedTax_id",
       "value": "d78d1157ab89ec13a84c8dcbeccb7b75",
       "type": "default",
