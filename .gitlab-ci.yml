@@ -33,7 +33,7 @@ variables:
 
 workflow:
   rules:
-    # do not run on push unless it has a tag.
+    # do not run on push unless it has a tag
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG == null'
       when: never
     - when: always
@@ -52,18 +52,14 @@ workflow:
     - apt-get install -y jq > /dev/null
     - PLUGIN_COMPOSER_NAME=$(jq -r ".name" composer.json)
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
-    - >
-      [ -d vendor ] && mv vendor /tmp/
-    - >
-      [ -d .cache ] && mv .cache /tmp/
+    - '[ -d vendor ] && mv vendor /tmp/'
+    - '[ -d .cache ] && mv .cache /tmp/'
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
     - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
-    - >
-      [ -d /tmp/vendor ] && mv /tmp/vendor ./
-    - >
-      [ -d /tmp/.cache ] && mv /tmp/.cache ./
+    - '[ -d /tmp/vendor ] && mv /tmp/vendor ./'
+    - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
@@ -209,4 +205,4 @@ downstream replyCert:
     UPSTREAM_REF: $CI_COMMIT_SHA
   trigger:
     project: apite/shopgate/reply-certificate-shopware6
-    branch: SGSW6-54-downstream-work
+    branch: ver-1.x
