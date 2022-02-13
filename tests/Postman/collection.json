@@ -556,12 +556,11 @@
                   }
                 },
                 "url": {
-                  "raw": "{{host}}/api/_action/sync",
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
                   "host": [
-                    "{{host}}"
+                    "{{sw_endpoint_api}}"
                   ],
                   "path": [
-                    "api",
                     "_action",
                     "sync"
                   ]
@@ -1599,6 +1598,58 @@
                         "clone",
                         "product",
                         "{{catalog_product_advPrices_id}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: create no stock backorder prod",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_noStock_backorder_id}}\",\r\n        \"name\" : \"API: out of stock backorder product\",\r\n        \"productNumber\" : \"SGDEMOCHECKCART03\",\r\n        \"stock\": 0,\r\n        \"isCloseout\": false,\r\n        \"releaseDate\": \"2022-01-29T11:00:04.389+00:00\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{created_product_noStock_id}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "clone",
+                        "product",
+                        "{{created_product_noStock_id}}"
                       ]
                     }
                   },
@@ -5900,6 +5951,21 @@
                       "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '2');",
                       "});",
                       "",
+                      "pm.test(\"Backorder Product is saleable\", function () {",
+                      "    const backOrderProduct = getObjectById(pm.environment.get('created_product_noStock_backorder_id'), jsonObject.items.item);",
+                      "    pm.expect(backOrderProduct.stock.is_saleable).to.be.eq('1');",
+                      "    pm.expect(backOrderProduct.stock.backorders).to.be.eq('1');",
+                      "    pm.expect(backOrderProduct.stock.use_stock).to.be.eq('0');",
+                      "    pm.expect(backOrderProduct.stock.stock_quantity).to.be.eq('0');",
+                      "});",
+                      "",
+                      "pm.test(\"Closeout Product is not saleable\", function () {",
+                      "    const closeOutProduct = getObjectById(pm.environment.get('created_product_noStock_id'), jsonObject.items.item);",
+                      "    pm.expect(closeOutProduct.stock.is_saleable).to.be.eq('0');",
+                      "    pm.expect(closeOutProduct.stock.backorders).to.be.eq('0');",
+                      "    pm.expect(closeOutProduct.stock.use_stock).to.be.eq('1');",
+                      "    pm.expect(closeOutProduct.stock.stock_quantity).to.be.eq('0');",
+                      "});",
                       "function checkManualCategoryExistence(productId, positionNumber) {",
                       "    const product = getObjectById(productId, jsonObject.items.item);",
                       "    if (pm.globals.get('verbose')) {",
