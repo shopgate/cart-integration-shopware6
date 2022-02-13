@@ -33,7 +33,7 @@ variables:
 
 workflow:
   rules:
-    # do not run on push
+    # do not run on push unless it has a tag.
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG == null'
       when: never
     - when: always
@@ -208,5 +208,5 @@ downstream replyCert:
     UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
     UPSTREAM_REF: $CI_COMMIT_SHA
   trigger:
-    project: shopgate/reply-certificate-shopware6
+    project: apite/shopgate/reply-certificate-shopware6
     branch: SGSW6-54-downstream-work
