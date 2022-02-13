@@ -11,6 +11,7 @@
 - added support for product `CrossSell` sliders (max 4)
 - fixed cron logic to accurately cancel orders & mark orders shipped in Shopgate Panel
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
+- fixed product export not honoring clearance flag
 
 # 1.8.5
 
