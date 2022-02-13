@@ -24,9 +24,9 @@ variables:
   # throws an exception when Criteria class has empty ids passed to it
   FEATURE_NEXT_16710: 1
 
-# Cache libraries in between PR commits
-cache:
-  key: $PLATFORM_BRANCH
+.cache: &cache
+  key: $PLUGIN_NAME-$PLATFORM_BRANCH
+  policy: pull
   paths:
     - .cache/npm
     - vendor/
@@ -38,8 +38,10 @@ workflow:
       when: never
     - when: always
 
-default:
+.defaults: &defaults
   image: $DEV_IMAGE
+  cache:
+    <<: *cache
   services:
     - name: $MYSQL_IMAGE
       alias: database
@@ -52,12 +54,16 @@ default:
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
     - >
       [ -d vendor ] && mv vendor /tmp/
+    - >
+      [ -d .cache ] && mv .cache /tmp/
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
     - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
     - >
       [ -d /tmp/vendor ] && mv /tmp/vendor ./
+    - >
+      [ -d /tmp/.cache ] && mv /tmp/.cache ./
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
@@ -79,17 +85,17 @@ default:
     - /entrypoint supervisord > /dev/null 2>&1 &
 
 newman:
+  <<: *defaults
   stage: test
+  cache:
+    <<: *cache
+    policy: pull-push
   rules:
     - if: '$CI_COMMIT_TAG == null'
   script:
     - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --activate SwagPlatformDemoData
-    - |-
-      if [[ $VERBOSE != "" ]]; then
-          mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
-      fi
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
@@ -98,16 +104,17 @@ newman:
       --env-var "host=$APP_URL" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
-    expire_in: 3 days
-    expose_as: 'Newman HTML Report'
+    expire_in: 7 days
     reports:
       junit: newman.junit.xml
     paths:
       - ./postman-report.html
 
 phpunit:
+  <<: *defaults
   stage: test
-  needs: [ ]
+  needs:
+    - newman
   rules:
     - exists:
         - phpunit.xml*
@@ -130,10 +137,34 @@ phpunit:
       junit: phpunit.junit.xml
       cobertura: cobertura.xml
 
-build zip:
+publish package:
+  image: curlimages/curl:latest
+  services: [ ]
   stage: build
   only:
     - tags
+  variables:
+    URL: "$CI_SERVER_PROTOCOL://$CI_SERVER_HOST:$CI_SERVER_PORT/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
+  before_script: [ ]
+  script:
+    - version=$([[ -z "$CI_COMMIT_TAG" ]] && echo "branch=$CI_COMMIT_REF_NAME" || echo "tag=$CI_COMMIT_TAG")
+    - insecure=$([ "$CI_SERVER_PROTOCOL" = "http" ] && echo "--insecure" || echo "")
+    - response=$(curl -s -w "\n%{http_code}" $insecure --data $version $URL)
+    - code=$(echo "$response" | tail -n 1)
+    - body=$(echo "$response" | head -n 1)
+    # Output state information
+    - if [ $code -eq 201 ]; then
+      echo "Package created - Code $code - $body";
+      else
+      echo "Could not create package - Code $code - $body";
+      exit 1;
+      fi
+
+build zip:
+  <<: *defaults
+  stage: build
+  rules:
+    - if: $CI_COMMIT_TAG != null
   script:
     - composer require frosh/plugin-uploader:0.3.19
     - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
@@ -143,9 +174,10 @@ build zip:
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
-    name: '${PLUGIN_NAME}.zip'
+    name: '${PLUGIN_NAME}'
+    expire_in: never
     paths:
-      - '*.zip'
+      - '${PLUGIN_NAME}.zip'
 
 upload zip to store:
   stage: deploy
@@ -160,8 +192,8 @@ upload zip to store:
     GIT_STRATEGY: none
   needs:
     - build zip
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_TAG !~ /beta|alpha/i
   before_script: [ ]
   script:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
