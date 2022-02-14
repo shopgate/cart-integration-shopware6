@@ -18,7 +18,7 @@ variables:
   DEV_IMAGE: shopware/development:7.4-composer-2
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
-  PLATFORM_BRANCH: 6.4.6.0
+  PLATFORM_BRANCH: 6.4.8.0
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
@@ -73,7 +73,7 @@ workflow:
     - bin/console system:install --drop-database --basic-setup --force --no-interaction --quiet
     - chown -R 1000:1000 .
     - bin/console plugin:refresh --quiet
-    - bin/console plugin:install --activate $PLUGIN_NAME
+    - bin/console plugin:install --quiet --activate $PLUGIN_NAME
     - >
       if bin/console debug:container --parameter kernel.plugin_infos --format json | grep -q "$PLUGIN_NAME";
         then echo "$PLUGIN_NAME is active";
@@ -99,7 +99,7 @@ newman:
   script:
     - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
-    - bin/console plugin:install --activate SwagPlatformDemoData
+    - bin/console plugin:install --quiet --activate SwagPlatformDemoData
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
     - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
@@ -113,33 +113,6 @@ newman:
       junit: newman.junit.xml
     paths:
       - ./postman-report.html
-
-phpunit:
-  <<: *defaults
-  stage: test
-  needs:
-    - newman
-  rules:
-    - exists:
-        - phpunit.xml*
-      if: '$CI_COMMIT_TAG == null'
-  before_script:
-    - composer require phpunit/phpunit:~9.5.2 --dev
-  script:
-    - php
-      -d pcov.enabled=1 -d pcov.directory=$PWD/src -d pcov.exclude='~(vendor|tests|node_modules)~'
-      vendor/bin/phpunit
-      --configuration phpunit.xml.dist
-      --log-junit ${CI_PROJECT_DIR}/phpunit.junit.xml
-      --colors=never
-      --coverage-cobertura ${CI_PROJECT_DIR}/cobertura.xml
-      --coverage-text | sed -E -n '1,/^\s*Lines:\s*([0-9]+(\.[0-9]+)?)%/ p' # do not output covered files lines
-  coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
-  artifacts:
-    when: always
-    reports:
-      junit: phpunit.junit.xml
-      cobertura: cobertura.xml
 
 register package:
   image: curlimages/curl:latest
