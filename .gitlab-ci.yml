@@ -16,7 +16,7 @@ variables:
   DEV_IMAGE: shopware/development:7.4-composer-2
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
-  PLATFORM_BRANCH: '6.4.6.0'
+  PLATFORM_BRANCH: 6.4.6.0
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
@@ -90,6 +90,7 @@ newman:
   parallel:
     matrix:
       - PLATFORM_BRANCH:
+          - 6.4.6.0
           - 6.4.8.0
   except:
     - tags
