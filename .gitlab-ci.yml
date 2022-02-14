@@ -65,8 +65,8 @@ workflow:
     - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
-    - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
     - composer config allow-plugins true
+    - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
     - composer install -n --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
@@ -89,11 +89,6 @@ newman:
   cache:
     <<: *cache
     policy: pull-push
-  parallel:
-    matrix:
-      - PLATFORM_BRANCH:
-          - 6.4.6.0
-          - 6.4.8.0
   except:
     - tags
   script:
