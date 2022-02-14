@@ -33,7 +33,7 @@ variables:
 
 workflow:
   rules:
-    # do not run on push
+    # do not run on push unless it has a tag
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG == null'
       when: never
     - when: always
@@ -52,18 +52,14 @@ workflow:
     - apt-get install -y jq > /dev/null
     - PLUGIN_COMPOSER_NAME=$(jq -r ".name" composer.json)
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
-    - >
-      [ -d vendor ] && mv vendor /tmp/
-    - >
-      [ -d .cache ] && mv .cache /tmp/
+    - '[ -d vendor ] && mv vendor /tmp/'
+    - '[ -d .cache ] && mv .cache /tmp/'
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
     - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
-    - >
-      [ -d /tmp/vendor ] && mv /tmp/vendor ./
-    - >
-      [ -d /tmp/.cache ] && mv /tmp/.cache ./
+    - '[ -d /tmp/vendor ] && mv /tmp/vendor ./'
+    - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
@@ -90,8 +86,8 @@ newman:
   cache:
     <<: *cache
     policy: pull-push
-  rules:
-    - if: '$CI_COMMIT_TAG == null'
+  except:
+    - tags
   script:
     - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
@@ -137,7 +133,7 @@ phpunit:
       junit: phpunit.junit.xml
       cobertura: cobertura.xml
 
-publish package:
+register package:
   image: curlimages/curl:latest
   services: [ ]
   stage: build
@@ -163,8 +159,8 @@ publish package:
 build zip:
   <<: *defaults
   stage: build
-  rules:
-    - if: $CI_COMMIT_TAG != null
+  only:
+    - tags
   script:
     - composer require frosh/plugin-uploader:0.3.19
     - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
@@ -179,7 +175,7 @@ build zip:
     paths:
       - '${PLUGIN_NAME}.zip'
 
-upload zip to store:
+publish to marketplace:
   stage: deploy
   environment:
     name: account.shopware.com
@@ -198,3 +194,15 @@ upload zip to store:
   script:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
+
+downstream replyCert:
+  except:
+    - tags
+  inherit:
+    variables: false
+  variables:
+    UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
+    UPSTREAM_REF: $CI_COMMIT_SHA
+  trigger:
+    project: apite/shopgate/reply-certificate-shopware6
+    branch: ver-1.x
