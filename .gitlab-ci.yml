@@ -183,7 +183,6 @@ publish to marketplace:
   variables:
     UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
     UPSTREAM_REF: $CI_COMMIT_SHA
-    GIT_CLONE_PATH: $GIT_CLONE_PATH
   inherit:
     variables: false
 
