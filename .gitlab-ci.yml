@@ -178,13 +178,12 @@ publish to marketplace:
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
 
 .downstreamDefaults: &downstreamDefaults
-  needs:
-    - newman
   except:
     - tags
   variables:
     UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
     UPSTREAM_REF: $CI_COMMIT_SHA
+    GIT_CLONE_PATH: $GIT_CLONE_PATH
   inherit:
     variables: false
 
