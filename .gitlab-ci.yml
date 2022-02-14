@@ -13,6 +13,8 @@ variables:
   GIT_STRATEGY: clone
   NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
   # things plugins might want to override
+  APP_ENV: dev
+  APP_SECRET: 123456
   DEV_IMAGE: shopware/development:7.4-composer-2
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
@@ -58,7 +60,7 @@ workflow:
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
-    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH --depth 1
+    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH --depth 50
     - '[ -d /tmp/vendor ] && mv /tmp/vendor ./'
     - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
     - mkdir -p custom/plugins || true
@@ -202,6 +204,8 @@ publish to marketplace:
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
 
 .downstreamDefaults: &downstreamDefaults
+  needs:
+    - newman
   except:
     - tags
   variables:
