@@ -12,6 +12,7 @@ variables:
   DATABASE_URL: "mysql://root:rootPass@database:3306/shopware?sslmode=disable&charset=utf8mb4"
   GIT_STRATEGY: clone
   NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
   # things plugins might want to override
   APP_ENV: dev
   APP_SECRET: 123456
@@ -89,6 +90,11 @@ newman:
   cache:
     <<: *cache
     policy: pull-push
+  parallel:
+    matrix:
+      - PLATFORM_BRANCH:
+          - 6.4.6.0
+          - 6.4.8.0
   except:
     - tags
   script:
