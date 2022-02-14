@@ -7,8 +7,9 @@ variables:
   PROJECT_ROOT: ${CI_PROJECT_DIR}
   WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/public
   LOG_STDOUT: $CI_PROJECT_DIR/var/log/stdout.log
-  MYSQL_DATABASE: root
-  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: shopware
+  MYSQL_ROOT_PASSWORD: rootPass
+  DATABASE_URL: "mysql://root:rootPass@database:3306/shopware?sslmode=disable&charset=utf8mb4"
   GIT_STRATEGY: clone
   NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
   # things plugins might want to override
@@ -57,7 +58,7 @@ workflow:
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
-    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
+    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH --depth 1
     - '[ -d /tmp/vendor ] && mv /tmp/vendor ./'
     - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
     - mkdir -p custom/plugins || true
@@ -86,6 +87,10 @@ newman:
   cache:
     <<: *cache
     policy: pull-push
+  parallel:
+    matrix:
+      - PLATFORM_BRANCH:
+          - 6.4.8.0
   except:
     - tags
   script:
@@ -195,14 +200,23 @@ publish to marketplace:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
 
-downstream replyCert:
+.downstreamDefaults: &downstreamDefaults
   except:
     - tags
-  inherit:
-    variables: false
   variables:
     UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
     UPSTREAM_REF: $CI_COMMIT_SHA
+  inherit:
+    variables: false
+
+downstream replyCert:
+  <<: *downstreamDefaults
   trigger:
     project: apite/shopgate/reply-certificate-shopware6
+    branch: ver-1.x
+
+downstream acrisSurcharge:
+  <<: *downstreamDefaults
+  trigger:
+    project: apite/shopgate/acris-surcharge-shopware6
     branch: ver-1.x
