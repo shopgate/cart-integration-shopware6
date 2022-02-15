@@ -18,9 +18,6 @@ class QuoteErrorMapping
     private LoggerInterface $logger;
     private SerializerInterface $serializer;
 
-    /**
-     * @param LoggerInterface $logger
-     */
     public function __construct(LoggerInterface $logger, SerializerInterface $serializer)
     {
         $this->logger = $logger;
