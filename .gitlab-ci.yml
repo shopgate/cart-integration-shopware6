@@ -7,41 +7,44 @@ variables:
   PROJECT_ROOT: ${CI_PROJECT_DIR}
   WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/public
   LOG_STDOUT: $CI_PROJECT_DIR/var/log/stdout.log
-  MYSQL_DATABASE: root
-  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: shopware
+  MYSQL_ROOT_PASSWORD: rootPass
+  DATABASE_URL: "mysql://root:rootPass@database:3306/shopware?sslmode=disable&charset=utf8mb4"
   GIT_STRATEGY: clone
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
   # things plugins might want to override
-  DEV_IMAGE: shopware/development:7.4-composer-2
-  MYSQL_IMAGE: mysql:5.7
+  APP_ENV: dev
+  APP_SECRET: 123456
+  MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
-  MYSQL8_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
-  PLATFORM_BRANCH: '6.4.6.0'
+  PHP: '7.4'
+  PLATFORM_BRANCH: 6.4.8.0
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
-  PLUGIN_CONFIG_APIKEY: '111111111111111111111111'
-  PLUGIN_CONFIG_SHOPNUMBER: '123456'
-  PLUGIN_CONFIG_HEADLESS_SHOPNUMBER: '1234567'
-  PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
-  SW_ADMIN_USER: myadmin
-  SW_ADMIN_PASS: test.123
   VERBOSE: ''
+  # throws an exception when Criteria class has empty ids passed to it
+  FEATURE_NEXT_16710: 1
 
-# Cache libraries in between PR commits
-cache:
-  key: $CI_MERGE_REQUEST_IID
+.cache: &cache
+  key: $PLUGIN_NAME-$PLATFORM_BRANCH
+  policy: pull
   paths:
+    - .cache/npm
     - vendor/
 
 workflow:
   rules:
-    # do not run on push
+    # do not run on push unless it has a tag
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG == null'
       when: never
     - when: always
 
-default:
-  image: $DEV_IMAGE
+.defaults: &defaults
+  image: shopware/development:$PHP-composer-2
+  cache:
+    <<: *cache
   services:
     - name: $MYSQL_IMAGE
       alias: database
@@ -51,28 +54,26 @@ default:
     - apt update > /dev/null
     - apt-get install -y jq > /dev/null
     - PLUGIN_COMPOSER_NAME=$(jq -r ".name" composer.json)
-    - PLUGIN_COMPOSER_VERSION=$(jq -r ".version" composer.json)
     - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
-    - >
-      [ -d vendor ] && mv vendor /tmp/
+    - '[ -d vendor ] && mv vendor /tmp/'
+    - '[ -d .cache ] && mv .cache /tmp/'
     - zip -rq plugin.zip .
     - mv plugin.zip /tmp/plugin.zip
     - rm -Rf .* * || true
-    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH
-    - >
-      [ -d /tmp/vendor ] && mv /tmp/vendor ./
+    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH --depth 50
+    - '[ -d /tmp/vendor ] && mv /tmp/vendor ./'
+    - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
-    - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
     - composer config allow-plugins true
+    - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
     - composer install -n --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
-    - bin/console system:install --drop-database --basic-setup --force --quiet
-    - bin/console user:create --admin --email=test-user@apite.io --password=$SW_ADMIN_PASS $SW_ADMIN_USER
+    - bin/console system:install --drop-database --basic-setup --force --no-interaction --quiet
     - chown -R 1000:1000 .
     - bin/console plugin:refresh --quiet
-    - bin/console plugin:install --activate $PLUGIN_NAME
+    - bin/console plugin:install --quiet --activate $PLUGIN_NAME
     - >
       if bin/console debug:container --parameter kernel.plugin_infos --format json | grep -q "$PLUGIN_NAME";
         then echo "$PLUGIN_NAME is active";
@@ -83,62 +84,62 @@ default:
     - /entrypoint supervisord > /dev/null 2>&1 &
 
 newman:
+  <<: *defaults
   stage: test
-  rules:
-    - if: '$CI_COMMIT_TAG == null'
+  cache:
+    <<: *cache
+    policy: pull-push
+  parallel:
+    matrix:
+      - PLATFORM_BRANCH:
+          - 6.4.6.0
+          - 6.4.8.0
+      - PHP:
+          - '8.0'
+  except:
+    - tags
   script:
     - npm install -g newman@^5.3.0 newman-reporter-htmlextra > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
-    - bin/console plugin:install --activate SwagPlatformDemoData
-    - export SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
-    - export HeadlessSalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='default.headless0';");
-    - >
-      mysql -h database -u root -proot root -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at) VALUES (UNHEX(REPLACE(UUID(),'-','')),'SgateShopgatePluginSW6.config.isActive', '{\"_value\": true}', null, NOW());";
-    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_SHOPNUMBER;
-    - bin/console system:config:set -s $HeadlessSalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_HEADLESS_SHOPNUMBER;
-    - bin/console system:config:set SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
-    - bin/console system:config:set SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
-    - |-
-      if [[ $VERBOSE != "" ]]; then
-          mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
-      fi
+    - bin/console plugin:install --quiet --activate SwagPlatformDemoData
     - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --color on --insecure --no-insecure-file-read
-      --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=$SW_ADMIN_USER" --env-var "sw_pass=$SW_ADMIN_PASS" --env-var "host=$APP_URL"
-      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER" --env-var "api_key=$PLUGIN_CONFIG_APIKEY" ${NEWMAN_VERBOSE}
-      --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER" --global-var "verbose=$VERBOSE";
+    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
+      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
+      --color on --insecure --no-insecure-file-read
+      --env-var "host=$APP_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
-    expire_in: 30 days
+    expire_in: 7 days
+    reports:
+      junit: newman.junit.xml
     paths:
       - ./postman-report.html
 
-phpunit:
-  stage: test
-  needs: [ ]
-  rules:
-    - exists:
-        - phpunit.xml*
-      if: '$CI_COMMIT_TAG == null'
-  before_script:
-    - composer require phpunit/phpunit:~9.5.2 --dev
+register package:
+  image: curlimages/curl:latest
+  services: [ ]
+  stage: build
+  only:
+    - tags
+  variables:
+    URL: "$CI_SERVER_PROTOCOL://$CI_SERVER_HOST:$CI_SERVER_PORT/api/v4/projects/$CI_PROJECT_ID/packages/composer?job_token=$CI_JOB_TOKEN"
+  before_script: [ ]
   script:
-    - php
-      -d pcov.enabled=1 -d pcov.directory=$PWD/src -d pcov.exclude='~(vendor|tests|node_modules)~'
-      vendor/bin/phpunit
-      --configuration phpunit.xml.dist
-      --log-junit ${CI_PROJECT_DIR}/phpunit.junit.xml
-      --colors=never
-      --coverage-cobertura ${CI_PROJECT_DIR}/cobertura.xml
-      --coverage-text | sed -E -n '1,/^\s*Lines:\s*([0-9]+(\.[0-9]+)?)%/ p' # do not output covered files lines
-  coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
-  artifacts:
-    when: always
-    reports:
-      junit: phpunit.junit.xml
-      cobertura: cobertura.xml
+    - version=$([[ -z "$CI_COMMIT_TAG" ]] && echo "branch=$CI_COMMIT_REF_NAME" || echo "tag=$CI_COMMIT_TAG")
+    - insecure=$([ "$CI_SERVER_PROTOCOL" = "http" ] && echo "--insecure" || echo "")
+    - response=$(curl -s -w "\n%{http_code}" $insecure --data $version $URL)
+    - code=$(echo "$response" | tail -n 1)
+    - body=$(echo "$response" | head -n 1)
+    # Output state information
+    - if [ $code -eq 201 ]; then
+      echo "Package created - Code $code - $body";
+      else
+      echo "Could not create package - Code $code - $body";
+      exit 1;
+      fi
 
 build zip:
+  <<: *defaults
   stage: build
   only:
     - tags
@@ -147,15 +148,16 @@ build zip:
     - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
     - cp ./devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
     - $PROJECT_ROOT/vendor/bin/pluginupload ext:zip --strategy=plain -- "$PWD"
-    - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PLUGIN_NAME.zip
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
+    - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PLUGIN_NAME.zip
     - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
-    name: '${PLUGIN_NAME}.zip'
+    name: '${PLUGIN_NAME}'
+    expire_in: never
     paths:
-      - '*.zip'
+      - '${PLUGIN_NAME}.zip'
 
-upload zip to store:
+publish to marketplace:
   stage: deploy
   environment:
     name: account.shopware.com
@@ -168,9 +170,30 @@ upload zip to store:
     GIT_STRATEGY: none
   needs:
     - build zip
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_TAG !~ /beta|alpha/i
   before_script: [ ]
   script:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
+
+.downstreamDefaults: &downstreamDefaults
+  except:
+    - tags
+  variables:
+    UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
+    UPSTREAM_REF: $CI_COMMIT_SHA
+  inherit:
+    variables: false
+
+downstream replyCert:
+  <<: *downstreamDefaults
+  trigger:
+    project: apite/shopgate/reply-certificate-shopware6
+    branch: ver-1.x
+
+downstream acrisSurcharge:
+  <<: *downstreamDefaults
+  trigger:
+    project: apite/shopgate/acris-surcharge-shopware6
+    branch: ver-1.x
