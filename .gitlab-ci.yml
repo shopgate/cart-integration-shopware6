@@ -7,9 +7,9 @@ variables:
   PROJECT_ROOT: ${CI_PROJECT_DIR}
   WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/public
   LOG_STDOUT: $CI_PROJECT_DIR/var/log/stdout.log
-  MYSQL_DATABASE: shopware
-  MYSQL_ROOT_PASSWORD: rootPass
-  DATABASE_URL: "mysql://root:rootPass@database:3306/shopware?sslmode=disable&charset=utf8mb4"
+  MYSQL_DATABASE: root
+  MYSQL_ROOT_PASSWORD: root
+  DATABASE_URL: "mysql://root:root@database:3306/root?sslmode=disable&charset=utf8mb4"
   GIT_STRATEGY: clone
   NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
@@ -110,23 +110,19 @@ newman:
     - export SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
     - export HeadlessSalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='default.headless0';");
     - >
-    mysql -h database -u root -proot root -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at) VALUES (UNHEX(REPLACE(UUID(),'-','')),'SgateShopgatePluginSW6.config.isActive', '{\"_value\": true}', null, NOW());";
-      - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_SHOPNUMBER;
-      - bin/console system:config:set -s $HeadlessSalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_HEADLESS_SHOPNUMBER;
-      - bin/console system:config:set SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
-      - bin/console system:config:set SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
-      - |-
-      if [[ $VERBOSE != "" ]]; then
-      mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
-      fi
-      - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-      - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
-        --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
-        --color on --insecure --no-insecure-file-read
-        --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=admin" --env-var "sw_pass=shopware"
-        --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER"
-        --env-var "api_key=$PLUGIN_CONFIG_APIKEY" --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER"
-        --env-var "host=$APP_URL";
+      mysql -h database -u root -proot root -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at) VALUES (UNHEX(REPLACE(UUID(),'-','')),'SgateShopgatePluginSW6.config.isActive', '{\"_value\": true}', null, NOW());";
+    - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_SHOPNUMBER;
+    - bin/console system:config:set -s $HeadlessSalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_HEADLESS_SHOPNUMBER;
+    - bin/console system:config:set SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
+    - bin/console system:config:set SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
+    - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
+    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
+      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
+      --color on --insecure --no-insecure-file-read
+      --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=admin" --env-var "sw_pass=shopware"
+      --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER"
+      --env-var "api_key=$PLUGIN_CONFIG_APIKEY" --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER"
+      --env-var "host=$APP_URL";
   artifacts:
     when: on_failure
     expire_in: 7 days
@@ -196,24 +192,3 @@ publish to marketplace:
   script:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
-
-.downstreamDefaults: &downstreamDefaults
-  except:
-    - tags
-  variables:
-    UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
-    UPSTREAM_REF: $CI_COMMIT_SHA
-  inherit:
-    variables: false
-
-downstream replyCert:
-  <<: *downstreamDefaults
-  trigger:
-    project: apite/shopgate/reply-certificate-shopware6
-    branch: main
-
-downstream acrisSurcharge:
-  <<: *downstreamDefaults
-  trigger:
-    project: apite/shopgate/acris-surcharge-shopware6
-    branch: main
