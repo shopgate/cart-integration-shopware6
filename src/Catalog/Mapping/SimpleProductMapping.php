@@ -433,18 +433,14 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         return $this->item;
     }
 
-    public function setChildren(): void
+    /**
+     * Rewritten to avoid a php8 warning printed in XML
+     */
+    public function setData($key, $value = null): self
     {
-        parent::setChildren([]);
-    }
-
-    public function setAttributeGroups(): void
-    {
-        parent::setAttributeGroups([]);
-    }
-
-    public function setInputs(): void
-    {
-        parent::setInputs([]);
+        if (null === $value && in_array($key, ['children', 'attribute_groups', 'inputs', 'attributes'])) {
+            $value = [];
+        }
+        return parent::setData($key, $value);
     }
 }
