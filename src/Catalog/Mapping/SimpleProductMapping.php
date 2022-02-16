@@ -435,4 +435,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     {
         return $this->item;
     }
+
+    public function setChildren(): void
+    {
+        parent::setChildren([]);
+    }
 }
