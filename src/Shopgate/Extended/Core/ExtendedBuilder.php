@@ -16,7 +16,6 @@ use ShopgateAuthenticationServiceOAuth;
 use ShopgateAuthenticationServiceShopgate;
 use ShopgateBuilder;
 use ShopgateConfigInterface;
-use ShopgateFileBufferCsv;
 use ShopgateFileBufferJson;
 use ShopgateMerchantApi;
 use ShopgateObject;
@@ -112,34 +111,20 @@ class ExtendedBuilder extends ShopgateBuilder
                 'get_reviews' => Shopgate_Model_Catalog_Review::class,
             ];
 
-            $format = $_REQUEST['response_type'] ?? '';
-            switch ($format) {
-                default:
-                case 'xml':
-                    /* @var $xmlModel Shopgate_Model_AbstractExport */
-                    $xmlModel = new $xmlModelNames[$_REQUEST['action']]();
-                    /** @noinspection PhpComposerExtensionStubsInspection */
-                    $xmlNode = new Shopgate_Model_XmlResultObject($xmlModel->getItemNodeIdentifier());
-                    $fileBuffer = new XmlFileBufferExtended(
-                        $xmlModel,
-                        $xmlNode,
-                        $this->config->getExportBufferCapacity(),
-                        $this->privateFileSystem,
-                        $this->config->getExportConvertEncoding(),
-                        ShopgateObject::$sourceEncodings
-                    );
-                    break;
-
-                case 'json':
-                    $fileBuffer = new ShopgateFileBufferJson(
-                        $this->config->getExportBufferCapacity(),
-                        $this->config->getExportConvertEncoding(),
-                        ShopgateObject::$sourceEncodings
-                    );
-                    break;
-            }
+            /* @var $xmlModel Shopgate_Model_AbstractExport */
+            $xmlModel = new $xmlModelNames[$_REQUEST['action']]();
+            /** @noinspection PhpComposerExtensionStubsInspection */
+            $xmlNode = new Shopgate_Model_XmlResultObject($xmlModel->getItemNodeIdentifier());
+            $fileBuffer = new XmlFileBufferExtended(
+                $xmlModel,
+                $xmlNode,
+                $this->config->getExportBufferCapacity(),
+                $this->privateFileSystem,
+                $this->config->getExportConvertEncoding(),
+                ShopgateObject::$sourceEncodings
+            );
         } else {
-            $fileBuffer = new ShopgateFileBufferCsv(
+            $fileBuffer = new ShopgateFileBufferJson(
                 $this->config->getExportBufferCapacity(),
                 $this->config->getExportConvertEncoding(),
                 ShopgateObject::$sourceEncodings
