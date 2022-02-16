@@ -26,6 +26,11 @@ variables:
   VERBOSE: ''
   # throws an exception when Criteria class has empty ids passed to it
   FEATURE_NEXT_16710: 1
+  # config
+  PLUGIN_CONFIG_APIKEY: '111111111111111111111111'
+  PLUGIN_CONFIG_SHOPNUMBER: '123456'
+  PLUGIN_CONFIG_HEADLESS_SHOPNUMBER: '1234567'
+  PLUGIN_CONFIG_CUSTOMERNUMBER: '12345'
 
 .cache: &cache
   key: $PLUGIN_NAME-$PLATFORM_BRANCH
@@ -102,11 +107,26 @@ newman:
     - npm install -g newman@^5.3.0 newman-reporter-htmlextra > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --quiet --activate SwagPlatformDemoData
-    - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
-      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
-      --color on --insecure --no-insecure-file-read
-      --env-var "host=$APP_URL" --global-var "verbose=$VERBOSE";
+    - export SalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='$APP_URL';");
+    - export HeadlessSalesChannel=$(mysql -h database -u root -proot root -BNe "SELECT lower(HEX(sales_channel_id)) FROM sales_channel_domain WHERE url='default.headless0';");
+    - >
+    mysql -h database -u root -proot root -e "INSERT INTO system_config (id, configuration_key, configuration_value, sales_channel_id, created_at) VALUES (UNHEX(REPLACE(UUID(),'-','')),'SgateShopgatePluginSW6.config.isActive', '{\"_value\": true}', null, NOW());";
+      - bin/console system:config:set -s $SalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_SHOPNUMBER;
+      - bin/console system:config:set -s $HeadlessSalesChannel SgateShopgatePluginSW6.config.shopNumber $PLUGIN_CONFIG_HEADLESS_SHOPNUMBER;
+      - bin/console system:config:set SgateShopgatePluginSW6.config.customerNumber $PLUGIN_CONFIG_CUSTOMERNUMBER;
+      - bin/console system:config:set SgateShopgatePluginSW6.config.apiKey $PLUGIN_CONFIG_APIKEY;
+      - |-
+      if [[ $VERBOSE != "" ]]; then
+      mysql -h database -u root -proot root -e "SELECT configuration_key, configuration_value, lower(HEX(sales_channel_id)) FROM system_config WHERE configuration_key LIKE '%Shopgate%';";
+      fi
+      - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
+      - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
+        --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
+        --color on --insecure --no-insecure-file-read
+        --env-var "plugin_version=$PLUGIN_COMPOSER_VERSION" --env-var "sw_admin=admin" --env-var "sw_pass=shopware"
+        --env-var "shop_number=$PLUGIN_CONFIG_SHOPNUMBER" --env-var "customer_number=$PLUGIN_CONFIG_CUSTOMERNUMBER"
+        --env-var "api_key=$PLUGIN_CONFIG_APIKEY" --env-var "shop_number_headless=$PLUGIN_CONFIG_HEADLESS_SHOPNUMBER"
+        --env-var "host=$APP_URL";
   artifacts:
     when: on_failure
     expire_in: 7 days
@@ -190,10 +210,10 @@ downstream replyCert:
   <<: *downstreamDefaults
   trigger:
     project: apite/shopgate/reply-certificate-shopware6
-    branch: ver-1.x
+    branch: main
 
 downstream acrisSurcharge:
   <<: *downstreamDefaults
   trigger:
     project: apite/shopgate/acris-surcharge-shopware6
-    branch: ver-1.x
+    branch: main
