@@ -158,11 +158,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setImages(): void
     {
-        if (!$this->item->getMedia()) {
-            return;
-        }
+        $swMedia = $this->item->getMedia() ?: [];
         $images = [];
-        foreach ($this->item->getMedia() as $productMedia) {
+        foreach ($swMedia as $productMedia) {
             if (!$media = $productMedia->getMedia()) {
                 continue;
             }
@@ -368,9 +366,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     public function setTags(): void
     {
-        if (!$shopwareTags = $this->item->getTags()) {
-            return;
-        }
+        $shopwareTags = $this->item->getTags() ?: [];
         $tags = [];
         foreach ($shopwareTags as $shopwareTag) {
             $tag = new Shopgate_Model_Catalog_Tag();
@@ -394,6 +390,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setRelations(): void
     {
         if (!$this->item->getCrossSellings()) {
+            parent::setRelations([]);
             return;
         }
 
@@ -444,5 +441,10 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setAttributeGroups(): void
     {
         parent::setAttributeGroups([]);
+    }
+
+    public function setInputs(): void
+    {
+        parent::setInputs([]);
     }
 }

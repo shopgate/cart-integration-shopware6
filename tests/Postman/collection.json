@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "be85d917-55ad-4119-a50f-3851da4c5dfc",
+    "_postman_id": "4f9a9fb8-f0aa-4572-987b-7b4fb37fa7c6",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -2801,7 +2801,7 @@
                   "pm.test(\"Check error\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.error).to.eql(999);",
-                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error location')",
+                  "    pm.expect(jsonData.error_text).to.contain('of type ShopgateAddress', 'Should have error location')",
                   "});"
                 ],
                 "type": "text/javascript"
