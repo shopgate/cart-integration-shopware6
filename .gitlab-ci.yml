@@ -16,9 +16,9 @@ variables:
   # things plugins might want to override
   APP_ENV: dev
   APP_SECRET: 123456
-  DEV_IMAGE: shopware/development:7.4-composer-2
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
+  PHP: '7.4'
   PLATFORM_BRANCH: 6.4.8.0
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
@@ -43,7 +43,7 @@ workflow:
     - when: always
 
 .defaults: &defaults
-  image: $DEV_IMAGE
+  image: shopware/development:$PHP-composer-2
   cache:
     <<: *cache
   services:
@@ -95,6 +95,8 @@ newman:
       - PLATFORM_BRANCH:
           - 6.4.6.0
           - 6.4.8.0
+      - PHP:
+          - '8.0'
   except:
     - tags
   script:

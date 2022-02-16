@@ -1,3 +1,6 @@
+# Not versioned
+- added support to PHP 8.0
+
 # 2.0.0
 
 - added ability to add settings via `set_settings`

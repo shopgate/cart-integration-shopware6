@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "be85d917-55ad-4119-a50f-3851da4c5dfc",
+    "_postman_id": "4f9a9fb8-f0aa-4572-987b-7b4fb37fa7c6",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -2801,7 +2801,6 @@
                   "pm.test(\"Check error\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.error).to.eql(999);",
-                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error location')",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -6436,8 +6435,86 @@
           ]
         },
         {
-          "name": "No variant export",
+          "name": "Variant export",
           "item": [
+            {
+              "name": "SG: variant check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "pm.test('Variant check', function() {",
+                      "    // variant parent",
+                      "    const variantProduct = jsonObject.items.item",
+                      "    pm.expect(variantProduct.children, 'Should have children').to.haveOwnProperty('item');",
+                      "    pm.expect(variantProduct.children.item).to.be.a('array').to.not.be.empty;",
+                      "",
+                      "    // variant child",
+                      "    const childProduct = Utility.getXmlByUid(variantProduct.children.item, pm.environment.get('gen_product_variant_child_id'));",
+                      "    pm.expect(childProduct, 'should have identifiers').to.haveOwnProperty('identifiers');",
+                      "    pm.expect(childProduct.identifiers.identifier.$.type).to.eq('sku', 'Should have SKU identifier only');",
+                      "    pm.expect(childProduct.attributes.attribute).lengthOf(2, 'Should have M and Red');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{catalog_product_variant}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
               "name": "SG: set simple",
               "event": [
@@ -6581,7 +6658,7 @@
               "response": []
             },
             {
-              "name": "SG: export variant",
+              "name": "SG: no variant exports",
               "event": [
                 {
                   "listen": "test",
@@ -6590,7 +6667,7 @@
                       "pm.test(\"Not an error\", function () {",
                       "    pm.response.to.have.jsonBody('error');",
                       "});",
-                      "pm.test(\"Your test name\", function () {",
+                      "pm.test(\"No variant in cart\", function () {",
                       "    var jsonData = pm.response.json();",
                       "    pm.expect(jsonData.error_text).to.eql('buffer is empty');",
                       "});"
@@ -16526,7 +16603,7 @@
           "    return list.find(item => item[key] === value);",
           "};",
           "// XML handlers",
-          "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value)",
+          "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value);",
           "function getXmlByAttributeKey(list, key, value) {",
           "    return list.find(item => item.$[key] === value);",
           "};"
