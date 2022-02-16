@@ -90,7 +90,6 @@ class ExtendedBuilder extends ShopgateBuilder
                 $this->config->getExportConvertEncoding(),
                 ShopgateObject::$sourceEncodings
             );
-
         } else {
             $fileBuffer = new ShopgateFileBufferJson(
                 $this->config->getExportBufferCapacity(),
