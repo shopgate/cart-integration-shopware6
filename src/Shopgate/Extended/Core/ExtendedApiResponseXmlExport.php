@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Core;
 
-use ShopgatePluginApiResponseAppXmlExport;
-
-class ExtendedApiResponseXmlExport extends ShopgatePluginApiResponseAppXmlExport
+class ExtendedApiResponseXmlExport extends ExtendedPluginApiResponseXmlExport
 {
     /**
      * Rewritten to save stream as data

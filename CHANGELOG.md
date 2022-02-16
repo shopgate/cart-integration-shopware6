@@ -1,6 +1,7 @@
 # 1.8.6
 
 - added support to php8.0
+- fixed flysystem header chunk size calculation
 
 # 1.8.5
 

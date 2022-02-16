@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "8bf5c773-af50-48c1-a325-56f907486089",
+    "_postman_id": "c11b2e18-365c-4a35-bbc9-4e4e2121b065",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -9,137 +9,554 @@
       "name": "Init",
       "item": [
         {
-          "name": "SW: get sales channel",
-          "event": [
+          "name": "System",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get Main Sales Channel data\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Storefront');\r",
-                  "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+              "name": "SW: get sales channel",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get Main Sales Channel data\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Storefront');\r",
+                      "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Storefront\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/search/sales-channel",
-              "host": [
-                "{{host}}"
               ],
-              "path": [
-                "api",
-                "search",
-                "sales-channel"
-              ]
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Storefront\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/search/sales-channel",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "search",
+                    "sales-channel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: find Headless channel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get values\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Headless');\r",
+                      "    pm.environment.set(\"gen_channel_headless_id\", jsonData.data[0].id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Headless\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/search/sales-channel",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "search",
+                    "sales-channel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: Set data protection acceptance to required",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully enabled configs\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"cf48550d5969465e9754b964e1837943\",\r\n                \"configurationKey\": \"core.loginRegistration.requireDataProtectionCheckbox\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/_action/sync",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get non default lang ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "\r",
+                      "pm.test(\"Test finding non-default lang: \", function () {\r",
+                      "    pm.expect(jsonData.total).to.eq(1);\r",
+                      "    pm.environment.set(`gen_non_default_lang`, jsonData.data[0]);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"2fbb5fe2e29a4d70aa5854ce7ce3e20b\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/search-ids/language",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "search-ids",
+                    "language"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: change channel lang",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully changed Headless channel language\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"languageId\": \"{{gen_non_default_lang}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/api/sales-channel/{{gen_channel_headless_id}}",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "sales-channel",
+                    "{{gen_channel_headless_id}}"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "SW: get shopgate plugin",
-          "event": [
+          "name": "Plugin",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get values\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.environment.set(\"gen_plugin_version\", jsonData.data[0].attributes.version);\r",
-                  "});"
+              "name": "SW: get shopgate plugin",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Get values\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"gen_plugin_version\", jsonData.data[0].attributes.version);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text",
+                    "disabled": true
+                  }
                 ],
-                "type": "text/javascript"
-              }
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"composerName\",\r\n          \"value\": \"shopgate/cart-integration-shopware6\"\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/plugin",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "plugin"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: set SG configs",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                 \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.customerNumber\",\r\n                \"configurationValue\": \"{{customer_number}}\"\r\n            },\r\n            {\r\n                \"id\": \"c9ee8625bc3a466ba073c8f6e9a10190\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.apiKey\",\r\n                \"configurationValue\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"id\": \"8711de7d1e0045229f22e1fe0ba98e5f\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"afcd57208add408ca1a019d5996211f0\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isActive\",\r\n                \"configurationValue\": true\r\n            },\r\n            {\r\n                \"id\": \"6a8a85fa614c4d0a889f749c8cde8205\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.productTypesToExport\",\r\n                \"configurationValue\": [\"simple\", \"variant\"]\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check SG shipping",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "// Disabled until SGSW6-88 is handled\r",
+                      "/*\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"Check rules\", function () {\r",
+                      "    jsonData.data.map(shippingMethod => pm.expect(shippingMethod.active).to.eq(true, `Expected shipping method to be active: '${shippingMethod.name}' >>>`));\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check rules\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eql(2, 'Supposed to have 2 shipping methods installed.');\r",
+                      "    jsonData.data.map(shipMethod => checkRule(shipMethod));\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check deliveries\", function () {\r",
+                      "    jsonData.data.map(shipMethod => checkDelivery(shipMethod));\r",
+                      "});\r",
+                      "*/\r",
+                      "function checkDelivery(shippingMethod) {\r",
+                      "    pm.expect(shippingMethod.deliveryTimeId).to.eq(\r",
+                      "        pm.environment.get('default_deliveryTime_sg_id'),\r",
+                      "        `Incorrect default SG delivery time ID: ${shippingMethod.deliveryTimeId} for shipMethod: ${shippingMethod.name}  >>>` \r",
+                      "    );\r",
+                      "}\r",
+                      "\r",
+                      "function checkRule(shippingMethod) {\r",
+                      "    pm.expect(shippingMethod, 'Rule not present in shipping method: ' + shippingMethod.name).has.ownProperty('availabilityRule').has.ownProperty('id')\r",
+                      "    .to.eq(\r",
+                      "        pm.environment.get('gen_rule_cartGreaterThan0_id'),\r",
+                      "        `Incorrect rule by name '${shippingMethod.availabilityRule.name}' for shipMethod: '${shippingMethod.name}' >>>` \r",
+                      "    );\r",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/shipping-method",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "shipping-method"
+                  ]
+                }
+              },
+              "response": []
             }
           ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"composerName\",\r\n          \"value\": \"shopgate/cart-integration-shopware6\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/search/plugin",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "search",
-                "plugin"
-              ]
-            }
-          },
-          "response": []
+          "description": "Setup related to plugins, modules that are not part of SW. This includes SG plugin."
         },
         {
           "name": "SW: get all categories",
@@ -256,257 +673,6 @@
                 "api",
                 "search-ids",
                 "customer-group"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: get non default lang ID",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "const jsonData = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"Test finding non-default lang: \", function () {\r",
-                  "    pm.expect(jsonData.total).to.eq(1);\r",
-                  "    pm.environment.set(`gen_non_default_lang`, jsonData.data[0]);\r",
-                  "});\r",
-                  "\r",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"2fbb5fe2e29a4d70aa5854ce7ce3e20b\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/search-ids/language",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "search-ids",
-                "language"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: find Headless channel",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Get values\", function () {\r",
-                  "    var jsonData = pm.response.json();\r",
-                  "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Headless');\r",
-                  "    pm.environment.set(\"gen_channel_headless_id\", jsonData.data[0].id);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {}
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Headless\"\r\n        }\r\n    ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/search/sales-channel",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "search",
-                "sales-channel"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: Set data protection acceptance to required",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successfully enabled configs\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {
-              "accept": true
-            }
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"cf48550d5969465e9754b964e1837943\",\r\n                \"configurationKey\": \"core.loginRegistration.requireDataProtectionCheckbox\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/_action/sync",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "_action",
-                "sync"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: change channel lang",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successfully changed Headless channel language\", function () {\r",
-                  "    pm.response.to.have.status(204);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {
-              "accept": true
-            }
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"languageId\": \"{{gen_non_default_lang}}\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{host}}/api/sales-channel/{{gen_channel_headless_id}}",
-              "host": [
-                "{{host}}"
-              ],
-              "path": [
-                "api",
-                "sales-channel",
-                "{{gen_channel_headless_id}}"
               ]
             }
           },
@@ -835,7 +1001,6 @@
                   "pm.test(\"Check error\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.error).to.eql(999);",
-                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error localtion')",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -2685,8 +2850,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Created single entity\", function () {\r",
-                  "    pm.response.to.have.status(204);\r",
+                  "pm.test(\"Successfully enabled flysystem\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -2719,7 +2884,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"configurationKey\": \"SgateShopgatePluginSW6.config.isFlysystem\",\r\n    \"configurationValue\": true,\r\n    \"salesChannelId\": null\r\n}",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"409fa1affcf441d59cf023b5ec62f782\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isFlysystem\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2727,13 +2892,13 @@
               }
             },
             "url": {
-              "raw": "{{host}}/api/system-config",
+              "raw": "{{sw_endpoint_api}}/_action/sync",
               "host": [
-                "{{host}}"
+                "{{sw_endpoint_api}}"
               ],
               "path": [
-                "api",
-                "system-config"
+                "_action",
+                "sync"
               ]
             }
           },
@@ -2750,9 +2915,15 @@
                   "    pm.response.to.not.have.jsonBody('error');",
                   "});",
                   "",
+                  "const jsonObject = xml2Json(responseBody);",
                   "pm.test(\"Flysystem export check\", function () {",
-                  "    var jsonObject = xml2Json(responseBody);",
                   "    pm.expect(jsonObject.items.item, 'Should have items with Flysystem enabled').to.be.a('array').to.be.not.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Header check\", function () {",
+                  "    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
+                  "    pm.response.to.have.header('Content-Length');",
+                  "    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -2805,6 +2976,67 @@
               "raw": "{{domain}}",
               "host": [
                 "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: Disable flysystem",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully disabled flysystem\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"409fa1affcf441d59cf023b5ec62f782\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isFlysystem\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
               ]
             }
           },

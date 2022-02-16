@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Core;
 
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use Shopgate_Model_Abstract;
 use Shopgate_Model_XmlResultObject;
@@ -38,6 +39,18 @@ class XmlFileBufferExtended extends ShopgateFileBufferXml
         if (empty($this->fileHandle)) {
             $this->fileHandle = fopen('php://temp', 'wb');
         }
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    public function getMeta(): array
+    {
+        if (!$this->privateFilesystem->has($this->filePath)) {
+            return [];
+        }
+
+        return $this->privateFilesystem->getMetadata($this->filePath);
     }
 
     /**

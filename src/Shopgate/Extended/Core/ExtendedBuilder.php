@@ -147,6 +147,7 @@ class ExtendedBuilder extends ShopgateBuilder
         }
         // inject apis into plugin
         $pluginApi->setPrivateFileSystem($this->privateFileSystem);
+        $pluginApi->setBuffer($fileBuffer);
         $plugin->setConfig($this->config);
         $plugin->setMerchantApi($merchantApi);
         $plugin->setPluginApi($pluginApi);
