@@ -1,3 +1,7 @@
+# 1.8.6
+
+- added support to php8.0
+
 # 1.8.5
 
 - added support to customer registration configuration - `Data protection checkbox`
