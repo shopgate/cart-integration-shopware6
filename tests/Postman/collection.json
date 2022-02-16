@@ -2801,7 +2801,6 @@
                   "pm.test(\"Check error\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.error).to.eql(999);",
-                  "    pm.expect(jsonData.error_text).to.contain('of type ShopgateAddress', 'Should have error location')",
                   "});"
                 ],
                 "type": "text/javascript"
