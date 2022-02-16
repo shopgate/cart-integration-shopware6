@@ -440,4 +440,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     {
         parent::setChildren([]);
     }
+
+    public function setAttributeGroups(): void
+    {
+        parent::setAttributeGroups([]);
+    }
 }
