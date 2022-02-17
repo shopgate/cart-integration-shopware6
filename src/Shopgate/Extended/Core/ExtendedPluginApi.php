@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\Shopgate\Extended\Core;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use ShopgateFileBuffer;
 use ShopgateLibraryException;
 use ShopgatePluginApi;
 use ShopgatePluginApiResponseAppJson;
@@ -13,6 +14,7 @@ use ShopgatePluginApiResponseAppJson;
 class ExtendedPluginApi extends ShopgatePluginApi
 {
     protected FilesystemInterface $privateFileSystem;
+    protected ?ShopgateFileBuffer $buffer;
 
     public function setPrivateFileSystem(FilesystemInterface $filesystem): ExtendedPluginApi
     {
@@ -31,6 +33,16 @@ class ExtendedPluginApi extends ShopgatePluginApi
         return $this;
     }
 
+    /**
+     * Needed to get name of the file to calculate file size for streams
+     */
+    public function setBuffer(ShopgateFileBuffer $buffer): ExtendedPluginApi
+    {
+        $this->buffer = $buffer;
+
+        return $this;
+    }
+
     public function handleRequest(array $data = array())
     {
         parent::handleRequest($data);
@@ -41,6 +53,7 @@ class ExtendedPluginApi extends ShopgatePluginApi
 
         try {
             $this->response = new ExtendedApiResponseXmlExport($this->trace_id);
+            $this->response->setMeta($this->buffer->getMeta());
             $this->response->setData(
                 $this->privateFileSystem->readStream($this->responseData)
             );
