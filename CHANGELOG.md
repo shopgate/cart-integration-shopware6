@@ -1,3 +1,7 @@
+# 1.8.7
+
+- fixed issue where in some cases global config setting would take priority over channel specific one
+
 # 1.8.6
 
 - added support to php8.0

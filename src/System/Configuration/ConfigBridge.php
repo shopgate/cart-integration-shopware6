@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
@@ -160,6 +161,7 @@ class ConfigBridge
                 ]),
                 new ContainsFilter('configurationKey', self::SYSTEM_CONFIG_DOMAIN)
             ]));
+        $criteria->addSorting(new FieldSorting('salesChannelId', FieldSorting::DESCENDING));
         /** @var SystemConfigCollection $collection */
         $collection = $this->systemConfigRepo->search(
             $criteria,
