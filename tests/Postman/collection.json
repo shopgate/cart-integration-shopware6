@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "4f9a9fb8-f0aa-4572-987b-7b4fb37fa7c6",
+    "_postman_id": "e651c641-8cc5-4e66-aa31-ec31457ac416",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -5142,6 +5142,71 @@
           "response": []
         },
         {
+          "name": "SG: ping",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_number');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.eq('export');",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "SG: get all products",
           "event": [
             {
@@ -5205,6 +5270,171 @@
                 {
                   "key": "offset",
                   "value": "0",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: reviews (main)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const moment = require('moment');",
+                  "const now = moment().format('YYYY-MM-DD');",
+                  "",
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "const jsonObject = xml2Json(responseBody);",
+                  "const reviews = jsonObject.reviews.review;",
+                  "pm.test(\"general check\", function () {",
+                  "    pm.expect(reviews).length(3, 'Expecting only 3 reviews');",
+                  "});",
+                  "",
+                  "pm.test(\"childReviewOne\", function () {",
+                  "    const childReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_child_id'));",
+                  "    pm.expect(childReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
+                  "    pm.expect(childReviewOne.score).to.eq('4');",
+                  "    pm.expect(childReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(childReviewOne.title).to.eq('German Title');",
+                  "    pm.expect(childReviewOne.text).to.eq('German Content');",
+                  "    pm.expect(childReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});",
+                  "pm.test(\"propReviewOne\", function () {",
+                  "    const propReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_id'));",
+                  "    pm.expect(propReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
+                  "    pm.expect(propReviewOne.score).to.eq('4');",
+                  "    pm.expect(propReviewOne.title).to.eq('Main product review');",
+                  "    pm.expect(propReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(propReviewOne.text).to.eq('Main product long content');",
+                  "    pm.expect(propReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});",
+                  "pm.test(\"disabledReviewOne\", function () {",
+                  "    const disabledReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_disabled_id'));",
+                  "    pm.expect(disabledReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
+                  "    pm.expect(disabledReviewOne.score).to.eq('2');",
+                  "    pm.expect(disabledReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(disabledReviewOne.title).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledReviewOne.text).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_reviews}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: get category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "",
+                  "pm.test(\"Have proper category data\", function () {",
+                  "    const jsonObject = xml2Json(responseBody);",
+                  "    if (pm.globals.get('verbose')){",
+                  "        console.log(jsonObject);",
+                  "    }",
+                  "    pm.expect(jsonObject.categories.category).to.have.property('$');",
+                  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_0\"));",
+                  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
+                  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('0');",
+                  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
+                  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_categories}}",
+                  "type": "text"
+                },
+                {
+                  "key": "uids[0]",
+                  "value": "{{gen_category_uid_0}}",
                   "type": "text"
                 }
               ]
