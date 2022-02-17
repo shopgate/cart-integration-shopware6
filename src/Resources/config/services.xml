@@ -158,16 +158,16 @@
             </call>
         </service>
         <service id="shopgate.sdk.shopgate_auth_service" class="\ShopgateAuthenticationServiceShopgate">
-            <argument key="$apiKey" type="expression">service('shopgate.config_bridge').get('apiKey')</argument>
-            <argument key="$customerNumber" type="expression">service('shopgate.config_bridge').get('customerNumber')</argument>
+            <argument key="$apiKey" type="expression">service('shopgate.config_mapping').getApiKey()</argument>
+            <argument key="$customerNumber" type="expression">service('shopgate.config_mapping').getCustomerNumber()</argument>
             <call method="setup">
                 <argument key="$config" type="service" id="shopgate.config_mapping"/>
             </call>
         </service>
         <service id="shopgate.core.extended.merchant_api" class="Shopgate\Shopware\Shopgate\Extended\Core\ExtendedMerchantApi" shared="true">
             <argument key="$authService" type="service" id="shopgate.sdk.shopgate_auth_service"/>
-            <argument key="$apiUrl" type="expression">service('shopgate.config_bridge').get('apiUrl')</argument>
-            <argument key="$shopNumber" type="expression">service('shopgate.config_bridge').get('shopNumber')</argument>
+            <argument key="$apiUrl" type="expression">service('shopgate.config_mapping').getApiUrl()</argument>
+            <argument key="$shopNumber" type="expression">service('shopgate.config_mapping').getShopNumber()</argument>
         </service>
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
