@@ -18,7 +18,12 @@ Component.register('sg-api-credentials-detail', {
             repository: null,
             isLoading: false,
             processSuccess: false,
-            isSaveSuccessful: false
+            isSaveSuccessful: false,
+            channelRepository: null,
+            languageOptions: [
+                {id: null, name: 'Add languages to this Sales Channel'}
+            ],
+            channelLanguageMap: null
         };
     },
 
@@ -31,19 +36,38 @@ Component.register('sg-api-credentials-detail', {
     created() {
         this.createdComponent();
     },
-
-    computed: {
-        languageOptions() {
-            return this.item.languages;
+    watch: {
+        'item.salesChannelId': function (channelId) {
+            this.createChannelLanguageMap();
+            if (this.channelLanguageMap) {
+                this.languageOptions = this.channelLanguageMap[channelId];
+            }
         }
     },
 
     methods: {
         createdComponent() {
             this.repository = this.repositoryFactory.create('shopgate_api_credentials');
+            this.channelResository = this.repositoryFactory.create('sales_channel');
+            this.createChannelLanguageMap();
             this.getEntity();
         },
 
+        createChannelLanguageMap() {
+            if (this.channelLanguageMap) {
+                return;
+            }
+            const criteria = new Criteria();
+            criteria.addAssociation('languages');
+            this.channelResository.search(criteria, Shopware.Context.api)
+                .then(
+                    list => {
+                        let map = [];
+                        list.forEach(({id, languages}) => map[id] = languages);
+                        this.channelLanguageMap = map;
+                    });
+
+        },
         getEntity() {
             const criteria = new Criteria();
             criteria.addAssociation('salesChannel.languages');
@@ -58,13 +82,9 @@ Component.register('sg-api-credentials-detail', {
         onClickSave() {
             this.isLoading = true;
             const titleSaveError = this.$tc('sg-api-credentials.detail.titleNotificationError');
-            const messageSaveError = this.$tc(
-                'sg-api-credentials.detail.messageSaveError'
-            );
+            const messageSaveError = this.$tc('sg-api-credentials.detail.messageSaveError');
             const titleSaveSuccess = this.$tc('sg-api-credentials.detail.titleNotificationSuccess');
-            const messageSaveSuccess = this.$tc(
-                'sg-api-credentials.detail.messageSaveSuccess'
-            );
+            const messageSaveSuccess = this.$tc('sg-api-credentials.detail.messageSaveSuccess');
 
             this.isSaveSuccessful = false;
             this.isLoading = true;

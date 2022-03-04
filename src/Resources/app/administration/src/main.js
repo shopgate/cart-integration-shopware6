@@ -7,3 +7,4 @@ import './module/sg-order/component/sg-order-details';
 import './module/sg-order/component/sg-title-content';
 import './module/sg-order/component/sg-key-value';
 import './module';
+import './core';
