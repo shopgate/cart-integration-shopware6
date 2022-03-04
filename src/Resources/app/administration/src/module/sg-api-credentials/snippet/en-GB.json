@@ -25,6 +25,20 @@
             "contextMenuEdit": "Edit",
             "textHeadline": "API credential set",
             "titleSidebarItemRefresh": "Refresh"
+        },
+        "detail": {
+            "title": "API Credentials Set",
+            "buttonCancel": "Cancel",
+            "buttonSave": "Save",
+            "cardTitle": "Settings",
+            "fieldTitleHelpTextActive": "Activate credentials.",
+            "fieldTitlePlaceholderCustomerNumber": "123456",
+            "fieldTitlePlaceholderShopNumber": "123456",
+            "fieldTitlePlaceholderApiKey": "11111111111111111111111",
+            "titleNotificationError": "Error",
+            "titleNotificationSuccess": "Success",
+            "messageSaveError": "Credentials could not be saved.",
+            "messageSaveSuccess": "Credentials have been saved."
         }
     }
 }
