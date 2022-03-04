@@ -6,7 +6,7 @@ import template from './sg-api-credentials-detail.html.twig';
 Component.register('sg-api-credentials-detail', {
     template,
 
-    inject: ['repositoryFactory', 'context'],
+    inject: ['repositoryFactory'],
 
     mixins: [
         Mixin.getByName('notification')
