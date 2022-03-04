@@ -10,8 +10,7 @@ Component.register('sg-api-credentials-list', {
 
     mixins: [
         Mixin.getByName('listing'),
-        Mixin.getByName('notification'),
-        Mixin.getByName('placeholder')
+        Mixin.getByName('notification')
     ],
 
     data() {

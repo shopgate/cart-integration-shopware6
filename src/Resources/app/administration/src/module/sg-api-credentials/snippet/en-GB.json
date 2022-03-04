@@ -38,7 +38,9 @@
             "titleNotificationError": "Error",
             "titleNotificationSuccess": "Success",
             "messageSaveError": "Credentials could not be saved.",
-            "messageSaveSuccess": "Credentials have been saved."
+            "messageSaveUniqueError": "Please make sure all your information is unique!",
+            "messageSaveSuccess": "Credentials have been saved.",
+            "noLanguages": "No languages are defined, please select a Sales Channel"
         }
     }
 }

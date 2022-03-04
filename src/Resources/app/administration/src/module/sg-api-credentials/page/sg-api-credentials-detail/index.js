@@ -21,7 +21,7 @@ Component.register('sg-api-credentials-detail', {
             isSaveSuccessful: false,
             channelRepository: null,
             languageOptions: [
-                {id: null, name: 'Add languages to this Sales Channel'}
+                {id: null, name: this.$tc('sg-api-credentials.detail.noLanguages')}
             ],
             channelLanguageMap: null
         };
@@ -38,7 +38,6 @@ Component.register('sg-api-credentials-detail', {
     },
     watch: {
         'item.salesChannelId': function (channelId) {
-            this.createChannelLanguageMap();
             if (this.channelLanguageMap) {
                 this.languageOptions = this.channelLanguageMap[channelId];
             }
@@ -54,19 +53,13 @@ Component.register('sg-api-credentials-detail', {
         },
 
         createChannelLanguageMap() {
-            if (this.channelLanguageMap) {
-                return;
-            }
             const criteria = new Criteria();
             criteria.addAssociation('languages');
-            this.channelResository.search(criteria, Shopware.Context.api)
-                .then(
-                    list => {
-                        let map = [];
-                        list.forEach(({id, languages}) => map[id] = languages);
-                        this.channelLanguageMap = map;
-                    });
-
+            this.channelResository
+                .search(criteria, Shopware.Context.api)
+                .then(list => {
+                    this.channelLanguageMap = this.languagesToMap(list);
+                });
         },
         getEntity() {
             const criteria = new Criteria();
@@ -76,36 +69,50 @@ Component.register('sg-api-credentials-detail', {
                 .get(this.$route.params.id, Shopware.Context.api, criteria)
                 .then((entity) => {
                     this.item = entity;
+                    this.languageOptions = entity.salesChannel.languages;
                 });
+        },
+
+        languagesToMap(list) {
+            let map = [];
+            list.forEach(({id, languages}) => map[id] = languages);
+            return map;
         },
 
         onClickSave() {
             this.isLoading = true;
-            const titleSaveError = this.$tc('sg-api-credentials.detail.titleNotificationError');
-            const messageSaveError = this.$tc('sg-api-credentials.detail.messageSaveError');
-            const titleSaveSuccess = this.$tc('sg-api-credentials.detail.titleNotificationSuccess');
-            const messageSaveSuccess = this.$tc('sg-api-credentials.detail.messageSaveSuccess');
-
             this.isSaveSuccessful = false;
-            this.isLoading = true;
 
             this.repository
                 .save(this.item, Shopware.Context.api)
                 .then(() => {
                     this.getEntity();
-                    this.isLoading = false;
                     this.processSuccess = true;
-                    this.createNotificationSuccess({
-                        title: titleSaveSuccess,
-                        message: messageSaveSuccess
-                    });
-                }).catch(() => {
-                this.isLoading = false;
-                this.createNotificationError({
-                    title: titleSaveError,
-                    message: messageSaveError
-                });
+                    this.handleSaveSuccess();
+                }).catch((e) => {
+                this.handleSaveFailure(e);
             });
+        },
+        handleSaveSuccess() {
+            this.isLoading = false;
+            this.createNotificationSuccess({
+                title: this.$tc('sg-api-credentials.detail.titleNotificationSuccess'),
+                message: this.$tc('sg-api-credentials.detail.messageSaveSuccess')
+            });
+        },
+        handleSaveFailure(error) {
+            this.isLoading = false;
+            if (error.response.status === 500) {
+                this.createNotificationError({
+                    title: this.$tc('sg-api-credentials.detail.titleNotificationError'),
+                    message: this.$tc('sg-api-credentials.detail.messageSaveUniqueError')
+                });
+            } else {
+                this.createNotificationError({
+                    title: this.$tc('sg-api-credentials.detail.titleNotificationError'),
+                    message: this.$tc('sg-api-credentials.detail.messageSaveError')
+                });
+            }
         },
 
         saveFinish() {

@@ -1,5 +1,5 @@
 import './page/sg-api-credentials-list';
-// import './page/sg-api-credentials-create';
+import './page/sg-api-credentials-create';
 import './page/sg-api-credentials-detail';
 import deDE from './snippet/de-DE';
 import enGB from './snippet/en-GB';
