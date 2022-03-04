@@ -2,15 +2,15 @@
     "sg-api-credentials": {
         "general": {
             "mainMenuItemGeneral": "Shopgate API",
-            "description": "Configure your API credential sets"
+            "description": "Configure your API credential sets",
+            "active": "Active",
+            "salesChannel": "SalesChannel",
+            "language": "Language",
+            "customerNumber": "Customer Number",
+            "shopNumber": "Shop Number",
+            "apiKey": "API Key"
         },
         "list": {
-            "columnActive": "Active",
-            "columnSalesChannel": "SalesChannel",
-            "columnLanguage": "Language",
-            "columnCustomerNumber": "Customer Number",
-            "columnShopNumber": "Shop Number",
-            "columnApiKey": "API Key",
             "fieldProcessNotRun": "Not created",
             "fieldProcessSucceed": "Successfully created",
             "fieldProcessFailed": "Failed",

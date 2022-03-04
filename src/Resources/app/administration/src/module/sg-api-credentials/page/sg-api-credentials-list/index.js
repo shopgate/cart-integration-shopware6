@@ -71,38 +71,38 @@ Component.register('sg-api-credentials-list', {
             return [
                 {
                     property: 'active',
-                    label: 'sg-api-credentials.list.columnActive',
+                    label: 'sg-api-credentials.general.active',
                     allowResize: true,
                     align: 'center'
                 },
                 {
                     property: 'salesChannel.name',
-                    label: 'sg-api-credentials.list.columnSalesChannel',
+                    label: 'sg-api-credentials.general.salesChannel',
                     routerLink: 'sg.api.credentials.detail',
                     allowResize: true,
                     primary: true
                 },
                 {
                     property: 'language.name',
-                    label: 'sg-api-credentials.list.columnLanguage',
+                    label: 'sg-api-credentials.general.language',
                     routerLink: 'sg.api.credentials.detail',
                     allowResize: true
                 },
                 {
                     property: 'customerNumber',
-                    label: 'sg-api-credentials.list.columnCustomerNumber',
+                    label: 'sg-api-credentials.general.customerNumber',
                     routerLink: 'sg.api.credentials.detail',
                     allowResize: true
                 },
                 {
                     property: 'shopNumber',
-                    label: 'sg-api-credentials.list.columnShopNumber',
+                    label: 'sg-api-credentials.general.shopNumber',
                     routerLink: 'sg.api.credentials.detail',
                     allowResize: true
                 },
                 {
                     property: 'apiKey',
-                    label: 'sg-api-credentials.list.columnApiKey',
+                    label: 'sg-api-credentials.general.apiKey',
                     routerLink: 'sg.api.credentials.detail',
                     allowResize: true
                 }
