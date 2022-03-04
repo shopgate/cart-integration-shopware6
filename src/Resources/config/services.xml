@@ -172,6 +172,9 @@
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
         </service>
+        <service id="Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsDefinition">
+            <tag name="shopware.entity.definition" entity="shopgate_api_credentials"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\ExtendedClassFactory">
             <argument key="$cart" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart"/>
             <argument key="$cartItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem"/>

@@ -1,0 +1,30 @@
+{
+    "sg-api-credentials": {
+        "general": {
+            "mainMenuItemGeneral": "Shopgate API",
+            "description": "Configure your API credential sets"
+        },
+        "list": {
+            "columnActive": "Active",
+            "columnSalesChannel": "SalesChannel",
+            "columnLanguage": "Language",
+            "columnCustomerNumber": "Customer Number",
+            "columnShopNumber": "Shop Number",
+            "columnApiKey": "API Key",
+            "fieldProcessNotRun": "Not created",
+            "fieldProcessSucceed": "Successfully created",
+            "fieldProcessFailed": "Failed",
+            "fieldProcessQueued": "Queued",
+            "title": "Shopgate API Credentials",
+            "buttonDelete": "Delete",
+            "modalTitleDelete": "Delete",
+            "contentEmpty": "No API credentials exist",
+            "textDeleteConfirm": "Do you want to delete the API credential set?",
+            "buttonCancel": "Cancel",
+            "buttonAdd": "Add",
+            "contextMenuEdit": "Edit",
+            "textHeadline": "API credential set",
+            "titleSidebarItemRefresh": "Refresh"
+        }
+    }
+}
