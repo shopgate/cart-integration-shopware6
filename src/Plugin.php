@@ -11,7 +11,6 @@ use Shopgate_Model_Catalog_Product;
 use ShopgateCart;
 use ShopgateCustomer;
 use ShopgateLibraryException;
-use ShopgateMerchantApiException;
 use ShopgateOrder;
 use ShopgatePlugin;
 use Shopware\Core\Framework\Uuid\Uuid;

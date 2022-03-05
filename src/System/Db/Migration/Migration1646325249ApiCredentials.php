@@ -32,11 +32,11 @@ class Migration1646325249ApiCredentials extends MigrationStep
             api_key           varchar(255)     not null,
             created_at       datetime          default CURRENT_TIMESTAMP not null,
             updated_at       datetime,
-            constraint sg_api_credentials_pk primary key (id),
-            constraint sg_api_credentials_pk_2 unique (sales_channel_id, language_id),
-            constraint sg_api_credentials_pk_3 unique (shop_number),
-            constraint sg_api_credentials_pk_4 unique (customer_number),
-            constraint sg_api_credentials_pk_5 unique (api_key),
+            constraint sg_api_credentials_unique_ID primary key (id),
+            constraint sg_api_credentials_unique_channel_lang unique (sales_channel_id, language_id),
+            constraint sg_api_credentials_unique_shopNumber unique (shop_number),
+            constraint sg_api_credentials_unique_customerNumber unique (customer_number),
+            constraint sg_api_credentials_unique_apiKey unique (api_key),
             constraint sg_api_credentials_language_id_fk 
                 foreign key (language_id) references language (id) on delete cascade,
             constraint sg_api_credentials_sales_channel_id_fk

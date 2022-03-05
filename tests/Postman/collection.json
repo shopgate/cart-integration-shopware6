@@ -897,7 +897,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{customer_number}},\r\n                \"shopNumber\": {{shop_number}},\r\n                \"apiKey\": \"{{api_key}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{customer_number}},\r\n                \"shopNumber\": {{shop_number}},\r\n                \"apiKey\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"id\": \"26909efb178412e49b65fc768544f615\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{shop_main_DE}},\r\n                \"shopNumber\": {{shop_main_DE}},\r\n                \"apiKey\": \"{{shop_main_DE}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3048,7 +3048,7 @@
                         ],
                         "body": {
                           "mode": "raw",
-                          "raw": "{\r\n    \"languageId\": \"{{gen_language_german_id}}\",\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{default_category_fTimeAndElectronics_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
+                          "raw": "{\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{default_category_fTimeAndElectronics_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
                           "options": {
                             "raw": {
                               "language": "json"
@@ -3980,7 +3980,23 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
-                      ""
+                      "/**\r",
+                      " *  SG Token generation\r",
+                      " */\r",
+                      "var tstamp = Math.floor(Date.now() / 1000);\r",
+                      "\r",
+                      "const customerNumber = pm.environment.get('customer_number');\r",
+                      "const apiKey = pm.environment.get('api_key');\r",
+                      "\r",
+                      "// Use the CryptoJS\r",
+                      "var authUser = customerNumber + \"-\" + tstamp;\r",
+                      "var tokenData = \"SPA-\" + customerNumber + \"-\" + tstamp + \"-\" + apiKey;\r",
+                      "\r",
+                      "var authToken = CryptoJS.SHA1(tokenData).toString();\r",
+                      "\r",
+                      "// Set the new header values\r",
+                      "pm.environment.set(\"gen_sg_header_auth_user\", authUser);\r",
+                      "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
                     ],
                     "type": "text/javascript"
                   }
@@ -17015,6 +17031,184 @@
             }
           },
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "Main DE",
+      "item": [
+        {
+          "name": "SG: get_settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Check issues with payload\", function () {",
+                  "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
+                  "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
+                  "});",
+                  "",
+                  "pm.test(\"Check custom NET group\", function () {",
+                  "    const nonDefaultGroup = findByName('API: A custom NET group');",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_net_id'));",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                  "});",
+                  "",
+                  "pm.test(\"Check other group\", function () {",
+                  "    const defaultGroup = findByName('Standard-Kundengruppe');",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
+                  "});",
+                  "",
+                  "function findByName(name) {",
+                  "    return jsonData.customer_groups.find(group => group.name === name);",
+                  "};"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_main_DE}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_settings}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: ping",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin check', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.not.be.empty.to.not.eq('not installed');",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_main_DE');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_main_DE}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "/**",
+              " *  SG Token generation",
+              " */",
+              "var tstamp = Math.floor(Date.now() / 1000);",
+              "",
+              "const deShopCreds = pm.environment.get('shop_main_DE');",
+              "",
+              "// Use the CryptoJS",
+              "var authUser = deShopCreds + \"-\" + tstamp;",
+              "var tokenData = \"SPA-\" + deShopCreds + \"-\" + tstamp + \"-\" + deShopCreds;",
+              "",
+              "var authToken = CryptoJS.SHA1(tokenData).toString();",
+              "",
+              "// Set the new header values",
+              "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
+              "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              ""
+            ]
+          }
         }
       ]
     }

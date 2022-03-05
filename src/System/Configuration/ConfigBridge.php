@@ -113,7 +113,7 @@ class ConfigBridge
                 'error_text' => 'Plugin is not active in Shopware config'
             ];
         }
-        $this->contextManager->createAndLoadByChannelId($channel->getSalesChannelId());
+        $this->contextManager->createAndLoad($channel);
         $this->load($channel->getSalesChannelId());
 
     }

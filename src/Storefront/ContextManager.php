@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront;
 
+use Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsEntity;
 use Shopware\Core\Framework\Routing\SalesChannelRequestContextResolver;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -39,9 +40,15 @@ class ContextManager
         $this->channelContextFactory = $channelContextFactory;
     }
 
-    public function createAndLoadByChannelId(string $salesChannelId): ContextManager
+    /**
+     * This function will not assign language starting SW 6.5.
+     * To rework, just search for `getLanguageId`
+     */
+    public function createAndLoad(ShopgateApiCredentialsEntity $apiCredentialsEntity): ContextManager
     {
-        $salesChannelContext = $this->createNewContext($salesChannelId);
+        $salesChannelContext = $this->createNewContext($apiCredentialsEntity->getSalesChannelId(),
+            [SalesChannelContextService::LANGUAGE_ID => $apiCredentialsEntity->getLanguageId()]
+        );
         $this->salesContext = $salesChannelContext;
 
         return $this;
