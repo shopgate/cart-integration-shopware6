@@ -31,7 +31,7 @@
             "buttonCancel": "Cancel",
             "buttonSave": "Save",
             "cardTitle": "Settings",
-            "fieldTitleHelpTextActive": "Activate credentials.",
+            "fieldTitleHelpTextActive": "Activate API connection using these credentials",
             "fieldTitlePlaceholderCustomerNumber": "123456",
             "fieldTitlePlaceholderShopNumber": "123456",
             "fieldTitlePlaceholderApiKey": "11111111111111111111111",

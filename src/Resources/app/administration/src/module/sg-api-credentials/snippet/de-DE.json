@@ -2,15 +2,15 @@
     "sg-api-credentials": {
         "general": {
             "mainMenuItemGeneral": "Shopgate API",
-            "description": "Konfigurieren Sie Ihren API Credentials"
+            "description": "Konfigurieren Sie Ihren API Credentials",
+            "active": "Aktiv",
+            "salesChannel": "SalesChannel",
+            "language": "Language",
+            "customerNumber": "Customer Number",
+            "shopNumber": "Shop Number",
+            "apiKey": "API Key"
         },
         "list": {
-            "columnActive": "Aktiv",
-            "columnSalesChannel": "SalesChannel",
-            "columnLanguage": "Language",
-            "columnCustomerNumber": "Customer Number",
-            "columnShopNumber": "Shop Number",
-            "columnApiKey": "API Key",
             "fieldProcessNotRun": "Not created",
             "fieldProcessSucceed": "Successfully created",
             "fieldProcessFailed": "Failed",
@@ -23,8 +23,24 @@
             "buttonCancel": "Abbrechen",
             "buttonAdd": "Hinzufügen",
             "contextMenuEdit": "Bearbeiten",
-            "textHeadline": "API Credentials",
+            "textHeadline": "API credential set",
             "titleSidebarItemRefresh": "Aktualisieren Sie"
+        },
+        "detail": {
+            "title": "API Credentials Set",
+            "buttonCancel": "Cancel",
+            "buttonSave": "Save",
+            "cardTitle": "Settings",
+            "fieldTitleHelpTextActive": "Activate API connection using these credentials",
+            "fieldTitlePlaceholderCustomerNumber": "123456",
+            "fieldTitlePlaceholderShopNumber": "123456",
+            "fieldTitlePlaceholderApiKey": "11111111111111111111111",
+            "titleNotificationError": "Error",
+            "titleNotificationSuccess": "Success",
+            "messageSaveError": "Credentials could not be saved.",
+            "messageSaveUniqueError": "Please make sure all your information is unique!",
+            "messageSaveSuccess": "Credentials have been saved.",
+            "noLanguages": "No languages are defined, please select a Sales Channel"
         }
     }
 }
