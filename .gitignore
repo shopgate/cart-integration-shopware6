@@ -4,5 +4,3 @@ composer.lock
 .php-cs.cache
 .DS_Store
 .phpunit.result.cache
-
-src/Resources/public/administration
