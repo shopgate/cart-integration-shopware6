@@ -49,7 +49,7 @@ class ShopgateApiCredentialsEntity extends Entity
         return $this;
     }
 
-    public function isActive(): bool
+    public function getActive(): bool
     {
         return $this->active;
     }
@@ -88,5 +88,21 @@ class ShopgateApiCredentialsEntity extends Entity
     public function getApiKey(): string
     {
         return $this->apiKey;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'active' => $this->active,
+            'salesChannelId' => $this->salesChannelId,
+            'languageId' => $this->languageId,
+            'customerNumber' => $this->customerNumber,
+            'shopNumber' => $this->shopNumber,
+            'apiKey' => $this->apiKey
+        ];
     }
 }

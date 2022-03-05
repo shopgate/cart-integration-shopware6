@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Configuration;
 
+use Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsEntity;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\DomainBridge;
 use ShopgateLibraryException;
@@ -14,8 +15,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\OrFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -30,7 +29,6 @@ class ConfigBridge
     public const SYSTEM_CONFIG_DOMAIN = self::PLUGIN_NAMESPACE . '.config.';
     public const SYSTEM_CONFIG_PROD_EXPORT = self::SYSTEM_CONFIG_DOMAIN . 'productTypesToExport';
     public const SYSTEM_CONFIG_IS_LIVE_SHOPPING = 'isLiveShopping';
-    public const SYSTEM_CONFIG_IS_ACTIVE = 'isActive';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 
@@ -40,15 +38,18 @@ class ConfigBridge
     private SystemConfigService $systemConfigService;
     private EntityRepositoryInterface $systemConfigRepo;
     private ?SystemConfigCollection $config = null;
+    private ?ShopgateApiCredentialsEntity $apiCredentialsEntity = null;
     private DomainBridge $domainBridge;
     private array $error = [];
+    private EntityRepositoryInterface $shopgateApiRepo;
 
     public function __construct(
         EntityRepositoryInterface $pluginRepository,
+        EntityRepositoryInterface $systemConfigRepo,
+        EntityRepositoryInterface $shopgateApiRepo,
         string $shopwareVersion,
         ContextManager $contextManager,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $systemConfigRepo,
         DomainBridge $domainBridge
     ) {
         $this->pluginRepository = $pluginRepository;
@@ -57,6 +58,7 @@ class ConfigBridge
         $this->systemConfigService = $systemConfigService;
         $this->systemConfigRepo = $systemConfigRepo;
         $this->domainBridge = $domainBridge;
+        $this->shopgateApiRepo = $shopgateApiRepo;
     }
 
     public function getShopwareVersion(): string
@@ -82,6 +84,8 @@ class ConfigBridge
     }
 
     /**
+     * This is the main entry of all endpoints
+     *
      * @required
      * @noinspection PhpUnused
      */
@@ -95,7 +99,7 @@ class ConfigBridge
             return;
         }
 
-        $channel = $this->getSalesChannelId($shopNumber);
+        $channel = $this->getSalesChannelConfig($shopNumber);
         if (null === $channel) {
             $this->error = [
                 'error' => ShopgateLibraryException::PLUGIN_API_UNKNOWN_SHOP_NUMBER,
@@ -103,46 +107,29 @@ class ConfigBridge
             ];
             return;
         }
-        $this->contextManager->createAndLoadByChannelId($channel);
-        $this->load($channel);
-        if ($this->get(self::SYSTEM_CONFIG_IS_ACTIVE) !== true) {
+        if ($channel->getActive() !== true) {
             $this->error = [
                 'error' => ShopgateLibraryException::CONFIG_PLUGIN_NOT_ACTIVE,
                 'error_text' => 'Plugin is not active in Shopware config'
             ];
         }
+        $this->contextManager->createAndLoadByChannelId($channel->getSalesChannelId());
+        $this->load($channel->getSalesChannelId());
+
     }
 
     /**
-     * Loads sales channel ID using shop_number.
-     * Shop_Number is in the Shopgate Plugin Config
-     * for a specific channel, not "All Channels"
-     *
-     * @param string $shopNumber
-     * @return string|null
+     * Shop number is unique to a specific SalesChannel, so we pull it here.
      */
-    public function getSalesChannelId(string $shopNumber): ?string
+    public function getSalesChannelConfig(string $shopNumber): ?ShopgateApiCredentialsEntity
     {
         $criteria = (new Criteria())
-            ->addFilter(
-                new EqualsFilter(
-                    'configurationKey',
-                    self::SYSTEM_CONFIG_DOMAIN . 'shopNumber'
-                )
-            )->addFilter(new EqualsFilter('configurationValue', $shopNumber))
-            ->addFilter(new NotFilter(
-                MultiFilter::CONNECTION_AND,
-                [new EqualsFilter('salesChannelId', null)]
-            ));
-        $criteria->setTitle('shopgate::system-config::sales-channel-id');
-        $values = $this->systemConfigRepo->search($criteria, new Context(new SalesChannelApiSource('')));
-        if ($values->getTotal() === 1) {
-            /** @var SystemConfigEntity $value */
-            $value = $values->first();
-            return $value->getSalesChannelId();
-        }
+            ->addFilter(new EqualsFilter('shopNumber', $shopNumber)
+            );
+        $criteria->setTitle('shopgate::api-configurations::sales-channel-id');
+        $values = $this->shopgateApiRepo->search($criteria, new Context(new SalesChannelApiSource('')));
 
-        return null;
+        return $this->apiCredentialsEntity = $values->first();
     }
 
     /**
@@ -177,9 +164,12 @@ class ConfigBridge
      */
     public function get(string $key, $fallback = '')
     {
-        // the only time this happens is when an incorrect shop_number is not provided in the request
-        if (null === $this->config) {
+        // the only time this happens is when shop_number is not provided in the request
+        if (null === $this->config && null === $this->apiCredentialsEntity) {
             return $fallback;
+        }
+        if ($this->apiCredentialsEntity && $this->apiCredentialsEntity->has($key)) {
+            return $this->apiCredentialsEntity->get($key);
         }
         /** @var ?SystemConfigEntity $config */
         $config = $this->config->filterByProperty('configurationKey', self::SYSTEM_CONFIG_DOMAIN . $key)->first();
@@ -190,14 +180,16 @@ class ConfigBridge
     /**
      * @param array|bool|float|int|string|null $value
      */
-    public function set(string $key, $value, SalesChannelContext $salesChannelContext = null): void
+    public function set(string $key, $value): void
     {
-        $this->systemConfigService->set(
-            self::SYSTEM_CONFIG_DOMAIN . $key,
-            $value,
-            $salesChannelContext
-                ? $salesChannelContext->getSalesChannelId()
-                : $this->contextManager->getSalesContext()->getSalesChannelId());
+        $context = $this->contextManager->getSalesContext();
+        if ($this->apiCredentialsEntity && $this->apiCredentialsEntity->has($key)) {
+            $this->shopgateApiRepo->update(
+                [$this->apiCredentialsEntity->assign([$key => $value])->toArray()], $context->getContext()
+            );
+            return;
+        }
+        $this->systemConfigService->set(self::SYSTEM_CONFIG_DOMAIN . $key, $value, $context->getSalesChannelId());
     }
 
     public function getCustomerOptInConfirmUrl(SalesChannelContext $context): string
