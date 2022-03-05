@@ -12,7 +12,7 @@ Module.register('sg-api-credentials', {
     title: 'sg-api-credentials.general.mainMenuItemGeneral',
     description: 'sg-api-credentials.general.description',
     color: '#9AA8B5',
-    icon: 'default-symbol-content',
+    icon: 'default-shopping-paper-bag',
     favicon: 'shopgate_logo.png',
 
     snippets: {
@@ -50,7 +50,7 @@ Module.register('sg-api-credentials', {
             to: 'sg.api.credentials.index',
             label: 'sg-api-credentials.general.mainMenuItemGeneral',
             group: 'plugins',
-            icon: 'default-symbol-content'
+            icon: 'default-shopping-paper-bag'
         }
     ]
 });
