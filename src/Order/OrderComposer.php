@@ -183,11 +183,8 @@ class OrderComposer
             ->addShopgateAssociations();
         $criteria->getAssociation('lineItems')->addFilter(new EqualsFilter('parentId', null));
 
-        // we use the language of the SG API credential mapping rather than customer default or channel default
-        $initialLanguage = $this->contextManager->getSalesContext()->getLanguageId();
         $initContext = $this->contextComposer->getContextByCustomerId($id);
-        $langContext = $this->contextComposer->changeLanguage($initialLanguage, $initContext);
-        $orderResponse = $this->quoteBridge->getOrdersAsCustomer(new Request(), $criteria, $langContext);
+        $orderResponse = $this->quoteBridge->getOrdersAsCustomer(new Request(), $criteria, $initContext);
 
         return $orderResponse->getOrders()->map(
             fn(OrderEntity $entity) => $this->orderMapping->mapOutgoingOrder($entity)

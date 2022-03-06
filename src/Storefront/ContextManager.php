@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
@@ -27,17 +28,20 @@ class ContextManager
     private AbstractSalesChannelContextFactory $channelContextFactory;
     private SalesChannelContextRestorer $contextRestorer;
     private AbstractContextSwitchRoute $contextSwitchRoute;
+    private SalesChannelContextPersister $contextPersist;
 
     public function __construct(
         AbstractSalesChannelContextFactory $channelContextFactory,
         SalesChannelRequestContextResolver $contextResolver,
         SalesChannelContextRestorer $contextRestorer,
-        AbstractContextSwitchRoute $contextSwitchRoute
+        AbstractContextSwitchRoute $contextSwitchRoute,
+        SalesChannelContextPersister $contextPersist
     ) {
         $this->contextResolver = $contextResolver;
         $this->contextRestorer = $contextRestorer;
         $this->contextSwitchRoute = $contextSwitchRoute;
         $this->channelContextFactory = $channelContextFactory;
+        $this->contextPersist = $contextPersist;
     }
 
     /**
@@ -86,7 +90,14 @@ class ContextManager
 
     public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
     {
-        $token = $this->contextSwitchRoute->switchContext($dataBag, $context ?: $this->salesContext)->getToken();
+        $currentContext = $context ?: $this->salesContext;
+        $this->contextPersist->save(
+            $currentContext->getToken(),
+            $dataBag->all(),
+            $currentContext->getSalesChannelId(),
+            $dataBag->get(SalesChannelContextService::CUSTOMER_ID)
+        );
+        $token = $this->contextSwitchRoute->switchContext($dataBag, $currentContext)->getToken();
         $context = $this->loadByCustomerToken($token);
 
         return $this->salesContext = $context;
@@ -130,10 +141,17 @@ class ContextManager
         string $salesChannelId,
         array $options = [],
         string $token = null
-    ): SalesChannelContext {
+    ): SalesChannelContext
+    {
         if (null === $token) {
             $token = Random::getAlphanumericString(32);
         }
+        $this->contextPersist->save(
+            $token,
+            $options,
+            $salesChannelId,
+            $options[SalesChannelContextService::CUSTOMER_ID] ?? null
+        );
 
         return $this->channelContextFactory->create($token, $salesChannelId, $options);
     }
