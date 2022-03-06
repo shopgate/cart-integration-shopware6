@@ -11,9 +11,7 @@ use ShopgateCustomer;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Throwable;
 
 class CustomerComposer
@@ -67,19 +65,10 @@ class CustomerComposer
     {
         $chanel = $this->contextManager->getSalesContext();
         $dataBag = $this->customerMapping->mapToShopwareEntity($customer, $password);
-        $dataBag->set(
-            'storefrontUrl',
-            $this->configBridge->getCustomerOptInConfirmUrl($chanel)
-        );
+        $dataBag->set('storefrontUrl', $this->configBridge->getCustomerOptInConfirmUrl($chanel));
         $dataBag->set('acceptedDataProtection', true);
         try {
-            $customer = $this->registerRoute
-                ->register($dataBag, $chanel, false)
-                ->getCustomer();
-            $this->contextManager->switchContext(
-                new RequestDataBag([SalesChannelContextService::LANGUAGE_ID => $chanel->getLanguageId()])
-            );
-            return $customer;
+            return $this->registerRoute->register($dataBag, $chanel, false)->getCustomer();
         } catch (ConstraintViolationException $e) {
             $errorMessages = [];
             foreach ($e->getViolations() as $violation) {
