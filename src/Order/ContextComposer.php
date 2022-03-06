@@ -80,4 +80,11 @@ class ContextComposer
 
         return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
     }
+
+    public function changeLanguage(string $languageId, SalesChannelContext $context): SalesChannelContext
+    {
+        $dataBag = [SalesChannelContextService::LANGUAGE_ID => $languageId];
+
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
+    }
 }

@@ -185,26 +185,31 @@
       "enabled": true
     },
     {
-      "key": "created_customer_headless_net_email",
-      "value": "example+1@apite.io",
-      "enabled": true
-    },
-    {
-      "key": "created_customer_withCustomGrp_id",
-      "value": "56b861af79034c7fa1e9158dbe62be16",
-      "enabled": true
-    },
-    {
-      "key": "created_customerGroup_net_id",
-      "value": "7ed46ba83b40423284938fbc98697aa7",
-      "enabled": true
-    },
-    {
-      "key": "created_discount_customerUSA_cart_1_id",
-      "value": "9c9b73c4076e2d8d2926c827598089cb",
-      "type": "default",
-      "enabled": true
-    },
+		"key": "created_customer_headless_net_email",
+		"value": "example+1@apite.io",
+		"enabled": true
+	},
+	  {
+		  "key": "created_customer_withCustomGrp_id",
+		  "value": "56b861af79034c7fa1e9158dbe62be16",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_customer_DE_id",
+		  "value": "209cbe18880744e7e5df24db194efb1a",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_customerGroup_net_id",
+		  "value": "7ed46ba83b40423284938fbc98697aa7",
+		  "enabled": true
+	  },
+	  {
+		  "key": "created_discount_customerUSA_cart_1_id",
+		  "value": "9c9b73c4076e2d8d2926c827598089cb",
+		  "type": "default",
+		  "enabled": true
+	  },
     {
       "key": "created_discount_customerUSA_delivery_1_id",
       "value": "53bb7b1bfaf57c6da3deea0a48af4325",
@@ -382,16 +387,16 @@
     },
     {
       "key": "default_shipMethod_sgFree_id",
-      "value": "92929e3cb97141f1b70ab9a8616df6a7",
-      "enabled": true
-    },
-    {
-      "key": "default_payMethod_sgDefault_id",
-      "value": "7046c79435a7410fb90a8b82f13d30a9",
-      "enabled": true
-    }
+		"value": "92929e3cb97141f1b70ab9a8616df6a7",
+		"enabled": true
+	},
+	  {
+		  "key": "default_payMethod_sgDefault_id",
+		  "value": "7046c79435a7410fb90a8b82f13d30a9",
+		  "enabled": true
+	  }
   ],
-  "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-03-05T15:50:57.141Z",
-  "_postman_exported_using": "Postman/9.14.9"
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2022-03-06T09:11:48.158Z",
+	"_postman_exported_using": "Postman/9.14.9"
 }
