@@ -115,7 +115,6 @@ class ConfigBridge
         }
         $this->contextManager->createAndLoad($channel);
         $this->load($channel->getSalesChannelId());
-
     }
 
     /**
