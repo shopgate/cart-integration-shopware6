@@ -14,7 +14,6 @@ Module.register('sg-api-credentials', {
     description: 'sg-api-credentials.general.description',
     color: '#9AA8B5',
     icon: 'default-shopping-paper-bag',
-    favicon: 'shopgate_logo.png',
 
     snippets: {
         'de-DE': deDE,

@@ -70,11 +70,22 @@ Component.extend('sg-channel-language-single-select', 'sw-entity-single-select',
                 ...this.context,
                 inheritance: true
             }, this.criteria).then((result) => {
-                this.displaySearch(result.languages);
                 this.isLoading = false;
+                this.displaySearch(result.languages);
 
                 return result.languages;
             });
-        }
+        },
+        search() {
+            if (this.criteria.term === this.searchTerm) {
+                return Promise.resolve();
+            }
+            const searchPromise = this.loadData().then(() => {
+                this.resetActiveItem();
+            });
+            this.$emit('search', searchPromise);
+
+            return searchPromise;
+        },
     }
 });
