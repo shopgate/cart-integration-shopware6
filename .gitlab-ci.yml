@@ -101,7 +101,7 @@ newman:
   except:
     - tags
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
+    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli@1.5.* > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --quiet --activate SwagPlatformDemoData
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL

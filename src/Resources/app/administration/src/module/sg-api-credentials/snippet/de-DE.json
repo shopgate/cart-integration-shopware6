@@ -1,0 +1,46 @@
+{
+    "sg-api-credentials": {
+        "general": {
+            "mainMenuItemGeneral": "Shopgate API",
+            "description": "Konfigurieren Sie Ihre API Zugangsdaten",
+            "active": "Aktiv",
+            "salesChannel": "Verkaufskanal (Sales Channel)",
+            "language": "Sprache",
+            "customerNumber": "Kundennummer",
+            "shopNumber": "Shopnummer",
+            "apiKey": "API Key"
+        },
+        "list": {
+            "fieldProcessNotRun": "Not erstellt",
+            "fieldProcessSucceed": "Erfolgreich erstellt",
+            "fieldProcessFailed": "Fehlerhaft",
+            "fieldProcessQueued": "In Warteschalnge",
+            "title": "Shopgate API Credentials",
+            "buttonDelete": "Löschen",
+            "modalTitleDelete": "Löschen",
+            "contentEmpty": "Es wurden keine API Zugangsdaten eingefügt",
+            "textDeleteConfirm": "Möchten Sie die API Zugangsdaten löschen?",
+            "buttonCancel": "Abbrechen",
+            "buttonAdd": "Hinzufügen",
+            "contextMenuEdit": "Bearbeiten",
+            "textHeadline": "API Zugangsdaten gespeichert",
+            "titleSidebarItemRefresh": "Aktualisieren"
+        },
+        "detail": {
+            "title": "API Zugangsdaten gespeichert",
+            "buttonCancel": "Abbrechen",
+            "buttonSave": "Speichern",
+            "cardTitle": "Einstellungen",
+            "fieldTitleHelpTextActive": "Aktive API Verbindung mit diesen Zugangsdaten",
+            "fieldTitlePlaceholderCustomerNumber": "123456",
+            "fieldTitlePlaceholderShopNumber": "123456",
+            "fieldTitlePlaceholderApiKey": "11111111111111111111111",
+            "titleNotificationError": "Fehler",
+            "titleNotificationSuccess": "Erfolgreich",
+            "messageSaveError": "Zugangsdaten können nicht gespeichert werden.",
+            "messageSaveUniqueError": "Dei selben Zugangsdaten werden bereits verwendet!",
+            "messageSaveSuccess": "Zugangsdaten wurden gespeichert.",
+            "noLanguages": "Keine Sprache ausgewählt, bitte Verkaufskanal (Sales Channel) auswählen."
+        }
+    }
+}

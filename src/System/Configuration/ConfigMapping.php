@@ -138,7 +138,7 @@ class ConfigMapping extends ShopgateConfig
                 continue;
             }
             $value = $this->castToType($this->{$key}, $key);
-            $key = ['shop_is_active' => 'is_active'][$key] ?? $key;
+            $key = ['shop_is_active' => 'active'][$key] ?? $key;
             $this->configReader->set($this->camelize($key), $value);
         }
     }

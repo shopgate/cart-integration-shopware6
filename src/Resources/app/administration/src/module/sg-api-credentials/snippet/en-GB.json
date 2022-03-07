@@ -1,0 +1,46 @@
+{
+    "sg-api-credentials": {
+        "general": {
+            "mainMenuItemGeneral": "Shopgate API",
+            "description": "Configure your API credential sets",
+            "active": "Active",
+            "salesChannel": "SalesChannel",
+            "language": "Language",
+            "customerNumber": "Customer Number",
+            "shopNumber": "Shop Number",
+            "apiKey": "API Key"
+        },
+        "list": {
+            "fieldProcessNotRun": "Not created",
+            "fieldProcessSucceed": "Successfully created",
+            "fieldProcessFailed": "Failed",
+            "fieldProcessQueued": "Queued",
+            "title": "Shopgate API Credentials",
+            "buttonDelete": "Delete",
+            "modalTitleDelete": "Delete",
+            "contentEmpty": "No API credentials exist",
+            "textDeleteConfirm": "Do you want to delete the API credential set?",
+            "buttonCancel": "Cancel",
+            "buttonAdd": "Add",
+            "contextMenuEdit": "Edit",
+            "textHeadline": "API credential set",
+            "titleSidebarItemRefresh": "Refresh"
+        },
+        "detail": {
+            "title": "API Credentials Set",
+            "buttonCancel": "Cancel",
+            "buttonSave": "Save",
+            "cardTitle": "Settings",
+            "fieldTitleHelpTextActive": "Activate API connection using these credentials",
+            "fieldTitlePlaceholderCustomerNumber": "123456",
+            "fieldTitlePlaceholderShopNumber": "123456",
+            "fieldTitlePlaceholderApiKey": "11111111111111111111111",
+            "titleNotificationError": "Error",
+            "titleNotificationSuccess": "Success",
+            "messageSaveError": "Credentials could not be saved.",
+            "messageSaveUniqueError": "Please make sure all your information is unique!",
+            "messageSaveSuccess": "Credentials have been saved.",
+            "noLanguages": "No languages are defined, please select a Sales Channel"
+        }
+    }
+}

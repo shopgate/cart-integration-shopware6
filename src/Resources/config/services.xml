@@ -172,6 +172,9 @@
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
         </service>
+        <service id="Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsDefinition">
+            <tag name="shopware.entity.definition" entity="shopgate_api_credentials"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\ExtendedClassFactory">
             <argument key="$cart" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart"/>
             <argument key="$cartItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem"/>
@@ -213,8 +216,9 @@
         <service id="Shopgate\Shopware\System\Configuration\ConfigBridge" alias="shopgate.config_bridge"/>
         <service id="shopgate.config_bridge" class="Shopgate\Shopware\System\Configuration\ConfigBridge" shared="true">
             <argument key="$pluginRepository" type="service" id="plugin.repository"/>
-            <argument key="$shopwareVersion" type="string">%kernel.shopware_version%</argument>
             <argument key="$systemConfigRepo" type="service" id="system_config.repository"/>
+            <argument key="$shopgateApiRepo" type="service" id="shopgate_api_credentials.repository"/>
+            <argument key="$shopwareVersion" type="string">%kernel.shopware_version%</argument>
             <call method="loadByShopNumber">
                 <argument type="expression">service('request_stack').getCurrentRequest().request.get('shop_number')</argument>
             </call>
@@ -242,7 +246,7 @@
             <call method="initShopwareConfig">
                 <argument type="expression">
                     {
-                    "shop_is_active": service('shopgate.config_bridge').get('isActive'),
+                    "shop_is_active": service('shopgate.config_bridge').get('active'),
                     "customer_number": service('shopgate.config_bridge').get('customerNumber'),
                     "shop_number": service('shopgate.config_bridge').get('shopNumber'),
                     "apikey": service('shopgate.config_bridge').get('apiKey'),

@@ -2,29 +2,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
-        <title>Basic Configuration</title>
-        <input-field type="bool">
-            <name>isActive</name>
-            <label>Enable</label>
-            <label lang="de-DE">Aktiv</label>
-            <helpText>Please test the connection in your Shopgate account.</helpText>
-            <helpText lang="de-DE">Verbindung im Shopgate Händlerbereich testen.</helpText>
-        </input-field>
-        <input-field type="int">
-            <name>customerNumber</name>
-            <label>Customer number</label>
-            <label lang="de-DE">Kundennummer</label>
-        </input-field>
-        <input-field type="int">
-            <name>shopNumber</name>
-            <label>Shop number</label>
-            <label lang="de-DE">Shopnummer</label>
-        </input-field>
-        <input-field>
-            <name>apiKey</name>
-            <label>API key</label>
-            <label lang="de-DE">API Key</label>
-        </input-field>
+        <title>API Configuration</title>
+        <component name="sg-config-api-notice">
+            <name>notice</name>
+        </component>
     </card>
     <card>
         <title>Catalog</title>
