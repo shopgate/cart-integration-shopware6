@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "88739b54-159a-4bcc-9694-c55b36445483",
+    "_postman_id": "1ed5dc17-4ddc-46e4-8b9d-f0246d0e7e56",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -121,6 +121,67 @@
                   "response": []
                 }
               ]
+            },
+            {
+              "name": "SW: first run wizard",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"language\": \"en_GB\",\r\n    \"failed\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/store/frw/finish",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "store",
+                    "frw",
+                    "finish"
+                  ]
+                }
+              },
+              "response": []
             },
             {
               "name": "SW: get sales channel",
@@ -8004,7 +8065,6 @@
                       "    pm.expect(jsonData.external_coupons).length(1);",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                      "    pm.expect(coupon.amount_net).to.eq(1.89);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -8012,6 +8072,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -8315,7 +8376,7 @@
                       "    pm.expect(jsonData.external_coupons).length(1);",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                      "    pm.expect(coupon.amount_net).to.eq(2.06);",
+                      "    //pm.expect(coupon.amount_net).to.eq(2.06);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -8323,6 +8384,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -8797,7 +8859,7 @@
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.not_valid_message).to.eq(null);",
                       "    pm.expect(coupon.code).to.be.a('string').to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
-                      "    pm.expect(coupon.amount_net).to.eq(67.23);",
+                      "    //pm.expect(coupon.amount_net).to.eq(67.23);",
                       "    pm.expect(coupon.amount_gross).to.eq(80);",
                       "    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -8805,6 +8867,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});",
                       "",
                       "pm.test(\"Check not valid coupon\", function () {",
@@ -8812,11 +8875,12 @@
                       "    pm.expect(coupon.is_valid).to.eq(false);",
                       "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
                       "    pm.expect(coupon.code).to.eq('NOT-VALID');",
-                      "    pm.expect(coupon.amount_net).to.eq('1.0');",
+                      "    //pm.expect(coupon.amount_net).to.eq('1.0');",
                       "    pm.expect(coupon.amount_gross).to.eq('1.5');",
                       "    pm.expect(coupon.name).to.eq('Not valid coupon');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
                       "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -8990,7 +9054,9 @@
                     {
                       "key": "cart[external_coupons][0][amount_net]",
                       "value": "1.0",
-                      "type": "text"
+                      "description": "supposed to not happen to have both values",
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[external_coupons][0][amount_gross]",
@@ -9121,7 +9187,6 @@
                       "    pm.expect(jsonData.external_coupons).length(1);",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                      "    pm.expect(coupon.amount_net).to.eq(1.81);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -9129,6 +9194,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -10213,6 +10279,7 @@
                           "    const rule = Utility.getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
                           "    pm.expect(rule.amount_gross).to.eq(99.19);",
                           "    pm.expect(rule.currency).to.eq('EUR');",
+                          "    Test.checkCouponAmount(rule);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -10438,7 +10505,7 @@
                           "    pm.expect(jsonData.external_coupons).length(1);",
                           "    pm.expect(coupon.is_valid).to.eq(1);",
                           "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                          "    pm.expect(coupon.amount_net).to.eq(2.02); // taking this on faith that it's 7% - 19%",
+                          "    // pm.expect(coupon.amount_net).to.eq(2.02); // taking this on faith that it's 7% - 19%",
                           "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                           "    pm.expect(coupon.name).to.eq('API: promo by code');",
                           "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -10446,6 +10513,7 @@
                           "    const internalInfo = JSON.parse(coupon.internal_info);",
                           "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                           "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                          "    Test.checkCouponAmount(coupon);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -11488,6 +11556,7 @@
                           "    const rule = Utility.getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
                           "    pm.expect(rule.amount_net).to.eq(83.35);",
                           "    pm.expect(rule.currency).to.eq('EUR');",
+                          "    Test.checkCouponAmount(rule);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -11714,13 +11783,14 @@
                           "    pm.expect(coupon.is_valid).to.eq(1);",
                           "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
                           "    pm.expect(coupon.amount_net).to.eq(2.25);",
-                          "    pm.expect(coupon.amount_gross).to.eq(2.5); // taking this on faith",
+                          "    //pm.expect(coupon.amount_gross).to.eq(2.5); // taking this on faith",
                           "    pm.expect(coupon.name).to.eq('API: promo by code');",
                           "    pm.expect(coupon.currency).to.eq('EUR');",
                           "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
                           "    const internalInfo = JSON.parse(coupon.internal_info);",
                           "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                           "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                          "    Test.checkCouponAmount(coupon);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -11944,7 +12014,6 @@
                   "    pm.expect(jsonData.external_coupons).length(1);",
                   "    pm.expect(coupon.is_valid).to.eq(1);",
                   "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                  "    pm.expect(coupon.amount_net).to.eq(1.89);",
                   "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                   "    pm.expect(coupon.name).to.eq('API: promo by code');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -11952,6 +12021,7 @@
                   "    const internalInfo = JSON.parse(coupon.internal_info);",
                   "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                   "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                  "    Test.checkCouponAmount(coupon);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -12470,7 +12540,7 @@
                   "    pm.expect(coupon.is_valid).to.eq(1);",
                   "    pm.expect(coupon.not_valid_message).to.eq(null);",
                   "    pm.expect(coupon.code).to.be.a('string').to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
-                  "    pm.expect(coupon.amount_net).to.eq(67.23);",
+                  "    //pm.expect(coupon.amount_net).to.eq(67.23);",
                   "    pm.expect(coupon.amount_gross).to.eq(80);",
                   "    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -12478,6 +12548,7 @@
                   "    const internalInfo = JSON.parse(coupon.internal_info);",
                   "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
                   "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                  "    Test.checkCouponAmount(coupon);",
                   "});",
                   "",
                   "pm.test(\"Check not valid coupon\", function () {",
@@ -12485,11 +12556,12 @@
                   "    pm.expect(coupon.is_valid).to.eq(false);",
                   "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
                   "    pm.expect(coupon.code).to.eq('NOT-VALID');",
-                  "    pm.expect(coupon.amount_net).to.eq('1.0');",
+                  "    //pm.expect(coupon.amount_net).to.eq('1.0');",
                   "    pm.expect(coupon.amount_gross).to.eq('1.5');",
                   "    pm.expect(coupon.name).to.eq('Not valid coupon');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
                   "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
+                  "    Test.checkCouponAmount(coupon);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -12648,7 +12720,9 @@
                 {
                   "key": "cart[external_coupons][0][amount_net]",
                   "value": "1.0",
-                  "type": "text"
+                  "description": "should not happen that it will pass both",
+                  "type": "text",
+                  "disabled": true
                 },
                 {
                   "key": "cart[external_coupons][0][amount_gross]",
@@ -13568,7 +13642,7 @@
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
-                      "    pm.expect(coupon.amount_net).to.eq(1.87);",
+                      "    //pm.expect(coupon.amount_net).to.eq(1.87);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.tax_type).to.eq('auto');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -13577,13 +13651,14 @@
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+                      "    Test.checkCouponAmount(coupon);",
                       "});",
                       "pm.test(\"Auto Promo 10% discount check\", function () {",
                       "    const promoDiscount = Utility.getByName(order.external_coupons, 'API: promo by Billing Country USA');",
                       "    pm.expect(promoDiscount, 'Could not locate 10% promo discount').to.not.be.undefined;",
                       "    pm.expect(promoDiscount.code).to.not.be.null;",
                       "    pm.expect(promoDiscount.name).to.eq('API: promo by Billing Country USA');",
-                      "    pm.expect(promoDiscount.amount_net).to.eq(43.37);",
+                      "    //pm.expect(promoDiscount.amount_net).to.eq(43.37);",
                       "    pm.expect(promoDiscount.amount_gross).to.eq(52.05);",
                       "    pm.expect(promoDiscount.tax_type).to.eq('auto');",
                       "    pm.expect(promoDiscount.currency).to.eq('EUR');",
@@ -13593,6 +13668,7 @@
                       "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
                       "    pm.expect(internalInfo.discountId).to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
+                      "    Test.checkCouponAmount(promoDiscount);",
                       "});",
                       "    ",
                       "pm.test(\"Shipping discount 1 check\", function () {",
@@ -13600,11 +13676,12 @@
                       "    pm.expect(shippingDiscount, 'Could not locate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('1');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 1');",
-                      "    pm.expect(shippingDiscount.amount_net).to.eq(0.83);",
+                      "    //pm.expect(shippingDiscount.amount_net).to.eq(0.83);",
                       "    pm.expect(shippingDiscount.amount_gross).to.eq(1.0);",
                       "    pm.expect(shippingDiscount.tax_type).to.eq('auto');",
                       "    pm.expect(shippingDiscount.currency).to.eq('EUR');",
                       "    pm.expect(shippingDiscount.is_free_shipping).to.eq(null);",
+                      "    Test.checkCouponAmount(shippingDiscount);",
                       "});",
                       "",
                       "pm.test(\"Shipping discount 2 check\", function () {",
@@ -13612,11 +13689,12 @@
                       "    pm.expect(shippingDiscount, 'Could not locate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('2');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 2');",
-                      "    pm.expect(shippingDiscount.amount_net).to.eq(1.25);",
+                      "    //pm.expect(shippingDiscount.amount_net).to.eq(1.25);",
                       "    pm.expect(shippingDiscount.amount_gross).to.eq(1.5);",
                       "    pm.expect(shippingDiscount.tax_type).to.eq('auto');",
                       "    pm.expect(shippingDiscount.currency).to.eq('EUR');",
                       "    pm.expect(shippingDiscount.is_free_shipping).to.eq(null);",
+                      "    Test.checkCouponAmount(shippingDiscount);",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -17976,6 +18054,16 @@
           "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value);",
           "function getXmlByAttributeKey(list, key, value) {",
           "    return list.find(item => item.$[key] === value);",
+          "};",
+          "",
+          "/**",
+          " * Helps running additional tests",
+          " */",
+          "Test = {};",
+          "Test.checkCouponAmount = function(coupon) {",
+          "    if (coupon.amount_gross && coupon.amount_net) {",
+          "        pm.expect(true).to.eq(false, 'Coupon should not have Gross & NET values');",
+          "    }",
           "};"
         ]
       }
