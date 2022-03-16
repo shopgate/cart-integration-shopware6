@@ -3238,7 +3238,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"a9cb89b54d594d1b87c4c55be91b7c16\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{customer_number_headless}},\r\n                \"shopNumber\": {{shop_number_headless}},\r\n                \"apiKey\": \"{{api_key_headless}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"a9cb89b54d594d1b87c4c55be91b7c16\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{customer_number}},\r\n                \"shopNumber\": {{shop_number_headless}},\r\n                \"apiKey\": \"{{api_key}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -5954,23 +5954,7 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "/**",
-              " *  SG Token generation",
-              " */",
-              "var tstamp = Math.floor(Date.now() / 1000);",
-              "",
-              "const customerNumber = pm.environment.get('customer_number_headless');",
-              "const apiKey = pm.environment.get('api_key_headless');",
-              "",
-              "// Use the CryptoJS",
-              "var authUser = customerNumber + \"-\" + tstamp;",
-              "var tokenData = \"SPA-\" + customerNumber + \"-\" + tstamp + \"-\" + apiKey;",
-              "",
-              "var authToken = CryptoJS.SHA1(tokenData).toString();",
-              "",
-              "// Set the new header values",
-              "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
-              "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
+              ""
             ]
           }
         },
