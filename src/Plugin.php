@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
+use Shopgate\Shopware\Order\Payment\PaymentBridge;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\RequestPersist;
 use Shopgate\Shopware\System\Log\LoggerInterface;
@@ -13,6 +14,7 @@ use ShopgateCustomer;
 use ShopgateLibraryException;
 use ShopgateOrder;
 use ShopgatePlugin;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class Plugin extends ShopgatePlugin
@@ -22,6 +24,7 @@ class Plugin extends ShopgatePlugin
     protected LoggerInterface $logger;
     protected RequestPersist $requestPersist;
     protected ExtendedClassFactory $classFactory;
+    protected PaymentBridge $paymentBridge;
 
     /**
      * @required
@@ -31,13 +34,15 @@ class Plugin extends ShopgatePlugin
         ImportService $importService,
         LoggerInterface $logger,
         RequestPersist $requestPersist,
-        ExtendedClassFactory $classFactory
+        ExtendedClassFactory $classFactory,
+        PaymentBridge $paymentBridge
     ): void {
         $this->exportService = $exportService;
         $this->importService = $importService;
         $this->logger = $logger;
         $this->requestPersist = $requestPersist;
         $this->classFactory = $classFactory;
+        $this->paymentBridge = $paymentBridge;
     }
 
     public function startup(): void
@@ -161,6 +166,20 @@ class Plugin extends ShopgatePlugin
     public function createPluginInfo(): array
     {
         return $this->exportService->getInfo();
+    }
+
+    public function createShopInfo(): array
+    {
+        return [
+            'payment_methods' => array_values($this->paymentBridge
+                ->getAllPaymentMethods()
+                ->map(fn(PaymentMethodEntity $pay) => [
+                    'id' => $pay->getId(),
+                    'name' => $pay->getTranslation('name'),
+                    'handle' => $pay->getFormattedHandlerIdentifier(),
+                    'fullHandle' => $pay->getHandlerIdentifier()
+                ]))
+        ];
     }
 
     protected function createMediaCsv(): void

@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "1ed5dc17-4ddc-46e4-8b9d-f0246d0e7e56",
+    "_postman_id": "9382391a-da44-4875-a5ce-0ad6eb79d045",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -2473,8 +2473,7 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "// marked as temp because of ticket SGSW6-88\r",
-                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                      "pm.test(\"Successfully created all entities\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
                       "});"
                     ],
@@ -2535,8 +2534,7 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "// marked as temp because of ticket SGSW6-88\r",
-                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                      "pm.test(\"Successfully updated all entities\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
                       "});"
                     ],
@@ -2571,6 +2569,133 @@
                 "body": {
                   "mode": "raw",
                   "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"8024ecf35ea702a0226c169dc8b4f5b9\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxAuto}}\"\r\n            },\r\n            {\r\n                \"id\": \"68dc87bda5c9e54e27b3237e409c7653\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxHighest}}\"\r\n            },\r\n            {\r\n                \"id\": \"25dc19720c2e67b4e0365518ffced6f2\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxFixed}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Payment",
+          "item": [
+            {
+              "name": "SW: create payment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully created entities\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"create-payment-methods\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_payment_customerUSA_id}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: Generic USA billing\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: Generic USA billing (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{created_rule_shippingUSA}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: add payment to channel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully updated all entities\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"bb9f742a1426a9f3af6f32596693e395\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"paymentMethodId\": \"{{created_payment_customerUSA_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4217,6 +4342,15 @@
                       "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
                       "    pm.expect(item.is_buyable).to.eql(0);",
                       "    pm.expect(item.error).to.eql(301);",
+                      "});",
+                      "",
+                      "pm.test(\"payment method check\", function () {",
+                      "    const payments = jsonData.payment_methods;",
+                      "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -9858,6 +9992,16 @@
                           "    pm.expect(item.stock_quantity).to.eql(10);",
                           "    pm.expect(item.unit_amount).to.eql(413.29);",
                           "    pm.expect(item.unit_amount_with_tax).to.eql(495.95);",
+                          "});",
+                          "",
+                          "pm.test(\"payment method check\", function () {",
+                          "    const payments = jsonData.payment_methods;",
+                          "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_defaultpayment_', false), 'API').to.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -10048,6 +10192,16 @@
                           "    pm.expect(item.stock_quantity).to.eql(10);",
                           "    pm.expect(item.unit_amount).to.eql(416.77);",
                           "    pm.expect(item.unit_amount_with_tax).to.eql(495.95);",
+                          "});",
+                          "",
+                          "pm.test(\"payment method check\", function () {",
+                          "    const payments = jsonData.payment_methods;",
+                          "    pm.expect(payments).lengthOf(4, 'Should have 4 payment methods');",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_defaultpayment_', false), 'API').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -11320,6 +11474,16 @@
                           "    pm.expect(item.stock_quantity).to.eql(10);",
                           "    pm.expect(item.unit_amount).to.eql(416.76);",
                           "    pm.expect(item.unit_amount_with_tax).to.eql(495.95);",
+                          "});",
+                          "",
+                          "pm.test(\"payment method check\", function () {",
+                          "    const payments = jsonData.payment_methods;",
+                          "    pm.expect(payments).lengthOf(4, 'Should have 4 payment methods');",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_defaultpayment_', false), 'API').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -11983,6 +12147,16 @@
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(300);",
                   "});",
+                  "",
+                  "pm.test(\"payment method check\", function () {",
+                  "    const payments = jsonData.payment_methods;",
+                  "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
+                  "});",
+                  "",
                   "pm.test(\"Check item max purchase\", function () {",
                   "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
@@ -12294,6 +12468,15 @@
                   "    pm.expect(item.unit_amount).to.eql(798.32);",
                   "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
                   "});",
+                  "",
+                  "pm.test(\"payment method check\", function () {",
+                  "    const payments = jsonData.payment_methods;",
+                  "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
+                  "});",
                   ""
                 ],
                 "type": "text/javascript"
@@ -12546,6 +12729,15 @@
                   "    pm.expect(coupon.currency).to.eq('EUR');",
                   "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
                   "    Test.checkCouponAmount(coupon);",
+                  "});",
+                  "",
+                  "pm.test(\"payment method check\", function () {",
+                  "    const payments = jsonData.payment_methods;",
+                  "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -17567,6 +17759,11 @@
                   "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
                   "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
                   "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});",
+                  "",
+                  "pm.test(\"payment methods\", function () {",
+                  "    const payment_methods = jsonData.shop_info.payment_methods;",
+                  "    pm.expect(payment_methods).to.not.be.undefined;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -18029,10 +18226,10 @@
           "// JSON handlers",
           "Utility.getByLabel = (list, value) => getItemByKey(list, 'label', value);",
           "Utility.getByName = (list, value) => getItemByKey(list, 'name', value);",
-          "Utility.getById = (list, value) => getItemByKey(list, 'id', value);",
+          "Utility.getById = (list, value, strict = true) => getItemByKey(list, 'id', value, strict);",
           "Utility.getByItemNumber = (list, value) => getItemByKey(list, 'item_number', value);",
-          "function getItemByKey(list, key, value) {",
-          "    return list.find(item => item[key] === value);",
+          "function getItemByKey(list, key, value, strict = true) {",
+          "    return list.find(item => strict ? item[key] === value : item[key].includes(value));",
           "};",
           "// XML handlers",
           "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value);",
