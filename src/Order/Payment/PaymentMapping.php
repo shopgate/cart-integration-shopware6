@@ -4,28 +4,42 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Payment;
 
+use Shopgate\Shopware\Order\Payment\Events\AfterPaymentMethodMapping;
+use Shopgate\Shopware\Order\Payment\Events\BeforePaymentMethodMapping;
+use Shopgate\Shopware\Order\Payment\Events\BeforePaymentTypeMapping;
+use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\System\Db\PaymentMethod\GenericPayment;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate\Shopware\System\PaymentHandler\GenericHandler;
 use ShopgateCartBase;
+use ShopgatePaymentMethod;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\CashPayment;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class PaymentMapping
 {
     private LoggerInterface $logger;
+    private ExtendedClassFactory $classFactory;
+    private EventDispatcherInterface $dispatcher;
 
-    public function __construct(LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        ExtendedClassFactory $classFactory,
+        EventDispatcherInterface $dispatcher
+    ) {
         $this->logger = $logger;
+        $this->classFactory = $classFactory;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
      * @return string - returns UID of payment method
      */
-    public function mapPayment(ShopgateCartBase $sgCart, PaymentMethodCollection $collection): string
+    public function mapPaymentType(ShopgateCartBase $sgCart, PaymentMethodCollection $collection): string
     {
+        $this->dispatcher->dispatch(new BeforePaymentTypeMapping($sgCart, $collection));
         $class = GenericHandler::class;
         switch ($sgCart->getPaymentMethod()) {
             case 'COD':
@@ -41,5 +55,24 @@ class PaymentMapping
         );
 
         return $entry ? $entry->getId() : GenericPayment::UUID;
+    }
+
+    public function mapPaymentMethod(PaymentMethodEntity $paymentMethod): ShopgatePaymentMethod
+    {
+        $this->dispatcher->dispatch(new BeforePaymentMethodMapping($paymentMethod));
+        $method = $this->classFactory->createPaymentMethod();
+        $method->setId($this->getPaymentId($paymentMethod));
+        $this->dispatcher->dispatch(new AfterPaymentMethodMapping($paymentMethod, $method));
+
+        return $method;
+    }
+
+    private function getPaymentId(PaymentMethodEntity $paymentMethod): string
+    {
+        $id = '';
+        if ($paymentMethod->getFormattedHandlerIdentifier() === 'handler_shopware_defaultpayment') {
+            $id = "_{$paymentMethod->getId()}";
+        }
+        return $paymentMethod->getFormattedHandlerIdentifier() . $id;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order\Payment;
 
 use Shopgate\Shopware\Order\State\StateBridge;
+use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -16,17 +17,18 @@ class PaymentBridge
 {
     private AbstractPaymentMethodRoute $paymentMethodRoute;
     private StateBridge $stateBridge;
+    private ContextManager $contextManager;
 
-    public function __construct(AbstractPaymentMethodRoute $paymentMethodRoute, StateBridge $stateBridge)
-    {
+    public function __construct(
+        AbstractPaymentMethodRoute $paymentMethodRoute,
+        StateBridge $stateBridge,
+        ContextManager $contextManager
+    ) {
         $this->paymentMethodRoute = $paymentMethodRoute;
         $this->stateBridge = $stateBridge;
+        $this->contextManager = $contextManager;
     }
 
-    /**
-     * @param SalesChannelContext $context
-     * @return PaymentMethodCollection
-     */
     public function getAvailableMethods(SalesChannelContext $context): PaymentMethodCollection
     {
         $request = new Request();
@@ -36,6 +38,17 @@ class PaymentBridge
         $criteria->setTitle('shopgate::payment-method::available');
         return $this->paymentMethodRoute
             ->load($request, $context, $criteria)
+            ->getPaymentMethods();
+    }
+
+    public function getAllPaymentMethods(SalesChannelContext $context = null): PaymentMethodCollection
+    {
+        $channel = $context ?: $this->contextManager->getSalesContext();
+        $request = new Request();
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::payment-method::all');
+        return $this->paymentMethodRoute
+            ->load($request, $channel, $criteria)
             ->getPaymentMethods();
     }
 

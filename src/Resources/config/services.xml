@@ -44,6 +44,7 @@
         <service id="shopgate.sdk.shipping_method" class="\ShopgateShippingMethod"/>
         <service id="shopgate.sdk.external_coupon" class="\ShopgateExternalCoupon"/>
         <service id="shopgate.sdk.delivery_note" class="\ShopgateDeliveryNote"/>
+        <service id="shopgate.sdk.payment_method" class="\ShopgatePaymentMethod"/>
         <service id="shopgate.sdk.external_order" class="\ShopgateExternalOrder"/>
         <service id="shopgate.sdk.external_order_extra_cost" class="\ShopgateExternalOrderExtraCost"/>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge"/>
@@ -185,6 +186,7 @@
             <argument key="$shippingMethod" type="service" id="shopgate.sdk.shipping_method"/>
             <argument key="$deliveryNote" type="service" id="shopgate.sdk.delivery_note"/>
             <argument key="$orderExtraCost" type="service" id="shopgate.sdk.external_order_extra_cost"/>
+            <argument key="$paymentMethod" type="service" id="shopgate.sdk.payment_method"/>
         </service>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon"/>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrder"/>
