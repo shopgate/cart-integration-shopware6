@@ -189,5 +189,4 @@ class AddressMapping
 
         return $shopgateAddress;
     }
-
 }
