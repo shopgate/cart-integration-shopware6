@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "9382391a-da44-4875-a5ce-0ad6eb79d045",
+    "_postman_id": "2f50bfbf-06f2-48ff-a541-58181253e705",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -3101,6 +3101,68 @@
                 {
                   "key": "cart[invoice_address][]",
                   "value": "null",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: addOrder no items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"No items in cart check\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(999);",
+                  "    pm.expect(jsonData).to.have.ownProperty('error_text').to.eq('Unknown error code: \\\"999\\\": Cart is empty');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_add_order}}",
+                  "type": "text"
+                },
+                {
+                  "key": "order_number",
+                  "value": "0012",
                   "type": "text"
                 }
               ]
