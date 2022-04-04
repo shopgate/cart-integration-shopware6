@@ -26,6 +26,13 @@
             <helpText>Less performant alternative. Enable only if your system disallows file writing operations.</helpText>
             <helpText lang="de-DE">Weniger performante Alternative. Nur aktivieren, falls der Server keine Schreiboperationen erlaubt.</helpText>
         </input-field>
+        <input-field type="bool">
+            <name>exportNetPrices</name>
+            <label>Export NET prices</label>
+            <label lang="de-DE">Nettopreise exportieren</label>
+            <helpText>Enable only if this sales channel is a NET shop.</helpText>
+            <helpText lang="de-DE">Nur aktivieren, falls dieser Verkaufskanal Preise in Netto zeigen soll.</helpText>
+        </input-field>
         <input-field type="multi-select">
             <name>productTypesToExport</name>
             <label>Product types to be exported</label>

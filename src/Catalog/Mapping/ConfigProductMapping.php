@@ -6,6 +6,7 @@ use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_AbstractExport;
@@ -24,6 +25,7 @@ class ConfigProductMapping extends SimpleProductMapping
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
+        ConfigBridge $configBridge,
         TierPriceMapping $tierPriceMapping,
         Formatter $translation,
         CurrencyComposer $currencyComposer,
@@ -32,8 +34,8 @@ class ConfigProductMapping extends SimpleProductMapping
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
         parent::__construct(
-            $contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation, $currencyComposer,
-            $crossSellingRoute
+            $contextManager, $customFieldSetBridge, $sortTree, $configBridge, $tierPriceMapping, $translation,
+            $currencyComposer, $crossSellingRoute
         );
         $this->productProperties = $productProperties;
         $this->childProductMapping = $childProductMapping;
