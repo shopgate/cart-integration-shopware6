@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "9382391a-da44-4875-a5ce-0ad6eb79d045",
+    "_postman_id": "f0fac92e-1841-4391-99e4-139df018287e",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -7596,6 +7596,294 @@
                   "raw": "{{domain}}",
                   "host": [
                     "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Net Prices",
+          "item": [
+            {
+              "name": "SW: Enable exportNetPrices",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully enabled NET Prices\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"ba903ee4d61c414385023e6ef3c1f484\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.exportNetPrices\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: get main product net",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "pm.test(\"Checking basic prices\", function () {",
+                      "    const jsonObject = xml2Json(responseBody);",
+                      "",
+                      "    pm.expect(jsonObject.items.item.prices.$, 'Price should have type net').to.haveOwnProperty('type').to.be.eq('net',' Should be net property set');",
+                      "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('416.76');",
+                      "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Content: 1');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100",
+                      "description": "\n",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[]",
+                      "value": "{{catalog_product_main_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: customer grp tier",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
+                      "    const jsonObject = xml2Json(responseBody);",
+                      "",
+                      "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('net',' Should be gross property set');",
+                      "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('798.32');",
+                      "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Content: 1');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.threshold).to.be.eq('12');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1]._).to.be.eq('168.07');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.type).to.be.eq('fixed');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$, 'Should be a customer group tier price')",
+                      "    .to.haveOwnProperty('customer_group_uid')",
+                      "    .to.be.eq(pm.environment.get('gen_customer_group_main_id'), 'Should equal default customer group');",
+                      "",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.threshold).to.be.eq('1');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.max_quantity).to.be.eq('11');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0]._).to.be.eq('126.05');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.type).to.be.eq('fixed');",
+                      "    pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$, 'Should be a customer group tier price')",
+                      "    .to.haveOwnProperty('customer_group_uid')",
+                      "    .to.be.eq(pm.environment.get('gen_customer_group_main_id'), 'Should equal default customer group');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: Disable exportNetPrices",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully disabled NET price export\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"ba903ee4d61c414385023e6ef3c1f484\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.exportNetPrices\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
                   ]
                 }
               },

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
+use Shopgate\Shopware\Order\Events\AfterCheckCartEvent;
+use Shopgate\Shopware\Order\Events\BeforeCheckCartEvent;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Order\Quote\QuoteBridge;
@@ -12,6 +14,7 @@ use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CartComposer
 {
@@ -22,6 +25,7 @@ class CartComposer
     private QuoteBridge $quoteBridge;
     private PaymentComposer $paymentComposer;
     private OrderCustomerComposer $orderCustomerComposer;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ShippingComposer $shippingComposer,
@@ -30,7 +34,8 @@ class CartComposer
         LineItemComposer $lineItemComposer,
         QuoteBridge $quoteBridge,
         PaymentComposer $paymentComposer,
-        OrderCustomerComposer $orderCustomerComposer
+        OrderCustomerComposer $orderCustomerComposer,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -39,6 +44,7 @@ class CartComposer
         $this->contextComposer = $contextComposer;
         $this->paymentComposer = $paymentComposer;
         $this->orderCustomerComposer = $orderCustomerComposer;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -48,6 +54,7 @@ class CartComposer
      */
     public function checkCart(ExtendedCart $sgCart): array
     {
+        $this->eventDispatcher->dispatch(new BeforeCheckCartEvent($sgCart));
         $sgCart->invalidateCoupons();
         $customerId = $sgCart->getExternalCustomerId();
         if ($sgCart->isGuest() && $sgCart->getMail()) {
@@ -78,6 +85,6 @@ class CartComposer
         $this->quoteBridge->deleteCart($context); // delete newly created cart
         $this->contextManager->resetContext($initContext); // revert back to desktop cart
 
-        return $result;
+        return $this->eventDispatcher->dispatch(new AfterCheckCartEvent($result))->getResult();
     }
 }

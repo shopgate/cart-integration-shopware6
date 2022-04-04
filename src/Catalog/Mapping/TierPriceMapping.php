@@ -36,15 +36,16 @@ class TierPriceMapping
     /**
      * @param ProductPriceCollection $priceCollection
      * @param Price $mainPrice
+     * @param bool $exportNet
      * @return Shopgate_Model_Catalog_TierPrice[]
      * @throws ReflectionException
      */
-    public function mapTierPrices(ProductPriceCollection $priceCollection, Price $mainPrice): array
+    public function mapTierPrices(ProductPriceCollection $priceCollection, Price $mainPrice, bool $exportNet = false): array
     {
         $groups = $this->customerBridge->getGroups();
         $list = [];
         foreach ($this->getValidTiers($priceCollection) as $swTier) {
-            if (null === ($tierPrice = $this->mapProductTier($swTier, $mainPrice))) {
+            if (null === ($tierPrice = $this->mapProductTier($swTier, $mainPrice, $exportNet))) {
                 continue;
             }
             /** @var AndRule|OrRule $payload */
@@ -116,14 +117,16 @@ class TierPriceMapping
 
     private function mapProductTier(
         ProductPriceEntity $priceEntity,
-        Price $normalPrice
+        Price $normalPrice,
+        bool $exportNet
     ): ?Shopgate_Model_Catalog_TierPrice {
+        $getNetOrGross = $exportNet ? 'getNet' : 'getGross';
         $tierPrice = new Shopgate_Model_Catalog_TierPrice();
         $tierPrice->setFromQuantity($priceEntity->getQuantityStart());
         $tierPrice->setToQuantity($priceEntity->getQuantityEnd());
         $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
         if ($reducedPrice = $this->currencyComposer->extractCalculatedPrice($priceEntity->getPrice())) {
-            $tierPrice->setReduction($normalPrice->getGross() - $reducedPrice->getGross());
+            $tierPrice->setReduction($normalPrice->$getNetOrGross() - $reducedPrice->$getNetOrGross());
             return $tierPrice;
         }
 
@@ -179,16 +182,17 @@ class TierPriceMapping
         return $carry;
     }
 
-    public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice): Price
+    public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice, bool $exportNet): Price
     {
+        $getNetOrGross = $exportNet ? 'getNet' : 'getGross';
         return array_reduce(
             $this->getValidTiers($priceCollection),
-            function (Price $carry, ProductPriceEntity $entity) {
+            function (Price $carry, ProductPriceEntity $entity) use ($getNetOrGross) {
                 $curPrice = $this->currencyComposer->extractCalculatedPrice($entity->getPrice());
                 if (!$curPrice) {
                     return $carry;
                 }
-                return $carry->getGross() > $curPrice->getGross() ? $carry : $curPrice;
+                return $carry->$getNetOrGross() > $curPrice->$getNetOrGross() ? $carry : $curPrice;
             },
             $basePrice
         );
