@@ -12,6 +12,8 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Formatter;
 use ShopgateExternalCoupon;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 
@@ -76,10 +78,9 @@ class LineItemPromoMapping
         $coupon->setIsFreeShipping(false);
         if ($lineItem->getPrice()) {
             $status = $this->contextManager->getSalesContext()->getTaxState();
-            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($lineItem->getPrice(), $status);
-            $coupon->setAmountNet(-($priceWithoutTax));
-            $coupon->setAmountGross(-($priceWithTax));
+            $this->applyOneCouponAmount($coupon, $lineItem->getPrice(), $status);
         }
+        $coupon->mergeInternalInfos();
 
         return $coupon;
     }
@@ -98,9 +99,7 @@ class LineItemPromoMapping
         $coupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
 
         if ($price = $lineItem->getPrice()) {
-            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($price, $taxStatus);
-            $coupon->setAmountNet(-($priceWithoutTax));
-            $coupon->setAmountGross(-($priceWithTax));
+            $this->applyOneCouponAmount($coupon, $price, $taxStatus);
         }
         $coupon->mergeInternalInfos();
 
@@ -118,12 +117,25 @@ class LineItemPromoMapping
         );
         $sgCoupon->setCode($index);
         if ($price = $deliveryEntity->getShippingCosts()) {
-            [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($price, $taxStatus);
-            $sgCoupon->setAmountNet(-($priceWithoutTax));
-            $sgCoupon->setAmountGross(-($priceWithTax));
+            $this->applyOneCouponAmount($sgCoupon, $price, $taxStatus);
         }
         $this->shippingDiscountIndex++;
 
         return $sgCoupon;
+    }
+
+    /**
+     * Only one amount should be set
+     */
+    private function applyOneCouponAmount(ShopgateExternalCoupon $coupon, CalculatedPrice $amount, string $status)
+    {
+        [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($amount, $status);
+        if ($status === CartPrice::TAX_STATE_GROSS) {
+            $coupon->setAmountNet(null);
+            $coupon->setAmountGross(-($priceWithTax));
+        } else {
+            $coupon->setAmountGross(null);
+            $coupon->setAmountNet(-($priceWithoutTax));
+        }
     }
 }

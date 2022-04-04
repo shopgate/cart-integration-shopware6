@@ -166,6 +166,7 @@ class LineItemProductMapping
         if ($product = $swLineItem->getProduct()) {
             $sgLineItem->setItemNumberPublic($product->getProductNumber());
             $sgLineItem->setItemNumber($swLineItem->getProductId());
+            $sgLineItem->setName($product->getTranslation('name') ?: $product->getName());
             $sgLineItem->setDescription($product->getTranslation('description') ?: $product->getDescription());
         } else {
             $sgLineItem->setItemNumberPublic($swLineItem->getPayload()['productNumber'] ?? $swLineItem->getLabel());

@@ -1,5 +1,5 @@
 {
-  "id": "081727f7-e7da-41d1-ab0a-cd4f0c08860e",
+  "id": "1bac6455-636e-4f2f-b3d5-c2835c1bb3fb",
   "name": "Shopware 6",
   "values": [
     {
@@ -22,6 +22,11 @@
       "key": "sw_endpoint_auth",
       "value": "{{sw_endpoint_api}}/oauth/token",
       "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "shop_main_DE",
+      "value": "44332211",
       "enabled": true
     },
     {
@@ -180,6 +185,11 @@
       "enabled": true
     },
     {
+      "key": "created_customer_DE_id",
+      "value": "209cbe18880744e7e5df24db194efb1a",
+      "enabled": true
+    },
+    {
       "key": "created_customerGroup_net_id",
       "value": "7ed46ba83b40423284938fbc98697aa7",
       "enabled": true
@@ -256,6 +266,12 @@
     {
       "key": "created_promotion_customerUSA_id",
       "value": "3e226aa33c486a291338478679382ab1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_payment_customerUSA_id",
+      "value": "01c2a865533cdf797e7bc33798d18d7a",
       "type": "default",
       "enabled": true
     },
@@ -377,6 +393,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-02-09T17:17:13.912Z",
-  "_postman_exported_using": "Postman/9.13.0"
+  "_postman_exported_at": "2022-03-21T10:57:05.287Z",
+  "_postman_exported_using": "Postman/9.14.14"
 }

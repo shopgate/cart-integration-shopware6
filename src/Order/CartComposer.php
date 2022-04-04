@@ -70,7 +70,7 @@ class CartComposer
         $result = [
                 'currency' => $context->getCurrency()->getIsoCode(),
                 'shipping_methods' => $this->shippingComposer->mapShippingMethods($context),
-                'payment_methods' => [],
+                'payment_methods' => $this->paymentComposer->mapOutgoingPayments($context)
             ]
             + $this->orderCustomerComposer->mapOutgoingCartCustomer($context)
             + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);

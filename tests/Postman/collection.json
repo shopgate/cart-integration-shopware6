@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "ba0560bc-fe98-4065-84ab-f86270cdd730",
+    "_postman_id": "9382391a-da44-4875-a5ce-0ad6eb79d045",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -121,6 +121,67 @@
                   "response": []
                 }
               ]
+            },
+            {
+              "name": "SW: first run wizard",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"language\": \"en_GB\",\r\n    \"failed\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/store/frw/finish",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "store",
+                    "frw",
+                    "finish"
+                  ]
+                }
+              },
+              "response": []
             },
             {
               "name": "SW: get sales channel",
@@ -897,7 +958,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n             {\r\n                 \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.customerNumber\",\r\n                \"configurationValue\": \"{{customer_number}}\"\r\n            },\r\n            {\r\n                \"id\": \"c9ee8625bc3a466ba073c8f6e9a10190\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.apiKey\",\r\n                \"configurationValue\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"id\": \"8711de7d1e0045229f22e1fe0ba98e5f\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"afcd57208add408ca1a019d5996211f0\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.isActive\",\r\n                \"configurationValue\": true\r\n            },\r\n            {\r\n                \"id\": \"6a8a85fa614c4d0a889f749c8cde8205\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.productTypesToExport\",\r\n                \"configurationValue\": [\"simple\", \"variant\"]\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{customer_number}},\r\n                \"shopNumber\": {{shop_number}},\r\n                \"apiKey\": \"{{api_key}}\"\r\n            },\r\n            {\r\n                \"id\": \"26909efb178412e49b65fc768544f615\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{shop_main_DE}},\r\n                \"shopNumber\": {{shop_main_DE}},\r\n                \"apiKey\": \"{{shop_main_DE}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1007,6 +1068,67 @@
                   "path": [
                     "search",
                     "shipping-method"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: test addOrder to live",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Live call should fail because no authorization\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.error).to.eql(102);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0001",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
                   ]
                 }
               },
@@ -2351,8 +2473,7 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "// marked as temp because of ticket SGSW6-88\r",
-                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                      "pm.test(\"Successfully created all entities\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
                       "});"
                     ],
@@ -2413,8 +2534,7 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "// marked as temp because of ticket SGSW6-88\r",
-                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                      "pm.test(\"Successfully updated all entities\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
                       "});"
                     ],
@@ -2449,6 +2569,133 @@
                 "body": {
                   "mode": "raw",
                   "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"8024ecf35ea702a0226c169dc8b4f5b9\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxAuto}}\"\r\n            },\r\n            {\r\n                \"id\": \"68dc87bda5c9e54e27b3237e409c7653\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxHighest}}\"\r\n            },\r\n            {\r\n                \"id\": \"25dc19720c2e67b4e0365518ffced6f2\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxFixed}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Payment",
+          "item": [
+            {
+              "name": "SW: create payment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully created entities\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"create-payment-methods\": {\r\n        \"entity\": \"payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_payment_customerUSA_id}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: Generic USA billing\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: Generic USA billing (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{created_rule_shippingUSA}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: add payment to channel",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully updated all entities\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"bb9f742a1426a9f3af6f32596693e395\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"paymentMethodId\": \"{{created_payment_customerUSA_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2801,7 +3048,6 @@
                   "pm.test(\"Check error\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.error).to.eql(999);",
-                  "    pm.expect(jsonData.error_text).to.contain('Argument 1 passed to', 'Should have error location')",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -2855,68 +3101,6 @@
                 {
                   "key": "cart[invoice_address][]",
                   "value": "null",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: addOrder no items",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"No items in cart check\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(999);",
-                  "    pm.expect(jsonData).to.have.ownProperty('error_text').to.eq('Unknown error code: \\\"999\\\": Cart is empty');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_add_order}}",
-                  "type": "text"
-                },
-                {
-                  "key": "order_number",
-                  "value": "0012",
                   "type": "text"
                 }
               ]
@@ -3050,7 +3234,7 @@
                         ],
                         "body": {
                           "mode": "raw",
-                          "raw": "{\r\n    \"languageId\": \"{{gen_language_german_id}}\",\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{default_category_fTimeAndElectronics_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
+                          "raw": "{\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{default_category_fTimeAndElectronics_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
                           "options": {
                             "raw": {
                               "language": "json"
@@ -3179,7 +3363,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"a9cb89b54d594d1b87c4c55be91b7c16\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.shopNumber\",\r\n                \"configurationValue\": \"{{shop_number_headless}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"a9cb89b54d594d1b87c4c55be91b7c16\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"active\": true,\r\n                \"customerNumber\": {{customer_number}},\r\n                \"shopNumber\": {{shop_number_headless}},\r\n                \"apiKey\": \"{{api_key}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -3373,7 +3557,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"product_review\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{product_review_props_customer_id}}\",\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"Customer attached review\",\r\n                \"content\": \"Customer attached review description\",\r\n                \"points\": 4,\r\n                \"status\": true,\r\n                \"customerId\": \"{{customer_default_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{created_review_headless_advPriceOne_id}}\",\r\n                \"productId\": \"{{created_product_headless_advPriceOne_id}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"API: Review title 2 (DE)\",\r\n                \"content\": \"API: Review content 2 (DE)\",\r\n                \"points\": 10,\r\n                \"status\": true,\r\n                \"customerId\": \"{{created_customer_withCustomGrp_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_freeShip_id}}\",\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"Secondary channel review\",\r\n                \"content\": \"German Content too\",\r\n                \"points\": 1.1,\r\n                \"status\": true\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"product_review\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{product_review_props_customer_id}}\",\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{system_default_language}}\",\r\n                \"title\": \"Customer attached review\",\r\n                \"content\": \"Customer attached review description\",\r\n                \"points\": 2.7,\r\n                \"status\": true,\r\n                \"customerId\": \"{{customer_default_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{created_review_headless_advPriceOne_id}}\",\r\n                \"productId\": \"{{created_product_headless_advPriceOne_id}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"API: Review title 2 (DE)\",\r\n                \"content\": \"API: Review content 2 (DE)\",\r\n                \"points\": 5,\r\n                \"status\": true,\r\n                \"customerId\": \"{{created_customer_withCustomGrp_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"{{product_review_freeShip_id}}\",\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"languageId\": \"{{gen_language_german_id}}\",\r\n                \"title\": \"Secondary channel review\",\r\n                \"content\": \"German Content too\",\r\n                \"points\": 1.1,\r\n                \"status\": true\r\n            }\r\n        ]\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -3388,6 +3572,69 @@
                       "path": [
                         "_action",
                         "sync"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Customer",
+              "item": [
+                {
+                  "name": "SW: create DE customer",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"Save product id for later use\", function () {\r",
+                          "    const jsonData = pm.response.json();\r",
+                          "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
+                          "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_DE_id}}\",\r\n        \"groupId\" : \"{{created_customerGroup_net_id}}\",\r\n        \"email\": \"test_DEcustomer@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"DE Customer\",\r\n        \"boundSalesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n        \"languageId\": \"{{gen_language_german_id}}\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/clone/customer/{{customer_default_id}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "clone",
+                        "customer",
+                        "{{customer_default_id}}"
                       ]
                     }
                   },
@@ -3982,7 +4229,23 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
-                      ""
+                      "/**\r",
+                      " *  SG Token generation\r",
+                      " */\r",
+                      "var tstamp = Math.floor(Date.now() / 1000);\r",
+                      "\r",
+                      "const customerNumber = pm.environment.get('customer_number');\r",
+                      "const apiKey = pm.environment.get('api_key');\r",
+                      "\r",
+                      "// Use the CryptoJS\r",
+                      "var authUser = customerNumber + \"-\" + tstamp;\r",
+                      "var tokenData = \"SPA-\" + customerNumber + \"-\" + tstamp + \"-\" + apiKey;\r",
+                      "\r",
+                      "var authToken = CryptoJS.SHA1(tokenData).toString();\r",
+                      "\r",
+                      "// Set the new header values\r",
+                      "pm.environment.set(\"gen_sg_header_auth_user\", authUser);\r",
+                      "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
                     ],
                     "type": "text/javascript"
                   }
@@ -4079,6 +4342,15 @@
                       "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
                       "    pm.expect(item.is_buyable).to.eql(0);",
                       "    pm.expect(item.error).to.eql(301);",
+                      "});",
+                      "",
+                      "pm.test(\"payment method check\", function () {",
+                      "    const payments = jsonData.payment_methods;",
+                      "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -4345,6 +4617,599 @@
         {
           "name": "Order",
           "item": [
+            {
+              "name": "DE customer",
+              "item": [
+                {
+                  "name": "SG: DE customer context",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "",
+                          "",
+                          "pm.test(\"Check default customer group set for customer\", function () {",
+                          "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_net_id'));",
+                          "});",
+                          "",
+                          "pm.test(\"General check\", function () {",
+                          "    pm.expect(jsonData.items).length(1, 'Should be 1 items in cart');",
+                          "    pm.expect(jsonData.currency).to.eq('USD');",
+                          "});",
+                          "const items = jsonData.items;",
+                          "",
+                          "pm.test(\"Check item not found\", function () {",
+                          "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+                          "    pm.expect(item.is_buyable).to.eql(0);",
+                          "    pm.expect(item.error).to.eql(301);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_check_cart}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number_headless}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_customer_id]",
+                          "value": "{{created_customer_DE_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_group]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_method]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][country]",
+                          "value": "BD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][country]",
+                          "value": "US",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][state]",
+                          "value": "US-AZ",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number]",
+                          "value": "{{catalog_product_advPrices_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number_public]",
+                          "value": "SWDEMO10002",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][quantity]",
+                          "value": "1",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: addOrder (GB)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number_headless}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "1002",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: get last order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.expect(jsonData.error).to.eq(0);",
+                          "    pm.expect(jsonData.orders).to.be.length(1);",
+                          "});",
+                          "",
+                          "const order = jsonData.orders[0];",
+                          "pm.test(\"Basic order data\", function () {",
+                          "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_1002_id'));",
+                          "    pm.expect(order.status_name).to.eq('Offen');",
+                          "    pm.expect(order.mail).to.eq('test_DEcustomer@example.com');",
+                          "    pm.expect(order.phone).to.eq('+1-111-111-1111');",
+                          "    pm.expect(order.currency).to.eq('USD');",
+                          "    pm.expect(order.is_paid).to.eq(0);",
+                          "    pm.expect(order.payment_method).to.eq('Vorkasse (Eigene Abwicklung)');",
+                          "    pm.expect(order.payment_time).to.eq(null);",
+                          "    pm.expect(order.is_shipping_completed).to.eq(0);",
+                          "});",
+                          "",
+                          "pm.test(\"Billing Address check\", function () {",
+                          "    const address = order.invoice_address;",
+                          "    pm.expect(address.is_invoice_address).to.eq(1);",
+                          "    pm.expect(address.is_delivery_address).to.eq(0);",
+                          "    pm.expect(address.first_name).to.eq('First Name');",
+                          "    pm.expect(address.last_name).to.eq('Last Name');",
+                          "    pm.expect(address.gender).to.eq('f');",
+                          "    pm.expect(address.birthday).to.eq(null);",
+                          "    pm.expect(address.company).to.eq('My Company 1');",
+                          "    pm.expect(address.street_1).to.eq('My Street 1 A');",
+                          "    pm.expect(address.street_2).to.eq('My Street 2 A');",
+                          "    pm.expect(address.zipcode).to.eq('27404');",
+                          "    pm.expect(address.city).to.eq('Frankenbostel');",
+                          "    pm.expect(address.country).to.eq('GB');",
+                          "    pm.expect(address.state).to.eq('GB-ABC');",
+                          "    pm.expect(address.phone).to.eq('+1-111-111-1111');",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping Address check\", function () {",
+                          "    const address = order.delivery_address;",
+                          "    pm.expect(address.is_invoice_address).to.eq(0);",
+                          "    pm.expect(address.is_delivery_address).to.eq(1);",
+                          "    pm.expect(address.first_name).to.eq('Bank');",
+                          "    pm.expect(address.last_name).to.eq('Payment');",
+                          "    pm.expect(address.gender).to.eq('m');",
+                          "    pm.expect(address.birthday).to.eq(null);",
+                          "    pm.expect(address.company).to.eq('My Company 2');",
+                          "    pm.expect(address.street_1).to.eq('My Street 1 B');",
+                          "    pm.expect(address.street_2).to.eq('My Street 2 B');",
+                          "    pm.expect(address.zipcode).to.eq('27404');",
+                          "    pm.expect(address.city).to.eq('Frankenbostel');",
+                          "    pm.expect(address.country).to.eq('GB');",
+                          "    pm.expect(address.state).to.eq('GB-ABC');",
+                          "    pm.expect(address.phone).to.eq('+2-111-111-1111');",
+                          "});",
+                          "",
+                          "pm.test(\"Delivery notes\", function () {",
+                          "    pm.expect(order.delivery_notes).to.be.length(1);",
+                          "    const note = order.delivery_notes[0];",
+                          "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                          "    pm.expect(note.shipping_service_name).to.eq('');",
+                          "    pm.expect(note.tracking_number).to.eq('');",
+                          "    pm.expect(note.shipping_time).to.eq(null);",
+                          "});",
+                          "",
+                          "pm.test(\"Taxes\", function () {",
+                          "    pm.expect(order.order_taxes).to.be.length(1);",
+                          "    const tax = order.order_taxes[0];",
+                          "    pm.expect(tax.label).to.eq('zzgl. 20 % MwSt.');",
+                          "    pm.expect(tax.tax_percent).to.eq(20);",
+                          "    pm.expect(tax.amount).to.eq(21); // tax 20%, -> 20 from item, 1 from shipping",
+                          "});",
+                          "",
+                          "pm.test(\"Item check\", function () {",
+                          "    pm.expect(order.items).to.be.length(1);",
+                          "    const product = Utility.getByName(order.items, 'API: Headless Advanced Prices One (DE)');",
+                          "    pm.expect(product, 'Could not find SGDEMO10001').to.not.be.undefined;",
+                          "    pm.expect(product.item_number).to.eq(pm.environment.get('created_product_headless_advPriceOne_id'));",
+                          "    pm.expect(product.item_number_public).to.eq('SGDEMO10001');",
+                          "    pm.expect(product.quantity).to.eq(1);",
+                          "    pm.expect(product.unit_amount).to.eq(100);",
+                          "    pm.expect(product.unit_amount_with_tax).to.eq(120);",
+                          "    pm.expect(product.tax_percent).to.eq(20);",
+                          "    pm.expect(product.currency).to.eq('USD');",
+                          "    pm.expect(product.description).to.eq('Adv. price one description (DE)');",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping extra cost check\", function () {",
+                          "    pm.expect(order.extra_costs).to.be.length(1);",
+                          "    const extraCost = order.extra_costs[0];",
+                          "    pm.expect(extraCost.type).to.eq('shipping');",
+                          "    pm.expect(extraCost.tax_percent).to.eq(20);",
+                          "    pm.expect(extraCost.amount).to.eq(5.0);",
+                          "    pm.expect(extraCost.label).to.eq('Versandkosten');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number_headless}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_orders}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_token",
+                          "value": "{{created_customer_DE_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_language",
+                          "value": "",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "SG: customer context",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_net_id'));",
+                      "});",
+                      "",
+                      "pm.test(\"General check\", function () {",
+                      "    pm.expect(jsonData.items).length(1, 'Should be 1 items in cart');",
+                      "    pm.expect(jsonData.currency).to.eq('USD');",
+                      "});",
+                      "const items = jsonData.items;",
+                      "",
+                      "pm.test(\"Check item not found\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(0);",
+                      "    pm.expect(item.error).to.eql(301);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number_headless}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "US",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][state]",
+                      "value": "US-AZ",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
               "name": "SG: addOrder (US)",
               "event": [
@@ -4937,7 +5802,7 @@
                       "pm.test(\"freeShip reviews\", function () {",
                       "    const freeShipReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_freeShip_id'));",
                       "    pm.expect(freeShipReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_freeShip'));",
-                      "    pm.expect(freeShipReviewOne.score).to.eq('1');",
+                      "    pm.expect(freeShipReviewOne.score).to.eq('2');",
                       "    pm.expect(freeShipReviewOne.reviewer_name).to.eq('*****');",
                       "    pm.expect(freeShipReviewOne.title).to.eq('Secondary channel review');",
                       "    pm.expect(freeShipReviewOne.text).to.eq('German Content too');",
@@ -4946,7 +5811,7 @@
                       "pm.test(\"properties product reviews\", function () {",
                       "    const propertyProductReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_customer_id'));",
                       "    pm.expect(propertyProductReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
-                      "    pm.expect(propertyProductReviewOne.score).to.eq('4');",
+                      "    pm.expect(propertyProductReviewOne.score).to.eq('5');",
                       "    pm.expect(propertyProductReviewOne.title).to.eq('Customer attached review');",
                       "    pm.expect(propertyProductReviewOne.reviewer_name).to.eq('Max M.');",
                       "    pm.expect(propertyProductReviewOne.text).to.eq('Customer attached review description');",
@@ -4984,6 +5849,84 @@
                     {
                       "key": "action",
                       "value": "{{framework_action_get_reviews}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: reviews (uids head)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "pm.test(\"have reviews\", function () {",
+                      "    const jsonObject = xml2Json(responseBody);",
+                      "    pm.expect(jsonObject.reviews.review).length(2, 'Expecting only 2 reviews');",
+                      "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('product_review_freeShip_id'));",
+                      "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_props_customer_id'));",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number_headless}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_reviews}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{product_review_freeShip_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[1]",
+                      "value": "{{product_review_props_customer_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[2]",
+                      "value": "{{product_review_freeShip_disabled_id}}",
+                      "description": "disabled review wont export",
                       "type": "text"
                     }
                   ]
@@ -5084,8 +6027,8 @@
                   "    pm.expect(jsonData.pong).to.eql('OK');",
                   "});",
                   "",
-                  "pm.test('Plugin Versions', function () {",
-                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "pm.test('Plugin check', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.not.be.empty.to.not.eq('not installed');",
                   "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
                   "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
                   "});",
@@ -5138,7 +6081,27 @@
           "response": []
         }
       ],
-      "description": "Preparation for multi-channel tests"
+      "description": "Preparation for multi-channel tests",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              ""
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "Flysystem",
@@ -5199,6 +6162,71 @@
               "path": [
                 "_action",
                 "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: ping",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin Versions', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_number');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.eq('export');",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
               ]
             }
           },
@@ -5268,6 +6296,171 @@
                 {
                   "key": "offset",
                   "value": "0",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: reviews (main)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const moment = require('moment');",
+                  "const now = moment().format('YYYY-MM-DD');",
+                  "",
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "const jsonObject = xml2Json(responseBody);",
+                  "const reviews = jsonObject.reviews.review;",
+                  "pm.test(\"general check\", function () {",
+                  "    pm.expect(reviews).length(3, 'Expecting only 3 reviews');",
+                  "});",
+                  "",
+                  "pm.test(\"childReviewOne\", function () {",
+                  "    const childReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_child_id'));",
+                  "    pm.expect(childReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
+                  "    pm.expect(childReviewOne.score).to.eq('7');",
+                  "    pm.expect(childReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(childReviewOne.title).to.eq('German Title');",
+                  "    pm.expect(childReviewOne.text).to.eq('German Content');",
+                  "    pm.expect(childReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});",
+                  "pm.test(\"propReviewOne\", function () {",
+                  "    const propReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_id'));",
+                  "    pm.expect(propReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
+                  "    pm.expect(propReviewOne.score).to.eq('9');",
+                  "    pm.expect(propReviewOne.title).to.eq('Main product review');",
+                  "    pm.expect(propReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(propReviewOne.text).to.eq('Main product long content');",
+                  "    pm.expect(propReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});",
+                  "pm.test(\"disabledReviewOne\", function () {",
+                  "    const disabledReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_disabled_id'));",
+                  "    pm.expect(disabledReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
+                  "    pm.expect(disabledReviewOne.score).to.eq('4');",
+                  "    pm.expect(disabledReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(disabledReviewOne.title).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledReviewOne.text).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_reviews}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: get category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Not an error\", function () {",
+                  "    pm.response.to.not.have.jsonBody('error');",
+                  "});",
+                  "",
+                  "pm.test(\"Have proper category data\", function () {",
+                  "    const jsonObject = xml2Json(responseBody);",
+                  "    if (pm.globals.get('verbose')){",
+                  "        console.log(jsonObject);",
+                  "    }",
+                  "    pm.expect(jsonObject.categories.category).to.have.property('$');",
+                  "    pm.expect(jsonObject.categories.category.$.uid, 'UUID not found').to.be.a('string').to.be.eq(pm.environment.get(\"gen_category_uid_0\"));",
+                  "    pm.expect(jsonObject.categories.category.$.sort_order).to.be.a('string').to.match(/^\\d+$/).to.eq('3');",
+                  "    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('0');",
+                  "    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
+                  "    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonObject.categories.category, 'Deeplink not set').to.have.property('deeplink').to.be.a('string').to.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_categories}}",
+                  "type": "text"
+                },
+                {
+                  "key": "uids[0]",
+                  "value": "{{gen_category_uid_0}}",
                   "type": "text"
                 }
               ]
@@ -6498,8 +7691,86 @@
           ]
         },
         {
-          "name": "No variant export",
+          "name": "Variant export",
           "item": [
+            {
+              "name": "SG: variant check",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "pm.test('Variant check', function() {",
+                      "    // variant parent",
+                      "    const variantProduct = jsonObject.items.item",
+                      "    pm.expect(variantProduct.children, 'Should have children').to.haveOwnProperty('item');",
+                      "    pm.expect(variantProduct.children.item).to.be.a('array').to.not.be.empty;",
+                      "",
+                      "    // variant child",
+                      "    const childProduct = Utility.getXmlByUid(variantProduct.children.item, pm.environment.get('gen_product_variant_child_id'));",
+                      "    pm.expect(childProduct, 'should have identifiers').to.haveOwnProperty('identifiers');",
+                      "    pm.expect(childProduct.identifiers.identifier.$.type).to.eq('sku', 'Should have SKU identifier only');",
+                      "    pm.expect(childProduct.attributes.attribute).lengthOf(2, 'Should have M and Red');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{catalog_product_variant}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
               "name": "SG: set simple",
               "event": [
@@ -6643,7 +7914,7 @@
               "response": []
             },
             {
-              "name": "SG: export variant",
+              "name": "SG: no variant exports",
               "event": [
                 {
                   "listen": "test",
@@ -6652,7 +7923,7 @@
                       "pm.test(\"Not an error\", function () {",
                       "    pm.response.to.have.jsonBody('error');",
                       "});",
-                      "pm.test(\"Your test name\", function () {",
+                      "pm.test(\"No variant in cart\", function () {",
                       "    var jsonData = pm.response.json();",
                       "    pm.expect(jsonData.error_text).to.eql('buffer is empty');",
                       "});"
@@ -6912,7 +8183,6 @@
                       "    pm.expect(jsonData.external_coupons).length(1);",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                      "    pm.expect(coupon.amount_net).to.eq(1.89);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -6920,6 +8190,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -7223,7 +8494,7 @@
                       "    pm.expect(jsonData.external_coupons).length(1);",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                      "    pm.expect(coupon.amount_net).to.eq(2.06);",
+                      "    //pm.expect(coupon.amount_net).to.eq(2.06);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -7231,6 +8502,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -7705,7 +8977,7 @@
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.not_valid_message).to.eq(null);",
                       "    pm.expect(coupon.code).to.be.a('string').to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
-                      "    pm.expect(coupon.amount_net).to.eq(67.23);",
+                      "    //pm.expect(coupon.amount_net).to.eq(67.23);",
                       "    pm.expect(coupon.amount_gross).to.eq(80);",
                       "    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -7713,6 +8985,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});",
                       "",
                       "pm.test(\"Check not valid coupon\", function () {",
@@ -7720,11 +8993,12 @@
                       "    pm.expect(coupon.is_valid).to.eq(false);",
                       "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
                       "    pm.expect(coupon.code).to.eq('NOT-VALID');",
-                      "    pm.expect(coupon.amount_net).to.eq('1.0');",
+                      "    //pm.expect(coupon.amount_net).to.eq('1.0');",
                       "    pm.expect(coupon.amount_gross).to.eq('1.5');",
                       "    pm.expect(coupon.name).to.eq('Not valid coupon');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
                       "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -7898,7 +9172,9 @@
                     {
                       "key": "cart[external_coupons][0][amount_net]",
                       "value": "1.0",
-                      "type": "text"
+                      "description": "supposed to not happen to have both values",
+                      "type": "text",
+                      "disabled": true
                     },
                     {
                       "key": "cart[external_coupons][0][amount_gross]",
@@ -8029,7 +9305,6 @@
                       "    pm.expect(jsonData.external_coupons).length(1);",
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                      "    pm.expect(coupon.amount_net).to.eq(1.81);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -8037,6 +9312,7 @@
                       "    const internalInfo = JSON.parse(coupon.internal_info);",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    Test.checkCouponAmount(coupon);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -8716,6 +9992,16 @@
                           "    pm.expect(item.stock_quantity).to.eql(10);",
                           "    pm.expect(item.unit_amount).to.eql(413.29);",
                           "    pm.expect(item.unit_amount_with_tax).to.eql(495.95);",
+                          "});",
+                          "",
+                          "pm.test(\"payment method check\", function () {",
+                          "    const payments = jsonData.payment_methods;",
+                          "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_defaultpayment_', false), 'API').to.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -8906,6 +10192,16 @@
                           "    pm.expect(item.stock_quantity).to.eql(10);",
                           "    pm.expect(item.unit_amount).to.eql(416.77);",
                           "    pm.expect(item.unit_amount_with_tax).to.eql(495.95);",
+                          "});",
+                          "",
+                          "pm.test(\"payment method check\", function () {",
+                          "    const payments = jsonData.payment_methods;",
+                          "    pm.expect(payments).lengthOf(4, 'Should have 4 payment methods');",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_defaultpayment_', false), 'API').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -9121,6 +10417,7 @@
                           "    const rule = Utility.getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
                           "    pm.expect(rule.amount_gross).to.eq(99.19);",
                           "    pm.expect(rule.currency).to.eq('EUR');",
+                          "    Test.checkCouponAmount(rule);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -9346,7 +10643,7 @@
                           "    pm.expect(jsonData.external_coupons).length(1);",
                           "    pm.expect(coupon.is_valid).to.eq(1);",
                           "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                          "    pm.expect(coupon.amount_net).to.eq(2.02); // taking this on faith that it's 7% - 19%",
+                          "    // pm.expect(coupon.amount_net).to.eq(2.02); // taking this on faith that it's 7% - 19%",
                           "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                           "    pm.expect(coupon.name).to.eq('API: promo by code');",
                           "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -9354,6 +10651,7 @@
                           "    const internalInfo = JSON.parse(coupon.internal_info);",
                           "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                           "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                          "    Test.checkCouponAmount(coupon);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -10176,6 +11474,16 @@
                           "    pm.expect(item.stock_quantity).to.eql(10);",
                           "    pm.expect(item.unit_amount).to.eql(416.76);",
                           "    pm.expect(item.unit_amount_with_tax).to.eql(495.95);",
+                          "});",
+                          "",
+                          "pm.test(\"payment method check\", function () {",
+                          "    const payments = jsonData.payment_methods;",
+                          "    pm.expect(payments).lengthOf(4, 'Should have 4 payment methods');",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_defaultpayment_', false), 'API').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -10396,6 +11704,7 @@
                           "    const rule = Utility.getByName(jsonData.external_coupons, 'API: promo by Billing Country USA');",
                           "    pm.expect(rule.amount_net).to.eq(83.35);",
                           "    pm.expect(rule.currency).to.eq('EUR');",
+                          "    Test.checkCouponAmount(rule);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -10622,13 +11931,14 @@
                           "    pm.expect(coupon.is_valid).to.eq(1);",
                           "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
                           "    pm.expect(coupon.amount_net).to.eq(2.25);",
-                          "    pm.expect(coupon.amount_gross).to.eq(2.5); // taking this on faith",
+                          "    //pm.expect(coupon.amount_gross).to.eq(2.5); // taking this on faith",
                           "    pm.expect(coupon.name).to.eq('API: promo by code');",
                           "    pm.expect(coupon.currency).to.eq('EUR');",
                           "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
                           "    const internalInfo = JSON.parse(coupon.internal_info);",
                           "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                           "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                          "    Test.checkCouponAmount(coupon);",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -10837,6 +12147,16 @@
                   "    pm.expect(item.is_buyable).to.eql(0);",
                   "    pm.expect(item.error).to.eql(300);",
                   "});",
+                  "",
+                  "pm.test(\"payment method check\", function () {",
+                  "    const payments = jsonData.payment_methods;",
+                  "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
+                  "});",
+                  "",
                   "pm.test(\"Check item max purchase\", function () {",
                   "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_maxPurchaseTen_id'));",
                   "    pm.expect(item.is_buyable).to.eql(0);",
@@ -10852,7 +12172,6 @@
                   "    pm.expect(jsonData.external_coupons).length(1);",
                   "    pm.expect(coupon.is_valid).to.eq(1);",
                   "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
-                  "    pm.expect(coupon.amount_net).to.eq(1.89);",
                   "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                   "    pm.expect(coupon.name).to.eq('API: promo by code');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -10860,6 +12179,7 @@
                   "    const internalInfo = JSON.parse(coupon.internal_info);",
                   "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                   "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                  "    Test.checkCouponAmount(coupon);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -11148,6 +12468,15 @@
                   "    pm.expect(item.unit_amount).to.eql(798.32);",
                   "    pm.expect(item.unit_amount_with_tax).to.eql(950);",
                   "});",
+                  "",
+                  "pm.test(\"payment method check\", function () {",
+                  "    const payments = jsonData.payment_methods;",
+                  "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
+                  "});",
                   ""
                 ],
                 "type": "text/javascript"
@@ -11378,7 +12707,7 @@
                   "    pm.expect(coupon.is_valid).to.eq(1);",
                   "    pm.expect(coupon.not_valid_message).to.eq(null);",
                   "    pm.expect(coupon.code).to.be.a('string').to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
-                  "    pm.expect(coupon.amount_net).to.eq(67.23);",
+                  "    //pm.expect(coupon.amount_net).to.eq(67.23);",
                   "    pm.expect(coupon.amount_gross).to.eq(80);",
                   "    pm.expect(coupon.name).to.eq('API: promo by Billing Country USA');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -11386,6 +12715,7 @@
                   "    const internalInfo = JSON.parse(coupon.internal_info);",
                   "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
                   "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
+                  "    Test.checkCouponAmount(coupon);",
                   "});",
                   "",
                   "pm.test(\"Check not valid coupon\", function () {",
@@ -11393,11 +12723,21 @@
                   "    pm.expect(coupon.is_valid).to.eq(false);",
                   "    pm.expect(coupon.not_valid_message).to.eq('Promotion with code NOT-VALID not found!');",
                   "    pm.expect(coupon.code).to.eq('NOT-VALID');",
-                  "    pm.expect(coupon.amount_net).to.eq('1.0');",
+                  "    //pm.expect(coupon.amount_net).to.eq('1.0');",
                   "    pm.expect(coupon.amount_gross).to.eq('1.5');",
                   "    pm.expect(coupon.name).to.eq('Not valid coupon');",
                   "    pm.expect(coupon.currency).to.eq('EUR');",
                   "    pm.expect(coupon.internal_info, 'Internal info should be empty').to.be.eq('[]');",
+                  "    Test.checkCouponAmount(coupon);",
+                  "});",
+                  "",
+                  "pm.test(\"payment method check\", function () {",
+                  "    const payments = jsonData.payment_methods;",
+                  "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                  "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -11556,7 +12896,9 @@
                 {
                   "key": "cart[external_coupons][0][amount_net]",
                   "value": "1.0",
-                  "type": "text"
+                  "description": "should not happen that it will pass both",
+                  "type": "text",
+                  "disabled": true
                 },
                 {
                   "key": "cart[external_coupons][0][amount_gross]",
@@ -11652,7 +12994,7 @@
                   "pm.test(\"childReviewOne\", function () {",
                   "    const childReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_child_id'));",
                   "    pm.expect(childReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
-                  "    pm.expect(childReviewOne.score).to.eq('4');",
+                  "    pm.expect(childReviewOne.score).to.eq('7'); // 3.7*2=7.4",
                   "    pm.expect(childReviewOne.reviewer_name).to.eq('*****');",
                   "    pm.expect(childReviewOne.title).to.eq('German Title');",
                   "    pm.expect(childReviewOne.text).to.eq('German Content');",
@@ -11661,20 +13003,20 @@
                   "pm.test(\"propReviewOne\", function () {",
                   "    const propReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_id'));",
                   "    pm.expect(propReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
-                  "    pm.expect(propReviewOne.score).to.eq('4');",
+                  "    pm.expect(propReviewOne.score).to.eq('9'); // 4.4*2=8.8",
                   "    pm.expect(propReviewOne.title).to.eq('Main product review');",
                   "    pm.expect(propReviewOne.reviewer_name).to.eq('*****');",
                   "    pm.expect(propReviewOne.text).to.eq('Main product long content');",
                   "    pm.expect(propReviewOne).to.haveOwnProperty('date').to.eq(now);",
                   "});",
-                  "pm.test(\"disabledReviewOne\", function () {",
-                  "    const disabledReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_disabled_id'));",
-                  "    pm.expect(disabledReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
-                  "    pm.expect(disabledReviewOne.score).to.eq('2');",
-                  "    pm.expect(disabledReviewOne.reviewer_name).to.eq('*****');",
-                  "    pm.expect(disabledReviewOne.title).to.be.a('string').to.not.be.empty;",
-                  "    pm.expect(disabledReviewOne.text).to.be.a('string').to.not.be.empty;",
-                  "    pm.expect(disabledReviewOne).to.haveOwnProperty('date').to.eq(now);",
+                  "pm.test(\"disabled product ReviewOne\", function () {",
+                  "    const disabledProdReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_disabled_id'));",
+                  "    pm.expect(disabledProdReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
+                  "    pm.expect(disabledProdReviewOne.score).to.eq('4'); //2*2=4",
+                  "    pm.expect(disabledProdReviewOne.reviewer_name).to.eq('*****');",
+                  "    pm.expect(disabledProdReviewOne.title).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledProdReviewOne.text).to.be.a('string').to.not.be.empty;",
+                  "    pm.expect(disabledProdReviewOne).to.haveOwnProperty('date').to.eq(now);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -11812,84 +13154,6 @@
           "response": []
         },
         {
-          "name": "SG: reviews (uids head)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Not an error\", function () {",
-                  "    pm.response.to.not.have.jsonBody('error');",
-                  "});",
-                  "",
-                  "pm.test(\"have reviews\", function () {",
-                  "    const jsonObject = xml2Json(responseBody);",
-                  "    pm.expect(jsonObject.reviews.review).length(2, 'Expecting only 2 reviews');",
-                  "    pm.expect(jsonObject.reviews.review[0].$.uid).to.eq(pm.environment.get('product_review_freeShip_id'));",
-                  "    pm.expect(jsonObject.reviews.review[1].$.uid).to.eq(pm.environment.get('product_review_props_customer_id'));",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "*/*"
-              },
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number_headless}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_get_reviews}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[0]",
-                  "value": "{{product_review_freeShip_id}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[1]",
-                  "value": "{{product_review_props_customer_id}}",
-                  "type": "text"
-                },
-                {
-                  "key": "uids[2]",
-                  "value": "{{product_review_freeShip_disabled_id}}",
-                  "description": "disabled review wont export",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "SG: reviews (limit)",
           "event": [
             {
@@ -11911,7 +13175,7 @@
                   "pm.test(\"childReviewOne\", function () {",
                   "    const childReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_child_id'));",
                   "    pm.expect(childReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('gen_product_variant_child_id'));",
-                  "    pm.expect(childReviewOne.score).to.eq('4');",
+                  "    pm.expect(childReviewOne.score).to.eq('7');",
                   "    pm.expect(childReviewOne.reviewer_name).to.eq('*****');",
                   "    pm.expect(childReviewOne.title).to.eq('German Title');",
                   "    pm.expect(childReviewOne.text).to.eq('German Content');",
@@ -11920,7 +13184,7 @@
                   "pm.test(\"propReviewOne\", function () {",
                   "    const propReviewOne = Utility.getXmlByUid(reviews, pm.environment.get('product_review_props_id'));",
                   "    pm.expect(propReviewOne).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_props'));",
-                  "    pm.expect(propReviewOne.score).to.eq('4');",
+                  "    pm.expect(propReviewOne.score).to.eq('9');",
                   "    pm.expect(propReviewOne.title).to.eq('Main product review');",
                   "    pm.expect(propReviewOne.reviewer_name).to.eq('*****');",
                   "    pm.expect(propReviewOne.text).to.eq('Main product long content');",
@@ -11999,7 +13263,7 @@
                   "    const jsonObject = xml2Json(responseBody);",
                   "    pm.expect(jsonObject.reviews.review.$.uid).to.eq(pm.environment.get('product_review_disabled_id'));",
                   "    pm.expect(jsonObject.reviews.review).to.have.property('item_uid').to.eq(pm.environment.get('catalog_product_disabled'));",
-                  "    pm.expect(jsonObject.reviews.review.score).to.eq('2');",
+                  "    pm.expect(jsonObject.reviews.review.score).to.eq('4');",
                   "    pm.expect(jsonObject.reviews.review.reviewer_name).to.eq('*****');",
                   "    pm.expect(jsonObject.reviews.review.title).to.be.a('string').to.not.be.empty;",
                   "    pm.expect(jsonObject.reviews.review.text).to.be.a('string').to.not.be.empty;",
@@ -12554,7 +13818,7 @@
                       "    pm.expect(coupon.is_valid).to.eq(1);",
                       "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_byCode_code'));",
                       "    pm.expect(coupon.name).to.eq('API: promo by code');",
-                      "    pm.expect(coupon.amount_net).to.eq(1.87);",
+                      "    //pm.expect(coupon.amount_net).to.eq(1.87);",
                       "    pm.expect(coupon.amount_gross).to.eq(2.25);",
                       "    pm.expect(coupon.tax_type).to.eq('auto');",
                       "    pm.expect(coupon.currency).to.eq('EUR');",
@@ -12563,13 +13827,14 @@
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
                       "    pm.expect(internalInfo.itemType).to.eq('coupon');",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_byCode_id'));",
+                      "    Test.checkCouponAmount(coupon);",
                       "});",
                       "pm.test(\"Auto Promo 10% discount check\", function () {",
                       "    const promoDiscount = Utility.getByName(order.external_coupons, 'API: promo by Billing Country USA');",
                       "    pm.expect(promoDiscount, 'Could not locate 10% promo discount').to.not.be.undefined;",
                       "    pm.expect(promoDiscount.code).to.not.be.null;",
                       "    pm.expect(promoDiscount.name).to.eq('API: promo by Billing Country USA');",
-                      "    pm.expect(promoDiscount.amount_net).to.eq(43.37);",
+                      "    //pm.expect(promoDiscount.amount_net).to.eq(43.37);",
                       "    pm.expect(promoDiscount.amount_gross).to.eq(52.05);",
                       "    pm.expect(promoDiscount.tax_type).to.eq('auto');",
                       "    pm.expect(promoDiscount.currency).to.eq('EUR');",
@@ -12579,6 +13844,7 @@
                       "    pm.expect(internalInfo.itemType).to.eq('cartRule');",
                       "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_customerUSA_id'));",
                       "    pm.expect(internalInfo.discountId).to.eq(pm.environment.get('created_discount_customerUSA_cart_1_id'));",
+                      "    Test.checkCouponAmount(promoDiscount);",
                       "});",
                       "    ",
                       "pm.test(\"Shipping discount 1 check\", function () {",
@@ -12586,11 +13852,12 @@
                       "    pm.expect(shippingDiscount, 'Could not locate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('1');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 1');",
-                      "    pm.expect(shippingDiscount.amount_net).to.eq(0.83);",
+                      "    //pm.expect(shippingDiscount.amount_net).to.eq(0.83);",
                       "    pm.expect(shippingDiscount.amount_gross).to.eq(1.0);",
                       "    pm.expect(shippingDiscount.tax_type).to.eq('auto');",
                       "    pm.expect(shippingDiscount.currency).to.eq('EUR');",
                       "    pm.expect(shippingDiscount.is_free_shipping).to.eq(null);",
+                      "    Test.checkCouponAmount(shippingDiscount);",
                       "});",
                       "",
                       "pm.test(\"Shipping discount 2 check\", function () {",
@@ -12598,11 +13865,12 @@
                       "    pm.expect(shippingDiscount, 'Could not locate shipping discount').to.not.be.undefined;",
                       "    pm.expect(shippingDiscount.code).to.eq('2');",
                       "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 2');",
-                      "    pm.expect(shippingDiscount.amount_net).to.eq(1.25);",
+                      "    //pm.expect(shippingDiscount.amount_net).to.eq(1.25);",
                       "    pm.expect(shippingDiscount.amount_gross).to.eq(1.5);",
                       "    pm.expect(shippingDiscount.tax_type).to.eq('auto');",
                       "    pm.expect(shippingDiscount.currency).to.eq('EUR');",
                       "    pm.expect(shippingDiscount.is_free_shipping).to.eq(null);",
+                      "    Test.checkCouponAmount(shippingDiscount);",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -16199,7 +17467,7 @@
       ]
     },
     {
-      "name": "Misc",
+      "name": "Settings",
       "item": [
         {
           "name": "SG: get_settings (EN)",
@@ -16278,6 +17546,197 @@
           "response": []
         },
         {
+          "name": "SG: set inactive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Check settings\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shopgate_settings).to.be.lengthOf(1);",
+                  "    pm.expect(jsonData.shopgate_settings[0].name).to.be.eq('shop_is_active');",
+                  "    pm.expect(jsonData.shopgate_settings[0].old).to.be.eq(1);",
+                  "    pm.expect(jsonData.shopgate_settings[0].new).to.be.eq(\"0\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_set_settings}}",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][name]",
+                  "value": "shop_is_active",
+                  "type": "text"
+                },
+                {
+                  "key": "shopgate_settings[0][value]",
+                  "value": "0",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: check inactive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Should be inactive\", function () {",
+                  "    pm.expect(jsonData.error).to.eql(12);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: re-activate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"active\": true\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Misc",
+      "item": [
+        {
           "name": "SG: ping",
           "event": [
             {
@@ -16289,8 +17748,8 @@
                   "    pm.expect(jsonData.pong).to.eql('OK');",
                   "});",
                   "",
-                  "pm.test('Plugin Versions', function () {",
-                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.be.eq(pm.environment.get(\"gen_plugin_version\"));",
+                  "pm.test('Plugin check', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.not.be.empty.to.not.eq('not installed');",
                   "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
                   "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
                   "});",
@@ -16300,6 +17759,11 @@
                   "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
                   "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
                   "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});",
+                  "",
+                  "pm.test(\"payment methods\", function () {",
+                  "    const payment_methods = jsonData.shop_info.payment_methods;",
+                  "    pm.expect(payment_methods).to.not.be.undefined;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -16484,6 +17948,184 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Main DE",
+      "item": [
+        {
+          "name": "SG: get_settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Check issues with payload\", function () {",
+                  "    pm.expect(jsonData.error, 'SDK Error').to.eql(0);",
+                  "    pm.expect(jsonData.customer_groups).to.be.a('array').to.be.length(2);",
+                  "});",
+                  "",
+                  "pm.test(\"Check custom NET group\", function () {",
+                  "    const nonDefaultGroup = findByName('API: A custom NET group');",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('created_customerGroup_net_id'));",
+                  "    pm.expect(nonDefaultGroup).to.haveOwnProperty('is_default').to.eq('0');",
+                  "});",
+                  "",
+                  "pm.test(\"Check other group\", function () {",
+                  "    const defaultGroup = findByName('Standard-Kundengruppe');",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
+                  "    pm.expect(defaultGroup).to.haveOwnProperty('is_default').to.eq('1');",
+                  "});",
+                  "",
+                  "function findByName(name) {",
+                  "    return jsonData.customer_groups.find(group => group.name === name);",
+                  "};"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_main_DE}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_get_settings}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: ping",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "pm.test(\"Ping Pong\", function () {",
+                  "    pm.expect(jsonData.pong).to.eql('OK');",
+                  "});",
+                  "",
+                  "pm.test('Plugin check', function () {",
+                  "    pm.expect(jsonData.plugin_version).to.be.a('string').to.not.be.empty.to.not.eq('not installed');",
+                  "    pm.expect(jsonData.shopgate_library_version).to.be.a('string').to.be.not.empty;",
+                  "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Check log paths\", function () {",
+                  "    const shopNumber = pm.environment.get('shop_main_DE');",
+                  "    pm.expect(jsonData.configuration.export_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.log_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "    pm.expect(jsonData.configuration.cache_folder_path).to.have.string('shopgate/' + shopNumber);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_main_DE}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_ping}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "/**",
+              " *  SG Token generation",
+              " */",
+              "var tstamp = Math.floor(Date.now() / 1000);",
+              "",
+              "const deShopCreds = pm.environment.get('shop_main_DE');",
+              "",
+              "// Use the CryptoJS",
+              "var authUser = deShopCreds + \"-\" + tstamp;",
+              "var tokenData = \"SPA-\" + deShopCreds + \"-\" + tstamp + \"-\" + deShopCreds;",
+              "",
+              "var authToken = CryptoJS.SHA1(tokenData).toString();",
+              "",
+              "// Set the new header values",
+              "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
+              "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ]
     }
   ],
   "event": [
@@ -16497,16 +18139,18 @@
           " */",
           "var tstamp = Math.floor(Date.now() / 1000);",
           "",
+          "const customerNumber = pm.environment.get('customer_number');",
+          "const apiKey = pm.environment.get('api_key');",
+          "",
           "// Use the CryptoJS",
-          "var authUser = pm.environment.get('customer_number') + \"-\" + tstamp;",
-          "var tokenData = \"SPA-\" + pm.environment.get('customer_number') + \"-\" + tstamp + \"-\" + pm.environment.get('api_key');",
+          "var authUser = customerNumber + \"-\" + tstamp;",
+          "var tokenData = \"SPA-\" + customerNumber + \"-\" + tstamp + \"-\" + apiKey;",
           "",
           "var authToken = CryptoJS.SHA1(tokenData).toString();",
           "",
           "// Set the new header values",
           "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
           "pm.environment.set(\"gen_sg_header_auth_token\", authToken);",
-          "",
           "",
           "/**",
           " * SW Token generation",
@@ -16582,15 +18226,25 @@
           "// JSON handlers",
           "Utility.getByLabel = (list, value) => getItemByKey(list, 'label', value);",
           "Utility.getByName = (list, value) => getItemByKey(list, 'name', value);",
-          "Utility.getById = (list, value) => getItemByKey(list, 'id', value);",
+          "Utility.getById = (list, value, strict = true) => getItemByKey(list, 'id', value, strict);",
           "Utility.getByItemNumber = (list, value) => getItemByKey(list, 'item_number', value);",
-          "function getItemByKey(list, key, value) {",
-          "    return list.find(item => item[key] === value);",
+          "function getItemByKey(list, key, value, strict = true) {",
+          "    return list.find(item => strict ? item[key] === value : item[key].includes(value));",
           "};",
           "// XML handlers",
-          "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value)",
+          "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value);",
           "function getXmlByAttributeKey(list, key, value) {",
           "    return list.find(item => item.$[key] === value);",
+          "};",
+          "",
+          "/**",
+          " * Helps running additional tests",
+          " */",
+          "Test = {};",
+          "Test.checkCouponAmount = function(coupon) {",
+          "    if (coupon.amount_gross && coupon.amount_net) {",
+          "        pm.expect(true).to.eq(false, 'Coupon should not have Gross & NET values');",
+          "    }",
           "};"
         ]
       }

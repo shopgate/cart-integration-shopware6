@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\Order\Payment;
 
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateCartBase;
+use ShopgatePaymentMethod;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -38,7 +39,18 @@ class PaymentComposer
             ];
         }, $methods->getElements()), true));
 
-        return $this->paymentMapping->mapPayment($sgCart, $methods);
+        return $this->paymentMapping->mapPaymentType($sgCart, $methods);
+    }
+
+    /**
+     * @param SalesChannelContext $context
+     * @return ShopgatePaymentMethod[]
+     */
+    public function mapOutgoingPayments(SalesChannelContext $context): array
+    {
+        return $this->paymentBridge->getAvailableMethods($context)
+            ->filter(fn(PaymentMethodEntity $pay) => strpos($pay->getHandlerIdentifier(), 'Shopgate') === false)
+            ->map(fn(PaymentMethodEntity $paymentMethod) => $this->paymentMapping->mapPaymentMethod($paymentMethod));
     }
 
     public function isPaid(?OrderTransactionCollection $transactions): bool

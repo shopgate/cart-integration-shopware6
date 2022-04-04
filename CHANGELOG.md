@@ -9,6 +9,8 @@
 - added Shopgate `custom_fields` support to customer & customer addresses (see [README](README.md))
 - added support for categories with `dynamic product groups`
 - added support for product `CrossSell` sliders (max 4)
+- added support to PHP 8.0
+- changed location of API credentials to accommodate multi-language calls
 - fixed cron logic to accurately cancel orders & mark orders shipped in Shopgate Panel
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
 - fixed product export not honoring clearance flag

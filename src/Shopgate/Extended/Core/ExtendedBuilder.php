@@ -6,6 +6,9 @@ namespace Shopgate\Shopware\Shopgate\Extended\Core;
 
 use Exception;
 use Shopgate_Model_AbstractExport;
+use Shopgate_Model_Catalog_Category;
+use Shopgate_Model_Catalog_Product;
+use Shopgate_Model_Catalog_Review;
 use Shopgate_Model_XmlResultObject;
 use ShopgateAuthenticationServiceInterface;
 use ShopgateBuilder;
@@ -70,11 +73,11 @@ class ExtendedBuilder extends ShopgateBuilder
             ShopgateObject::$sourceEncodings = array($this->config->getEncoding());
         }
 
-        $xmlModelNames = array(
-            'get_items' => 'Shopgate_Model_Catalog_Product',
-            'get_categories' => 'Shopgate_Model_Catalog_Category',
-            'get_reviews' => 'Shopgate_Model_Review',
-        );
+        $xmlModelNames = [
+            'get_items' => Shopgate_Model_Catalog_Product::class,
+            'get_categories' => Shopgate_Model_Catalog_Category::class,
+            'get_reviews' => Shopgate_Model_Catalog_Review::class,
+        ];
         if (isset($xmlModelNames[$_REQUEST['action']])) {
             /* @var $xmlModel Shopgate_Model_AbstractExport */
             $xmlModel = new $xmlModelNames[$_REQUEST['action']]();
@@ -87,7 +90,6 @@ class ExtendedBuilder extends ShopgateBuilder
                 $this->config->getExportConvertEncoding(),
                 ShopgateObject::$sourceEncodings
             );
-
         } else {
             $fileBuffer = new ShopgateFileBufferJson(
                 $this->config->getExportBufferCapacity(),

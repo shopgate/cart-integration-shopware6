@@ -30,6 +30,7 @@ class ChildProductMapping extends SimpleProductMapping
     public function setAttributes(): void
     {
         if (null === $this->item->getParentId()) {
+            parent::setAttributes([]);
             return;
         }
         $export = [];

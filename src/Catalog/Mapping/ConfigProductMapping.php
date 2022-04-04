@@ -64,7 +64,7 @@ class ConfigProductMapping extends SimpleProductMapping
     public function setChildren(): void
     {
         $result = [];
-        $children = $this->item->getChildren();
+        $children = $this->item->getChildren() ?: [];
         foreach ($children as $child) {
             $exportChild = clone $this->childProductMapping;
             $exportChild->setItem($child);

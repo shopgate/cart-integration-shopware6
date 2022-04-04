@@ -16,6 +16,7 @@ use ShopgateExternalOrderExtraCost;
 use ShopgateExternalOrderItem;
 use ShopgateExternalOrderTax;
 use ShopgateOrder;
+use ShopgatePaymentMethod;
 use ShopgateShippingMethod;
 
 class ExtendedClassFactory
@@ -29,6 +30,7 @@ class ExtendedClassFactory
     private ShopgateShippingMethod $shippingMethod;
     private ShopgateDeliveryNote $deliveryNote;
     private ShopgateExternalOrderExtraCost $orderExtraCost;
+    private ShopgatePaymentMethod $paymentMethod;
 
     public function __construct(
         ShopgateCart $cart,
@@ -39,7 +41,8 @@ class ExtendedClassFactory
         ShopgateOrder $order,
         ShopgateShippingMethod $shippingMethod,
         ShopgateDeliveryNote $deliveryNote,
-        ShopgateExternalOrderExtraCost $orderExtraCost
+        ShopgateExternalOrderExtraCost $orderExtraCost,
+        ShopgatePaymentMethod $paymentMethod
     ) {
         $this->cart = $cart;
         $this->cartItem = $cartItem;
@@ -50,6 +53,7 @@ class ExtendedClassFactory
         $this->shippingMethod = $shippingMethod;
         $this->deliveryNote = $deliveryNote;
         $this->orderExtraCost = $orderExtraCost;
+        $this->paymentMethod = $paymentMethod;
     }
 
     /**
@@ -113,5 +117,10 @@ class ExtendedClassFactory
     public function createOrderExtraCost(): ShopgateExternalOrderExtraCost
     {
         return clone $this->orderExtraCost;
+    }
+
+    public function createPaymentMethod(): ShopgatePaymentMethod
+    {
+        return clone $this->paymentMethod;
     }
 }

@@ -10,7 +10,7 @@ use Shopgate_Model_Abstract;
 use Shopgate_Model_XmlResultObject;
 use ShopgateFileBufferXml;
 
-class XmlFileBufferExtended extends ShopgateFileBufferXml
+class XmlFileBufferExtended extends ShopgateFileBufferXml implements ExtendedFileBufferInterface
 {
     private FilesystemInterface $privateFilesystem;
 
@@ -20,7 +20,7 @@ class XmlFileBufferExtended extends ShopgateFileBufferXml
         $capacity,
         FilesystemInterface $filesystem,
         $convertEncoding = true,
-        array $sourceEncodings = array()
+        array $sourceEncodings = []
     ) {
         parent::__construct($xmlModel, $xmlNode, $capacity, $convertEncoding, $sourceEncodings);
         $this->privateFilesystem = $filesystem;

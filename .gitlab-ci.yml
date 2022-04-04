@@ -15,10 +15,11 @@ variables:
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
   # things plugins might want to override
   APP_ENV: dev
+  APP_DEBUG: 1
   APP_SECRET: 123456
-  DEV_IMAGE: shopware/development:7.4-composer-2
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
+  PHP: '7.4'
   PLATFORM_BRANCH: 6.4.8.0
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
@@ -43,7 +44,7 @@ workflow:
     - when: always
 
 .defaults: &defaults
-  image: $DEV_IMAGE
+  image: shopware/development:$PHP-composer-2
   cache:
     <<: *cache
   services:
@@ -95,10 +96,12 @@ newman:
       - PLATFORM_BRANCH:
           - 6.4.6.0
           - 6.4.8.0
+      - PHP:
+          - '8.0'
   except:
     - tags
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli > /dev/null
+    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli@1.5.* > /dev/null
     - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
     - bin/console plugin:install --quiet --activate SwagPlatformDemoData
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL

@@ -63,16 +63,12 @@ class CustomerComposer
      */
     public function registerCustomer(?string $password, ShopgateCustomer $customer): CustomerEntity
     {
+        $chanel = $this->contextManager->getSalesContext();
         $dataBag = $this->customerMapping->mapToShopwareEntity($customer, $password);
-        $dataBag->set(
-            'storefrontUrl',
-            $this->configBridge->getCustomerOptInConfirmUrl($this->contextManager->getSalesContext())
-        );
+        $dataBag->set('storefrontUrl', $this->configBridge->getCustomerOptInConfirmUrl($chanel));
         $dataBag->set('acceptedDataProtection', true);
         try {
-            return $this->registerRoute
-                ->register($dataBag, $this->contextManager->getSalesContext(), false)
-                ->getCustomer();
+            return $this->registerRoute->register($dataBag, $chanel, false)->getCustomer();
         } catch (ConstraintViolationException $e) {
             $errorMessages = [];
             foreach ($e->getViolations() as $violation) {
