@@ -40,7 +40,7 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * Helps to handle circular references
+     * Helps to handle circular references.
      */
     private function getSerializerContext(): array
     {
@@ -48,6 +48,7 @@ class Logger implements LoggerInterface
             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
                 return get_class($object);
             },
+            AbstractNormalizer::IGNORED_ATTRIBUTES => ['session']
         ];
     }
 }
