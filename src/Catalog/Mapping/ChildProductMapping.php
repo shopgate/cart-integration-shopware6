@@ -5,6 +5,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_Attribute;
@@ -16,13 +17,14 @@ class ChildProductMapping extends SimpleProductMapping
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
+        ConfigBridge $configBridge,
         TierPriceMapping $tierPriceMapping,
         Formatter $translation,
         CurrencyComposer $currencyComposer,
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
-        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $tierPriceMapping, $translation,
-            $currencyComposer, $crossSellingRoute);
+        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $configBridge, $tierPriceMapping,
+            $translation, $currencyComposer, $crossSellingRoute);
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';
     }

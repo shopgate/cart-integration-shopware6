@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer;
 
+use Shopgate\Shopware\Customer\Events\AfterGetCustomerEvent;
+use Shopgate\Shopware\Customer\Events\AfterRegisterCustomerEvent;
+use Shopgate\Shopware\Customer\Events\BeforeRegisterCustomerEvent;
 use Shopgate\Shopware\Customer\Mapping\CustomerMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
@@ -12,6 +15,7 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 class CustomerComposer
@@ -21,19 +25,22 @@ class CustomerComposer
     private CustomerBridge $customerBridge;
     private CustomerMapping $customerMapping;
     private ConfigBridge $configBridge;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ContextManager $contextManager,
         AbstractRegisterRoute $registerRoute,
         CustomerBridge $customerBridge,
         CustomerMapping $customerMapping,
-        ConfigBridge $configBridge
+        ConfigBridge $configBridge,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->contextManager = $contextManager;
         $this->registerRoute = $registerRoute;
         $this->customerBridge = $customerBridge;
         $this->customerMapping = $customerMapping;
         $this->configBridge = $configBridge;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -52,7 +59,9 @@ class CustomerComposer
         }
         $detailedCustomer = $this->customerBridge->getDetailedContextCustomer($this->contextManager->getSalesContext());
 
-        return $this->customerMapping->mapToShopgateEntity($detailedCustomer);
+        $shopgateCustomer = $this->customerMapping->mapToShopgateEntity($detailedCustomer);
+        $this->eventDispatcher->dispatch(new AfterGetCustomerEvent($shopgateCustomer, $detailedCustomer));
+        return $shopgateCustomer;
     }
 
     /**
@@ -63,12 +72,13 @@ class CustomerComposer
      */
     public function registerCustomer(?string $password, ShopgateCustomer $customer): CustomerEntity
     {
-        $chanel = $this->contextManager->getSalesContext();
+        $context = $this->contextManager->getSalesContext();
+        $this->eventDispatcher->dispatch(new BeforeRegisterCustomerEvent($customer));
         $dataBag = $this->customerMapping->mapToShopwareEntity($customer, $password);
-        $dataBag->set('storefrontUrl', $this->configBridge->getCustomerOptInConfirmUrl($chanel));
+        $dataBag->set('storefrontUrl', $this->configBridge->getCustomerOptInConfirmUrl($context));
         $dataBag->set('acceptedDataProtection', true);
         try {
-            return $this->registerRoute->register($dataBag, $chanel, false)->getCustomer();
+            $shopwareCustomer = $this->registerRoute->register($dataBag, $context, false)->getCustomer();
         } catch (ConstraintViolationException $e) {
             $errorMessages = [];
             foreach ($e->getViolations() as $violation) {
@@ -93,6 +103,9 @@ class CustomerComposer
                 true
             );
         }
+
+        $this->eventDispatcher->dispatch(new AfterRegisterCustomerEvent($customer, $shopwareCustomer));
+        return $shopwareCustomer;
     }
 
     public function getCustomerGroups(): array

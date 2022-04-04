@@ -28,6 +28,7 @@ class ConfigBridge
     public const PLUGIN_NAMESPACE = 'SgateShopgatePluginSW6';
     public const SYSTEM_CONFIG_DOMAIN = self::PLUGIN_NAMESPACE . '.config.';
     public const SYSTEM_CONFIG_PROD_EXPORT = self::SYSTEM_CONFIG_DOMAIN . 'productTypesToExport';
+    public const SYSTEM_CONFIG_NET_PRICE_EXPORT = 'exportNetPrices';
     public const SYSTEM_CONFIG_IS_LIVE_SHOPPING = 'isLiveShopping';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
