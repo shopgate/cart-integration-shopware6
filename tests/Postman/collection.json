@@ -3113,6 +3113,68 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "SG: addOrder no items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"No items in cart check\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(999);",
+                  "    pm.expect(jsonData).to.have.ownProperty('error_text').to.eq('Unknown error code: \\\"999\\\": Cart is empty');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_add_order}}",
+                  "type": "text"
+                },
+                {
+                  "key": "order_number",
+                  "value": "0012",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -7757,7 +7819,7 @@
                       "    pm.response.to.not.have.jsonBody('error');",
                       "});",
                       "",
-                      "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
+                      "pm.test(\"Checking that customer group tier prices are Net discounted\", function () {",
                       "    const jsonObject = xml2Json(responseBody);",
                       "",
                       "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('net',' Should be gross property set');",
@@ -7905,7 +7967,7 @@
                       "    pm.response.to.not.have.jsonBody('error');",
                       "});",
                       "",
-                      "pm.test(\"Checking that customer group tier prices are discounted\", function () {",
+                      "pm.test(\"Checking that customer group tier prices are Gross discounted\", function () {",
                       "    const jsonObject = xml2Json(responseBody);",
                       "",
                       "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
