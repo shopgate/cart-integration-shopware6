@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\System\Log;
 
 use ShopgateLogger;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -44,11 +45,13 @@ class Logger implements LoggerInterface
      */
     private function getSerializerContext(): array
     {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         return [
             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
                 return get_class($object);
             },
-            AbstractNormalizer::IGNORED_ATTRIBUTES => ['session']
+            AbstractNormalizer::IGNORED_ATTRIBUTES => ['session'],
+            JsonEncode::OPTIONS => JSON_PARTIAL_OUTPUT_ON_ERROR
         ];
     }
 }
