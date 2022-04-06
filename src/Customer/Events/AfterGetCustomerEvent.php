@@ -20,8 +20,11 @@ class AfterGetCustomerEvent extends Event
      * @param ShopgateCustomer $shopgateCustomer
      * @param CustomerEntity $shopwareCustomer
      */
-    public function __construct(SalesChannelContext $context, ShopgateCustomer $shopgateCustomer, CustomerEntity $shopwareCustomer)
-    {
+    public function __construct(
+        SalesChannelContext $context,
+        ShopgateCustomer $shopgateCustomer,
+        CustomerEntity $shopwareCustomer
+    ) {
         $this->context = $context;
         $this->shopgateCustomer = $shopgateCustomer;
         $this->shopwareCustomer = $shopwareCustomer;

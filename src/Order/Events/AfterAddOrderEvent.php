@@ -22,8 +22,12 @@ class AfterAddOrderEvent extends Event
      * @param ShopgateOrder $shopgateOrder
      * @param OrderEntity $shopwareOrder
      */
-    public function __construct(SalesChannelContext $context, array $result, ShopgateOrder $shopgateOrder, OrderEntity $shopwareOrder)
-    {
+    public function __construct(
+        SalesChannelContext $context,
+        array $result,
+        ShopgateOrder $shopgateOrder,
+        OrderEntity $shopwareOrder
+    ) {
         $this->context = $context;
         $this->result = $result;
         $this->shopgateOrder = $shopgateOrder;
