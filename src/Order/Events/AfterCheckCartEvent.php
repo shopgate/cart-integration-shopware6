@@ -9,38 +9,25 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterCheckCartEvent extends Event
 {
-    private SalesChannelContext $context;
     private array $result;
+    private SalesChannelContext $context;
 
-    /**
-     * @param SalesChannelContext $context
-     * @param array $result
-     */
-    public function __construct(SalesChannelContext $context, array $result)
+    public function __construct(array $result, SalesChannelContext $context)
     {
         $this->context = $context;
         $this->result = $result;
     }
 
-    /**
-     * @return SalesChannelContext
-     */
     public function getContext(): SalesChannelContext
     {
         return $this->context;
     }
 
-    /**
-     * @return array
-     */
     public function getResult(): array
     {
         return $this->result;
     }
 
-    /**
-     * @param array $result
-     */
     public function setResult(array $result): void
     {
         $this->result = $result;

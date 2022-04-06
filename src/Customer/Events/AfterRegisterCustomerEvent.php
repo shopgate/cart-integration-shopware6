@@ -15,40 +15,26 @@ class AfterRegisterCustomerEvent extends Event
     private ShopgateCustomer $shopgateCustomer;
     private CustomerEntity $shopwareCustomer;
 
-    /**
-     * @param SalesChannelContext $context
-     * @param ShopgateCustomer $shopgateCustomer
-     * @param CustomerEntity $shopwareCustomer
-     */
     public function __construct(
-        SalesChannelContext $context,
+        CustomerEntity $shopwareCustomer,
         ShopgateCustomer $shopgateCustomer,
-        CustomerEntity $shopwareCustomer
+        SalesChannelContext $context
     ) {
         $this->context = $context;
         $this->shopgateCustomer = $shopgateCustomer;
         $this->shopwareCustomer = $shopwareCustomer;
     }
 
-    /**
-     * @return SalesChannelContext
-     */
     public function getContext(): SalesChannelContext
     {
         return $this->context;
     }
 
-    /**
-     * @return ShopgateCustomer
-     */
     public function getShopgateCustomer(): ShopgateCustomer
     {
         return $this->shopgateCustomer;
     }
 
-    /**
-     * @return CustomerEntity
-     */
     public function getShopwareCustomer(): CustomerEntity
     {
         return $this->shopwareCustomer;

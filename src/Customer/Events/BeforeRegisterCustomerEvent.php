@@ -13,27 +13,17 @@ class BeforeRegisterCustomerEvent extends Event
     private SalesChannelContext $context;
     private ShopgateCustomer $customer;
 
-    /**
-     * @param SalesChannelContext $context
-     * @param ShopgateCustomer $customer
-     */
-    public function __construct(SalesChannelContext $context, ShopgateCustomer $customer)
+    public function __construct(ShopgateCustomer $customer, SalesChannelContext $context)
     {
-        $this->context = $context;
         $this->customer = $customer;
+        $this->context = $context;
     }
 
-    /**
-     * @return SalesChannelContext
-     */
     public function getContext(): SalesChannelContext
     {
         return $this->context;
     }
 
-    /**
-     * @return ShopgateCustomer
-     */
     public function getCustomer(): ShopgateCustomer
     {
         return $this->customer;

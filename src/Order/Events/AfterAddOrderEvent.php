@@ -11,22 +11,16 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterAddOrderEvent extends Event
 {
-    private SalesChannelContext $context;
     private array $result;
     private ShopgateOrder $shopgateOrder;
     private OrderEntity $shopwareOrder;
+    private SalesChannelContext $context;
 
-    /**
-     * @param SalesChannelContext $context
-     * @param array $result
-     * @param ShopgateOrder $shopgateOrder
-     * @param OrderEntity $shopwareOrder
-     */
     public function __construct(
-        SalesChannelContext $context,
         array $result,
+        OrderEntity $shopwareOrder,
         ShopgateOrder $shopgateOrder,
-        OrderEntity $shopwareOrder
+        SalesChannelContext $context
     ) {
         $this->context = $context;
         $this->result = $result;
@@ -34,41 +28,26 @@ class AfterAddOrderEvent extends Event
         $this->shopwareOrder = $shopwareOrder;
     }
 
-    /**
-     * @return SalesChannelContext
-     */
     public function getContext(): SalesChannelContext
     {
         return $this->context;
     }
 
-    /**
-     * @return array
-     */
     public function getResult(): array
     {
         return $this->result;
     }
 
-    /**
-     * @param array $result
-     */
     public function setResult(array $result): void
     {
         $this->result = $result;
     }
 
-    /**
-     * @return ShopgateOrder
-     */
     public function getShopgateOrder(): ShopgateOrder
     {
         return $this->shopgateOrder;
     }
 
-    /**
-     * @return OrderEntity
-     */
     public function getShopwareOrder(): OrderEntity
     {
         return $this->shopwareOrder;

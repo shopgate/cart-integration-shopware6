@@ -13,27 +13,17 @@ class BeforeAddOrderEvent extends Event
     private SalesChannelContext $context;
     private ShopgateOrder $shopgateOrder;
 
-    /**
-     * @param SalesChannelContext $context
-     * @param ShopgateOrder $shopgateOrder
-     */
-    public function __construct(SalesChannelContext $context, ShopgateOrder $shopgateOrder)
+    public function __construct(ShopgateOrder $shopgateOrder, SalesChannelContext $context)
     {
-        $this->context = $context;
         $this->shopgateOrder = $shopgateOrder;
+        $this->context = $context;
     }
 
-    /**
-     * @return SalesChannelContext
-     */
     public function getContext(): SalesChannelContext
     {
         return $this->context;
     }
 
-    /**
-     * @return ShopgateOrder
-     */
     public function getShopgateOrder(): ShopgateOrder
     {
         return $this->shopgateOrder;

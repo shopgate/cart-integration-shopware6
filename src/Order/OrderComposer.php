@@ -118,7 +118,8 @@ class OrderComposer
                 true
             );
         }
-        $this->eventDispatcher->dispatch(new BeforeAddOrderEvent($duplicatedContext, $order));
+
+        $this->eventDispatcher->dispatch(new BeforeAddOrderEvent($order, $duplicatedContext));
 
         $cleanCartContext = $this->contextComposer->addCustomerAddress($order, $duplicatedContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
@@ -170,7 +171,8 @@ class OrderComposer
             'external_order_number' => $swOrder->getOrderNumber()
         ];
 
-        return $this->eventDispatcher->dispatch(new AfterAddOrderEvent($newContext, $result, $order, $swOrder))->getResult();
+        return $this->eventDispatcher->dispatch(new AfterAddOrderEvent($result, $swOrder, $order, $newContext))
+            ->getResult();
     }
 
     /**
