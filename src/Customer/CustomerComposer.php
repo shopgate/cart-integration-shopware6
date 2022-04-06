@@ -52,31 +52,34 @@ class CustomerComposer
         if (null === $token) {
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, 'User token not found');
         }
-        $shopwareCustomer = $this->contextManager->loadByCustomerToken($token->getToken())->getCustomer();
-        if (null === $shopwareCustomer) {
+        $context = $this->contextManager->loadByCustomerToken($token->getToken());
+        $customer = $context->getCustomer();
+        if (null === $customer) {
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,
                 'User logged in context missing');
         }
-        $detailedCustomer = $this->customerBridge->getDetailedContextCustomer($this->contextManager->getSalesContext());
+        $swCustomer = $this->customerBridge->getDetailedContextCustomer($context);
+        $sgCustomer = $this->customerMapping->mapToShopgateEntity($swCustomer);
 
-        $shopgateCustomer = $this->customerMapping->mapToShopgateEntity($detailedCustomer);
-        $this->eventDispatcher->dispatch(new AfterGetCustomerEvent($shopgateCustomer, $detailedCustomer));
-        return $shopgateCustomer;
+        $this->eventDispatcher->dispatch(new AfterGetCustomerEvent($swCustomer, $sgCustomer, $context));
+
+        return $sgCustomer;
     }
 
     /**
-     * @param string|null $password - pass null for guest customer
-     * @param ShopgateCustomer $customer
-     * @return CustomerEntity
+     * Null password for guest customer
+     *
      * @throws ShopgateLibraryException
      */
     public function registerCustomer(?string $password, ShopgateCustomer $customer): CustomerEntity
     {
         $context = $this->contextManager->getSalesContext();
-        $this->eventDispatcher->dispatch(new BeforeRegisterCustomerEvent($customer));
+        $this->eventDispatcher->dispatch(new BeforeRegisterCustomerEvent($customer, $context));
+
         $dataBag = $this->customerMapping->mapToShopwareEntity($customer, $password);
         $dataBag->set('storefrontUrl', $this->configBridge->getCustomerOptInConfirmUrl($context));
         $dataBag->set('acceptedDataProtection', true);
+
         try {
             $shopwareCustomer = $this->registerRoute->register($dataBag, $context, false)->getCustomer();
         } catch (ConstraintViolationException $e) {
@@ -104,7 +107,8 @@ class CustomerComposer
             );
         }
 
-        $this->eventDispatcher->dispatch(new AfterRegisterCustomerEvent($customer, $shopwareCustomer));
+        $this->eventDispatcher->dispatch(new AfterRegisterCustomerEvent($shopwareCustomer, $customer, $context));
+
         return $shopwareCustomer;
     }
 
@@ -122,6 +126,7 @@ class CustomerComposer
                 'customer_tax_class_key' => 'default',
             ];
         }
+
         return $result;
     }
 }

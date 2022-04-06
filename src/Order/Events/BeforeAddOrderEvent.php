@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Events;
 
-use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
+use ShopgateOrder;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class BeforeCheckCartEvent extends Event
+class BeforeAddOrderEvent extends Event
 {
-    private ExtendedCart $extendedCart;
     private SalesChannelContext $context;
+    private ShopgateOrder $shopgateOrder;
 
-    public function __construct(ExtendedCart $extendedCart, SalesChannelContext $context)
+    public function __construct(ShopgateOrder $shopgateOrder, SalesChannelContext $context)
     {
-        $this->extendedCart = $extendedCart;
+        $this->shopgateOrder = $shopgateOrder;
         $this->context = $context;
     }
 
@@ -24,8 +24,8 @@ class BeforeCheckCartEvent extends Event
         return $this->context;
     }
 
-    public function getExtendedCart(): ExtendedCart
+    public function getShopgateOrder(): ShopgateOrder
     {
-        return $this->extendedCart;
+        return $this->shopgateOrder;
     }
 }

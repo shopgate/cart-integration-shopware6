@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Order\Customer\OrderCustomerComposer;
+use Shopgate\Shopware\Order\Events\AfterAddOrderEvent;
+use Shopgate\Shopware\Order\Events\BeforeAddOrderEvent;
 use Shopgate\Shopware\Order\LineItem\LineItemComposer;
 use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Order\Quote\GetOrdersCriteria;
@@ -37,6 +39,7 @@ use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 class OrderComposer
@@ -55,6 +58,7 @@ class OrderComposer
     private LoggerInterface $logger;
     /** @var ExtendedMerchantApi */
     private ShopgateMerchantApiInterface $merchantApi;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ContextManager $contextManager,
@@ -69,7 +73,8 @@ class OrderComposer
         OrderCustomerComposer $orderCustomerComposer,
         OrderMapping $orderMapping,
         LoggerInterface $logger,
-        ShopgateMerchantApiInterface $merchantApi
+        ShopgateMerchantApiInterface $merchantApi,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->contextManager = $contextManager;
         $this->lineItemComposer = $lineItemComposer;
@@ -84,6 +89,7 @@ class OrderComposer
         $this->logger = $logger;
         $this->stateComposer = $stateComposer;
         $this->merchantApi = $merchantApi;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -112,6 +118,8 @@ class OrderComposer
                 true
             );
         }
+
+        $this->eventDispatcher->dispatch(new BeforeAddOrderEvent($order, $duplicatedContext));
 
         $cleanCartContext = $this->contextComposer->addCustomerAddress($order, $duplicatedContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
@@ -158,10 +166,13 @@ class OrderComposer
             $this->contextManager->resetContext($initContext); // load original desktop cart
         }
 
-        return [
+        $result = [
             'external_order_id' => $swOrder->getId(),
             'external_order_number' => $swOrder->getOrderNumber()
         ];
+
+        return $this->eventDispatcher->dispatch(new AfterAddOrderEvent($result, $swOrder, $order, $newContext))
+            ->getResult();
     }
 
     /**
