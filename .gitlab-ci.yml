@@ -20,7 +20,7 @@ variables:
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
   PHP: '7.4'
-  PLATFORM_BRANCH: 6.4.10.0
+  PLATFORM_BRANCH: 6.4.9.0
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_SOURCE_DIR: src/
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
@@ -95,7 +95,7 @@ newman:
     matrix:
       - PLATFORM_BRANCH:
           - 6.4.6.0
-          - 6.4.10.0
+          - 6.4.9.0
       - PHP:
           - '8.0'
   except:
