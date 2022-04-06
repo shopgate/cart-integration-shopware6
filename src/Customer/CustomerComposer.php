@@ -52,15 +52,16 @@ class CustomerComposer
         if (null === $token) {
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, 'User token not found');
         }
-        $shopwareCustomer = $this->contextManager->loadByCustomerToken($token->getToken())->getCustomer();
-        if (null === $shopwareCustomer) {
+        $context = $this->contextManager->loadByCustomerToken($token->getToken());
+        $customer = $context->getCustomer();
+        if (null === $customer) {
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,
                 'User logged in context missing');
         }
-        $detailedCustomer = $this->customerBridge->getDetailedContextCustomer($this->contextManager->getSalesContext());
+        $detailedCustomer = $this->customerBridge->getDetailedContextCustomer($context);
 
         $shopgateCustomer = $this->customerMapping->mapToShopgateEntity($detailedCustomer);
-        $this->eventDispatcher->dispatch(new AfterGetCustomerEvent($shopgateCustomer, $detailedCustomer));
+        $this->eventDispatcher->dispatch(new AfterGetCustomerEvent($context, $shopgateCustomer, $detailedCustomer));
         return $shopgateCustomer;
     }
 
@@ -73,7 +74,7 @@ class CustomerComposer
     public function registerCustomer(?string $password, ShopgateCustomer $customer): CustomerEntity
     {
         $context = $this->contextManager->getSalesContext();
-        $this->eventDispatcher->dispatch(new BeforeRegisterCustomerEvent($customer));
+        $this->eventDispatcher->dispatch(new BeforeRegisterCustomerEvent($context, $customer));
         $dataBag = $this->customerMapping->mapToShopwareEntity($customer, $password);
         $dataBag->set('storefrontUrl', $this->configBridge->getCustomerOptInConfirmUrl($context));
         $dataBag->set('acceptedDataProtection', true);
@@ -104,7 +105,7 @@ class CustomerComposer
             );
         }
 
-        $this->eventDispatcher->dispatch(new AfterRegisterCustomerEvent($customer, $shopwareCustomer));
+        $this->eventDispatcher->dispatch(new AfterRegisterCustomerEvent($context, $customer, $shopwareCustomer));
         return $shopwareCustomer;
     }
 

@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Events;
 
+use ShopgateOrder;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class AfterCheckCartEvent extends Event
+class BeforeAddOrderEvent extends Event
 {
     private SalesChannelContext $context;
-    private array $result;
+    private ShopgateOrder $shopgateOrder;
 
     /**
      * @param SalesChannelContext $context
-     * @param array $result
+     * @param ShopgateOrder $shopgateOrder
      */
-    public function __construct(SalesChannelContext $context, array $result)
+    public function __construct(SalesChannelContext $context, ShopgateOrder $shopgateOrder)
     {
         $this->context = $context;
-        $this->result = $result;
+        $this->shopgateOrder = $shopgateOrder;
     }
 
     /**
@@ -31,18 +32,10 @@ class AfterCheckCartEvent extends Event
     }
 
     /**
-     * @return array
+     * @return ShopgateOrder
      */
-    public function getResult(): array
+    public function getShopgateOrder(): ShopgateOrder
     {
-        return $this->result;
-    }
-
-    /**
-     * @param array $result
-     */
-    public function setResult(array $result): void
-    {
-        $this->result = $result;
+        return $this->shopgateOrder;
     }
 }

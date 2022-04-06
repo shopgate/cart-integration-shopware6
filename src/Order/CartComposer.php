@@ -54,7 +54,6 @@ class CartComposer
      */
     public function checkCart(ExtendedCart $sgCart): array
     {
-        $this->eventDispatcher->dispatch(new BeforeCheckCartEvent($sgCart));
         $sgCart->invalidateCoupons();
         $customerId = $sgCart->getExternalCustomerId();
         if ($sgCart->isGuest() && $sgCart->getMail()) {
@@ -67,6 +66,7 @@ class CartComposer
         // load desktop cart, duplicate its context, add info to context & create new cart based on it
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
         $duplicatedContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
+        $this->eventDispatcher->dispatch(new BeforeCheckCartEvent($duplicatedContext, $sgCart));
         $cleanCartContext = $this->contextComposer->addCustomerAddress($sgCart, $duplicatedContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $cleanCartContext);
         $context = $this->contextComposer->addActivePayment($paymentId, $cleanCartContext);
@@ -82,9 +82,10 @@ class CartComposer
             + $this->orderCustomerComposer->mapOutgoingCartCustomer($context)
             + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
 
+        $result = $this->eventDispatcher->dispatch(new AfterCheckCartEvent($context, $result))->getResult();
         $this->quoteBridge->deleteCart($context); // delete newly created cart
         $this->contextManager->resetContext($initContext); // revert back to desktop cart
 
-        return $this->eventDispatcher->dispatch(new AfterCheckCartEvent($result))->getResult();
+        return $result;
     }
 }
