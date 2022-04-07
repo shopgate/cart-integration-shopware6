@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "f0fac92e-1841-4391-99e4-139df018287e",
+    "_postman_id": "1c52036e-9ebe-4d19-a4f8-32e9d7f25175",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -627,157 +627,6 @@
                   ]
                 },
                 "description": "Set data protection acceptance to required - this config check makes sure our register customer does not fail if this flag is enabled."
-              },
-              "response": []
-            },
-            {
-              "name": "SW: get Rules",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "const jsonData = pm.response.json();\r",
-                      "pm.test(\"AlwaysValid rule\", function () {\r",
-                      "    pm.expect(jsonData.data,'Should find 4 rules only').to.be.length(4);\r",
-                      "    const alwaysValid = getByName('Always valid (Default)');\r",
-                      "    pm.expect(alwaysValid).to.have.ownProperty('id');\r",
-                      "    pm.environment.set(\"gen_rule_allValid_id\", alwaysValid.id);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Cart >= 0 rule\", function () {\r",
-                      "    const cartRule = getByName('Cart >= 0');\r",
-                      "    pm.expect(cartRule).to.have.ownProperty('id');\r",
-                      "    pm.environment.set(\"gen_rule_cartGreaterThan0_id\", cartRule.id);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"USA customer rule\", function () {\r",
-                      "    const usaRule = getByName('Customers from USA');\r",
-                      "    pm.expect(usaRule).to.have.ownProperty('id');\r",
-                      "    pm.environment.set(\"gen_rule_usaCustomer_id\", usaRule.id);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Is Shopgate rule\", function () {\r",
-                      "    const isShopgateRule = getByName('Is Shopgate');\r",
-                      "    pm.expect(isShopgateRule).to.have.ownProperty('id');\r",
-                      "    pm.expect(isShopgateRule.id,'Is Shopgate rule has correct id').to.eql(pm.environment.get(\"default_rule_isShopgate_id\"));\r",
-                      "});\r",
-                      "\r",
-                      "function getByName(name) {\r",
-                      "    return jsonData.data.find(rule => rule.name === name);\r",
-                      "}"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {}
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Always valid (Default)\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Cart >= 0\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Customers from USA\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Is Shopgate\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/search/rule",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "search",
-                    "rule"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "SW: create rules",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "// marked as temp because of ticket SGSW6-88\r",
-                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "protocolProfileBehavior": {
-                "disabledSystemHeaders": {
-                  "accept": true
-                }
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{gen_access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"create-rules\": {\r\n        \"entity\": \"rule\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_rule_shippingUSA}}\",\r\n                \"name\": \"API: shipping USA\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_USA_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 20\r\n            },\r\n            {\r\n                \"id\": \"{{created_rule_shippingGB}}\",\r\n                \"name\": \"API: shipping Great Britain\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_GB_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 30\r\n            }\r\n        ]\r\n    }\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{sw_endpoint_api}}/_action/sync",
-                  "host": [
-                    "{{sw_endpoint_api}}"
-                  ],
-                  "path": [
-                    "_action",
-                    "sync"
-                  ]
-                }
               },
               "response": []
             },
@@ -1880,6 +1729,58 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "SW: create prod Tag",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Created single entity\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {}
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"id\": \"358185f91d5c57511ffcedcf2aa284e3\",\r\n    \"productId\": \"{{catalog_product_freeShip}}\",\r\n    \"tagId\": \"{{created_tag_one}}\",\r\n    \"tag\": {\r\n        \"id\": \"{{created_tag_one}}\",\r\n        \"name\": \"API: prod tag 1\",\r\n        \"translations\": {\r\n            \"de-DE\": {\r\n                \"name\": \"API: prod tag 1 (DE)\"\r\n            }\r\n        }\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/product-tag",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "product-tag"
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ]
             }
@@ -2054,8 +1955,329 @@
           ]
         },
         {
+          "name": "Rules",
+          "item": [
+            {
+              "name": "SW: get Rules",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"AlwaysValid rule\", function () {\r",
+                      "    pm.expect(jsonData.data,'Should find 4 rules only').to.be.length(4);\r",
+                      "    const alwaysValid = getByName('Always valid (Default)');\r",
+                      "    pm.expect(alwaysValid).to.have.ownProperty('id');\r",
+                      "    pm.environment.set(\"gen_rule_allValid_id\", alwaysValid.id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Cart >= 0 rule\", function () {\r",
+                      "    const cartRule = getByName('Cart >= 0');\r",
+                      "    pm.expect(cartRule).to.have.ownProperty('id');\r",
+                      "    pm.environment.set(\"gen_rule_cartGreaterThan0_id\", cartRule.id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"USA customer rule\", function () {\r",
+                      "    const usaRule = getByName('Customers from USA');\r",
+                      "    pm.expect(usaRule).to.have.ownProperty('id');\r",
+                      "    pm.environment.set(\"gen_rule_usaCustomer_id\", usaRule.id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Is Shopgate rule\", function () {\r",
+                      "    const isShopgateRule = getByName('Is Shopgate');\r",
+                      "    pm.expect(isShopgateRule).to.have.ownProperty('id');\r",
+                      "    pm.expect(isShopgateRule.id,'Is Shopgate rule has correct id').to.eql(pm.environment.get(\"default_rule_isShopgate_id\"));\r",
+                      "});\r",
+                      "\r",
+                      "function getByName(name) {\r",
+                      "    return jsonData.data.find(rule => rule.name === name);\r",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Always valid (Default)\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Cart >= 0\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Customers from USA\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Is Shopgate\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/rule",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "rule"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create rules",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// marked as temp because of ticket SGSW6-88\r",
+                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"create-rules\": {\r\n        \"entity\": \"rule\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_rule_shippingUSA}}\",\r\n                \"name\": \"API: shipping USA\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_USA_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 20\r\n            },\r\n            {\r\n                \"id\": \"{{created_rule_shippingGB}}\",\r\n                \"name\": \"API: shipping Great Britain\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_GB_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 30\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create tag rule",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// marked as temp because of ticket SGSW6-88\r",
+                      "pm.test(\"Successfully updated all entities with proper Rules\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"create-rules\": {\r\n        \"entity\": \"rule\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_rule_lineItem_tag1}}\",\r\n                \"name\": \"API: line items Tag 1\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"cartLineItemTag\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"identifiers\": [\r\n                                \"{{created_tag_one}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 25\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "Promo / Coupons",
           "item": [
+            {
+              "name": "Tag Promo",
+              "item": [
+                {
+                  "name": "SW: create tag code",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Created entity successfully\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"id\": \"{{created_promotion_tagCode_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: tag 1 code\",\r\n    \"code\": \"{{created_promotion_tagCode_code}}\",\r\n    \"exclusive\": false,\r\n    \"useCodes\": true,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 2.33\r\n        }\r\n    ],\r\n    \"salesChannels\":[\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/promotion",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "promotion"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: cart condition to tag code",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Created entity successfully\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"promotionId\": \"{{created_promotion_tagCode_id}}\",\r\n    \"ruleId\": \"{{created_rule_lineItem_tag1}}\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/promotion-cart-rule",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "promotion-cart-rule"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
             {
               "name": "SW: create coupon code",
               "event": [
@@ -12451,6 +12673,180 @@
                   "response": []
                 }
               ]
+            }
+          ]
+        },
+        {
+          "name": "Tag",
+          "item": [
+            {
+              "name": "SG: check tag item rule",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "",
+                      "pm.test(\"Check tag coupon code\", function () {",
+                      "    const coupon = jsonData.external_coupons[0];",
+                      "    pm.expect(jsonData.external_coupons).length(1);",
+                      "    pm.expect(coupon.is_valid).to.eq(1);",
+                      "    pm.expect(coupon.code).to.eq(pm.environment.get('created_promotion_tagCode_code'));",
+                      "    pm.expect(coupon.amount_net).to.eq(2.33);",
+                      "    pm.expect(coupon.name).to.eq('API: tag 1 code');",
+                      "    pm.expect(coupon.currency).to.eq('EUR');",
+                      "    pm.expect(coupon.internal_info, 'Internal info should not be empty').to.not.be.empty;",
+                      "    const internalInfo = JSON.parse(coupon.internal_info);",
+                      "    pm.expect(internalInfo.promotionId).to.eq(pm.environment.get('created_promotion_tagCode_id'));",
+                      "    pm.expect(internalInfo.itemType).to.eq('coupon');",
+                      "    Test.checkCouponAmount(coupon);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_freeShip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_coupons][0][code]",
+                      "value": "{{created_promotion_tagCode_code}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },

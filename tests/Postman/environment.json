@@ -1,5 +1,5 @@
 {
-  "id": "1bac6455-636e-4f2f-b3d5-c2835c1bb3fb",
+  "id": "19aac0dd-0b1c-446c-9987-4d1557f2e63e",
   "name": "Shopware 6",
   "values": [
     {
@@ -270,6 +270,18 @@
       "enabled": true
     },
     {
+      "key": "created_promotion_tagCode_id",
+      "value": "6ab2972f8021e00f05da971348967800",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_promotion_tagCode_code",
+      "value": "TAG1",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "created_payment_customerUSA_id",
       "value": "01c2a865533cdf797e7bc33798d18d7a",
       "type": "default",
@@ -278,6 +290,12 @@
     {
       "key": "created_review_headless_advPriceOne_id",
       "value": "3e226aa33c486a291338478679382ab1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_rule_lineItem_tag1",
+      "value": "ab8fb9bf87902ce5d31dad65887e1700",
       "type": "default",
       "enabled": true
     },
@@ -319,6 +337,12 @@
     {
       "key": "created_stream_allActive_id",
       "value": "5c95c0421f832b16ae99d0a295d2deb0",
+      "enabled": true
+    },
+    {
+      "key": "created_tag_one",
+      "value": "db781ce7300c94eaf08d59bce9980e4e",
+      "type": "default",
       "enabled": true
     },
     {
@@ -393,6 +417,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-03-21T10:57:05.287Z",
-  "_postman_exported_using": "Postman/9.14.14"
+  "_postman_exported_at": "2022-04-07T08:15:20.739Z",
+  "_postman_exported_using": "Postman/9.15.11"
 }
