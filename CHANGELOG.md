@@ -1,3 +1,7 @@
+# 1.8.8
+
+- added before/after cart add item events
+
 # 1.8.7
 
 - fixed issue where in some cases global config setting would take priority over channel specific one
