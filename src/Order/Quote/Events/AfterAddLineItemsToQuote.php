@@ -15,7 +15,6 @@ class AfterAddLineItemsToQuote extends Event
 
     public function __construct(Cart $cart, SalesChannelContext $context)
     {
-
         $this->cart = $cart;
         $this->context = $context;
     }
