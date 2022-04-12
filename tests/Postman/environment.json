@@ -1,126 +1,186 @@
 {
-  "id": "081727f7-e7da-41d1-ab0a-cd4f0c08860e",
-  "name": "Shopware 6",
-  "values": [
-    {
-      "key": "host",
-      "value": "http://localhost",
-      "enabled": true
-    },
-    {
-      "key": "domain",
-      "value": "{{host}}/shopgate/plugin",
-      "enabled": true
-    },
-    {
-      "key": "shop_number",
-      "value": "123456",
-      "enabled": true
-    },
-    {
-      "key": "shop_number_headless",
-      "value": "1234567",
-      "enabled": true
-    },
-    {
-      "key": "api_key",
-      "value": "111111111111111111111111",
-      "enabled": true
-    },
-    {
-      "key": "customer_number",
-      "value": "12345",
-      "enabled": true
-    },
-    {
-      "key": "userEmail",
-      "value": "test@example.com",
-      "enabled": true
-    },
-    {
-      "key": "userPass",
-      "value": "shopware",
-      "enabled": true
-    },
-    {
-      "key": "category_main_name",
-      "value": "Catalogue #1",
-      "enabled": true
-    },
-    {
-      "key": "sw_admin",
-      "value": "admin",
-      "enabled": true
-    },
-    {
-      "key": "sw_pass",
-      "value": "shopware",
-      "enabled": true
-    },
-    {
-      "key": "sw_client_id",
-      "value": "administration",
-      "enabled": true
-    },
-    {
-      "key": "sw_endpoint_api",
-      "value": "{{host}}{{system_port}}/api",
-      "type": "default",
-      "enabled": true
-    },
-    {
-      "key": "sw_endpoint_auth",
-      "value": "{{sw_endpoint_api}}/oauth/token",
-      "type": "default",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_firstName",
-      "value": "Max",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_lastName",
-      "value": "Mustermann",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_city",
-      "value": "Musterstadt",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_street1",
-      "value": "Musterstraße 1",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_zip",
-      "value": "12345",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_gender",
-      "value": "m",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_id",
-      "value": "6c97534c2c0747f39e8751e43cb2b013",
-      "enabled": true
-    },
-    {
-      "key": "customer_default_address_id",
-      "value": "d8f0dff7ef3947979a83c42f6509f22c",
-      "enabled": true
-    },
-    {
-      "key": "catalog_product_main_id",
-      "value": "2a88d9b59d474c7e869d8071649be43c",
-      "enabled": true
-    }
-  ],
-  "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-02-09T17:17:13.912Z",
-  "_postman_exported_using": "Postman/9.13.0"
+	"id": "f400ac27-74f7-4c3c-b692-2b50d4e275bc",
+	"name": "Shopware 6 - v1",
+	"values": [
+		{
+			"key": "host",
+			"value": "http://localhost",
+			"enabled": true
+		},
+		{
+			"key": "domain",
+			"value": "{{host}}/shopgate/plugin",
+			"enabled": true
+		},
+		{
+			"key": "shop_number",
+			"value": "123456",
+			"enabled": true
+		},
+		{
+			"key": "shop_number_headless",
+			"value": "1234567",
+			"enabled": true
+		},
+		{
+			"key": "api_key",
+			"value": "111111111111111111111111",
+			"enabled": true
+		},
+		{
+			"key": "customer_number",
+			"value": "12345",
+			"enabled": true
+		},
+		{
+			"key": "userEmail",
+			"value": "test@example.com",
+			"enabled": true
+		},
+		{
+			"key": "userPass",
+			"value": "shopware",
+			"enabled": true
+		},
+		{
+			"key": "category_main_name",
+			"value": "Catalogue #1",
+			"enabled": true
+		},
+		{
+			"key": "sw_admin",
+			"value": "admin",
+			"enabled": true
+		},
+		{
+			"key": "sw_pass",
+			"value": "shopware",
+			"enabled": true
+		},
+		{
+			"key": "sw_client_id",
+			"value": "administration",
+			"enabled": true
+		},
+		{
+			"key": "sw_endpoint_api",
+			"value": "{{host}}{{system_port}}/api",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "sw_endpoint_auth",
+			"value": "{{sw_endpoint_api}}/oauth/token",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_firstName",
+			"value": "Max",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_lastName",
+			"value": "Mustermann",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_city",
+			"value": "Musterstadt",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_street1",
+			"value": "Musterstraße 1",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_zip",
+			"value": "12345",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_gender",
+			"value": "m",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_id",
+			"value": "6c97534c2c0747f39e8751e43cb2b013",
+			"enabled": true
+		},
+		{
+			"key": "customer_default_address_id",
+			"value": "d8f0dff7ef3947979a83c42f6509f22c",
+			"enabled": true
+		},
+		{
+			"key": "catalog_product_main_id",
+			"value": "2a88d9b59d474c7e869d8071649be43c",
+			"enabled": true
+		},
+		{
+			"key": "creted_product_prevPrice_id",
+			"value": "3c1cbc98312f3f692a102615e84bf6fe",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "gen_sg_header_auth_user",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_sg_header_auth_token",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_salesChannel_id",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_channel_headless_id",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_non_default_lang",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_shopware_version",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_access_token",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_token_expires",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "gen_refresh_token",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2022-04-12T10:49:53.748Z",
+	"_postman_exported_using": "Postman/9.15.11"
 }
