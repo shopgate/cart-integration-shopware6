@@ -186,6 +186,7 @@
             <argument key="$orderItem" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem"/>
             <argument key="$orderTax" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax"/>
             <argument key="$order" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrder"/>
+            <argument key="$property" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedProperty"/>
             <argument key="$shippingMethod" type="service" id="shopgate.sdk.shipping_method"/>
             <argument key="$deliveryNote" type="service" id="shopgate.sdk.delivery_note"/>
             <argument key="$orderExtraCost" type="service" id="shopgate.sdk.external_order_extra_cost"/>
@@ -207,6 +208,7 @@
             <argument key="$visitor" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedToArrayVisitor"/>
         </service>
         <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedOrderItem"/>
+        <service id="Shopgate\Shopware\Shopgate\Extended\ExtendedProperty"/>
         <service id="Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_order"/>
         </service>

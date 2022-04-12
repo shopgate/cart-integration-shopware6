@@ -5,6 +5,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
+use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
@@ -30,11 +31,12 @@ class ConfigProductMapping extends SimpleProductMapping
         CurrencyComposer $currencyComposer,
         PropertyBridge $productProperties,
         Shopgate_Model_AbstractExport $childProductMapping,
+        ExtendedClassFactory $classFactory,
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
         parent::__construct(
             $contextManager, $customFieldSetBridge, $sortTree, $priceMapping, $tierPriceMapping, $translation,
-            $currencyComposer, $crossSellingRoute
+            $currencyComposer, $classFactory, $crossSellingRoute
         );
         $this->productProperties = $productProperties;
         $this->childProductMapping = $childProductMapping;
