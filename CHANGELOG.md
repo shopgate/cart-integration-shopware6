@@ -1,3 +1,7 @@
+# 1.9.0
+
+- added product export of previous and cheapest prices (SW6.4.10+)
+
 # 1.8.8
 
 - added before/after cart add item events
