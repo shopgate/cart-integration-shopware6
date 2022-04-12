@@ -68,6 +68,9 @@
         <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping">
             <argument key="$childProductMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
         </service>
+        <service id="Shopgate\Shopware\Catalog\Mapping\PriceMapping">
+            <argument key="$exportNet" type="expression">service('shopgate.config_bridge').get('exportNetPrices', false)</argument>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Mapping\ProductMapFactory">
             <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
             <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>

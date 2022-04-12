@@ -2,5 +2,9 @@
   "sg-quote": {
     "summaryLabelShippingCosts": "plus shipping costs",
     "discountLabelShippingCosts": "discount shipping costs"
+  },
+  "sg-catalog": {
+    "cheapestPriceLabel": "Cheapest price",
+    "previousPriceLabel": "Previous price"
   }
 }

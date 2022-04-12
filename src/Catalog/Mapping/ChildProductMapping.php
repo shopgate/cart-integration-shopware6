@@ -17,13 +17,13 @@ class ChildProductMapping extends SimpleProductMapping
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
-        ConfigBridge $configBridge,
+        PriceMapping $priceMapping,
         TierPriceMapping $tierPriceMapping,
         Formatter $translation,
         CurrencyComposer $currencyComposer,
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
-        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $configBridge, $tierPriceMapping,
+        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $priceMapping, $tierPriceMapping,
             $translation, $currencyComposer, $crossSellingRoute);
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';
