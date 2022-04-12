@@ -1517,7 +1517,7 @@
                       "",
                       "pm.test(\"Has All items\", function () {",
                       "    var jsonObject = xml2Json(responseBody);",
-                      "    pm.expect(Object.keys(jsonObject.items.item).length).to.eq(5);",
+                      "    pm.expect(Object.keys(jsonObject.items.item).length).to.be.gte(5);",
                       "});"
                     ],
                     "type": "text/javascript"
