@@ -303,6 +303,30 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $properties[$field] = $property;
         }
 
+        /**
+         * Supposed to get the cheapest price, cannot confirm or test this SW 6.4.10 feature
+         */
+        if (method_exists($this->item, 'getCalculatedCheapestPrice')
+            && ($cheapest = $this->item->getCalculatedCheapestPrice())
+            && $cheapest->getUnitPrice() !== $this->item->getCalculatedPrice()->getUnitPrice()
+        ) {
+            $property = new Shopgate_Model_Catalog_Property();
+            $property->setUid('cheapestPrice');
+            $property->setLabel('Günstigster Preis');
+            $property->setValue((string)$cheapest->getUnitPrice());
+            $properties[] = $property;
+        }
+
+        // SW 6.4.10+
+        $calculated = $this->item->getCalculatedPrice();
+        if (method_exists($calculated, 'getRegulationPrice') && $regPrice = $calculated->getRegulationPrice()) {
+            $property = new Shopgate_Model_Catalog_Property();
+            $property->setUid('previousPrice');
+            $property->setLabel('Vorheriger Preis');
+            $property->setValue((string)$regPrice->getPrice());
+            $properties[] = $property;
+        }
+
         parent::setProperties($properties);
     }
 

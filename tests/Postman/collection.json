@@ -1,7 +1,7 @@
 {
   "info": {
-    "_postman_id": "c11b2e18-365c-4a35-bbc9-4e4e2121b065",
-    "name": "SW6 CI Tests",
+    "_postman_id": "eccbb65c-bbed-4f2d-990f-e931b70f3bf4",
+    "name": "SW6 CI Tests - v1",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -11,6 +11,53 @@
         {
           "name": "System",
           "item": [
+            {
+              "name": "SW: get system config",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"get SW version\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.version).to.be.a('string');\r",
+                      "    pm.environment.set(\"gen_shopware_version\", jsonData.version);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_info/config",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_info",
+                    "config"
+                  ]
+                }
+              },
+              "response": []
+            },
             {
               "name": "SW: get sales channel",
               "event": [
@@ -24,8 +71,9 @@
                       "\r",
                       "pm.test(\"Get Main Sales Channel data\", function () {\r",
                       "    var jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Storefront');\r",
+                      "    pm.expect(jsonData.data[0].name).to.be.eq('Storefront');\r",
                       "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
+                      "    pm.environment.set(\"gen_salesChannel_currency_id\", jsonData.data[0].currencyId);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -51,8 +99,7 @@
                   {
                     "key": "Accept",
                     "value": "application/json",
-                    "type": "text",
-                    "disabled": true
+                    "type": "text"
                   }
                 ],
                 "body": {
@@ -628,6 +675,63 @@
                 "customer-address",
                 "{{customer_default_address_id}}",
                 "country"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: create prev. price product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// functionality is only supported in SW 6.4.10+\r",
+                  "if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.4.10.0')){\r",
+                  "    return;\r",
+                  "}\r",
+                  "\r",
+                  "pm.test(\"Product created\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{creted_product_prevPrice_id}}\",\r\n        \"name\": \"API: cheapest & previous price\",\r\n        \"productNumber\": \"SG.DEMO.PREV.PRICE\",\r\n        \"stock\": 999,\r\n        \"releaseDate\": \"2022-04-12T11:00:04.389+00:00\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 417.64705882353,\r\n                \"gross\": 497,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 420.16806722689,\r\n                    \"gross\": 500,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 394.95798319328,\r\n                    \"gross\": 470,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"purchasePrices\": [\r\n        {\r\n            \"currencyId\": \"{{system_default_currency_id}}\",\r\n            \"net\": 294.11764705882,\r\n            \"gross\": 350,\r\n            \"linked\": true,\r\n            \"listPrice\": null,\r\n            \"percentage\": null,\r\n            \"regulationPrice\": null\r\n        }\r\n    ],\r\n    \"cloneChildren\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_main_id}}",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "clone",
+                "product",
+                "{{catalog_product_main_id}}"
               ]
             }
           },
@@ -1413,7 +1517,7 @@
                       "",
                       "pm.test(\"Has All items\", function () {",
                       "    var jsonObject = xml2Json(responseBody);",
-                      "    pm.expect(Object.keys(jsonObject.items.item).length).to.eq(5);",
+                      "    pm.expect(Object.keys(jsonObject.items.item).length).to.be.gte(5);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -1473,6 +1577,80 @@
                     {
                       "key": "use_shutdown_handler",
                       "value": "1",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check previous price",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// functionality is only supported in SW 6.4.10+",
+                      "if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.4.10.0')){",
+                      "    return;",
+                      "}",
+                      "",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "pm.test('Check properties', function() {",
+                      "    const properties = jsonObject.items.item.properties.property;",
+                      "    pm.expect(properties).to.be.an('array', 'Should be a property array');",
+                      "    const previous = Utility.getXmlByUid(properties, 'previousPrice');",
+                      "    pm.expect(previous).to.haveOwnProperty('label').to.eq('Vorheriger Preis');",
+                      "    pm.expect(previous).to.haveOwnProperty('value').to.eq('470');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{creted_product_prevPrice_id}}",
                       "type": "text"
                     }
                   ]
@@ -3069,7 +3247,12 @@
           "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value);",
           "function getXmlByAttributeKey(list, key, value) {",
           "    return list.find(item => item.$[key] === value);",
-          "};"
+          "};",
+          "",
+          "// Version functionality",
+          "Utility.version = {};",
+          "const versionCompare = (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });",
+          "Utility.version.isLT = (a, b) => versionCompare(a, b) < 0;"
         ]
       }
     },

@@ -1,6 +1,6 @@
 {
-  "id": "081727f7-e7da-41d1-ab0a-cd4f0c08860e",
-  "name": "Shopware 6",
+  "id": "f400ac27-74f7-4c3c-b692-2b50d4e275bc",
+  "name": "Shopware 6 - v1",
   "values": [
     {
       "key": "host",
@@ -118,9 +118,15 @@
       "key": "catalog_product_main_id",
       "value": "2a88d9b59d474c7e869d8071649be43c",
       "enabled": true
+    },
+    {
+      "key": "creted_product_prevPrice_id",
+      "value": "3c1cbc98312f3f692a102615e84bf6fe",
+      "type": "default",
+      "enabled": true
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-02-09T17:17:13.912Z",
-  "_postman_exported_using": "Postman/9.13.0"
+  "_postman_exported_at": "2022-04-12T10:49:53.748Z",
+  "_postman_exported_using": "Postman/9.15.11"
 }
