@@ -71,8 +71,9 @@
                       "\r",
                       "pm.test(\"Get Main Sales Channel data\", function () {\r",
                       "    var jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Storefront');\r",
+                      "    pm.expect(jsonData.data[0].name).to.be.eq('Storefront');\r",
                       "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
+                      "    pm.environment.set(\"gen_salesChannel_currency_id\", jsonData.data[0].currencyId);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -98,8 +99,7 @@
                   {
                     "key": "Accept",
                     "value": "application/json",
-                    "type": "text",
-                    "disabled": true
+                    "type": "text"
                   }
                 ],
                 "body": {
@@ -715,7 +715,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{creted_product_prevPrice_id}}\",\r\n        \"name\": \"API: cheapest & previous price\",\r\n        \"productNumber\": \"SG.DEMO.PREV.PRICE\",\r\n        \"stock\": 999,\r\n        \"releaseDate\": \"2022-04-12T11:00:04.389+00:00\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{system_default_currency_id}}\",\r\n                \"net\": 417.64705882353,\r\n                \"gross\": 497,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{system_default_currency_id}}\",\r\n                    \"net\": 420.16806722689,\r\n                    \"gross\": 500,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{system_default_currency_id}}\",\r\n                    \"net\": 394.95798319328,\r\n                    \"gross\": 470,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"purchasePrices\": [\r\n        {\r\n            \"currencyId\": \"{{system_default_currency_id}}\",\r\n            \"net\": 294.11764705882,\r\n            \"gross\": 350,\r\n            \"linked\": true,\r\n            \"listPrice\": null,\r\n            \"percentage\": null,\r\n            \"regulationPrice\": null\r\n        }\r\n    ],\r\n    \"cloneChildren\": false\r\n}",
+              "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{creted_product_prevPrice_id}}\",\r\n        \"name\": \"API: cheapest & previous price\",\r\n        \"productNumber\": \"SG.DEMO.PREV.PRICE\",\r\n        \"stock\": 999,\r\n        \"releaseDate\": \"2022-04-12T11:00:04.389+00:00\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 417.64705882353,\r\n                \"gross\": 497,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 420.16806722689,\r\n                    \"gross\": 500,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 394.95798319328,\r\n                    \"gross\": 470,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"purchasePrices\": [\r\n        {\r\n            \"currencyId\": \"{{system_default_currency_id}}\",\r\n            \"net\": 294.11764705882,\r\n            \"gross\": 350,\r\n            \"linked\": true,\r\n            \"listPrice\": null,\r\n            \"percentage\": null,\r\n            \"regulationPrice\": null\r\n        }\r\n    ],\r\n    \"cloneChildren\": false\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
