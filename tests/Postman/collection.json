@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "1c52036e-9ebe-4d19-a4f8-32e9d7f25175",
+    "_postman_id": "29349017-44c8-4883-a627-146c80ba54ab",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -47,7 +47,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "raw": "{\r\n    \"write-custom-field-sets\": {\r\n        \"entity\": \"custom_field_set\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_order\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Order API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"order\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_address\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Address API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer_address\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_customer_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_customer\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Customer API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"customer\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_product_customFieldSet_id}}\",\r\n                \"name\": \"test_api_custom_fieltset_product\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"label\": {\r\n                        \"en-GB\": \"Test Product API Custom Field Set\"\r\n                    }\r\n                },\r\n                \"relations\": [\r\n                    {\r\n                        \"entityName\": \"product\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -100,7 +100,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    }, \r\n                    \"componentName\": \"sw-field\", \r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "raw": "{\r\n    \"write-custom-fields\": {\r\n        \"entity\": \"custom_field\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"5cbeeb4ee9929880f9e6d9ef8ccd81e1\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: text\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"6be2be70aeda8760d1d3c5b901c2d34b\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: int\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e7310ca83a5f57b6f8327d45c36c4c14\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: float\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"4c911ad4306ba418894de07ffb5eec11\",\r\n                \"customFieldSetId\": \"{{created_order_customFieldSet_id}}\",\r\n                \"name\": \"api_order_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Order Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"b5c7f79ff01c938ac5182a2483eb575c\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: text\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"e63481deddfe062bf19642e826eb4540\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: int\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7435ab1689eccdf3d5969259ef8bd383\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: float\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"650a349b0f0b8b2d5e31fa02cc02f6b3\",\r\n                \"customFieldSetId\": \"{{created_address_customFieldSet_id}}\",\r\n                \"name\": \"api_address_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API Address Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"12ef501b9e48202580343aeed861c457\",\r\n                \"customFieldSetId\": \"{{created_product_customFieldSet_id}}\",\r\n                \"name\": \"api_product_custom_field_text_0001\",\r\n                \"type\": \"text\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"text\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API product Custom Field 0001: text\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"text\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"15e5ce267753a38f131a194a0f6f116a\",\r\n                \"customFieldSetId\": \"{{created_product_customFieldSet_id}}\",\r\n                \"name\": \"api_product_custom_field_int_0001\",\r\n                \"type\": \"int\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"int\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API product Custom Field 0001: int\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"9b8c5b0ad10b9f931be48bce6dfdbb4e\",\r\n                \"customFieldSetId\": \"{{created_product_customFieldSet_id}}\",\r\n                \"name\": \"api_product_custom_field_float_0001\",\r\n                \"type\": \"float\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"number\",\r\n                    \"numberType\": \"float\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API product Custom Field 0001: float\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"number\"\r\n                }\r\n            },\r\n            {\r\n                \"id\": \"7dc1d529c84526106ffa0260a631d02f\",\r\n                \"customFieldSetId\": \"{{created_product_customFieldSet_id}}\",\r\n                \"name\": \"api_product_custom_field_bool_0001\",\r\n                \"type\": \"bool\",\r\n                \"active\": true,\r\n                \"config\": {\r\n                    \"type\": \"checkbox\",\r\n                    \"label\": {\r\n                        \"en-GB\": \"API product Custom Field 0001: bool\"\r\n                    },\r\n                    \"componentName\": \"sw-field\",\r\n                    \"customFieldType\": \"checkbox\"\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -178,6 +178,53 @@
                     "store",
                     "frw",
                     "finish"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: get system config",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"get SW version\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.version).to.be.a('string');\r",
+                      "    pm.environment.set(\"gen_shopware_version\", jsonData.version);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_info/config",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_info",
+                    "config"
                   ]
                 }
               },
@@ -1076,7 +1123,7 @@
                           "\r",
                           "pm.test(\"Get values\", function () {\r",
                           "    var jsonData = pm.response.json();\r",
-                          "    pm.expect(jsonData.data[0].attributes.name).to.be.eq('Default category layout');\r",
+                          "    pm.expect(jsonData.data[0].attributes.name).to.be.a('string');\r",
                           "    pm.environment.set(\"gen_cms_page_default_id\", jsonData.data[0].id);\r",
                           "});"
                         ],
@@ -1109,7 +1156,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Default category layout\"\r\n        }\r\n    ]\r\n}",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default category layout\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default listing layout\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -1777,6 +1824,63 @@
                       ],
                       "path": [
                         "product-tag"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: create prev. price product",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// functionality is only supported in SW 6.4.10+\r",
+                          "if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.4.10.0')){\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_prevPrice_id}}\",\r\n        \"name\": \"API: cheapest & previous price\",\r\n        \"productNumber\": \"SG.DEMO.PREV.PRICE\",\r\n        \"stock\": 999,\r\n        \"releaseDate\": \"2022-04-12T11:00:04.389+00:00\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 417.64705882353,\r\n                \"gross\": 497,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 420.16806722689,\r\n                    \"gross\": 500,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 394.95798319328,\r\n                    \"gross\": 470,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            }\r\n        ],\r\n        \"purchasePrices\": [\r\n            {\r\n                \"currencyId\": \"{{system_default_currency_id}}\",\r\n                \"net\": 294.11764705882,\r\n                \"gross\": 350,\r\n                \"linked\": true,\r\n                \"listPrice\": null,\r\n                \"percentage\": null,\r\n                \"regulationPrice\": null\r\n            }\r\n        ],\r\n        \"customFields\": {\r\n            \"api_product_custom_field_bool_0001\": false,\r\n            \"api_product_custom_field_float_0001\": 40.31,\r\n            \"api_product_custom_field_int_0001\": 14,\r\n            \"api_product_custom_field_text_0001\": \"test text\"\r\n        }\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_main_id}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "clone",
+                        "product",
+                        "{{catalog_product_main_id}}"
                       ]
                     }
                   },
@@ -3794,6 +3898,63 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "SW: create prev. price product",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// functionality is only supported in SW 6.4.10+\r",
+                          "if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.4.10.0')){\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "pm.test(\"Product created\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_headless_prevPrice_id}}\",\r\n        \"name\": \"API: headless cheapest & previous price\",\r\n        \"translations\": {\r\n            \"de-DE\": {\r\n                \"name\": \"API: headless cheapest & previous price (DE)\"\r\n            }\r\n        },\r\n        \"productNumber\": \"SG.DEMO.HEADLESS.PREV.PRICE\",\r\n        \"stock\": 999,\r\n        \"releaseDate\": \"2022-04-12T11:00:04.389+00:00\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 417.64705882353,\r\n                \"gross\": 497,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 420.16806722689,\r\n                    \"gross\": 500,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 394.95798319328,\r\n                    \"gross\": 470,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            },\r\n            {\r\n                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                \"net\": 617.64705882353,\r\n                \"gross\": 650,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                    \"net\": 720.16806722689,\r\n                    \"gross\": 750,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                    \"net\": 595.95798319328,\r\n                    \"gross\": 605,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            }\r\n        ],\r\n        \"purchasePrices\": [\r\n            {\r\n                \"currencyId\": \"{{system_default_currency_id}}\",\r\n                \"net\": 294.11764705882,\r\n                \"gross\": 350,\r\n                \"linked\": true,\r\n                \"listPrice\": null,\r\n                \"percentage\": null,\r\n                \"regulationPrice\": null\r\n            },\r\n            {\r\n                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                \"net\": 394.11764705882,\r\n                \"gross\": 450,\r\n                \"linked\": true,\r\n                \"listPrice\": null,\r\n                \"percentage\": null,\r\n                \"regulationPrice\": null\r\n            }\r\n        ],\r\n        \"visibilities\": [\r\n            {\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"visibility\": 30\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_main_id}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "clone",
+                        "product",
+                        "{{catalog_product_main_id}}"
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ]
             },
@@ -4105,6 +4266,80 @@
                     {
                       "key": "uids[0]",
                       "value": "{{created_product_headless_advPriceOne_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check previous price",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// functionality is only supported in SW 6.4.10+",
+                      "if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.4.10.0')){",
+                      "    return;",
+                      "}",
+                      "",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "pm.test('Check properties', function() {",
+                      "    const properties = jsonObject.items.item.properties.property;",
+                      "    pm.expect(properties).to.be.an('array', 'Should be a property array');",
+                      "    const previous = Utility.getXmlByUid(properties, 'previousPrice');",
+                      "    pm.expect(previous).to.haveOwnProperty('label').to.eq('Vorheriger Preis');",
+                      "    pm.expect(previous).to.haveOwnProperty('value').to.eq('605');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number_headless}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{created_product_headless_prevPrice_id}}",
                       "type": "text"
                     }
                   ]
@@ -7297,6 +7532,276 @@
       "name": "Product",
       "item": [
         {
+          "name": "Details",
+          "item": [
+            {
+              "name": "SG: check previous price",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// functionality is only supported in SW 6.4.10+",
+                      "if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.4.10.0')){",
+                      "    return;",
+                      "}",
+                      "",
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "const properties = jsonObject.items.item.properties.property;",
+                      "pm.test('Check properties', function() {",
+                      "    pm.expect(properties).to.be.an('array', 'Should be a property array');",
+                      "    const previous = Utility.getXmlByUid(properties, 'previousPrice');",
+                      "    pm.expect(previous).to.haveOwnProperty('label').to.eq('Previous price');",
+                      "    pm.expect(previous).to.haveOwnProperty('value').to.eq('470');",
+                      "});",
+                      "",
+                      "pm.test('Check custom field props export', function() {",
+                      "    pm.expect(properties).to.be.a('array');",
+                      "    const integer = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: int');",
+                      "    pm.expect(integer, 'should have found width').to.haveOwnProperty('value').to.eq('14');",
+                      "",
+                      "    const bool = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: bool');",
+                      "    pm.expect(bool, 'should have found height').to.haveOwnProperty('value').to.eq('0');",
+                      "",
+                      "    const text = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: text');",
+                      "    pm.expect(text, 'should have found length').to.haveOwnProperty('value').to.eq('test text');",
+                      "",
+                      "    const float = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: float');",
+                      "    pm.expect(float, 'should have found length').to.haveOwnProperty('value').to.eq('40.31');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{created_product_prevPrice_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check props",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "",
+                      "pm.test(\"Checking various translations\", function () {",
+                      "    pm.expect(jsonObject.items.item.deeplink).to.eq(pm.environment.get('host') + '/Main-product-with-advanced-prices/SWDEMO10002');",
+                      "    pm.expect(jsonObject.items.item.name).to.eq('Main product with advanced prices');",
+                      "    pm.expect(jsonObject.items.item.currency).to.eq('EUR');",
+                      "    pm.expect(jsonObject.items.item.manufacturer, 'manufacturer should be defined').to.haveOwnProperty('title').to.eq('Shopware Freetime');",
+                      "});",
+                      "",
+                      "pm.test('Check properties', function() {",
+                      "    const props = jsonObject.items.item.properties.property;",
+                      "    pm.expect(props).to.be.a('array');",
+                      "    const width = Utility.getXmlByUid(props, 'width');",
+                      "    pm.expect(width, 'should have found width').to.haveOwnProperty('label').to.eq('Width');",
+                      "",
+                      "    const height = Utility.getXmlByUid(props, 'height');",
+                      "    pm.expect(height, 'should have found height').to.haveOwnProperty('label').to.eq('Height');",
+                      "",
+                      "    const length = Utility.getXmlByUid(props, 'length');",
+                      "    pm.expect(length, 'should have found length').to.haveOwnProperty('label').to.eq('Length');",
+                      "});",
+                      "",
+                      "pm.test(\"Checking regular price options\", function () {",
+                      "    pm.expect(jsonObject.items.item.prices.$, 'Price should have a type').to.haveOwnProperty('type').to.be.eq('gross',' Should be gross property set');",
+                      "    pm.expect(jsonObject.items.item.prices.price).to.be.eq('950');",
+                      "    pm.expect(jsonObject.items.item.prices.base_price).to.be.eq('Content: 1');",
+                      "});",
+                      "",
+                      "pm.test('Check first tier price', function() {",
+                      "    const firstTier = jsonObject.items.item.prices.tier_prices.tier_price.find(price => price.$.threshold === '1');",
+                      "    pm.expect(firstTier._).to.be.eq('150');",
+                      "    pm.expect(firstTier.$.threshold).to.be.eq('1');",
+                      "    pm.expect(firstTier.$.max_quantity).to.be.eq('11');",
+                      "    pm.expect(firstTier.$.type).to.be.eq('fixed');",
+                      "});",
+                      "pm.test('Check second tier price', function() {",
+                      "    const secondTier = jsonObject.items.item.prices.tier_prices.tier_price.find(price => price.$.threshold === '12');",
+                      "    pm.expect(secondTier._).to.be.eq('200');",
+                      "    pm.expect(secondTier.$.threshold).to.be.eq('12');",
+                      "    pm.expect(secondTier.$.type).to.be.eq('fixed');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check normal props",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "pm.test('Check properties', function() {",
+                      "    const props = jsonObject.items.item.properties.property;",
+                      "    pm.expect(props).to.be.a('array');",
+                      "    const width = Utility.getXmlByLabel(props, 'Size');",
+                      "    pm.expect(width, 'should have found width').to.haveOwnProperty('value').to.eq('S, L, M, XL');",
+                      "",
+                      "    const height = Utility.getXmlByLabel(props, 'Material');",
+                      "    pm.expect(height, 'should have found height').to.haveOwnProperty('value').to.eq('Polyester, Cotton');",
+                      "",
+                      "    const length = Utility.getXmlByLabel(props, 'Target group');",
+                      "    pm.expect(length, 'should have found length').to.haveOwnProperty('value').to.eq('Man');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{catalog_product_props}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "Dynamic",
           "item": [
             {
@@ -7474,7 +7979,7 @@
                       "",
                       "const jsonObject = xml2Json(responseBody);",
                       "pm.test(\"General check\", function () {",
-                      "    pm.expect(jsonObject.items.item).to.be.a('array').to.be.length(9, 'Should have certain number of products');",
+                      "    pm.expect(jsonObject.items.item).to.be.a('array').length.to.be.gte(10, 'Should have certain number of products');",
                       "});",
                       "",
                       "pm.test(\"Check `adv price` product category sort\", function () {",
@@ -7739,16 +8244,17 @@
                       "});",
                       "pm.test(\"Relation list check\", function () {",
                       "    pm.expect(jsonObject.items.item.relations.relation[3].$.type).to.be.eq('relation');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(9, 'All 9 products?');",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('created_product_maxPurchaseTen_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('created_product_noStock_backorder_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('created_product_noStock_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('created_product_reducedTax_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('catalog_product_variant'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[5]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[6]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[7]).to.be.eq(pm.environment.get('catalog_product_props'));",
-                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[8]).to.be.eq(pm.environment.get('catalog_product_freeShip'));    ",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid).to.be.an('array', 'Where be the children 4?').length(10, 'All 10 products?');",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[0]).to.be.eq(pm.environment.get('created_product_prevPrice_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[1]).to.be.eq(pm.environment.get('created_product_maxPurchaseTen_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[2]).to.be.eq(pm.environment.get('created_product_noStock_backorder_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[3]).to.be.eq(pm.environment.get('created_product_noStock_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[4]).to.be.eq(pm.environment.get('created_product_reducedTax_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[5]).to.be.eq(pm.environment.get('catalog_product_variant'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[6]).to.be.eq(pm.environment.get('catalog_product_main_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[7]).to.be.eq(pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[8]).to.be.eq(pm.environment.get('catalog_product_props'));",
+                      "    pm.expect(jsonObject.items.item.relations.relation[3].uid[9]).to.be.eq(pm.environment.get('catalog_product_freeShip'));    ",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -18978,10 +19484,15 @@
           "    return list.find(item => strict ? item[key] === value : item[key].includes(value));",
           "};",
           "// XML handlers",
+          "const getXmlByAttributeKey = (list, key, value) => list.find(item => item.$[key] === value);",
+          "const getXmlByAttributeProp = (list, key, value) => list.find(item => item[key] === value);",
           "Utility.getXmlByUid = (list, value) => getXmlByAttributeKey(list, 'uid', value);",
-          "function getXmlByAttributeKey(list, key, value) {",
-          "    return list.find(item => item.$[key] === value);",
-          "};",
+          "Utility.getXmlByLabel = (list, value) => getXmlByAttributeProp(list, 'label', value);",
+          "",
+          "// Version functionality",
+          "Utility.version = {};",
+          "const versionCompare = (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });",
+          "Utility.version.isLT = (a, b) => versionCompare(a, b) < 0;",
           "",
           "/**",
           " * Helps running additional tests",

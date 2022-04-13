@@ -7,8 +7,8 @@ use ReflectionException;
 use Shopgate\Shopware\Catalog\Product\ProductExportExtension;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
+use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_CategoryPath;
@@ -16,7 +16,6 @@ use Shopgate_Model_Catalog_Identifier;
 use Shopgate_Model_Catalog_Manufacturer;
 use Shopgate_Model_Catalog_Price;
 use Shopgate_Model_Catalog_Product;
-use Shopgate_Model_Catalog_Property;
 use Shopgate_Model_Catalog_Relation;
 use Shopgate_Model_Catalog_Shipping;
 use Shopgate_Model_Catalog_Stock;
@@ -37,31 +36,34 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected $item;
     protected ContextManager $contextManager;
     protected SortTree $sortTree;
-    protected ConfigBridge $configBridge;
+    protected PriceMapping $priceMapping;
     protected TierPriceMapping $tierPriceMapping;
     protected Formatter $formatter;
     protected CustomFieldBridge $customFieldSetBridge;
     protected AbstractProductCrossSellingRoute $crossSellingRoute;
     protected CurrencyComposer $currencyComposer;
+    private ExtendedClassFactory $classFactory;
 
     public function __construct(
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
         SortTree $sortTree,
-        ConfigBridge $configBridge,
+        PriceMapping $priceMapping,
         TierPriceMapping $tierPriceMapping,
         Formatter $formatter,
         CurrencyComposer $currencyComposer,
+        ExtendedClassFactory $classFactory,
         AbstractProductCrossSellingRoute $crossSellingRoute
     ) {
         $this->contextManager = $contextManager;
         $this->customFieldSetBridge = $customFieldSetBridge;
         $this->sortTree = $sortTree;
-        $this->configBridge = $configBridge;
+        $this->priceMapping = $priceMapping;
         $this->tierPriceMapping = $tierPriceMapping;
         $this->formatter = $formatter;
         $this->crossSellingRoute = $crossSellingRoute;
         $this->currencyComposer = $currencyComposer;
+        $this->classFactory = $classFactory;
         parent::__construct();
     }
 
@@ -120,31 +122,28 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setPrice(): void
     {
         $shopgatePrice = new Shopgate_Model_Catalog_Price();
-        $exportNet = $this->configBridge->get(ConfigBridge::SYSTEM_CONFIG_NET_PRICE_EXPORT, false) === true;
-        $shopgatePrice->setType( $exportNet
-            ? Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_NET
-            : Shopgate_Model_Catalog_Price::DEFAULT_PRICE_TYPE_GROSS
-        );
-        $getNetOrGross = $exportNet ? 'getNet' : 'getGross';
+        $shopgatePrice->setType($this->priceMapping->getPriceType());
         if ($shopwarePrice = $this->currencyComposer->extractCalculatedPrice($this->item->getPrice())) {
-            $shopgatePrice->setPrice($shopwarePrice->$getNetOrGross());
+            $shopgatePrice->setPrice($this->priceMapping->mapPrice($shopwarePrice));
             if ($listPrice = $shopwarePrice->getListPrice()) {
-                $shopgatePrice->setMsrp($this->currencyComposer->toCalculatedPrice($listPrice)->$getNetOrGross());
+                $shopgatePrice->setMsrp(
+                    $this->priceMapping->mapPrice($this->currencyComposer->toCalculatedPrice($listPrice))
+                );
             }
 
             if ($priceCollection = $this->item->getPrices()) {
                 $priceCollection->sortByQuantity();
-                $highestPrice = $this->tierPriceMapping->getHighestPrice($priceCollection, $shopwarePrice, $exportNet);
-                $shopgatePrice->setPrice($highestPrice->$getNetOrGross());
+                $highestPrice = $this->tierPriceMapping->getHighestPrice($priceCollection, $shopwarePrice);
+                $shopgatePrice->setPrice($this->priceMapping->mapPrice($highestPrice));
                 $shopgatePrice->setTierPricesGroup(
-                    $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice, $exportNet)
+                    $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice)
                 );
             }
         }
 
         if ($this->item->getPurchasePrices()
             && $cost = $this->currencyComposer->extractCalculatedPrice($this->item->getPurchasePrices())) {
-            $shopgatePrice->setCost($cost->$getNetOrGross());
+            $shopgatePrice->setCost($this->priceMapping->mapPrice($cost));
         }
 
         /**
@@ -256,9 +255,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 if (isset($properties[$uid])) {
                     $value = $properties[$uid]->getValue() . ', ' . $value;
                 }
-                $property = new Shopgate_Model_Catalog_Property();
-                $property->setUid($uid);
-                $property->setValue($this->translateEntityValue($value));
+                $property = $this->classFactory->createProperty()->setUid($uid)->setValue($value);
                 if ($group = $shopwareProp->getGroup()) {
                     $property->setLabel($group->getTranslation('name') ?: $group->getName());
                 } else {
@@ -276,17 +273,16 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 if (!$entity) {
                     continue;
                 }
-                $customField = new Shopgate_Model_Catalog_Property();
-                $customField->setUid($entity->getId());
-                $customField->setValue($this->translateEntityValue($value));
                 // Use language label, fallback "my_key" -> "My Key"
                 $label = $entity->getConfig()['label'][$locale]
                     ?? $entity->getConfig()['label']['en-GB']
                     ?? implode(' ', array_map(static function ($item) {
                         return ucfirst($item);
                     }, explode('_', $key)));
-                $customField->setLabel($label);
-                $properties[] = $customField;
+                $properties[] = $this->classFactory->createProperty()
+                    ->setUid($entity->getId())
+                    ->setValue($value)
+                    ->setLabel($label);
             }
         }
 
@@ -302,25 +298,40 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 continue;
             }
             $label = $this->formatter->translate('component.product.feature.label.' . $field, []);
-            $property = new Shopgate_Model_Catalog_Property();
-            $property->setUid($field);
-            $property->setLabel($label ? rtrim($label, ':') : $this->formatter->camelCaseToSpaced($field));
-            $property->setValue($value);
-            $properties[$field] = $property;
+            $properties[$field] = $this->classFactory->createProperty()
+                ->setUid($field)
+                ->setLabel($label ? rtrim($label, ':') : $this->formatter->camelCaseToSpaced($field))
+                ->setValue($value);
+        }
+
+        /**
+         * Supposed to get the cheapest price, cannot confirm or test this SW 6.4.10 feature
+         */
+        if (method_exists($this->item, 'getCheapestPrice')
+            && $this->item->getCheapestPrice()
+            && ($price = $this->currencyComposer->extractCalculatedPrice($this->item->getCheapestPrice()->getPrice()))
+            && $this->item->getCalculatedCheapestPrice()->getUnitPrice() !== $this->item->getCalculatedPrice()
+                ->getUnitPrice()
+        ) {
+            $properties[] = $this->classFactory->createProperty()
+                ->setUid('cheapestPrice')
+                ->setAndTranslateLabel('sg-catalog.cheapestPriceLabel', [], null)
+                ->setValue($price);
+        }
+
+        // SW 6.4.10+
+        $calculated = $this->currencyComposer->extractCalculatedPrice($this->item->getPrice());
+        if ($calculated
+            && method_exists($calculated, 'getRegulationPrice')
+            && $regPrice = $calculated->getRegulationPrice()
+        ) {
+            $properties[] = $this->classFactory->createProperty()
+                ->setUid('previousPrice')
+                ->setAndTranslateLabel('sg-catalog.previousPriceLabel', [], null)
+                ->setValue($regPrice);
         }
 
         parent::setProperties($properties);
-    }
-
-    /**
-     * Translates FALSE value field to string
-     *
-     * @param mixed $value
-     * @return string
-     */
-    private function translateEntityValue($value): string
-    {
-        return $value === false ? '0' : (string)$value;
     }
 
     public function setStock(): void

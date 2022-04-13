@@ -8,6 +8,8 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedProperty;
+use Shopgate_Model_Catalog_Property;
 use ShopgateCart;
 use ShopgateCartItem;
 use ShopgateDeliveryNote;
@@ -31,6 +33,7 @@ class ExtendedClassFactory
     private ShopgateDeliveryNote $deliveryNote;
     private ShopgateExternalOrderExtraCost $orderExtraCost;
     private ShopgatePaymentMethod $paymentMethod;
+    private Shopgate_Model_Catalog_Property $property;
 
     public function __construct(
         ShopgateCart $cart,
@@ -39,6 +42,7 @@ class ExtendedClassFactory
         ShopgateExternalOrderTax $orderTax,
         ShopgateExternalCoupon $externalCoupon,
         ShopgateOrder $order,
+        Shopgate_Model_Catalog_Property $property,
         ShopgateShippingMethod $shippingMethod,
         ShopgateDeliveryNote $deliveryNote,
         ShopgateExternalOrderExtraCost $orderExtraCost,
@@ -50,6 +54,7 @@ class ExtendedClassFactory
         $this->orderTax = $orderTax;
         $this->externalCoupon = $externalCoupon;
         $this->order = $order;
+        $this->property = $property;
         $this->shippingMethod = $shippingMethod;
         $this->deliveryNote = $deliveryNote;
         $this->orderExtraCost = $orderExtraCost;
@@ -122,5 +127,13 @@ class ExtendedClassFactory
     public function createPaymentMethod(): ShopgatePaymentMethod
     {
         return clone $this->paymentMethod;
+    }
+
+    /**
+     * @return ExtendedProperty|Shopgate_Model_Catalog_Property
+     */
+    public function createProperty(): Shopgate_Model_Catalog_Property
+    {
+        return clone $this->property;
     }
 }
