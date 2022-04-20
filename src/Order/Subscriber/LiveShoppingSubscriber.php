@@ -46,7 +46,7 @@ class LiveShoppingSubscriber implements EventSubscriberInterface
             return;
         }
         $incItem = $event->getItem();
-        $ids = $this->requestPersist->getIncomingCart()->getItemIds();
+        $ids = $this->requestPersist->getEntity()->getItemIds();
         $tax = (float)$incItem->getTaxPercent();
         $newPrice = [
             'type' => QuantityPriceDefinition::TYPE,

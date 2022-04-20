@@ -180,6 +180,13 @@
           "name": "API: Cloned & Altered Variant Child Red-M",
           "unit_amount": "10.00",
           "tax_percent": "20.00"
+        },
+        {
+          "item_number": "d78d1157ab89ec13a84c8dcbeccb7b75",
+          "quantity": 1,
+          "name": "API: reduced tax",
+          "unit_amount": "10.00",
+          "tax_percent": "0.00"
         }
       ]
     }

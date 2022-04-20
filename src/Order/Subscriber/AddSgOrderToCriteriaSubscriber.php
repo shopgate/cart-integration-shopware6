@@ -70,7 +70,7 @@ class AddSgOrderToCriteriaSubscriber implements EventSubscriberInterface
         $ids = $event->getCriteria()->getIds();
         $id = array_pop($ids);
         $channelId = $event->getSalesChannelContext()->getSalesChannelId();
-        $order = $this->requestPersist->getIncomingOrder();
+        $order = $this->requestPersist->getEntity();
         $this->shopgateOrderBridge->saveEntity(
             (new ShopgateOrderEntity())->mapQuote($id, $channelId, $order),
             $event->getSalesChannelContext()->getContext()

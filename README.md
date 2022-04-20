@@ -65,6 +65,9 @@ cd [shopware6 root folder]
 * `Cannot declare interface XXX, because the name is already in use` - happens after installing of our plugin via
   symlink. This is because there is a `vendor` directory inside our plugin folder. Either remove `vendor` directory from
   our plugin directory **or** do not install via symlink. These are two different ways of installing our plugin.
+* `ConstraintViolationException: Caught 1 violation errors` during a `check_cart` or customer `registration`. One of the
+  known errors is when the Shopgate App does not require the phone number to be set, but the Shopware does. So when the
+  `check_cart` attempts to create the address a constraint violation occurs.
 
 # Configuration
 
