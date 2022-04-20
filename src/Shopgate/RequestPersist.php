@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate;
 
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 
 /**
@@ -13,6 +14,7 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 class RequestPersist
 {
     private ExtendedOrder $incomingOrder;
+    private ExtendedCart $incomingCart;
 
     public function getIncomingOrder(): ExtendedOrder
     {
@@ -24,5 +26,17 @@ class RequestPersist
         $this->incomingOrder = $order;
 
         return $this;
+    }
+
+    public function setIncomingCart(ExtendedCart $incomingCart): RequestPersist
+    {
+        $this->incomingCart = $incomingCart;
+
+        return $this;
+    }
+
+    public function getIncomingCart(): ExtendedCart
+    {
+        return $this->incomingCart;
     }
 }

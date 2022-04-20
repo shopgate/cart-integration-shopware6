@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpCastIsUnnecessaryInspection */
 
 declare(strict_types=1);
 
@@ -6,6 +6,8 @@ namespace Shopgate\Shopware\Order\Subscriber;
 
 use Shopgate\Shopware\Order\LineItem\Events\AfterIncItemMappingEvent;
 use Shopgate\Shopware\Order\Quote\Events\BeforeAddLineItemsToQuote;
+use Shopgate\Shopware\Order\Taxes\TaxMapping;
+use Shopgate\Shopware\Shopgate\RequestPersist;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
 use Shopware\Core\Content\Product\Cart\ProductCartProcessor;
@@ -14,10 +16,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class LiveShoppingSubscriber implements EventSubscriberInterface
 {
     private ConfigBridge $configBridge;
+    private RequestPersist $requestPersist;
+    private TaxMapping $taxMapping;
 
-    public function __construct(ConfigBridge $configBridge)
-    {
+    public function __construct(
+        ConfigBridge $configBridge,
+        RequestPersist $requestPersist,
+        TaxMapping $taxMapping
+    ) {
         $this->configBridge = $configBridge;
+        $this->requestPersist = $requestPersist;
+        $this->taxMapping = $taxMapping;
     }
 
     public static function getSubscribedEvents(): array
@@ -37,19 +46,19 @@ class LiveShoppingSubscriber implements EventSubscriberInterface
             return;
         }
         $incItem = $event->getItem();
-        $itemMap = $event->getMapping();
-        $oldPrice = $itemMap->get('priceDefinition', []);
+        $ids = $this->requestPersist->getIncomingCart()->getItemIds();
+        $tax = (float)$incItem->getTaxPercent();
         $newPrice = [
             'type' => QuantityPriceDefinition::TYPE,
             'quantity' => (int)$incItem->getQuantity(),
             'price' => $incItem->getUnitAmount(),
-            'taxRules' => [
-                [
-                    'taxRate' => $incItem->getTaxPercent(),
-                    'percentage' => 100
-                ]
-            ]
+            'taxRules' => empty($tax)
+                ? $this->taxMapping->mapTaxRate($incItem, $ids, $event->getContext())
+                : [['taxRate' => $tax, 'percentage' => 100]]
         ];
+
+        $itemMap = $event->getMapping();
+        $oldPrice = $itemMap->get('priceDefinition', []);
         $itemMap->set('priceDefinition', array_merge($newPrice, $oldPrice));
     }
 

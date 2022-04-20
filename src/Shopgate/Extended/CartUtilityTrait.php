@@ -16,6 +16,14 @@ use ShopgateShippingInfo;
 trait CartUtilityTrait
 {
     /**
+     * @return array<string>
+     */
+    public function getItemIds(): array
+    {
+        return array_map(static fn(ShopgateOrderItem $item) => $item->getItemNumber(), $this->items);
+    }
+
+    /**
      * Locates item by ID
      *
      * @param string $itemId

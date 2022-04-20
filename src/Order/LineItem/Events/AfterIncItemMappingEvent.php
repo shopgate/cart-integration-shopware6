@@ -6,6 +6,7 @@ namespace Shopgate\Shopware\Order\LineItem\Events;
 
 use ShopgateOrderItem;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
@@ -16,11 +17,13 @@ class AfterIncItemMappingEvent extends Event
 {
     private DataBag $mapping;
     private ShopgateOrderItem $item;
+    private SalesChannelContext $context;
 
-    public function __construct(DataBag $mapping, ShopgateOrderItem $item)
+    public function __construct(DataBag $mapping, ShopgateOrderItem $item, SalesChannelContext $context)
     {
         $this->mapping = $mapping;
         $this->item = $item;
+        $this->context = $context;
     }
 
     /**
@@ -35,5 +38,10 @@ class AfterIncItemMappingEvent extends Event
     public function getItem(): ShopgateOrderItem
     {
         return $this->item;
+    }
+
+    public function getContext(): SalesChannelContext
+    {
+        return $this->context;
     }
 }

@@ -120,6 +120,7 @@ class Plugin extends ShopgatePlugin
         $this->logger->debug('Incoming Check Cart');
         $this->logger->debug($cart);
         $newCart = $this->classFactory->createCart()->loadFromShopgateCart($cart);
+        $this->requestPersist->setIncomingCart($newCart);
 
         $result = $this->exportService->checkCart($newCart);
         $this->logger->debug('Check Cart Response');

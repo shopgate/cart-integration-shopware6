@@ -101,4 +101,13 @@ class ProductBridge
 
         return $result;
     }
+
+    public function getSimplifiedProductList(array $ids = []): ProductCollection
+    {
+        $context = $this->contextManager->getSalesContext();
+        $criteria = (new Criteria(!empty($ids) ? $ids : null));
+        $criteria->setTitle('shopgate::products::simple');
+
+        return $this->productListRoute->load($criteria, $context)->getProducts();
+    }
 }
