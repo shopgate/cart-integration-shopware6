@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate;
 
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
+use ShopgateCartBase;
 
 /**
  * Holds incoming Shopgate objects in singleton/global memory, so we can
@@ -12,17 +14,20 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
  */
 class RequestPersist
 {
-    private ExtendedOrder $incomingOrder;
+    private ShopgateCartBase $entity;
 
-    public function getIncomingOrder(): ExtendedOrder
+    public function setEntity(ShopgateCartBase $entity): self
     {
-        return $this->incomingOrder;
-    }
-
-    public function setIncomingOrder(ExtendedOrder $order): RequestPersist
-    {
-        $this->incomingOrder = $order;
+        $this->entity = $entity;
 
         return $this;
+    }
+
+    /**
+     * @return ExtendedCart|ExtendedOrder
+     */
+    public function getEntity(): ShopgateCartBase
+    {
+        return $this->entity;
     }
 }

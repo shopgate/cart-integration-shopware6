@@ -47,6 +47,7 @@ class LineItemProductMapping
      */
     public function mapIncomingItems(array $items): array
     {
+        $context = $this->contextManager->getSalesContext();
         $lineItems = [];
         foreach ($items as $item) {
             $dataBag = new DataBag([
@@ -56,7 +57,7 @@ class LineItemProductMapping
                 'quantity' => (int)$item->getQuantity(),
                 'stackable' => true
             ]);
-            $this->eventDispatcher->dispatch(new AfterIncItemMappingEvent($dataBag, $item));
+            $this->eventDispatcher->dispatch(new AfterIncItemMappingEvent($dataBag, $item, $context));
             $lineItems[] = $dataBag->all();
         }
 

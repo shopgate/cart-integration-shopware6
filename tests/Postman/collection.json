@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "29349017-44c8-4883-a627-146c80ba54ab",
+    "_postman_id": "7cbcce77-38ae-4d3c-a88b-d5f96c991688",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -9134,6 +9134,77 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Tax",
+          "item": [
+            {
+              "name": "SG: check reduced tax",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "pm.test(\"Checking tax class\", function () {",
+                      "    const jsonObject = xml2Json(responseBody);",
+                      "",
+                      "    pm.expect(jsonObject.items.item.tax_class).to.be.a('string').to.eq('tax_' + pm.environment.get('gen_tax_reduced_id'));",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{created_product_reducedTax_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -9757,11 +9828,10 @@
                       "type": "text"
                     },
                     {
-                      "key": "cart[items][1][tax_percent]",
-                      "value": "0",
-                      "type": "text",
-                      "disabled": true
-                    },
+						"key": "cart[items][1][tax_percent]",
+						"value": "0.01",
+						"type": "text"
+					},
                     {
                       "key": "cart[external_coupons][0][code]",
                       "value": "{{created_promotion_byCode_code}}",
@@ -10564,6 +10634,420 @@
                     {
                       "key": "cart[external_coupons][0][code]",
                       "value": "{{created_promotion_byCode_code}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: no tax percent (DE)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "const items = jsonData.items;",
+                      "pm.test(\"Check standard tax\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(12);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(721.29);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(858.34); // 19% tax",
+                      "});",
+                      "",
+                      "pm.test(\"Check reduced tax\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_reducedTax_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(100);",
+                      "    pm.expect(item.unit_amount).to.eql(100);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(107); // 7% tax",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "12",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "721.29",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "858.34",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][0][tax_percent]",
+                      "value": "0.00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "{{created_product_reducedTax_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "100",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: no tax percent (AT)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "const items = jsonData.items;",
+                      "// checks that advanced prices do not apply to this customer group",
+                      "pm.test(\"Check standard tax\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_advPrices_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(12);",
+                      "    pm.expect(item.stock_quantity).to.eql(10);",
+                      "    pm.expect(item.unit_amount).to.eql(721.29);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(865.55); // 20% tax",
+                      "});",
+                      "",
+                      "",
+                      "pm.test(\"Check reduced tax\", function () {",
+                      "    const item = Utility.getByItemNumber(items, pm.environment.get('created_product_reducedTax_id'));",
+                      "    pm.expect(item.is_buyable).to.eql(1);",
+                      "    pm.expect(item.qty_buyable).to.eql(1);",
+                      "    pm.expect(item.stock_quantity).to.eql(100);",
+                      "    pm.expect(item.unit_amount).to.eql(100);",
+                      "    pm.expect(item.unit_amount_with_tax).to.eql(113); // 13% tax",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{created_customer_withCustomGrp_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "AT",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][phone]",
+                      "value": "12345678",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_advPrices_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "12",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount]",
+                      "value": "721.29",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][unit_amount_with_tax]",
+                      "value": "858.34",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "cart[items][0][tax_percent]",
+                      "value": "0.00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][item_number]",
+                      "value": "{{created_product_reducedTax_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][1][unit_amount]",
+                      "value": "100",
                       "type": "text"
                     }
                   ]
@@ -16175,59 +16659,73 @@
                       "pm.test(\"Status code is 200\", function () {",
                       "    pm.response.to.have.status(200);",
                       "});",
-                      "",
-                      "const jsonData = pm.response.json();",
-                      "pm.test(\"Not an error\", function () {",
-                      "    pm.expect(jsonData.error).to.eq(0);",
-                      "    pm.expect(jsonData.orders).to.be.length(1);",
-                      "});",
-                      "",
-                      "const order = jsonData.orders[0];",
-                      "pm.test(\"Basic order data\", function () {",
-                      "    /**",
-                      "     * 137 just items Gross - 125+12",
-                      "     * 142 for items & shipping Gross - 125+12+5",
-                      "     * 114.02 for item + shipping GROSS 100 + 10 + (5 - 0.07 - 0.91)",
-                      "     */",
-                      "    pm.expect(order.amount_items_gross).to.eq(137);",
-                      "    pm.expect(order.amount_complete_gross).to.eq(142);",
-                      "    pm.expect(order.amount_complete_net).to.eq(114.02);",
-                      "});",
-                      "",
-                      "pm.test(\"Item check\", function () {",
-                      "    pm.expect(order.items).to.be.length(2);",
-                      "    const product = Utility.getByName(order.items, 'Main product');",
-                      "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
-                      "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
-                      "    pm.expect(product.quantity).to.eq(1);",
-                      "    pm.expect(product.unit_amount).to.eq(100.00);",
-                      "    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
-                      "    pm.expect(product.tax_percent).to.eq(25);",
-                      "    pm.expect(product.currency).to.eq('EUR');",
-                      "    pm.expect(product.description).to.have.string('Lorem ipsum');",
-                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
-                      "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
-                      "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
-                      "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
-                      "    pm.expect(variantChild.quantity).to.eq(1);",
-                      "    pm.expect(variantChild.unit_amount).to.eq(10.00);",
-                      "    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
-                      "    pm.expect(variantChild.tax_percent).to.eq(20);",
-                      "    pm.expect(variantChild.currency).to.eq('EUR');",
-                      "    pm.expect(variantChild.description).to.have.string('Lorem ipsum');",
-                      "});",
-                      "",
-                      "pm.test(\"Taxes\", function () {",
-                      "    pm.expect(order.order_taxes).to.be.length(2);",
-                      "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
-                      "    pm.expect(taxOne.tax_percent).to.eq(25);",
-                      "    pm.expect(taxOne.amount).to.eq(25.91);",
-                      "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
-                      "    pm.expect(taxTwo.tax_percent).to.eq(20);",
-                      "    pm.expect(taxTwo.amount).to.eq(2.07);",
-                      "});"
-                    ],
+						"",
+						"const jsonData = pm.response.json();",
+						"pm.test(\"Not an error\", function () {",
+						"    pm.expect(jsonData.error).to.eq(0);",
+						"    pm.expect(jsonData.orders).to.be.length(1);",
+						"});",
+						"",
+						"const order = jsonData.orders[0];",
+						"pm.test(\"Basic order data\", function () {",
+						"    /**",
+						"     * 147.7 just items Gross - 125+12+10.7",
+						"     * 152.70 for items & shipping Gross - 125+12+10.7+5",
+						"     * 124.06 for item + shipping GROSS 100 + 10 + 10 + (5 - 0.07 - 0.85 - 0.02)",
+						"     */",
+						"    pm.expect(order.amount_items_gross).to.eq(147.7);",
+						"    pm.expect(order.amount_complete_gross).to.eq(152.7);",
+						"    pm.expect(order.amount_complete_net).to.eq(124.06);",
+						"});",
+						"",
+						"pm.test(\"Item check\", function () {",
+						"    pm.expect(order.items).to.be.length(3);",
+						"    const product = Utility.getByName(order.items, 'Main product');",
+						"    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
+						"    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+						"    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+						"    pm.expect(product.quantity).to.eq(1);",
+						"    pm.expect(product.unit_amount).to.eq(100.00);",
+						"    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
+						"    pm.expect(product.tax_percent).to.eq(25);",
+						"    pm.expect(product.currency).to.eq('EUR');",
+						"    pm.expect(product.description).to.have.string('Lorem ipsum');",
+						"",
+						"    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
+						"    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
+						"    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
+						"    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
+						"    pm.expect(variantChild.quantity).to.eq(1);",
+						"    pm.expect(variantChild.unit_amount).to.eq(10.00);",
+						"    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
+						"    pm.expect(variantChild.tax_percent).to.eq(20);",
+						"    pm.expect(variantChild.currency).to.eq('EUR');",
+						"    pm.expect(variantChild.description).to.have.string('Lorem ipsum');",
+						"",
+						"    const reducedProduct = Utility.getByName(order.items, 'API: reduced tax product');",
+						"    pm.expect(reducedProduct, 'Could not find reduced price product').to.not.be.undefined;",
+						"    pm.expect(reducedProduct.item_number_public).to.eq('SG.DEMO.REDUCED.TAX.PROD');",
+						"    pm.expect(reducedProduct.item_number).to.eq(pm.environment.get('created_product_reducedTax_id'));",
+						"    pm.expect(reducedProduct.quantity).to.eq(1);",
+						"    pm.expect(reducedProduct.unit_amount).to.eq(10.00);",
+						"    pm.expect(reducedProduct.unit_amount_with_tax).to.eq(10.70);",
+						"    pm.expect(reducedProduct.tax_percent).to.eq(7);",
+						"    pm.expect(reducedProduct.currency).to.eq('EUR');",
+						"});",
+						"",
+						"pm.test(\"Taxes\", function () {",
+						"    pm.expect(order.order_taxes).to.be.length(3);",
+						"    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
+						"    pm.expect(taxOne.tax_percent).to.eq(25);",
+						"    pm.expect(taxOne.amount).to.eq(25.85);",
+						"    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
+						"    pm.expect(taxTwo.tax_percent).to.eq(20);",
+						"    pm.expect(taxTwo.amount).to.eq(2.07);",
+						"    const taxThree = Utility.getByLabel(order.order_taxes, 'plus 7% VAT');",
+						"    pm.expect(taxThree.tax_percent).to.eq(7);",
+						"    pm.expect(taxThree.amount).to.eq(0.72);",
+						"});"
+					],
                     "type": "text/javascript"
                   }
                 }
@@ -16370,59 +16868,73 @@
                       "pm.test(\"Status code is 200\", function () {",
                       "    pm.response.to.have.status(200);",
                       "});",
-                      "",
-                      "const jsonData = pm.response.json();",
-                      "pm.test(\"Not an error\", function () {",
-                      "    pm.expect(jsonData.error).to.eq(0);",
-                      "    pm.expect(jsonData.orders).to.be.length(1);",
-                      "});",
-                      "",
-                      "const order = jsonData.orders[0];",
-                      "pm.test(\"Basic order data\", function () {",
-                      "    /**",
-                      "     * 110 just items NET - 100+10",
-                      "     * 115 for items & shipping NET - 100+10+5",
-                      "     * 143.23 for item + shipping GROSS 100+25% + 10+20% + 5+25%+20%",
-                      "     */",
-                      "    pm.expect(order.amount_items_net).to.eq(110);",
-                      "    pm.expect(order.amount_complete_gross).to.eq(143.23);",
-                      "    pm.expect(order.amount_complete_net).to.eq(115.00);",
-                      "});",
-                      "",
-                      "pm.test(\"Item check\", function () {",
-                      "    pm.expect(order.items).to.be.length(2);",
-                      "    const product = Utility.getByName(order.items, 'Main product');",
-                      "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
-                      "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
-                      "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
-                      "    pm.expect(product.quantity).to.eq(1);",
-                      "    pm.expect(product.unit_amount).to.eq(100.00);",
-                      "    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
-                      "    pm.expect(product.tax_percent).to.eq(25);",
-                      "    pm.expect(product.currency).to.eq('EUR');",
-                      "    pm.expect(product.description).to.have.string('Lorem ipsum');",
-                      "    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
-                      "    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
-                      "    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
-                      "    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
-                      "    pm.expect(variantChild.quantity).to.eq(1);",
-                      "    pm.expect(variantChild.unit_amount).to.eq(10.00);",
-                      "    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
-                      "    pm.expect(variantChild.tax_percent).to.eq(20);",
-                      "    pm.expect(variantChild.currency).to.eq('EUR');",
-                      "    pm.expect(variantChild.description).to.have.string('Lorem ipsum');",
-                      "});",
-                      "",
-                      "pm.test(\"Taxes\", function () {",
-                      "    pm.expect(order.order_taxes).to.be.length(2);",
-                      "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
-                      "    pm.expect(taxOne.tax_percent).to.eq(25);",
-                      "    pm.expect(taxOne.amount).to.eq(26.14);",
-                      "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
-                      "    pm.expect(taxTwo.tax_percent).to.eq(20);",
-                      "    pm.expect(taxTwo.amount).to.eq(2.09);",
-                      "});"
-                    ],
+						"",
+						"const jsonData = pm.response.json();",
+						"pm.test(\"Not an error\", function () {",
+						"    pm.expect(jsonData.error).to.eq(0);",
+						"    pm.expect(jsonData.orders).to.be.length(1);",
+						"});",
+						"",
+						"const order = jsonData.orders[0];",
+						"pm.test(\"Basic order data\", function () {",
+						"    /**",
+						"     * 120 just items NET - 100+10+10",
+						"     * 125 for items & shipping NET - 100+10+10+5",
+						"     * 154.47 for item + shipping GROSS 100+25% + 10+20% + 10+13% + 5+25%+20%+13%",
+						"     */",
+						"    pm.expect(order.amount_items_net).to.eq(120);",
+						"    pm.expect(order.amount_complete_gross).to.eq(154.47);",
+						"    pm.expect(order.amount_complete_net).to.eq(125.00);",
+						"});",
+						"",
+						"pm.test(\"Item check\", function () {",
+						"    pm.expect(order.items).to.be.length(3);",
+						"    const product = Utility.getByName(order.items, 'Main product');",
+						"    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
+						"    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+						"    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+						"    pm.expect(product.quantity).to.eq(1);",
+						"    pm.expect(product.unit_amount).to.eq(100.00);",
+						"    pm.expect(product.unit_amount_with_tax).to.eq(125.00);",
+						"    pm.expect(product.tax_percent).to.eq(25);",
+						"    pm.expect(product.currency).to.eq('EUR');",
+						"    pm.expect(product.description).to.have.string('Lorem ipsum');",
+						"",
+						"    const variantChild = Utility.getByName(order.items, 'API: Variant Child (Red-M)');",
+						"    pm.expect(variantChild, 'Could not find variant child').to.not.be.undefined;",
+						"    pm.expect(variantChild.item_number_public).to.eq('SG.DEMO.CHILD.1');",
+						"    pm.expect(variantChild.item_number).to.eq(pm.environment.get('created_product_variant_child_id'));",
+						"    pm.expect(variantChild.quantity).to.eq(1);",
+						"    pm.expect(variantChild.unit_amount).to.eq(10.00);",
+						"    pm.expect(variantChild.unit_amount_with_tax).to.eq(12.00);",
+						"    pm.expect(variantChild.tax_percent).to.eq(20);",
+						"    pm.expect(variantChild.currency).to.eq('EUR');",
+						"    pm.expect(variantChild.description).to.have.string('Lorem ipsum');",
+						"",
+						"    const reducedProduct = Utility.getByName(order.items, 'API: reduced tax product');",
+						"    pm.expect(reducedProduct, 'Could not find reduced price product').to.not.be.undefined;",
+						"    pm.expect(reducedProduct.item_number_public).to.eq('SG.DEMO.REDUCED.TAX.PROD');",
+						"    pm.expect(reducedProduct.item_number).to.eq(pm.environment.get('created_product_reducedTax_id'));",
+						"    pm.expect(reducedProduct.quantity).to.eq(1);",
+						"    pm.expect(reducedProduct.unit_amount).to.eq(10.00);",
+						"    pm.expect(reducedProduct.unit_amount_with_tax).to.eq(11.3);",
+						"    pm.expect(reducedProduct.tax_percent).to.eq(13);",
+						"    pm.expect(reducedProduct.currency).to.eq('EUR');",
+						"});",
+						"",
+						"pm.test(\"Taxes\", function () {",
+						"    pm.expect(order.order_taxes).to.be.length(3);",
+						"    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
+						"    pm.expect(taxOne.tax_percent).to.eq(25);",
+						"    pm.expect(taxOne.amount).to.eq(26.04);",
+						"    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
+						"    pm.expect(taxTwo.tax_percent).to.eq(20);",
+						"    pm.expect(taxTwo.amount).to.eq(2.08);",
+						"    const taxThree = Utility.getByLabel(order.order_taxes, 'plus 13% VAT');",
+						"    pm.expect(taxThree.tax_percent).to.eq(13);",
+						"    pm.expect(taxThree.amount).to.eq(1.35);",
+						"});"
+					],
                     "type": "text/javascript"
                   }
                 }

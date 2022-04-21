@@ -94,9 +94,9 @@
         "street_2": null,
         "zipcode": "27404",
         "city": "Frankenbostel",
-        "country": "DE",
-        "state": null,
-        "phone": null,
+        "country": "AT",
+        "state": "AT-9",
+        "phone": "12314444",
         "mobile": null,
         "mail": null,
         "custom_fields": [
@@ -140,9 +140,9 @@
         "street_2": null,
         "zipcode": "27404",
         "city": "Frankenbostel",
-        "country": "DE",
-        "state": null,
-        "phone": null,
+        "country": "AT",
+        "state": "AT-9",
+        "phone": "12314444",
         "mobile": null,
         "mail": null,
         "custom_fields": [
@@ -180,6 +180,13 @@
           "name": "API: Cloned & Altered Variant Child Red-M",
           "unit_amount": "10.00",
           "tax_percent": "20.00"
+        },
+        {
+          "item_number": "d78d1157ab89ec13a84c8dcbeccb7b75",
+          "quantity": 1,
+          "name": "API: reduced tax",
+          "unit_amount": "10.00",
+          "tax_percent": null
         }
       ]
     }

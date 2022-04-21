@@ -4,28 +4,36 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Taxes;
 
+use Shopgate\Shopware\Catalog\Product\ProductBridge;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use ShopgateExternalOrderTax;
+use ShopgateOrderItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class TaxMapping
 {
+    private CurrencyComposer $currencyComposer;
     private ExtendedClassFactory $classFactory;
     private Formatter $formatter;
-    private CurrencyComposer $currencyComposer;
+    private ProductBridge $productBridge;
 
     public function __construct(
-        ExtendedClassFactory $classFactory,
         CurrencyComposer $currencyComposer,
-        Formatter $formatter
+        ExtendedClassFactory $classFactory,
+        Formatter $formatter,
+        ProductBridge $productBridge
     ) {
+        $this->currencyComposer = $currencyComposer;
         $this->classFactory = $classFactory;
         $this->formatter = $formatter;
-        $this->currencyComposer = $currencyComposer;
+        $this->productBridge = $productBridge;
     }
 
     public function calculatePrices(
@@ -67,5 +75,22 @@ class TaxMapping
         })->sortByTax()->first();
 
         return $tax ? $tax->getTaxRate() : 0.0;
+    }
+
+    /** @noinspection PhpCastIsUnnecessaryInspection */
+    public function mapTaxRate(ShopgateOrderItem $incItem, array $cartItemIds, SalesChannelContext $context): array
+    {
+        $product = $this->productBridge
+            ->getSimplifiedProductList($cartItemIds)
+            ->get($incItem->getItemNumber());
+        if (!$product) {
+            return [];
+        }
+        $definition = new QuantityPriceDefinition(
+            (float)$incItem->getUnitAmount(),
+            $context->buildTaxRules($product->getTaxId()),
+            (int)$incItem->getQuantity());
+
+        return array_map(static fn(TaxRule $taxRule) => $taxRule->getVars(), $definition->getTaxRules()->getElements());
     }
 }

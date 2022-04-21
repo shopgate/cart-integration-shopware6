@@ -94,7 +94,7 @@ class Plugin extends ShopgatePlugin
         $this->logger->debug('Incoming Add Order');
         $this->logger->debug($order);
         $newOrder = $this->classFactory->createOrder()->loadFromShopgateOrder($order);
-        $this->requestPersist->setIncomingOrder($newOrder);
+        $this->requestPersist->setEntity($newOrder);
 
         return $this->importService->addOrder($newOrder);
     }
@@ -120,6 +120,7 @@ class Plugin extends ShopgatePlugin
         $this->logger->debug('Incoming Check Cart');
         $this->logger->debug($cart);
         $newCart = $this->classFactory->createCart()->loadFromShopgateCart($cart);
+        $this->requestPersist->setEntity($newCart);
 
         $result = $this->exportService->checkCart($newCart);
         $this->logger->debug('Check Cart Response');

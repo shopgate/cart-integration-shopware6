@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Order;
 
+use ShopgateCartBase;
 use ShopgateOrder;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -181,7 +182,7 @@ class ShopgateOrderEntity extends Entity
      * @param ShopgateOrder $order
      * @return ShopgateOrderEntity
      */
-    public function mapQuote(string $id, string $channelId, ShopgateOrder $order): ShopgateOrderEntity
+    public function mapQuote(string $id, string $channelId, ShopgateCartBase $order): ShopgateOrderEntity
     {
         return $this
             ->setShopwareOrderId($id)
