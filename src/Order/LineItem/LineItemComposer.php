@@ -104,6 +104,7 @@ class LineItemComposer
         /**
          * Handle removed items because of errors
          */
+        $unmappedErrors = [];
         foreach ($cart->getErrors() as $error) {
             $errorClass = get_class($error);
             switch ($errorClass) {
@@ -132,17 +133,22 @@ class LineItemComposer
                     $ineligibleCoupon->setNotValidMessage($error->getMessage());
                     break;
                 default:
-                    $this->logger->debug('Unmapped cart errors & notifications');
-                    $this->logger->debug($error);
+                    $unmappedErrors[] = $error;
             }
         }
 
         $dataBag = new DataBag([
             'items' => $lineItems,
-            'external_coupons' => $externalCoupons
+            'external_coupons' => $externalCoupons,
+            'errors' => $unmappedErrors
         ]);
 
-        $this->eventDispatcher->dispatch(new AfterOutLineItemMappingEvent($dataBag));
+        $this->eventDispatcher->dispatch(new AfterOutLineItemMappingEvent($dataBag, $cart, $sgCart));
+        array_map(function ($error) {
+            $this->logger->debug('Unmapped cart error & notification:');
+            $this->logger->debug($error);
+        }, $dataBag->get('errors')->all());
+        $dataBag->remove('errors');
 
         return $dataBag->all();
     }
