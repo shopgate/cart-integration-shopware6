@@ -4,10 +4,12 @@
 
 ### Packagist install (recommended)
 This plugin is available on `packagist.org`. To install simply add the composer package to the shopware's root composer:
+
 ```shell
 cd [shopware6 root folder]
 composer require shopgate/cart-integration-shopware6
 ```
+
 Afterwards just increment the plugin version inside `root/composer.json`, and run `composer update` to get the latest
 version.
 
