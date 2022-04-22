@@ -200,3 +200,9 @@ downstream acrisSurcharge:
   trigger:
     project: apite/shopgate/acris-surcharge-shopware6
     branch: ver-1.x
+
+downstream dynamicAccess:
+  <<: *downstreamDefaults
+  trigger:
+    project: apite/shopgate/shopware-6-dynamic-access
+    branch: main

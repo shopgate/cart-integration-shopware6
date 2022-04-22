@@ -121,6 +121,7 @@ has a customField defined, it will map.
 #### Customer Address
 
 - `department` - department of a company
+- `phoneNumber` - phone number can be passed this was as an alternative
 
 #### Order
 
