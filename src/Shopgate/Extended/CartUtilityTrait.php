@@ -40,6 +40,17 @@ trait CartUtilityTrait
         return $foundItems ? array_pop($foundItems) : null;
     }
 
+    public function findItemByName(string $name): ?ShopgateOrderItem
+    {
+        $foundItems = array_filter(
+            $this->items,
+            static function (ShopgateOrderItem $item) use ($name) {
+                return $item->getName() === $name;
+            }
+        );
+        return $foundItems ? array_pop($foundItems) : null;
+    }
+
     /**
      * @param string $code
      * @return ShopgateExternalCoupon|null
