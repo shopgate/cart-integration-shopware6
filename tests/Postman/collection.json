@@ -13886,7 +13886,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"98b54d4b87b74abca0afc59c95312dd2\",\r\n                \"configurationKey\": \"core.loginRegistration.phoneNumberFieldRequired\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"98b54d4b87b74abca0afc59c95312dd2\",\r\n                \"configurationKey\": \"core.loginRegistration.phoneNumberFieldRequired\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"53c783b675e2a6398f5fc30e37daf103\",\r\n                \"configurationKey\": \"core.loginRegistration.showPhoneNumberField\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -19358,7 +19358,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"98b54d4b87b74abca0afc59c95312dd2\",\r\n                \"configurationKey\": \"core.loginRegistration.phoneNumberFieldRequired\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"98b54d4b87b74abca0afc59c95312dd2\",\r\n                \"configurationKey\": \"core.loginRegistration.phoneNumberFieldRequired\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            },\r\n            {\r\n                \"id\": \"53c783b675e2a6398f5fc30e37daf103\",\r\n                \"configurationKey\": \"core.loginRegistration.showPhoneNumberField\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
