@@ -4403,9 +4403,11 @@
                       "    pm.expect(billing.street_2).to.eql('Street2');",
                       "    pm.expect(billing.phone).to.eql('12345');",
                       "    pm.expect(billing.gender).to.eql('f');",
-                      "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
+                      "    pm.expect(billing.custom_fields).length(2, 'Billing 2 custom fields')",
                       "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
                       "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
+                      "    pm.expect(billing.custom_fields[1].internal_field_name).to.eq('phoneNumber');",
+                      "    pm.expect(billing.custom_fields[1].value).to.eq('12345');",
                       "  });",
                       "    ",
                       "pm.test(\"Shipping\", function () {",
@@ -13900,8 +13902,7 @@
                     "_action",
                     "sync"
                   ]
-                },
-                "description": "Set data protection acceptance to required - this config check makes sure our register customer does not fail if this flag is enabled."
+                }
               },
               "response": []
             },
@@ -14031,7 +14032,7 @@
                     },
                     {
                       "key": "cart[delivery_address][street_1]",
-                      "value": "{{customer_default_street1}}",
+                      "value": "{{$randomStreetAddress}}",
                       "type": "text"
                     },
                     {
@@ -14372,8 +14373,7 @@
                     "_action",
                     "sync"
                   ]
-                },
-                "description": "Set data protection acceptance to required - this config check makes sure our register customer does not fail if this flag is enabled."
+                }
               },
               "response": []
             }
@@ -19318,7 +19318,68 @@
       "name": "Customer",
       "item": [
         {
-          "name": "SG: register_customer",
+          "name": "SW: set req. phone cfg",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully enabled configs\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"98b54d4b87b74abca0afc59c95312dd2\",\r\n                \"configurationKey\": \"core.loginRegistration.phoneNumberFieldRequired\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SG: error check",
           "event": [
             {
               "listen": "test",
@@ -19326,48 +19387,7 @@
                 "exec": [
                   "pm.test(\"Check customer data\", function () {",
                   "    const jsonData = pm.response.json();",
-                  "    if (pm.globals.get('verbose')) {",
-                  "        console.log(jsonData);",
-                  "    }",
-                  "    const firstName = pm.environment.get('temp-first-name');",
-                  "    const lastName = pm.environment.get('temp-last-name');",
-                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
-                  "    pm.expect(jsonData.user_data.gender).to.eql('f');",
-                  "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
-                  "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
-                  "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
-                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
-                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
-                  "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
-                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
-                  "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
-                  "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
-                  "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
-                  "    ",
-                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
-                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
-                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
-                  "    pm.expect(billing.country).to.eql('DE');",
-                  "    pm.expect(billing.zipcode).to.eql('54321');",
-                  "    pm.expect(billing.state).to.eql('DE-SH');",
-                  "    pm.expect(billing.first_name).to.eql(firstName);",
-                  "    pm.expect(billing.last_name).to.eql(lastName);",
-                  "    pm.expect(billing.company).to.eql('My Company');",
-                  "    pm.expect(billing.street_2).to.eql('Street2');",
-                  "    pm.expect(billing.phone).to.eql('12345');",
-                  "    pm.expect(billing.gender).to.eql('f');",
-                  "    pm.expect(billing.custom_fields).length(1, 'Billing 1 custom field')",
-                  "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
-                  "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
-                  "",
-                  "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
-                  "    pm.expect(shipping.country).to.eql('DE');",
-                  "    pm.expect(shipping.zipcode).to.eql('12340');",
-                  "    pm.expect(shipping.state).to.be.null;",
-                  "    pm.expect(shipping.first_name).to.not.eql(firstName);",
-                  "    pm.expect(shipping.last_name).to.not.eql(lastName);",
-                  "    pm.expect(shipping.gender).to.eql('m');",
-                  "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
+                  "    pm.expect(jsonData.error).to.eql(220);",
                   "});",
                   "",
                   "// unset temp variables",
@@ -19679,6 +19699,379 @@
           "response": []
         },
         {
+          "name": "SG: register_customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "const firstName = pm.environment.get('temp-first-name');",
+                  "const lastName = pm.environment.get('temp-last-name');",
+                  "pm.test(\"Check customer data\", function () {",
+                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
+                  "    pm.expect(jsonData.user_data.gender).to.eql('f');",
+                  "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
+                  "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
+                  "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
+                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
+                  "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
+                  "});",
+                  "pm.test(\"Billing check\", function () {",
+                  "    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
+                  "    pm.expect(billing.is_invoice_address).to.eql(1);",
+                  "    pm.expect(billing.is_delivery_address).to.eql(0);",
+                  "    pm.expect(billing.country).to.eql('DE');",
+                  "    pm.expect(billing.zipcode).to.eql('54321');",
+                  "    pm.expect(billing.state).to.eql('DE-SH');",
+                  "    pm.expect(billing.first_name).to.eql(firstName);",
+                  "    pm.expect(billing.last_name).to.eql(lastName);",
+                  "    pm.expect(billing.company).to.eql('My Company');",
+                  "    pm.expect(billing.street_2).to.eql('Street2');",
+                  "    pm.expect(billing.gender).to.eql('f');",
+                  "    pm.expect(billing.custom_fields).length(2, 'Billing 1 custom field')",
+                  "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
+                  "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
+                  "    pm.expect(billing.custom_fields[1].internal_field_name).to.eq('phoneNumber');",
+                  "    pm.expect(billing.custom_fields[1].value).to.eq('112233445');",
+                  "});",
+                  "",
+                  "pm.test(\"shipping check\", function () {",
+                  "    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
+                  "    pm.expect(shipping.country).to.eql('DE');",
+                  "    pm.expect(shipping.zipcode).to.eql('12340');",
+                  "    pm.expect(shipping.state).to.be.null;",
+                  "    pm.expect(shipping.first_name).to.not.eql(firstName);",
+                  "    pm.expect(shipping.last_name).to.not.eql(lastName);",
+                  "    pm.expect(shipping.gender).to.eql('m');",
+                  "    pm.expect(shipping.custom_fields).length(1, 'Should have phone number');",
+                  "    pm.expect(shipping.phone).to.eql('12345');",
+                  "});",
+                  "",
+                  "// unset temp variables",
+                  "pm.environment.unset(\"temp-email\");",
+                  "pm.environment.unset(\"temp-first-name\");",
+                  "pm.environment.unset(\"temp-last-name\");"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "*/*"
+              },
+              {
+                "key": "X-Shopgate-Auth-User",
+                "value": "{{gen_sg_header_auth_user}}"
+              },
+              {
+                "key": "X-Shopgate-Auth-Token",
+                "value": "{{gen_sg_header_auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "shop_number",
+                  "value": "{{shop_number}}",
+                  "type": "text"
+                },
+                {
+                  "key": "action",
+                  "value": "{{framework_action_register_customer}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "pass",
+                  "value": "{{userPass}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[registration_date]",
+                  "value": "2021-01-27T13:07:38+0000",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[first_name]",
+                  "value": "{{temp-first-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[last_name]",
+                  "value": "{{temp-last-name}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[gender]",
+                  "value": "f",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[mail]",
+                  "value": "{{temp-email}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[birthday]",
+                  "value": "1987-05-19",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_invoice_address]",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][is_delivery_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][first_name]",
+                  "value": "{{$randomFirstName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][last_name]",
+                  "value": "{{$randomLastName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][gender]",
+                  "value": "m",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][zipcode]",
+                  "value": "12340",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][phone]",
+                  "value": "12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_invoice_address]",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][is_delivery_address]",
+                  "value": "0",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][first_name]",
+                  "value": "rewritten_first_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][last_name]",
+                  "value": "rewritten_last_name",
+                  "description": "Seems like this field get rewritten no matter what we set",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][gender]",
+                  "value": "m",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_1]",
+                  "value": "{{$randomStreetAddress}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][zipcode]",
+                  "value": "54321",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][city]",
+                  "value": "{{$randomCity}}",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][country]",
+                  "value": "DE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][state]",
+                  "value": "DE-SH",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][company]",
+                  "value": "My Company",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][street_2]",
+                  "value": "Street2",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][name]",
+                  "value": "VAT IDs",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][internal_field_name]",
+                  "value": "vatIds",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][0][value]",
+                  "value": "1234,12345",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][internal_field_name]",
+                  "value": "affiliateCode",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][1][value]",
+                  "value": "AFFILIATE_CODE",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][2][value]",
+                  "value": "Big Boss",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][internal_field_name]",
+                  "value": "accountType",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][3][value]",
+                  "value": "business",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][internal_field_name]",
+                  "value": "cannotMap",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[custom_fields][4][value]",
+                  "value": "not mapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][0][value]",
+                  "value": "Mr.",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
+                  "value": "notMapped",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][1][value]",
+                  "value": "not mapped either",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
+                  "value": "department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][2][value]",
+                  "value": "Some department",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][3][internal_field_name]",
+                  "value": "phoneNumber",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][1][custom_fields][3][value]",
+                  "value": "112233445",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
+                  "value": "title",
+                  "type": "text"
+                },
+                {
+                  "key": "user_data[addresses][0][custom_fields][0][value]",
+                  "value": "Mrs.",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}",
+              "host": [
+                "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "SG: get_customer",
           "event": [
             {
@@ -19687,10 +20080,6 @@
                 "exec": [
                   "const jsonData = pm.response.json();",
                   "pm.test(\"Check customer data\", function () {",
-                  "    if (pm.globals.get('verbose')) {",
-                  "        console.log(jsonData);",
-                  "    }",
-                  "",
                   "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('userEmail'));",
                   "    pm.expect(jsonData.user_data.gender).to.eql('m');",
                   "    pm.expect(jsonData.user_data.first_name).to.eql('Max');",
@@ -19762,6 +20151,67 @@
               "raw": "{{domain}}",
               "host": [
                 "{{domain}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SW: unset req. phone cfg",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successfully enabled configs\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disabledSystemHeaders": {
+              "accept": true
+            }
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{gen_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"98b54d4b87b74abca0afc59c95312dd2\",\r\n                \"configurationKey\": \"core.loginRegistration.phoneNumberFieldRequired\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sw_endpoint_api}}/_action/sync",
+              "host": [
+                "{{sw_endpoint_api}}"
+              ],
+              "path": [
+                "_action",
+                "sync"
               ]
             }
           },
