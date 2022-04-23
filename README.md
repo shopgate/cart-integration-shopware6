@@ -123,7 +123,7 @@ has a customField defined, it will map.
 #### Customer Address
 
 - `department` - department of a company
-- `phoneNumber` - phone number can be passed this was as an alternative
+- `phoneNumber` - phone number can be passed via `customFields` as an alternative to `address->phone`
 
 #### Order
 
