@@ -32,6 +32,7 @@
         </parameter>
         <parameter key="shopgate.customer.address.custom_field.whitelist" type="collection">
             <parameter key="department">string</parameter>
+            <parameter key="phoneNumber">string</parameter>
         </parameter>
         <parameter key="shopgate.order.custom_field.whitelist" type="collection">
             <parameter key="affiliateCode">string</parameter>
