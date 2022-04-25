@@ -12,14 +12,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 class CustomFieldMapping
 {
     private array $whitelist;
+    private array $transformList;
 
-    public function __construct(array $whitelist)
+    public function __construct(array $whitelist, array $transformList = [])
     {
         $this->whitelist = $whitelist;
+        $this->transformList = $transformList;
     }
 
     /**
-     * @param Entity $entity
      * @return ShopgateOrderCustomField[]
      */
     public function mapToShopgateCustomFields(Entity $entity): array
@@ -51,14 +52,23 @@ class CustomFieldMapping
         foreach ($entity->getCustomFields() as $customField) {
             $type = $this->whitelist[$customField->getInternalFieldName()] ?? null;
             $value = $customField->getValue();
+            $key = $this->transform($customField->getInternalFieldName());
             $isEmpty = $value === '' || $value === null;
             if ($type && !$isEmpty) {
-                $data[$customField->getInternalFieldName()] = $type === 'array' ? [$value] : $value;
+                $data[$key] = $type === 'array' ? [$value] : $value;
             } elseif (!$isEmpty) {
-                $data['customFields'][$customField->getInternalFieldName()] = $value;
+                $data['customFields'][$key] = $value;
             }
         }
 
         return $data;
+    }
+
+    /**
+     * Helps with translating incoming Shopgate keys to Shopware
+     */
+    private function transform(string $key)
+    {
+        return $this->transformList[$key] ?? $key;
     }
 }

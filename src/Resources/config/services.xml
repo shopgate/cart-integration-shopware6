@@ -32,7 +32,10 @@
         </parameter>
         <parameter key="shopgate.customer.address.custom_field.whitelist" type="collection">
             <parameter key="department">string</parameter>
-            <parameter key="phoneNumber">string</parameter>
+            <parameter key="phone_number">string</parameter>
+        </parameter>
+        <parameter key="shopgate.customer.address.custom_field.transformList" type="collection">
+            <parameter key="phone_number">phoneNumber</parameter>
         </parameter>
         <parameter key="shopgate.order.custom_field.whitelist" type="collection">
             <parameter key="affiliateCode">string</parameter>
@@ -239,6 +242,7 @@
         </service>
         <service id="sg.customer.address.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
             <argument key="$whitelist">%shopgate.customer.address.custom_field.whitelist%</argument>
+            <argument key="$transformList">%shopgate.customer.address.custom_field.transformList%</argument>
         </service>
         <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"
                  alias="sg.customer.custom_field.whitelist"/>

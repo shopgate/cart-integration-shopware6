@@ -14217,12 +14217,22 @@
                     },
                     {
                       "key": "cart[delivery_address][custom_fields][0][internal_field_name]",
+                      "value": "phone_number",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][custom_fields][1][internal_field_name]",
                       "value": "phoneNumber",
                       "type": "text"
                     },
                     {
                       "key": "cart[delivery_address][custom_fields][0][value]",
                       "value": "112233445",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][custom_fields][1][value]",
+                      "value": "112233",
                       "type": "text"
                     },
                     {
