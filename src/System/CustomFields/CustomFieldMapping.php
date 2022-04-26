@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\CustomFields;
@@ -14,6 +15,10 @@ class CustomFieldMapping
     private array $whitelist;
     private array $transformList;
 
+    /**
+     * @param array $whitelist - allowed exported custom fields
+     * @param array $transformList - map of Shopgate key to Shopware key
+     */
     public function __construct(array $whitelist, array $transformList = [])
     {
         $this->whitelist = $whitelist;
@@ -27,7 +32,8 @@ class CustomFieldMapping
     {
         $customFields = [];
         foreach ($this->whitelist as $method => $type) {
-            if ($entity->has($method) && ($value = $entity->get($method))) {
+            $mappedMethod = $this->transformList[$method] ?? $method;
+            if ($entity->has($mappedMethod) && ($value = $entity->get($mappedMethod))) {
                 $customField = new ShopgateOrderCustomField();
                 $customField->setLabel($method);
                 $customField->setInternalFieldName($method);
@@ -50,9 +56,11 @@ class CustomFieldMapping
     {
         $data = [];
         foreach ($entity->getCustomFields() as $customField) {
-            $type = $this->whitelist[$customField->getInternalFieldName()] ?? null;
+            $fieldName = $customField->getInternalFieldName();
             $value = $customField->getValue();
-            $key = $this->transform($customField->getInternalFieldName());
+
+            $type = $this->whitelist[$fieldName] ?? null;
+            $key = $this->transformList[$fieldName] ?? $fieldName;
             $isEmpty = $value === '' || $value === null;
             if ($type && !$isEmpty) {
                 $data[$key] = $type === 'array' ? [$value] : $value;
@@ -62,13 +70,5 @@ class CustomFieldMapping
         }
 
         return $data;
-    }
-
-    /**
-     * Helps with translating incoming Shopgate keys to Shopware
-     */
-    private function transform(string $key)
-    {
-        return $this->transformList[$key] ?? $key;
     }
 }
