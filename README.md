@@ -115,18 +115,18 @@ has a customField defined, it will map.
 #### Customer
 
 - `title` - customer title
-- `affiliateCode`
-- `campaignCode`
-- `accountType` - `business` or `private`
-- `vatIds` - provide a **single** VAT ID, `accountType` must be `business` for this to be set
+- `affiliate_code`
+- `campaign_code`
+- `account_type` - `business` or `private`
+- `vat_ids` - provide a **single** VAT ID, `accountType` must be `business` for this to be set
 
 #### Customer Address
 
 - `department` - department of a company
-- `phoneNumber` - phone number can be passed via `customFields` as an alternative to `address->phone`
+- `phone_number` - phone number can be passed via `customFields` as an alternative to `address->phone`
 
 #### Order
 
-- `affiliateCode`
-- `campaignCode`
-- `customerComment` - a comment string from the customer
+- `affiliate_code`
+- `campaign_code`
+- `customer_comment` - a comment string from the customer

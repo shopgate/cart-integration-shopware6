@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "e1717faa-d082-4cec-91d9-082643ed51fa",
+    "_postman_id": "1a992f77-6344-471f-9de4-e5ebd2096c01",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -4381,10 +4381,10 @@
                       "    pm.expect(jsonData.user_data.customer_groups[0].name).to.eql('API: A custom NET group');",
                       "});",
                       "pm.test('Custom fields', function() {",
-                      "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
-                      "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
+                      "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because account type is not exported');",
+                      "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vat_ids');",
                       "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
-                      "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
+                      "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliate_code');",
                       "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
                       "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
                       "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
@@ -4406,7 +4406,7 @@
                       "    pm.expect(billing.custom_fields).length(2, 'Billing 2 custom fields')",
                       "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
                       "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
-                      "    pm.expect(billing.custom_fields[1].internal_field_name).to.eq('phoneNumber');",
+                      "    pm.expect(billing.custom_fields[1].internal_field_name).to.eq('phone_number');",
                       "    pm.expect(billing.custom_fields[1].value).to.eq('12345');",
                       "  });",
                       "    ",
@@ -4631,7 +4631,7 @@
                     },
                     {
                       "key": "user_data[custom_fields][0][internal_field_name]",
-                      "value": "vatIds",
+                      "value": "vat_ids",
                       "type": "text"
                     },
                     {
@@ -4641,7 +4641,7 @@
                     },
                     {
                       "key": "user_data[custom_fields][1][internal_field_name]",
-                      "value": "affiliateCode",
+                      "value": "affiliate_code",
                       "type": "text"
                     },
                     {
@@ -4661,7 +4661,7 @@
                     },
                     {
                       "key": "user_data[custom_fields][3][internal_field_name]",
-                      "value": "accountType",
+                      "value": "account_type",
                       "type": "text"
                     },
                     {
@@ -14217,12 +14217,22 @@
                     },
                     {
                       "key": "cart[delivery_address][custom_fields][0][internal_field_name]",
+                      "value": "phone_number",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][custom_fields][1][internal_field_name]",
                       "value": "phoneNumber",
                       "type": "text"
                     },
                     {
                       "key": "cart[delivery_address][custom_fields][0][value]",
                       "value": "112233445",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][custom_fields][1][value]",
+                      "value": "112233",
                       "type": "text"
                     },
                     {
@@ -16028,8 +16038,8 @@
                       "pm.test(\"Custom Fields\", function () {",
                       "    pm.expect(order.custom_fields).to.be.length(1);",
                       "    const field = order.custom_fields[0];",
-                      "    pm.expect(field.label).to.eq('customerComment');",
-                      "    pm.expect(field.internal_field_name).to.eq('customerComment');",
+                      "    pm.expect(field.label).to.eq('customer_comment');",
+                      "    pm.expect(field.internal_field_name).to.eq('customer_comment');",
                       "    pm.expect(field.value).to.eq('My order comment');",
                       "});",
                       "",
@@ -19599,7 +19609,7 @@
                 },
                 {
                   "key": "user_data[custom_fields][0][internal_field_name]",
-                  "value": "vatIds",
+                  "value": "vat_ids",
                   "type": "text"
                 },
                 {
@@ -19609,7 +19619,7 @@
                 },
                 {
                   "key": "user_data[custom_fields][1][internal_field_name]",
-                  "value": "affiliateCode",
+                  "value": "affiliate_code",
                   "type": "text"
                 },
                 {
@@ -19629,7 +19639,7 @@
                 },
                 {
                   "key": "user_data[custom_fields][3][internal_field_name]",
-                  "value": "accountType",
+                  "value": "account_type",
                   "type": "text"
                 },
                 {
@@ -19714,10 +19724,10 @@
                   "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
                   "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
                   "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
-                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because accountType is not exported');",
-                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vatIds');",
+                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because account type is not exported');",
+                  "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vat_ids');",
                   "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
-                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliateCode');",
+                  "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliate_code');",
                   "    pm.expect(jsonData.user_data.custom_fields[1].value).to.eq('AFFILIATE_CODE');",
                   "    pm.expect(jsonData.user_data.custom_fields[0].internal_field_name).to.eq('title');",
                   "    pm.expect(jsonData.user_data.custom_fields[0].value).to.eq('Big Boss');",
@@ -19737,7 +19747,7 @@
                   "    pm.expect(billing.custom_fields).length(2, 'Billing 1 custom field')",
                   "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
                   "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
-                  "    pm.expect(billing.custom_fields[1].internal_field_name).to.eq('phoneNumber');",
+                  "    pm.expect(billing.custom_fields[1].internal_field_name).to.eq('phone_number');",
                   "    pm.expect(billing.custom_fields[1].value).to.eq('112233445');",
                   "});",
                   "",
@@ -19962,7 +19972,7 @@
                 },
                 {
                   "key": "user_data[custom_fields][0][internal_field_name]",
-                  "value": "vatIds",
+                  "value": "vat_ids",
                   "type": "text"
                 },
                 {
@@ -19972,7 +19982,7 @@
                 },
                 {
                   "key": "user_data[custom_fields][1][internal_field_name]",
-                  "value": "affiliateCode",
+                  "value": "affiliate_code",
                   "type": "text"
                 },
                 {
@@ -19992,7 +20002,7 @@
                 },
                 {
                   "key": "user_data[custom_fields][3][internal_field_name]",
-                  "value": "accountType",
+                  "value": "account_type",
                   "type": "text"
                 },
                 {
@@ -20042,7 +20052,7 @@
                 },
                 {
                   "key": "user_data[addresses][1][custom_fields][3][internal_field_name]",
-                  "value": "phoneNumber",
+                  "value": "phone_number",
                   "type": "text"
                 },
                 {

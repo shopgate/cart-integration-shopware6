@@ -38,7 +38,7 @@
       "custom_fields": [
         {
           "label": "Customer Comment",
-          "internal_field_name": "customerComment",
+          "internal_field_name": "customer_comment",
           "value": "My order comment"
         }
       ],

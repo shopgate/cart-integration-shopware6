@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\CustomFields;
@@ -12,21 +13,27 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 class CustomFieldMapping
 {
     private array $whitelist;
+    private array $transformList;
 
-    public function __construct(array $whitelist)
+    /**
+     * @param array $whitelist - allowed exported custom fields
+     * @param array $transformList - map of Shopgate key to Shopware key
+     */
+    public function __construct(array $whitelist, array $transformList = [])
     {
         $this->whitelist = $whitelist;
+        $this->transformList = $transformList;
     }
 
     /**
-     * @param Entity $entity
      * @return ShopgateOrderCustomField[]
      */
     public function mapToShopgateCustomFields(Entity $entity): array
     {
         $customFields = [];
         foreach ($this->whitelist as $method => $type) {
-            if ($entity->has($method) && ($value = $entity->get($method))) {
+            $mappedMethod = $this->transformList[$method] ?? $method;
+            if ($entity->has($mappedMethod) && ($value = $entity->get($mappedMethod))) {
                 $customField = new ShopgateOrderCustomField();
                 $customField->setLabel($method);
                 $customField->setInternalFieldName($method);
@@ -49,13 +56,16 @@ class CustomFieldMapping
     {
         $data = [];
         foreach ($entity->getCustomFields() as $customField) {
-            $type = $this->whitelist[$customField->getInternalFieldName()] ?? null;
+            $fieldName = $customField->getInternalFieldName();
             $value = $customField->getValue();
+
+            $type = $this->whitelist[$fieldName] ?? null;
+            $key = $this->transformList[$fieldName] ?? $fieldName;
             $isEmpty = $value === '' || $value === null;
             if ($type && !$isEmpty) {
-                $data[$customField->getInternalFieldName()] = $type === 'array' ? [$value] : $value;
+                $data[$key] = $type === 'array' ? [$value] : $value;
             } elseif (!$isEmpty) {
-                $data['customFields'][$customField->getInternalFieldName()] = $value;
+                $data['customFields'][$key] = $value;
             }
         }
 

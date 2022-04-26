@@ -25,19 +25,27 @@
         <!-- Whatever does not map here goes into the $swEntity->customFields list, it will only save if the field exists. -->
         <parameter key="shopgate.customer.custom_field.whitelist" type="collection">
             <parameter key="title">string</parameter>
-            <parameter key="affiliateCode">string</parameter>
-            <parameter key="campaignCode">string</parameter>
-            <parameter key="vatIds">array</parameter><!-- Req. accountType=business & billingAddress->company -->
-            <parameter key="accountType">string</parameter> <!-- see constants at Shopware\Core\Checkout\Customer -->
+            <parameter key="affiliate_code">string</parameter>
+            <parameter key="campaign_code">string</parameter>
+            <parameter key="vat_ids">array</parameter><!-- Req. account_type=business & billingAddress->company -->
+            <parameter key="account_type">string</parameter> <!-- see constants at Shopware\Core\Checkout\Customer -->
         </parameter>
         <parameter key="shopgate.customer.address.custom_field.whitelist" type="collection">
             <parameter key="department">string</parameter>
-            <parameter key="phoneNumber">string</parameter>
+            <parameter key="phone_number">string</parameter>
         </parameter>
         <parameter key="shopgate.order.custom_field.whitelist" type="collection">
-            <parameter key="affiliateCode">string</parameter>
-            <parameter key="campaignCode">string</parameter>
-            <parameter key="customerComment">string</parameter>
+            <parameter key="affiliate_code">string</parameter>
+            <parameter key="campaign_code">string</parameter>
+            <parameter key="customer_comment">string</parameter>
+        </parameter>
+        <parameter key="shopgate.custom_field.transformList" type="collection">
+            <parameter key="account_type">accountType</parameter>
+            <parameter key="affiliate_code">affiliateCode</parameter>
+            <parameter key="campaign_code">campaignCode</parameter>
+            <parameter key="customer_comment">customerComment</parameter>
+            <parameter key="phone_number">phoneNumber</parameter>
+            <parameter key="vat_ids">vatIds</parameter>
         </parameter>
     </parameters>
     <services>
@@ -233,12 +241,15 @@
         </service>
         <service id="sg.order.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
             <argument key="$whitelist">%shopgate.order.custom_field.whitelist%</argument>
+            <argument key="$transformList">%shopgate.custom_field.transformList%</argument>
         </service>
         <service id="sg.customer.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
             <argument key="$whitelist">%shopgate.customer.custom_field.whitelist%</argument>
+            <argument key="$transformList">%shopgate.custom_field.transformList%</argument>
         </service>
         <service id="sg.customer.address.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
             <argument key="$whitelist">%shopgate.customer.address.custom_field.whitelist%</argument>
+            <argument key="$transformList">%shopgate.custom_field.transformList%</argument>
         </service>
         <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"
                  alias="sg.customer.custom_field.whitelist"/>
