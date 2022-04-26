@@ -4,36 +4,38 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product\Sort;
 
-use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\FileCache;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
+use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 
 class SortTree
 {
-    public const CACHE_KEY = 'shopgate.sort.tree';
+    public const CACHE_KEY = 'shopgate.category.sort';
     private ContextManager $contextManager;
     private CategoryBridge $categoryBridge;
     private AbstractProductListingRoute $listingRoute;
-    private FileCache $cache;
+    private TagAwareAdapterInterface $cache;
     private LoggerInterface $logger;
 
     public function __construct(
-        FileCache $cacheObject,
+        TagAwareAdapterInterface $cache,
         ContextManager $contextManager,
         CategoryBridge $categoryBridge,
         AbstractProductListingRoute $listingRoute,
         LoggerInterface $logger
     ) {
-        $this->cache = $cacheObject;
+        $this->cache = $cache;
         $this->contextManager = $contextManager;
         $this->categoryBridge = $categoryBridge;
         $this->listingRoute = $listingRoute;
@@ -41,18 +43,27 @@ class SortTree
     }
 
     /**
-     * @throws InvalidArgumentException
+     * To enable cache you will need to go "prod" mode & enable HTTP Cache
+     * @throws InvalidArgumentException|CacheException
      */
     public function getSortTree(string $rootCategoryId): array
     {
-        /** @var CacheItemInterface $tree */
         $tree = $this->cache->getItem(self::CACHE_KEY . '.' . $rootCategoryId);
-        if (!$tree->isHit()) {
-            $this->logger->debug('Building new sort order cache');
-            $build = $this->build($rootCategoryId);
-            $this->cache->save($tree->set($build));
+        try {
+            if ($tree->isHit() && $tree->get()) {
+                return CacheCompressor::uncompress($tree);
+            }
+        } catch (Throwable $e) {
+            $this->logger->error($e->getMessage());
         }
-        return $tree->get();
+
+        $this->logger->debug('Building new sort order cache');
+        $build = $this->build($rootCategoryId);
+        $tree = CacheCompressor::compress($tree, $build);
+        $tree->tag([self::CACHE_KEY]);
+        $this->cache->save($tree);
+
+        return $build;
     }
 
     /**

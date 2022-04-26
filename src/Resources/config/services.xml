@@ -95,10 +95,13 @@
         <service id="Shopgate\Shopware\Catalog\Product\Sort\SortBridge">
             <argument type="service" id="product_sorting.repository"/>
         </service>
-        <service id="Shopgate\Shopware\Catalog\Product\Subscribers\ProductUpdateSubscriber">
+        <service id="Shopgate\Shopware\System\Subscribers\CacheInvalidateSubscriber">
+            <argument key="$cacheInvalidator" type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheInvalidator"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree"/>
+        <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree">
+            <argument key="$cache" type="service" id="cache.object"/>
+        </service>
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
             <argument type="service" id="salutation.repository"/>
         </service>
@@ -253,11 +256,6 @@
         </service>
         <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"
                  alias="sg.customer.custom_field.whitelist"/>
-        <service id="Shopgate\Shopware\System\FileCache">
-            <argument>shopgate</argument>
-            <argument>86400</argument>
-            <argument>%kernel.cache_dir%</argument>
-        </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
         <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Configuration\ConfigMapping" shared="true">
             <argument>%shopgate.configurations%</argument>
