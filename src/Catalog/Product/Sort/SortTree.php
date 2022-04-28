@@ -10,7 +10,7 @@ use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -75,21 +75,9 @@ class SortTree
         $tree = [];
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
         foreach ($categories as $category) {
-            $request = new Request();
-            $request->setSession(new Session()); // 3rd party subscriber support
-
-            if ($orderKey = $this->getSortOrderKey($category)) {
-                $request->request->set('order', $orderKey);
-            }
-            $criteria = new Criteria();
-            $criteria->setTitle('shopgate::product::category-id');
-            $result = $this->listingRoute
-                ->load($category->getId(), $request, $this->contextManager->getSalesContext(), $criteria)
-                ->getResult();
-            $products = $result->getEntities();
+            $products = $this->getAllCategoryProducts($category);
             $maxProducts = $products->count();
             $i = 0;
-            /** @var ProductEntity $product */
             foreach ($products as $product) {
                 $tree[$product->getParentId() ?: $product->getId()][] = [
                     'categoryId' => $category->getId(),
@@ -99,6 +87,36 @@ class SortTree
         }
 
         return $tree;
+    }
+
+    /**
+     * Loops through all products for every category out there. Expensive stuff!
+     */
+    private function getAllCategoryProducts(CategoryEntity $category): ProductCollection
+    {
+        $list = new ProductCollection();
+        $page = 1;
+        $limit = 100;
+
+        do {
+            $request = new Request();
+            $request->setMethod(Request::METHOD_POST);
+            $request->request->set('p', $page++);
+            $request->request->set('limit', $limit);
+            $request->setSession(new Session()); // 3rd party subscriber support
+            if ($orderKey = $this->getSortOrderKey($category)) {
+                $request->request->set('order', $orderKey);
+            }
+            $criteria = new Criteria();
+            $criteria->setTitle('shopgate::product::category-id');
+            $result = $this->listingRoute
+                ->load($category->getId(), $request, $this->contextManager->getSalesContext(), $criteria)
+                ->getResult();
+            $list->merge($result->getEntities());
+            $pageCount = ceil($result->getTotal() / $limit);
+        } while ($page <= $pageCount);
+
+        return $list;
     }
 
     /**
