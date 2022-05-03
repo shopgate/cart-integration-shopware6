@@ -65,6 +65,9 @@
                     {% endblock %}
                 </sw-description-list>
             </sw-container>
+            <sw-alert variant="warning" v-if="hasShopgateCoupon">
+                <p>{{ $tc('sg-order.messages.shopgateCouponNotSupported') }}</p>
+            </sw-alert>
         </sw-card-section>
     </sw-card>
 {% endblock %}

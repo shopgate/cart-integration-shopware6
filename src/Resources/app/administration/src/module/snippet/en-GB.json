@@ -20,6 +20,9 @@
     },
     "customFields": {
       "title": "Custom Order Fields"
+    },
+    "messages": {
+      "shopgateCouponNotSupported": "Shopgate Coupon import is not supported for this platform. Please use Shopware coupons with rule \"Is Shopgate Mobile\" -> Yes to create Shopgate specific coupons."
     }
   }
 }

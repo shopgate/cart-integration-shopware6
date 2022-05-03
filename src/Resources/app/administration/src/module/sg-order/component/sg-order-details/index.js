@@ -15,5 +15,12 @@ Component.register('sg-order-details', {
                 return {};
             }
         }
+    },
+
+    computed: {
+        hasShopgateCoupon: function () {
+            const items = this.sgOrder?.receivedData?.items;
+            return items && items.filter(item => item.type === 'sg_coupon').length;
+        }
     }
 });
