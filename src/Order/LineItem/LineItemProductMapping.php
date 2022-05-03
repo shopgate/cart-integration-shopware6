@@ -58,7 +58,7 @@ class LineItemProductMapping
                 'stackable' => true
             ]);
             $this->eventDispatcher->dispatch(new AfterIncItemMappingEvent($dataBag, $item, $context));
-            $lineItems[] = $dataBag->all();
+            $dataBag->has(AfterIncItemMappingEvent::SKIP) ?: $lineItems[] = $dataBag->all();
         }
 
         return $lineItems;
