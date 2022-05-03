@@ -19418,7 +19418,7 @@
                       "\r",
                       "pm.test(\"Check shopgate order has coupon item\", function () {\r",
                       "    pm.expect(order.extensions.shopgateOrder).to.not.be.null;\r",
-                      "    const items = order.extensions.shopgateOrder?.receivedData?.items;\r",
+                      "    const items = order.extensions.shopgateOrder.receivedData.items;\r",
                       "    pm.expect(items).to.not.be.undefined;\r",
                       "    const sgCoupon = Utility.getByItemNumber(items, 'COUPON');\r",
                       "    pm.expect(sgCoupon).to.not.be.undefined;\r",
