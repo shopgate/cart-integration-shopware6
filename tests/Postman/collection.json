@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "1a992f77-6344-471f-9de4-e5ebd2096c01",
+    "_postman_id": "48348cba-dd4f-4996-ab19-e4c798ddf188",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -3441,7 +3441,7 @@
           "response": []
         },
         {
-          "name": "SG: addOrder no items",
+          "name": "SG: addOrder no items (12)",
           "event": [
             {
               "listen": "test",
@@ -17612,7 +17612,7 @@
           ]
         },
         {
-          "name": "8 - Cron",
+          "name": "8 - 11 - Cron",
           "item": [
             {
               "name": "8 - Partial & Full ship",
@@ -19319,6 +19319,158 @@
                 }
               ],
               "description": "Checks that response from merchant API that order is already cancelled prevents it from sending this order again."
+            }
+          ]
+        },
+        {
+          "name": "13 - SG Coupon",
+          "item": [
+            {
+              "name": "SG: addOrder",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0013",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: check order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"One order found\", function () {\r",
+                      "    pm.expect(jsonData.total).to.eql(1);\r",
+                      "});\r",
+                      "\r",
+                      "const order = jsonData.data[0];\r",
+                      "pm.test(\"Check order data\", function () {\r",
+                      "    pm.expect(order.shippingTotal).to.eql(5);\r",
+                      "    pm.expect(order.amountTotal).to.eql(501.89);\r",
+                      "    pm.expect(order.taxStatus).to.eql('net');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check shopgate order has coupon item\", function () {\r",
+                      "    pm.expect(order.extensions.shopgateOrder).to.not.be.null;\r",
+                      "    const items = order.extensions.shopgateOrder.receivedData.items;\r",
+                      "    pm.expect(items).to.not.be.undefined;\r",
+                      "    const sgCoupon = Utility.getByItemNumber(items, 'COUPON');\r",
+                      "    pm.expect(sgCoupon).to.not.be.undefined;\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0013_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"shopgateOrder\":{}\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/order",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "order"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         }

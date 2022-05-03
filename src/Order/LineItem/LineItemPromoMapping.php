@@ -127,7 +127,7 @@ class LineItemPromoMapping
     /**
      * Only one amount should be set
      */
-    private function applyOneCouponAmount(ShopgateExternalCoupon $coupon, CalculatedPrice $amount, string $status)
+    private function applyOneCouponAmount(ShopgateExternalCoupon $coupon, CalculatedPrice $amount, string $status): void
     {
         [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($amount, $status);
         if ($status === CartPrice::TAX_STATE_GROSS) {

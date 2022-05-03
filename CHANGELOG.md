@@ -17,6 +17,7 @@
 - fixed product sort to use parent ID instead of child ID for sort order positions in a category
 - fixed product export not honoring clearance flag
 - fixed category sort cache is now more responsive to cache clears
+- fixed issue with order import when an SG coupon is present
 
 # 1.8.5
 
