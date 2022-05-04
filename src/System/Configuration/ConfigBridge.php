@@ -174,7 +174,7 @@ class ConfigBridge
         /** @var ?SystemConfigEntity $config */
         $config = $this->config->filterByProperty('configurationKey', self::SYSTEM_CONFIG_DOMAIN . $key)->first();
 
-        return $config && !empty($config->getConfigurationValue()) ? $config->getConfigurationValue() : $fallback;
+        return $config && null !== $config->getConfigurationValue() ? $config->getConfigurationValue() : $fallback;
     }
 
     /**

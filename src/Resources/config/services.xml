@@ -67,6 +67,10 @@
             <argument key="$reviewRepository" type="service" id="product_review.repository"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Review\ReviewMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Review\Subscriber\AddChannelFilterSubscriber">
+            <argument key="$exportAllChannelReviews" type="expression">service('shopgate.config_bridge').get('exportAllChannelReviews', true)</argument>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\Customer\CustomerComposer"/>
         <service id="Shopgate\Shopware\Customer\AddressBridge">
             <argument key="$addressRepository" type="service" id="customer_address.repository"/>
