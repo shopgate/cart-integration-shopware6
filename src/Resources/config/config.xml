@@ -53,7 +53,7 @@
         <input-field type="bool">
             <name>exportAllChannelReviews</name>
             <label>Allow reviews from all Sales Channels</label>
-            <label lang="de-DE">Allow reviews from all Sales Channels</label>
+            <label lang="de-DE">Exportiert Reviews von allen Sales Channels</label>
             <defaultValue>true</defaultValue>
         </input-field>
     </card>
