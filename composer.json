@@ -3,7 +3,7 @@
   "description": "Shopgate Module for Shopware 6",
   "license": "proprietary",
   "type": "shopware-platform-plugin",
-  "version": "2.0.0-beta.14",
+  "version": "2.0.0",
   "keywords": [
     "mobile",
     "app"
