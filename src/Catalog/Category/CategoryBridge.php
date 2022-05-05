@@ -82,9 +82,10 @@ class CategoryBridge
 
         $items = new CategoryCollection();
         $maxChildren = $children->count();
-        foreach ($children as $key => $child) {
+        $i = 0;
+        foreach ($children as $child) {
             $child->setChildren($this->buildTree($child->getId(), $categories));
-            $child->setCustomFields(['sortOrder' => $maxChildren - $key]);
+            $child->setCustomFields(['sortOrder' => $maxChildren - $i++]);
             $items->add($child);
         }
 

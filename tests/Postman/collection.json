@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "48348cba-dd4f-4996-ab19-e4c798ddf188",
+    "_postman_id": "a1ff0a82-82e4-49b2-b9f0-709b39e803ad",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -8211,9 +8211,11 @@
                       "    const jsonObject = xml2Json(responseBody);",
                       "",
                       "    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
-                      "    pm.expect(jsonObject.items.item.categories.category[0].$.uid).to.be.eq(pm.environment.get('created_category_noFreeShip_id'));",
-                      "    pm.expect(jsonObject.items.item.categories.category[0].$.sort_order).to.be.eq('1');",
-                      "    pm.expect(jsonObject.items.item.categories.category[1].$.sort_order).to.be.eq('4');",
+                      "    const noFreeShipCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('created_category_noFreeShip_id'));",
+                      "    pm.expect(noFreeShipCat.$.sort_order).to.be.eq('1');",
+                      "",
+                      "    const freeTimeCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('category_freeTime_id'));",
+                      "    pm.expect(freeTimeCat.$.sort_order).to.be.eq('4');",
                       "});",
                       "",
                       "pm.test(\"Header check\", function () {",
