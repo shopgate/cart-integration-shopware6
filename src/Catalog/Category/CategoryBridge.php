@@ -6,7 +6,6 @@ namespace Shopgate\Shopware\Catalog\Category;
 
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Category\CategoryCollection;
-use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
@@ -17,30 +16,17 @@ class CategoryBridge
     private AbstractCategoryListRoute $categoryListRoute;
     private ContextManager $contextManager;
 
-    /**
-     * @param AbstractCategoryListRoute $categoryListRoute
-     * @param ContextManager $contextManager
-     */
-    public function __construct(
-        AbstractCategoryListRoute $categoryListRoute,
-        ContextManager $contextManager
-    ) {
+    public function __construct(AbstractCategoryListRoute $categoryListRoute, ContextManager $contextManager)
+    {
         $this->categoryListRoute = $categoryListRoute;
         $this->contextManager = $contextManager;
     }
 
-    /**
-     * @return string
-     */
     public function getRootCategoryId(): string
     {
         return $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
     }
 
-    /**
-     * @param string $parentId
-     * @return CategoryCollection
-     */
     public function getChildCategories(string $parentId): CategoryCollection
     {
         $criteria = (new Criteria())
@@ -55,26 +41,19 @@ class CategoryBridge
             );
         $criteria->setTitle('shopgate::category::parent-id');
         $list = $this->categoryListRoute->load($criteria, $this->contextManager->getSalesContext())->getCategories();
-        $tree = $this->buildTree($parentId, $list->getElements());
-        $flatten = $this->flattenTree($tree->getElements());
+        $tree = $this->buildTree($parentId, $list);
 
-        return new CategoryCollection($flatten);
+        return $this->flattenTree($tree, new CategoryCollection());
     }
 
-    /**
-     * @param string|null $parentId
-     * @param array $categories
-     * @return CategoryCollection
-     */
-    private function buildTree(?string $parentId, array $categories): CategoryCollection
+    private function buildTree(?string $parentId, CategoryCollection $categories): CategoryCollection
     {
         $children = new CategoryCollection();
         foreach ($categories as $key => $category) {
             if ($category->getParentId() !== $parentId) {
                 continue;
             }
-            unset($categories[$key]);
-
+            $categories->remove($key);
             $children->add($category);
         }
 
@@ -82,27 +61,23 @@ class CategoryBridge
 
         $items = new CategoryCollection();
         $maxChildren = $children->count();
-        foreach ($children as $key => $child) {
+        $i = 0;
+        foreach ($children as $child) {
             $child->setChildren($this->buildTree($child->getId(), $categories));
-            $child->setCustomFields(['sortOrder' => $maxChildren - $key]);
+            $child->setCustomFields(['sortOrder' => $maxChildren - $i++]);
             $items->add($child);
         }
 
         return $items;
     }
 
-    /**
-     * @param CategoryEntity[] $list
-     * @param CategoryEntity[] $result
-     * @return array
-     */
-    private function flattenTree(array $list, array $result = []): array
+    private function flattenTree(CategoryCollection $list, CategoryCollection $result): CategoryCollection
     {
         foreach ($list as $item) {
             if ($item->getChildren()) {
-                $result = $this->flattenTree($item->getChildren()->getElements(), $result);
+                $result = $this->flattenTree($item->getChildren(), $result);
             }
-            $result[] = $item;
+            $result->add($item);
         }
         return $result;
     }

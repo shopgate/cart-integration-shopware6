@@ -1,6 +1,7 @@
 # 2.1.0
 
 - added configuration that allows for reviews to be exported from all sales channels (default: on)
+- added support to SW 6.4.11
 
 # 2.0.0
 
