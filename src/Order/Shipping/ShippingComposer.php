@@ -14,6 +14,7 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryCalculator;
 use Shopware\Core\Checkout\Cart\Delivery\DeliveryProcessor;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
@@ -27,7 +28,6 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -36,26 +36,26 @@ use Throwable;
 class ShippingComposer
 {
     private ShippingBridge $shippingBridge;
-    private CheckoutCartPageLoader $cartPageLoader;
     private ContextManager $contextManager;
     private ShippingMapping $shippingMapping;
     private EventDispatcherInterface $eventDispatcher;
     private StateComposer $stateComposer;
+    private CartCalculator $calculator;
 
     public function __construct(
         ShippingBridge $shippingBridge,
         ShippingMapping $shippingMapping,
-        CheckoutCartPageLoader $cartPageLoader,
         StateComposer $stateComposer,
         ContextManager $contextManager,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        CartCalculator $calculator
     ) {
         $this->shippingBridge = $shippingBridge;
         $this->shippingMapping = $shippingMapping;
-        $this->cartPageLoader = $cartPageLoader;
         $this->stateComposer = $stateComposer;
         $this->contextManager = $contextManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->calculator = $calculator;
     }
 
     /**
@@ -86,11 +86,9 @@ class ShippingComposer
 
     /**
      * @return ShopgateShippingMethod[]
-     * @throws ShopgateLibraryException
      */
-    public function mapShippingMethods(SalesChannelContext $context): array
+    public function mapOutgoingShipping(DeliveryCollection $deliveries): array
     {
-        $deliveries = $this->getCalculatedDeliveries($context);
         $this->eventDispatcher->dispatch(new BeforeShippingMethodMappingEvent($deliveries));
         $result = new DataBag($deliveries->map(
             fn(Delivery $delivery) => $this->shippingMapping->mapOutCartShippingMethod($delivery))
@@ -101,9 +99,11 @@ class ShippingComposer
     }
 
     /**
+     * Applies shipping method one at a time, then returns prices for every shipping method
+     *
      * @throws ShopgateLibraryException
      */
-    public function getCalculatedDeliveries(SalesChannelContext $context): DeliveryCollection
+    public function getCalculatedDeliveries(Cart $originalCart, SalesChannelContext $context): DeliveryCollection
     {
         $shippingMethods = $this->shippingBridge->getShippingMethods($context);
         $list = [];
@@ -114,8 +114,8 @@ class ShippingComposer
                 $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
                 $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
                 $resultContext = $this->contextManager->switchContext($dataBag, $context);
-                $cart = $this->cartPageLoader->load($request, $resultContext)->getCart();
-                $deliveries = $this->sortCartDeliveries($cart->getDeliveries());
+                $modifiedCart = $this->calculator->calculate($originalCart, $resultContext);
+                $deliveries = $this->sortCartDeliveries($modifiedCart->getDeliveries());
                 $delivery = $deliveries->first();
                 // we have shipping discounts
                 if ($delivery && $deliveries->count() > 1) {

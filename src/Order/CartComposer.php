@@ -64,23 +64,29 @@ class CartComposer
         // load desktop cart, duplicate its context, add info to context & create new cart based on it
         $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
         $duplicatedContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
-
         $this->eventDispatcher->dispatch(new BeforeCheckCartEvent($sgCart, $duplicatedContext));
-
         $cleanCartContext = $this->contextComposer->addCustomerAddress($sgCart, $duplicatedContext);
+
+        // payment
         $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $cleanCartContext);
         $context = $this->contextComposer->addActivePayment($paymentId, $cleanCartContext);
-        $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
+
+        // line items
+        $initialCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
-        $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);
+        $updatedCart = $this->lineItemComposer->addLineItemsToCart($initialCart, $context, $lineItems);
+        $lineItemExport = $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
+
+        // ship
+        $deliveries = $this->shippingComposer->getCalculatedDeliveries($updatedCart, $context);
 
         $result = [
                 'currency' => $context->getCurrency()->getIsoCode(),
-                'shipping_methods' => $this->shippingComposer->mapShippingMethods($context),
-                'payment_methods' => $this->paymentComposer->mapOutgoingPayments($context)
+                'payment_methods' => $this->paymentComposer->mapOutgoingPayments($context),
+                'shipping_methods' => $this->shippingComposer->mapOutgoingShipping($deliveries)
             ]
             + $this->orderCustomerComposer->mapOutgoingCartCustomer($context)
-            + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
+            + $lineItemExport;
 
         $result = $this->eventDispatcher->dispatch(new AfterCheckCartEvent($result, $context))->getResult();
 

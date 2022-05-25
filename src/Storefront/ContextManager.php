@@ -90,7 +90,7 @@ class ContextManager
 
     public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
     {
-        $currentContext = $context ?: $this->salesContext;
+        $currentContext = $context ?: $this->getSalesContext();
         $this->contextPersist->save(
             $currentContext->getToken(),
             $dataBag->all(),
