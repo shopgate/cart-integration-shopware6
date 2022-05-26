@@ -33,8 +33,8 @@ class QuoteBridge
     private AbstractCartLoadRoute $cartLoadRoute;
     private AbstractCartItemAddRoute $cartItemAddRoute;
     private AbstractCartDeleteRoute $cartDeleteRoute;
-    private EntityRepositoryInterface $orderRepository;
     private AbstractOrderRoute $orderRoute;
+    private EntityRepositoryInterface $orderRepository;
     private EventDispatcherInterface $dispatcher;
 
     public function __construct(

@@ -1,3 +1,7 @@
+# 2.1.1
+
+- added caching of cart after addItem is added to support 3rd party plugin cart re-calculations
+
 # 2.1.0
 
 - added configuration that allows for reviews to be exported from all sales channels (default: on)
