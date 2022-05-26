@@ -1,8 +1,9 @@
 {
   "info": {
-    "_postman_id": "a1ff0a82-82e4-49b2-b9f0-709b39e803ad",
+    "_postman_id": "7a6b99f1-bbf6-4cd8-bc0a-26e3c59724d6",
     "name": "SW6 CI Tests",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "5289226"
   },
   "item": [
     {
@@ -2320,7 +2321,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"create-rules\": {\r\n        \"entity\": \"rule\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_rule_shippingUSA}}\",\r\n                \"name\": \"API: shipping USA\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_USA_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 20\r\n            },\r\n            {\r\n                \"id\": \"{{created_rule_shippingGB}}\",\r\n                \"name\": \"API: shipping Great Britain\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_GB_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 30\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"create-rules\": {\r\n        \"entity\": \"rule\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_rule_shippingUSA}}\",\r\n                \"name\": \"API: shipping USA\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_USA_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 20\r\n            },\r\n            {\r\n                \"id\": \"{{created_rule_shippingGB}}\",\r\n                \"name\": \"API: shipping Great Britain\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"customerShippingCountry\",\r\n                        \"value\": {\r\n                            \"operator\": \"=\",\r\n                            \"countryIds\": [\r\n                                \"{{gen_country_GB_id}}\"\r\n                            ]\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 30\r\n            },\r\n            {\r\n                \"id\": \"{{created_rule_cart5k}}\",\r\n                \"name\": \"API: cart >=5k\",\r\n                \"conditions\": [\r\n                    {\r\n                        \"type\": \"cartCartAmount\",\r\n                        \"value\": {\r\n                            \"operator\": \">=\",\r\n                            \"amount\": 5000\r\n                        }\r\n                    }\r\n                ],\r\n                \"priority\": 40\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2961,7 +2962,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"create-shipping-methods\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_shipping_taxAuto}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: shipping tax Auto\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: shipping tax Auto (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"deliveryTimeId\": \"{{default_deliveryTime_sg_id}}\",\r\n                \"taxType\": \"auto\",\r\n                \"prices\": [\r\n                    {\r\n                        \"quantityStart\": 0,\r\n                        \"quantityEnd\": 1,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 4,\r\n                                \"gross\": 5,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 6,\r\n                                \"gross\": 7,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"318c9103807bf03b9934b4ae5ea8ff04\"\r\n                    },\r\n                    {\r\n                        \"quantityStart\": 2,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 7,\r\n                                \"gross\": 8,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"86951016d2eb8e81277051d0acb4653d\"\r\n                    },\r\n                    {\r\n                        \"ruleId\": \"{{created_rule_shippingUSA}}\",\r\n                        \"quantityStart\": 150,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 3,\r\n                                \"gross\": 4,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 4,\r\n                                \"gross\": 5,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 2,\r\n                        \"id\": \"fd785fe1af5b8b0afa4fe1aa2f5b46f8\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_shipping_taxHighest}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: shipping tax Highest\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: shipping tax Highest (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"deliveryTimeId\": \"{{default_deliveryTime_sg_id}}\",\r\n                \"taxType\": \"highest\",\r\n                \"prices\": [\r\n                    {\r\n                        \"quantityStart\": 0,\r\n                        \"quantityEnd\": 1,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 4.10,\r\n                                \"gross\": 5.10,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 6.10,\r\n                                \"gross\": 7.10,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"1202e5b323349d37ac232086fb9196ab\"\r\n                    },\r\n                    {\r\n                        \"quantityStart\": 2,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 7.10,\r\n                                \"gross\": 8.10,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"bfb951d09cd6d2b07124ffddcd4f06a9\"\r\n                    },\r\n                    {\r\n                        \"ruleId\": \"{{created_rule_shippingGB}}\",\r\n                        \"quantityStart\": 150,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 3.10,\r\n                                \"gross\": 4.10,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 4.10,\r\n                                \"gross\": 5.10,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 2,\r\n                        \"id\": \"28a72f610a8c991c69b7ba56518a6e4d\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_shipping_taxFixed}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: shipping tax Fixed\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: shipping tax Fixed (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"deliveryTimeId\": \"{{default_deliveryTime_sg_id}}\",\r\n                \"taxType\": \"fixed\",\r\n                \"taxId\": \"{{gen_tax_reduced_id}}\",\r\n                \"prices\": [\r\n                    {\r\n                        \"quantityStart\": 0,\r\n                        \"quantityEnd\": 1,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 4.20,\r\n                                \"gross\": 5.20,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 6.20,\r\n                                \"gross\": 7.20,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"e8b238f9b34609b27dcf894035018e3b\"\r\n                    },\r\n                    {\r\n                        \"quantityStart\": 2,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 7.20,\r\n                                \"gross\": 8.20,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"0f10a0cabdfebf782ac28e451c12f3ef\"\r\n                    },\r\n                    {\r\n                        \"ruleId\": \"{{created_rule_shippingGB}}\",\r\n                        \"quantityStart\": 150,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 3.20,\r\n                                \"gross\": 4.20,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 4.20,\r\n                                \"gross\": 5.20,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 2,\r\n                        \"id\": \"16bfe960e480a361adfda182f5975a42\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"create-shipping-methods\": {\r\n        \"entity\": \"shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_shipping_taxAuto}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: shipping tax Auto\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: shipping tax Auto (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"deliveryTimeId\": \"{{default_deliveryTime_sg_id}}\",\r\n                \"taxType\": \"auto\",\r\n                \"prices\": [\r\n                    {\r\n                        \"quantityStart\": 0,\r\n                        \"quantityEnd\": 1,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 4,\r\n                                \"gross\": 5,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 6,\r\n                                \"gross\": 7,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"318c9103807bf03b9934b4ae5ea8ff04\"\r\n                    },\r\n                    {\r\n                        \"quantityStart\": 2,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 7,\r\n                                \"gross\": 8,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"86951016d2eb8e81277051d0acb4653d\"\r\n                    },\r\n                    {\r\n                        \"ruleId\": \"{{created_rule_shippingUSA}}\",\r\n                        \"quantityStart\": 150,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 3,\r\n                                \"gross\": 4,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 4,\r\n                                \"gross\": 5,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 2,\r\n                        \"id\": \"fd785fe1af5b8b0afa4fe1aa2f5b46f8\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_shipping_taxHighest}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: shipping tax Highest\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: shipping tax Highest (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"deliveryTimeId\": \"{{default_deliveryTime_sg_id}}\",\r\n                \"taxType\": \"highest\",\r\n                \"prices\": [\r\n                    {\r\n                        \"quantityStart\": 0,\r\n                        \"quantityEnd\": 1,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 4.10,\r\n                                \"gross\": 5.10,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 6.10,\r\n                                \"gross\": 7.10,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"1202e5b323349d37ac232086fb9196ab\"\r\n                    },\r\n                    {\r\n                        \"quantityStart\": 2,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 7.10,\r\n                                \"gross\": 8.10,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"bfb951d09cd6d2b07124ffddcd4f06a9\"\r\n                    },\r\n                    {\r\n                        \"ruleId\": \"{{created_rule_shippingGB}}\",\r\n                        \"quantityStart\": 150,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 3.10,\r\n                                \"gross\": 4.10,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 4.10,\r\n                                \"gross\": 5.10,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 2,\r\n                        \"id\": \"28a72f610a8c991c69b7ba56518a6e4d\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_shipping_taxFixed}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: shipping tax Fixed\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: shipping tax Fixed (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"deliveryTimeId\": \"{{default_deliveryTime_sg_id}}\",\r\n                \"taxType\": \"fixed\",\r\n                \"taxId\": \"{{gen_tax_reduced_id}}\",\r\n                \"prices\": [\r\n                    {\r\n                        \"quantityStart\": 0,\r\n                        \"quantityEnd\": 1,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 4.20,\r\n                                \"gross\": 5.20,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 6.20,\r\n                                \"gross\": 7.20,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"e8b238f9b34609b27dcf894035018e3b\"\r\n                    },\r\n                    {\r\n                        \"quantityStart\": 2,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 7.20,\r\n                                \"gross\": 8.20,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"0f10a0cabdfebf782ac28e451c12f3ef\"\r\n                    },\r\n                    {\r\n                        \"ruleId\": \"{{created_rule_shippingGB}}\",\r\n                        \"quantityStart\": 150,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 3.20,\r\n                                \"gross\": 4.20,\r\n                                \"linked\": false\r\n                            },\r\n                            {\r\n                                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                                \"net\": 4.20,\r\n                                \"gross\": 5.20,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 2,\r\n                        \"id\": \"16bfe960e480a361adfda182f5975a42\"\r\n                    }\r\n                ]\r\n            },\r\n            {\r\n                \"id\": \"{{created_shipping_cart5k}}\",\r\n                \"active\": true,\r\n                \"translations\": {\r\n                    \"en-GB\": {\r\n                        \"name\": \"API: shipping cart 5k+\"\r\n                    },\r\n                    \"de-DE\": {\r\n                        \"name\": \"API: shipping cart 5k+ (DE)\"\r\n                    }\r\n                },\r\n                \"availabilityRuleId\": \"{{created_rule_cart5k}}\",\r\n                \"deliveryTimeId\": \"{{default_deliveryTime_sg_id}}\",\r\n                \"taxType\": \"auto\",\r\n                \"prices\": [\r\n                    {\r\n                        \"quantityStart\": 0,\r\n                        \"quantityEnd\": null,\r\n                        \"currencyPrice\": [\r\n                            {\r\n                                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                                \"net\": 3.77,\r\n                                \"gross\": 3.83,\r\n                                \"linked\": false\r\n                            }\r\n                        ],\r\n                        \"calculation\": 1,\r\n                        \"id\": \"84192e49701bfff2599ecf75cebe18bc\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3022,7 +3023,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"8024ecf35ea702a0226c169dc8b4f5b9\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxAuto}}\"\r\n            },\r\n            {\r\n                \"id\": \"68dc87bda5c9e54e27b3237e409c7653\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxHighest}}\"\r\n            },\r\n            {\r\n                \"id\": \"25dc19720c2e67b4e0365518ffced6f2\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxFixed}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"8024ecf35ea702a0226c169dc8b4f5b9\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxAuto}}\"\r\n            },\r\n            {\r\n                \"id\": \"68dc87bda5c9e54e27b3237e409c7653\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxHighest}}\"\r\n            },\r\n            {\r\n                \"id\": \"25dc19720c2e67b4e0365518ffced6f2\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxFixed}}\"\r\n            },\r\n            {\r\n                \"id\": \"a702e8bd39e9c1e3b7c1da4d81cfb2d0\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_cart5k}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -10241,7 +10242,7 @@
                       "});",
                       "// reason for this is because the active line item in cart  are \"free ship\" items",
                       "pm.test(\"Check shipping is free\", function () {",
-                      "    pm.expect(jsonData.shipping_methods).length(5);",
+                      "    pm.expect(jsonData.shipping_methods).length(6);",
                       "    jsonData.shipping_methods.map(method => {",
                       "        pm.expect(method.amount_with_tax).is.eq(0, 'Price of all shipping should be 0');",
                       "    });",
@@ -12780,6 +12781,183 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "SG: shipping 5k+",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "",
+                          "pm.test(\"Check default customer group set for customer\", function () {",
+                          "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                          "});",
+                          "",
+                          "pm.test(\"Check ship grandTotal\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(6);",
+                          "    const taxFixed = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_cart5k'));",
+                          "    pm.expect(taxFixed.title).to.eq('API: shipping cart 5k+');",
+                          "    pm.expect(taxFixed.amount_with_tax).to.eq(3.83);",
+                          "    pm.expect(taxFixed.tax_percent).to.eq(19);",
+                          "});",
+                          "",
+                          "pm.test(\"General item check\", function () {",
+                          "    pm.expect(jsonData.items).length(1, 'Should be 1 item in cart');",
+                          "});",
+                          "const items = jsonData.items;",
+                          "pm.test(\"Check item success\", function () {",
+                          "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_main_id'));",
+                          "    pm.expect(item.is_buyable).to.eql(1);",
+                          "    pm.expect(item.qty_buyable).to.eql(11);",
+                          "    pm.expect(item.unit_amount).to.eql(416.76);",
+                          "    pm.expect(item.unit_amount_with_tax).to.eql(495.95);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_check_cart}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_customer_id]",
+                          "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_group]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_method]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][country]",
+                          "value": "BD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][country]",
+                          "value": "BD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number]",
+                          "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number_public]",
+                          "value": "SWDEMO10002",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][quantity]",
+                          "value": "11",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ]
             },
@@ -14778,7 +14956,7 @@
                   "",
                   "// reason for this is because the active line item in cart  are \"free ship\" items",
                   "pm.test(\"Check shipping is free\", function () {",
-                  "    pm.expect(jsonData.shipping_methods).length(5);",
+                  "    pm.expect(jsonData.shipping_methods).length(6);",
                   "    jsonData.shipping_methods.map(method => {",
                   "        pm.expect(method.amount_with_tax).is.eq(0, 'Price of all shipping should be 0');",
                   "    });",
@@ -15100,7 +15278,7 @@
                   "});",
                   "// reason for this is because the active line item in cart  are \"free ship\" items",
                   "pm.test(\"Check shipping is free\", function () {",
-                  "    pm.expect(jsonData.shipping_methods).length(5);",
+                  "    pm.expect(jsonData.shipping_methods).length(6);",
                   "    jsonData.shipping_methods.map(method => {",
                   "        pm.expect(method.amount_with_tax).is.eq(0, 'Price of all shipping should be 0');",
                   "    });",
