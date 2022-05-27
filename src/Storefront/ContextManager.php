@@ -90,12 +90,13 @@ class ContextManager
 
     public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
     {
-        $currentContext = $context ?: $this->salesContext;
+        $currentContext = $context ?: $this->getSalesContext();
+        $customerId = $currentContext->getCustomer() ? $currentContext->getCustomer()->getId(): null;
         $this->contextPersist->save(
             $currentContext->getToken(),
             $dataBag->all(),
             $currentContext->getSalesChannelId(),
-            $dataBag->get(SalesChannelContextService::CUSTOMER_ID)
+            $dataBag->get(SalesChannelContextService::CUSTOMER_ID) ?: $customerId
         );
         $token = $this->contextSwitchRoute->switchContext($dataBag, $currentContext)->getToken();
         $context = $this->loadByCustomerToken($token);
