@@ -206,3 +206,9 @@ downstream dynamicAccess:
   trigger:
     project: apite/shopgate/shopware-6-dynamic-access
     branch: main
+
+downstream vatIdMapping:
+  <<: *downstreamDefaults
+  trigger:
+    project: apite/shopgate/phi-vat-id-mapping-shopware6
+    branch: SW6M-24-added-ability-to-clear-vatId
