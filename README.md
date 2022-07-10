@@ -18,7 +18,7 @@ version.
 It can be installed manually by copying the plugin folder to `custom/plugins` directory. However, please make sure you
 have a composer compiled version of the plugin. Meaning, you have a `vendor` directory in the plugin folder.
 
-#### Composer symlink (development)
+#### Composer symlink
 
 After placing it in the `plugins` folder you can now link it to composer by running this command in the root
 directory:
@@ -49,7 +49,7 @@ You may install and activate via the Shopware administration panel instead, if y
 
 ## Compile frontend
 
-This shopware 6 command will compile the JavaScript of frontend and backend:
+This Shopware 6 command will compile the JavaScript of frontend and backend (optional):
 
 ```shell
 cd [shopware6 root folder]
@@ -130,3 +130,7 @@ has a customField defined, it will map.
 - `affiliate_code`
 - `campaign_code`
 - `customer_comment` - a comment string from the customer
+
+### Won't do
+- Cannot support cart rounding, Shopgate App will handle rounding up to 2 decimal places. Currency conversion rounding
+will be left intact for now unless we get complaints about issues with inaccuracy.

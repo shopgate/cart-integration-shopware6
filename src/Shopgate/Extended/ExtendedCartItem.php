@@ -7,6 +7,9 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 use ShopgateCartItem;
 use ShopgateOrderItem;
 
+/**
+ * There is no internal info on this object, don't bother with serialize trait
+ */
 class ExtendedCartItem extends ShopgateCartItem
 {
     use CloningTrait;

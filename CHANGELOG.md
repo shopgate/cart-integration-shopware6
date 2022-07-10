@@ -1,3 +1,7 @@
+# 2.1.2
+
+- removed item, coupon & shipping rounding in check_cart
+
 # 2.1.1
 
 - added caching of cart after addItem is added to support 3rd party plugin cart re-calculations
