@@ -1,3 +1,7 @@
+# Unreleased
+
+- Shopgate logo updated
+
 # 2.1.2
 
 - removed item, coupon & shipping rounding in check_cart
