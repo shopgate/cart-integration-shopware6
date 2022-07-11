@@ -191,23 +191,23 @@ publish to marketplace:
 downstream replyCert:
   <<: *downstreamDefaults
   trigger:
-    project: apite/shopgate/reply-certificate-shopware6
+    project: apite/shopgate/shopware6/reply-certificate
     branch: ver-1.x
 
 downstream acrisSurcharge:
   <<: *downstreamDefaults
   trigger:
-    project: apite/shopgate/acris-surcharge-shopware6
+    project: apite/shopgate/shopware6/acris-surcharge
     branch: ver-1.x
 
 downstream dynamicAccess:
   <<: *downstreamDefaults
   trigger:
-    project: apite/shopgate/shopware-6-dynamic-access
+    project: apite/shopgate/shopware6/shopware-dynamic-access
     branch: main
 
 downstream vatIdMapping:
   <<: *downstreamDefaults
   trigger:
-    project: apite/shopgate/phi-vat-id-mapping-shopware6
+    project: apite/shopgate/shopware6/shopgate-vat-id-mapping
     branch: main
