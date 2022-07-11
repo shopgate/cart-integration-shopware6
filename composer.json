@@ -1,6 +1,6 @@
 {
   "name": "shopgate/cart-integration-shopware6",
-  "description": "Shopgate Module for Shopware 6",
+  "description": "Shopgate Legacy plugin for Shopware 6",
   "license": "proprietary",
   "type": "shopware-platform-plugin",
   "version": "2.1.2",
@@ -24,7 +24,7 @@
   },
   "extra": {
     "shopware-plugin-class": "Shopgate\\Shopware\\SgateShopgatePluginSW6",
-    "plugin-icon": "src/Resources/public/shopgate_logo.png",
+    "plugin-icon": "src/Resources/public/shopgate-logo.png",
     "copyright": "by Apite",
     "label": {
       "de-DE": "Shopgate Modul",
