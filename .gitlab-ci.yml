@@ -4,7 +4,7 @@ stages:
   - deploy
 
 variables:
-  PROJECT_ROOT: ${CI_PROJECT_DIR}
+  PROJECT_ROOT: $CI_PROJECT_DIR
   WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/public
   LOG_STDOUT: $CI_PROJECT_DIR/var/log/stdout.log
   MYSQL_DATABASE: shopware
@@ -67,13 +67,11 @@ workflow:
     - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
     - mkdir -p custom/plugins || true
     - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
-    - composer config allow-plugins true
     - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
     - composer install -n --quiet
     - mkdir -p config/jwt || true
     - bin/console system:generate-jwt || true
     - bin/console system:install --drop-database --basic-setup --force --no-interaction --quiet
-    - chown -R 1000:1000 .
     - bin/console plugin:refresh --quiet
     - bin/console plugin:install --quiet --activate $PLUGIN_NAME
     - >
@@ -83,6 +81,7 @@ workflow:
       fi
     - bin/console bundle:dump
     - bin/console assets:install --quiet
+    - chown -R 1000:1000 .
     - /entrypoint supervisord > /dev/null 2>&1 &
 
 newman:
@@ -94,7 +93,7 @@ newman:
   parallel:
     matrix:
       - PLATFORM_BRANCH:
-          - 6.4.6.0
+          - 6.4.8.0
           - 6.4.11.0
       - PHP:
           - '8.0'
