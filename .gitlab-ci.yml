@@ -15,7 +15,7 @@ variables:
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
   # things plugins might want to override
   APP_ENV: dev
-  APP_DEBUG: 1
+  APP_DEBUG: 0
   APP_SECRET: 123456
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld

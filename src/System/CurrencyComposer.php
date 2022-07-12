@@ -80,11 +80,14 @@ class CurrencyComposer
         return $price ? $this->toCalculatedPrice($price) : null;
     }
 
+    /**
+     * A flat 3 decimal point round per SG requirements in SW6M-37
+     */
     public function roundAsItem(float $value): float
     {
-        return $this->rounding->cashRound(
-            $value,
-            $this->contextManager->getSalesContext()->getItemRounding()
-        );
+        $roundingConfig = $this->contextManager->getSalesContext()->getItemRounding();
+        $roundingConfig->setDecimals(3);
+
+        return $this->rounding->cashRound($value, $roundingConfig);
     }
 }
