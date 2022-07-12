@@ -1,6 +1,6 @@
 # 2.2.0
 
-- added item, coupon, shipping rounding up to 3 decimal points
+- added item, coupon, shipping, product export rounding up to 3 decimal points
 - updated Shopgate logo
 
 # 2.1.2
