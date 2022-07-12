@@ -130,7 +130,3 @@ has a customField defined, it will map.
 - `affiliate_code`
 - `campaign_code`
 - `customer_comment` - a comment string from the customer
-
-### Won't do
-- Cannot support cart rounding, Shopgate App will handle rounding up to 2 decimal places. Currency conversion rounding
-will be left intact for now unless we get complaints about issues with inaccuracy.

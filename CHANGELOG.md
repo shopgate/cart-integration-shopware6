@@ -1,6 +1,7 @@
-# Unreleased
+# 2.2.0
 
-- Shopgate logo updated
+- added item, coupon, shipping rounding up to 3 decimal points
+- updated Shopgate logo
 
 # 2.1.2
 
