@@ -15,9 +15,9 @@ class ConfigMapping extends ShopgateConfig
     protected array $product_types_to_export = [];
     protected ConfigBridge $configReader;
 
-    public function setConfigBridge(ConfigBridge $configReader): ConfigMapping
+    public function setConfigBridge(ConfigBridge $configBridge): ConfigMapping
     {
-        $this->configReader = $configReader;
+        $this->configReader = $configBridge;
 
         return $this;
     }
@@ -120,7 +120,7 @@ class ConfigMapping extends ShopgateConfig
     }
 
     /**
-     * Writes the given fields to magento
+     * Writes the given fields
      *
      * @param array $fieldList
      * @param boolean $validate
@@ -138,7 +138,6 @@ class ConfigMapping extends ShopgateConfig
                 continue;
             }
             $value = $this->castToType($this->{$key}, $key);
-            $key = ['shop_is_active' => 'active'][$key] ?? $key;
             $this->configReader->set($this->camelize($key), $value);
         }
     }

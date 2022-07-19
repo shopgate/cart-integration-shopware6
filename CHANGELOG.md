@@ -1,3 +1,7 @@
+# 2.3.0
+
+- removed being able to de-activate channel via set_setting's `shop_is_active` flag
+
 # 2.2.0
 
 - added item, coupon, shipping, product export rounding up to 3 decimal points

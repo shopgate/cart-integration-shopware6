@@ -70,6 +70,9 @@ cd [shopware6 root folder]
 * `ConstraintViolationException: Caught 1 violation errors` during a `check_cart` or customer `registration`. One of the
   known errors is when the Shopgate App does not require the phone number to be set, but the Shopware does. So when the
   `check_cart` attempts to create the address a constraint violation occurs.
+* Export prices are too long (e.g. `"unit_amount":2.3999999999999999`) - there is a server setting that should help 
+  narrow down prices to 3 decimals, in short try php.ini setting `serialize_precision = -1`. Link to issue on 
+  [stack](https://stackoverflow.com/questions/42981409/php7-1-json-encode-float-issue).
 
 # Configuration
 
@@ -101,7 +104,6 @@ Payment Type:
 
 ### Set settings API
 
-- **shop_is_active** - `0` or `1` (NB! once you disable, you will not be able to call this shop anymore)
 - **server** - `live`, `pg` or `custom`
 - **api_url** - `http://my.url.com`
 - **product_types_to_export** - `simple,variant` (a comma separated list)

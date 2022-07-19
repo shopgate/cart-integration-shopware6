@@ -9240,7 +9240,7 @@
                       "    pm.expect(jsonData.shopgate_settings[0].old).to.be.an('array').length(2);",
                       "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('simple');",
                       "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('shop_is_active');",
-                      "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(1);",
+                      "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(false);",
                       "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('1');",
                       "});"
                     ],
@@ -9322,7 +9322,7 @@
                       "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
                       "});",
                       "pm.test('Configurations check', function () {",
-                      "    pm.expect(jsonData.configuration.shop_is_active).to.be.eq(1);",
+                      "    pm.expect(jsonData.configuration.shop_is_active).to.be.eq(false);",
                       "    pm.expect(jsonData.configuration.server).to.be.eq('custom');",
                       "    pm.expect(jsonData.configuration.product_types_to_export).to.be.a('array').length(1);",
                       "    pm.expect(jsonData.configuration.product_types_to_export[0]).to.eq('simple');",
@@ -9445,9 +9445,10 @@
                       "    pm.expect(jsonData.shopgate_settings[0].name).to.eq('product_types_to_export');",
                       "    pm.expect(jsonData.shopgate_settings[0].old).to.be.an('array').length(1);",
                       "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('simple,variant');",
+                      "    // doesn't work anymore",
                       "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('shop_is_active');",
-                      "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(1);",
-                      "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('1');",
+                      "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(false);",
+                      "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('0');",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -9496,7 +9497,7 @@
                     },
                     {
                       "key": "shopgate_settings[1][value]",
-                      "value": "1",
+                      "value": "0",
                       "type": "text"
                     }
                   ]
@@ -21214,12 +21215,9 @@
                   "    pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test(\"Check settings\", function () {",
+                  "pm.test(\"activation via plugin is not implemented\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.shopgate_settings).to.be.lengthOf(1);",
-                  "    pm.expect(jsonData.shopgate_settings[0].name).to.be.eq('shop_is_active');",
-                  "    pm.expect(jsonData.shopgate_settings[0].old).to.be.eq(1);",
-                  "    pm.expect(jsonData.shopgate_settings[0].new).to.be.eq(\"0\");",
+                  "    pm.expect(jsonData.error_text).to.be.eq('invalid value in configuration');",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -21253,7 +21251,7 @@
                 },
                 {
                   "key": "shopgate_settings[0][name]",
-                  "value": "shop_is_active",
+                  "value": "active",
                   "type": "text"
                 },
                 {
@@ -21267,123 +21265,6 @@
               "raw": "{{domain}}",
               "host": [
                 "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SG: check inactive",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "const jsonData = pm.response.json();",
-                  "pm.test(\"Should be inactive\", function () {",
-                  "    pm.expect(jsonData.error).to.eql(12);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "X-Shopgate-Auth-User",
-                "value": "{{gen_sg_header_auth_user}}"
-              },
-              {
-                "key": "X-Shopgate-Auth-Token",
-                "value": "{{gen_sg_header_auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "shop_number",
-                  "value": "{{shop_number}}",
-                  "type": "text"
-                },
-                {
-                  "key": "action",
-                  "value": "{{framework_action_ping}}",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{domain}}",
-              "host": [
-                "{{domain}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "SW: re-activate",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Successfully created all SG system config entities\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "protocolProfileBehavior": {
-            "disabledSystemHeaders": {
-              "accept": true
-            }
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{gen_access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"shopgate_api_credentials\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"16c16c5cf2a24afbaa2b9ad3ed1324af\",\r\n                \"active\": true\r\n            }\r\n        ]\r\n    }\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{sw_endpoint_api}}/_action/sync",
-              "host": [
-                "{{sw_endpoint_api}}"
-              ],
-              "path": [
-                "_action",
-                "sync"
               ]
             }
           },
