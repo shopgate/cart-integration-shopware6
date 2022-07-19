@@ -273,7 +273,6 @@
             <call method="initShopwareConfig">
                 <argument type="expression">
                     {
-                    "shop_is_active": service('shopgate.config_bridge').get('active'),
                     "customer_number": service('shopgate.config_bridge').get('customerNumber'),
                     "shop_number": service('shopgate.config_bridge').get('shopNumber'),
                     "apikey": service('shopgate.config_bridge').get('apiKey'),

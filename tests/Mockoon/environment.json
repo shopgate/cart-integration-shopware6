@@ -1,6 +1,6 @@
 {
   "uuid": "8c7cfae6-e438-42c9-92f7-053fdfa6f1a4",
-  "lastMigration": 19,
+  "lastMigration": 20,
   "name": "SG Merchant API",
   "endpointPrefix": "",
   "latency": 0,
@@ -25,7 +25,8 @@
           "rules": [],
           "rulesOperator": "OR",
           "disableTemplating": false,
-          "fallbackTo404": false
+          "fallbackTo404": false,
+          "default": true
         },
         {
           "uuid": "742d4e49-7d09-4b33-8de9-1e8a8b4a3c48",
@@ -46,7 +47,8 @@
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
-          "fallbackTo404": false
+          "fallbackTo404": false,
+          "default": false
         },
         {
           "uuid": "da490d86-9023-43fc-a7e0-aace85a02a54",
@@ -73,7 +75,8 @@
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
-          "fallbackTo404": false
+          "fallbackTo404": false,
+          "default": false
         },
         {
           "uuid": "41fda6d1-8970-4b38-ab51-57d69ada41ea",
@@ -100,7 +103,8 @@
           ],
           "rulesOperator": "AND",
           "disableTemplating": false,
-          "fallbackTo404": false
+          "fallbackTo404": false,
+          "default": false
         },
         {
           "uuid": "e2d82829-aaae-4cb1-89e1-d40632a4bff8",
@@ -127,7 +131,8 @@
           ],
           "rulesOperator": "OR",
           "disableTemplating": false,
-          "fallbackTo404": false
+          "fallbackTo404": false,
+          "default": false
         }
       ],
       "enabled": true,
