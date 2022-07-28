@@ -101,13 +101,9 @@ trait CartUtilityTrait
      */
     public function getShippingCost(string $type = CartPrice::TAX_STATE_GROSS): float
     {
-        if ($this->getShippingInfos() instanceof ShopgateShippingInfo) {
-            return (float)($type === CartPrice::TAX_STATE_GROSS
-                ? $this->getShippingInfos()->getAmountGross()
-                : $this->getShippingInfos()->getAmountNet());
-        }
-
-        return (float)($this->getAmountShipping() ?? 0.0);
+        return (float)($type === CartPrice::TAX_STATE_GROSS
+            ? $this->getShippingInfos()->getAmountGross()
+            : $this->getShippingInfos()->getAmountNet());
     }
 
     /**
