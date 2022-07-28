@@ -7,6 +7,7 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 use ShopgateExternalCoupon;
 use ShopgateOrderItem;
 use ShopgateShippingInfo;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 
 /**
  * Common functions for both cart and order objects
@@ -82,23 +83,31 @@ trait CartUtilityTrait
     }
 
     /**
+     * @param string $type - tax class as defined by SW6
      * @return bool
      */
-    public function isShippingFree(): bool
+    public function isShippingFree(string $type = CartPrice::TAX_STATE_GROSS): bool
     {
-        return $this->getShippingCost() === 0.0;
+        return $this->getShippingCost($type) === 0.0;
     }
 
     /**
+     * @param string $type - tax class as defined by SW6
      * @return float
+     * @see CartPrice::TAX_STATE_GROSS
+     * @see CartPrice::TAX_STATE_NET
+     * @noinspection UnnecessaryCastingInspection - SDK lies
+     * @noinspection PhpCastIsUnnecessaryInspection
      */
-    public function getShippingCost(): float
+    public function getShippingCost(string $type = CartPrice::TAX_STATE_GROSS): float
     {
-        $cost = 0.0;
-        if ($this->getAmountShipping() || ($this->getShippingInfos() instanceof ShopgateShippingInfo)) {
-            $cost = (float)($this->getAmountShipping() ?? $this->getShippingInfos()->getAmountNet());
+        if ($this->getShippingInfos() instanceof ShopgateShippingInfo) {
+            return (float)($type === CartPrice::TAX_STATE_GROSS
+                ? $this->getShippingInfos()->getAmountGross()
+                : $this->getShippingInfos()->getAmountNet());
         }
-        return $cost;
+
+        return (float)($this->getAmountShipping() ?? 0.0);
     }
 
     /**

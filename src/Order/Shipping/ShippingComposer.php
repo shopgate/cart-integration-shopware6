@@ -68,7 +68,7 @@ class ShippingComposer
      */
     public function addShippingFeeToCart(ExtendedOrder $sgOrder, Cart $swCart): void
     {
-        $shippingCost = $sgOrder->getShippingCost();
+        $shippingCost = $sgOrder->getShippingCost($this->contextManager->getSalesContext()->getTaxState());
         $shopCurrency = $this->contextManager->getSalesContext()->getCurrencyId();
         // for some reason manual shipping cost calculator uses default shop currency
         if ($shopCurrency !== Defaults::CURRENCY) {
