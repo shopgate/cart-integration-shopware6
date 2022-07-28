@@ -39,17 +39,16 @@
       "shipping_type": "MANUAL",
       "shipping_infos": {
         "name": "DHL Deutschland",
-        "display_name": "DHL Pakte gogreen",
-        "description": "",
-        "amount": "5.00",
-        "weight": 0,
-        "api_response": null
+        "display_name": "Express",
+        "amount": "6.10",
+        "amount_net": "5.15",
+        "amount_gross": "6.10"
       },
       "custom_fields": [],
       "payment_method": "PREPAY",
       "payment_group": "PREPAY",
       "amount_items": "139.95",
-      "amount_shipping": "5.00",
+      "amount_shipping": "6.10",
       "amount_shop_payment": "5.00",
       "payment_tax_percent": "19.00",
       "amount_shopgate_payment": "0.00",

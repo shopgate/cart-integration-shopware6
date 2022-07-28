@@ -5321,7 +5321,7 @@
           "name": "Order",
           "item": [
             {
-              "name": "DE customer",
+              "name": "1002 - DE customer (Net)",
               "item": [
                 {
                   "name": "SG: DE customer context",
@@ -5635,7 +5635,7 @@
                           "pm.test(\"Delivery notes\", function () {",
                           "    pm.expect(order.delivery_notes).to.be.length(1);",
                           "    const note = order.delivery_notes[0];",
-                          "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                          "    pm.expect(note.shipping_service_id).to.eq('Express');",
                           "    pm.expect(note.shipping_service_name).to.eq('');",
                           "    pm.expect(note.tracking_number).to.eq('');",
                           "    pm.expect(note.shipping_time).to.eq(null);",
@@ -5646,7 +5646,7 @@
                           "    const tax = order.order_taxes[0];",
                           "    pm.expect(tax.label).to.eq('zzgl. 20 % MwSt.');",
                           "    pm.expect(tax.tax_percent).to.eq(20);",
-                          "    pm.expect(tax.amount).to.eq(21); // tax 20%, -> 20 from item, 1 from shipping",
+                          "    pm.expect(tax.amount).to.eq(21.03); // tax 20%, -> 20 from item, 1.03 from shipping",
                           "});",
                           "",
                           "pm.test(\"Item check\", function () {",
@@ -5668,7 +5668,7 @@
                           "    const extraCost = order.extra_costs[0];",
                           "    pm.expect(extraCost.type).to.eq('shipping');",
                           "    pm.expect(extraCost.tax_percent).to.eq(20);",
-                          "    pm.expect(extraCost.amount).to.eq(5.0);",
+                          "    pm.expect(extraCost.amount).to.eq(5.15);",
                           "    pm.expect(extraCost.label).to.eq('Versandkosten');",
                           "});"
                         ],
@@ -6006,7 +6006,9 @@
                       "});\r",
                       "\r",
                       "pm.test(\"Check order data\", function () {\r",
-                      "    pm.expect(order.shippingTotal).to.eql(5.0);\r",
+                      "    pm.expect(order.shippingTotal).to.eql(5.15); // gross 5.15 + (5.15*0.19)\r",
+                      "    pm.expect(order.amountNet).to.eql(105.15);\r",
+                      "    pm.expect(order.amountTotal).to.eql(125.13); // 19% tax -> 105.15 + 0.98 (ship) + 19 (item)\r",
                       "    pm.expect(order.affiliateCode).to.eql(null);\r",
                       "    pm.expect(order.campaignCode).to.eql(null);\r",
                       "    pm.expect(order.orderCustomer.email).to.eql('test_customGrp@example.com');\r",
@@ -6130,7 +6132,7 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
                       "    pm.expect(note.shipping_service_name).to.eq('');",
                       "    pm.expect(note.tracking_number).to.eq('');",
                       "    pm.expect(note.shipping_time).to.eq(null);",
@@ -6141,7 +6143,7 @@
                       "    const tax = order.order_taxes[0];",
                       "    pm.expect(tax.label).to.eq('zzgl. 19 % MwSt.');",
                       "    pm.expect(tax.tax_percent).to.eq(19);",
-                      "    pm.expect(tax.amount).to.eq(19.95); // tax 19%, -> 19 from item, 0.95 from shipping",
+                      "    pm.expect(tax.amount).to.eq(19.98); // tax 19%, -> 19 from item, 0.98 from shipping",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -6163,7 +6165,7 @@
                       "    const extraCost = order.extra_costs[0];",
                       "    pm.expect(extraCost.type).to.eq('shipping');",
                       "    pm.expect(extraCost.tax_percent).to.eq(19);",
-                      "    pm.expect(extraCost.amount).to.eq(5.0);",
+                      "    pm.expect(extraCost.amount).to.eq(5.15);",
                       "    pm.expect(extraCost.label).to.eq('Versandkosten');",
                       "});"
                     ],
@@ -6368,7 +6370,7 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
                       "    pm.expect(note.shipping_service_name).to.eq('');",
                       "    pm.expect(note.tracking_number).to.eq('');",
                       "    pm.expect(note.shipping_time).to.eq(null);",
@@ -6379,7 +6381,7 @@
                       "    const tax = order.order_taxes[0];",
                       "    pm.expect(tax.label).to.eq('zzgl. 20 % MwSt.');",
                       "    pm.expect(tax.tax_percent).to.eq(20);",
-                      "    pm.expect(tax.amount).to.eq(21); // tax 20%, -> 20 from item, 1 from shipping",
+                      "    pm.expect(tax.amount).to.eq(21.03); // tax 20%, -> 20 from item, 1.03 from shipping",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -6401,7 +6403,7 @@
                       "    const extraCost = order.extra_costs[0];",
                       "    pm.expect(extraCost.type).to.eq('shipping');",
                       "    pm.expect(extraCost.tax_percent).to.eq(20);",
-                      "    pm.expect(extraCost.amount).to.eq(5.0);",
+                      "    pm.expect(extraCost.amount).to.eq(5.15);",
                       "    pm.expect(extraCost.label).to.eq('Versandkosten');",
                       "});"
                     ],
@@ -16457,7 +16459,7 @@
                       "});\r",
                       "\r",
                       "pm.test(\"Check order data\", function () {\r",
-                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.shippingTotal).to.eql(6.1);\r",
                       "    pm.expect(order.affiliateCode).to.eql(null);\r",
                       "    pm.expect(order.campaignCode).to.eql(null);\r",
                       "    pm.expect(order.orderCustomer.email).to.eql('test@example.com');\r",
@@ -16609,7 +16611,7 @@
                       "const jsonData = pm.response.json();\r",
                       "const order = jsonData.data[0];\r",
                       "pm.test(\"Check order data\", function () {\r",
-                      "    pm.expect(order.shippingTotal).to.eql(4.9);\r",
+                      "    pm.expect(order.shippingTotal).to.eql(6.1);\r",
                       "    pm.expect(order.affiliateCode).to.eql(null);\r",
                       "    pm.expect(order.campaignCode).to.eql(null);\r",
                       "    pm.expect(order.orderCustomer.email).to.eql('guest_customer@apite.io');\r",
@@ -16826,7 +16828,7 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
                       "    pm.expect(note.shipping_service_name).to.eq('');",
                       "    pm.expect(note.tracking_number).to.eq('');",
                       "    pm.expect(note.shipping_time).to.eq(null);",
@@ -16837,7 +16839,7 @@
                       "    const tax = order.order_taxes[0];",
                       "    pm.expect(tax.label).to.eq('plus 20% VAT');",
                       "    pm.expect(tax.tax_percent).to.eq(20);",
-                      "    pm.expect(tax.amount).to.eq(78.08);",
+                      "    pm.expect(tax.amount).to.eq(78.28);",
                       "});",
                       "",
                       "pm.test(\"Promotion by code check\", function () {",
@@ -16931,7 +16933,7 @@
                       "    const extraCost = order.extra_costs[0];",
                       "    pm.expect(extraCost.type).to.eq('shipping');",
                       "    pm.expect(extraCost.tax_percent).to.eq(20);",
-                      "    pm.expect(extraCost.amount).to.eq(4.9);",
+                      "    pm.expect(extraCost.amount).to.eq(6.1);",
                       "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
                       "});"
                     ],
@@ -17051,7 +17053,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"orderId\",\r\n                    \"value\": \"{{gen_order_0003_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"shippingCosts.unitPrice\",\r\n                    \"value\": 4.9\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"orderId\",\r\n                    \"value\": \"{{gen_order_0003_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"shippingCosts.unitPrice\",\r\n                    \"value\": 6.10\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -17224,7 +17226,7 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('DHL Pakte gogreen');",
+                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
                       "    pm.expect(note.shipping_service_name).to.eq('');",
                       "    pm.expect(note.tracking_number).to.eq('test-code-1, test-code-2');",
                       "    pm.expect(note.shipping_time).to.be.a('string').to.not.be.empty;",
@@ -17963,12 +17965,12 @@
                       "pm.test(\"Basic order data\", function () {",
                       "    /**",
                       "     * 147.7 just items Gross - 125+12+10.7",
-                      "     * 152.70 for items & shipping Gross - 125+12+10.7+5",
-                      "     * 124.06 for item + shipping GROSS 100 + 10 + 10 + (5 - 0.07 - 0.85 - 0.02)",
+                      "     * 153.8 for items & shipping Gross - 125+12+10.7+6.10",
+                      "     * 124.96 for item + shipping GROSS 100 + 10 + 10 + (6.10 - 1.03 - 0.08 -  - 0.03)",
                       "     */",
                       "    pm.expect(order.amount_items_gross).to.eq(147.7);",
-                      "    pm.expect(order.amount_complete_gross).to.eq(152.7);",
-                      "    pm.expect(order.amount_complete_net).to.eq(124.06);",
+                      "    pm.expect(order.amount_complete_gross).to.eq(153.8);",
+                      "    pm.expect(order.amount_complete_net).to.eq(124.96);",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -18010,13 +18012,13 @@
                       "    pm.expect(order.order_taxes).to.be.length(3);",
                       "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
                       "    pm.expect(taxOne.tax_percent).to.eq(25);",
-                      "    pm.expect(taxOne.amount).to.eq(25.85);",
+                      "    pm.expect(taxOne.amount).to.eq(26.03);",
                       "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
                       "    pm.expect(taxTwo.tax_percent).to.eq(20);",
-                      "    pm.expect(taxTwo.amount).to.eq(2.07);",
+                      "    pm.expect(taxTwo.amount).to.eq(2.08);",
                       "    const taxThree = Utility.getByLabel(order.order_taxes, 'plus 7% VAT');",
                       "    pm.expect(taxThree.tax_percent).to.eq(7);",
-                      "    pm.expect(taxThree.amount).to.eq(0.72);",
+                      "    pm.expect(taxThree.amount).to.eq(0.73);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -18172,12 +18174,12 @@
                       "pm.test(\"Basic order data\", function () {",
                       "    /**",
                       "     * 120 just items NET - 100+10+10",
-                      "     * 125 for items & shipping NET - 100+10+10+5",
-                      "     * 154.47 for item + shipping GROSS 100+25% + 10+20% + 10+13% + 5+25%+20%+13%",
+                      "     * 125.15 for items & shipping NET - 100+10+10+5.15",
+                      "     * 154.47 for item + shipping GROSS 100+25% + 10+20% + 10+13% + 5.15+25%+20%+13%",
                       "     */",
                       "    pm.expect(order.amount_items_net).to.eq(120);",
-                      "    pm.expect(order.amount_complete_gross).to.eq(154.47);",
-                      "    pm.expect(order.amount_complete_net).to.eq(125.00);",
+                      "    pm.expect(order.amount_complete_gross).to.eq(154.67);",
+                      "    pm.expect(order.amount_complete_net).to.eq(125.15);",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -18219,13 +18221,13 @@
                       "    pm.expect(order.order_taxes).to.be.length(3);",
                       "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
                       "    pm.expect(taxOne.tax_percent).to.eq(25);",
-                      "    pm.expect(taxOne.amount).to.eq(26.04);",
+                      "    pm.expect(taxOne.amount).to.eq(26.07);",
                       "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
                       "    pm.expect(taxTwo.tax_percent).to.eq(20);",
-                      "    pm.expect(taxTwo.amount).to.eq(2.08);",
+                      "    pm.expect(taxTwo.amount).to.eq(2.09);",
                       "    const taxThree = Utility.getByLabel(order.order_taxes, 'plus 13% VAT');",
                       "    pm.expect(taxThree.tax_percent).to.eq(13);",
-                      "    pm.expect(taxThree.amount).to.eq(1.35);",
+                      "    pm.expect(taxThree.amount).to.eq(1.36);",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -18481,7 +18483,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"orderId\",\r\n                    \"value\": \"{{gen_order_0008_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"shippingCosts.unitPrice\",\r\n                    \"value\": 5.0\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                      "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"orderId\",\r\n                    \"value\": \"{{gen_order_0008_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"shippingCosts.unitPrice\",\r\n                    \"value\": 5.15\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -20155,8 +20157,8 @@
                       "\r",
                       "const order = jsonData.data[0];\r",
                       "pm.test(\"Check order data\", function () {\r",
-                      "    pm.expect(order.shippingTotal).to.eql(5);\r",
-                      "    pm.expect(order.amountTotal).to.eql(501.89);\r",
+                      "    pm.expect(order.shippingTotal).to.eql(5.15);\r",
+                      "    pm.expect(order.amountTotal).to.eql(502.07);\r",
                       "    pm.expect(order.taxStatus).to.eql('net');\r",
                       "});\r",
                       "\r",
@@ -20215,6 +20217,301 @@
                 }
               },
               "response": []
+            }
+          ]
+        },
+        {
+          "name": "100-130 Shipping",
+          "item": [
+            {
+              "name": "Gross",
+              "item": [
+                {
+                  "name": "SG: add order (gross)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "0100",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"One order found\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "});\r",
+                          "\r",
+                          "const order = jsonData.data[0];\r",
+                          "pm.test(\"Check order data\", function () {\r",
+                          "    pm.expect(order.amountTotal).to.eql(1326.55);\r",
+                          "    pm.expect(order.amountNet).to.eql(1190.49);\r",
+                          "    pm.expect(order.taxStatus).to.eql('gross');\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {}
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0100_id}}\"\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Net",
+              "item": [
+                {
+                  "name": "SG: add order (net)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "0101",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SW: check order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "const jsonData = pm.response.json();\r",
+                          "pm.test(\"One order found\", function () {\r",
+                          "    pm.expect(jsonData.total).to.eql(1);\r",
+                          "});\r",
+                          "\r",
+                          "const order = jsonData.data[0];\r",
+                          "pm.test(\"Check order data\", function () {\r",
+                          "    pm.expect(order.amountTotal).to.eql(1381.16);\r",
+                          "    pm.expect(order.amountNet).to.eql(1241.48);\r",
+                          "    pm.expect(order.taxStatus).to.eql('net');\r",
+                          "});\r",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {}
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0101_id}}\"\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/search/order",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "search",
+                        "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
             }
           ]
         }
