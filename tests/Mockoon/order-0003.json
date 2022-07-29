@@ -29,11 +29,13 @@
       "mobile": null,
       "shipping_group": "DHL",
       "shipping_type": "MANUAL",
-      "amount_shipping": "4.90",
+      "amount_shipping": "6.10",
       "shipping_infos": {
         "name": "DHL Deutschland",
-        "display_name": "DHL Pakte gogreen",
-        "amount": "4.90"
+        "display_name": "Express",
+        "amount": "6.10",
+        "amount_net": "5.15",
+        "amount_gross": "6.10"
       },
       "custom_fields": [
         {

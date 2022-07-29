@@ -19,7 +19,7 @@
         "purpose": "SG1501511499"
       },
       "is_shipping_blocked": 1,
-      "is_shipping_completed": 1,
+      "is_shipping_completed": 0,
       "shipping_completed_time": "2014-08-06T11:57:29+00:00",
       "is_test": 0,
       "is_storno": 0,
@@ -31,7 +31,7 @@
       "external_order_number": null,
       "external_order_id": null,
       "external_customer_number": null,
-      "external_customer_id": "6c97534c2c0747f39e8751e43cb2b013",
+      "external_customer_id": "56b861af79034c7fa1e9158dbe62be16",
       "mail": null,
       "phone": null,
       "mobile": null,
@@ -40,9 +40,8 @@
       "shipping_infos": {
         "name": "DHL Deutschland",
         "display_name": "Express",
-        "amount": "6.10",
-        "amount_net": "5.15",
-        "amount_gross": "6.10"
+        "amount_gross": "6.10",
+        "amount_net": "5.15"
       },
       "custom_fields": [
         {
@@ -84,15 +83,15 @@
         "id": null,
         "is_invoice_address": true,
         "is_delivery_address": false,
-        "first_name": "{{faker 'name.firstName'}}",
-        "last_name": "{{faker 'name.lastName'}}",
+        "first_name": "First Name",
+        "last_name": "Last Name",
         "gender": "f",
         "birthday": null,
         "company": null,
         "street_1": "Zevener Straße 8",
         "street_2": null,
-        "zipcode": "{{faker 'address.zipCode'}}",
-        "city": "{{faker 'address.city'}}",
+        "zipcode": "27404",
+        "city": "Frankenbostel",
         "country": "DE",
         "state": null,
         "phone": null,
@@ -161,10 +160,10 @@
           "parent_item_number": null,
           "order_item_id": "4399298",
           "quantity": 1,
-          "name": "Aim Analog Watch",
-          "unit_amount": "45.00",
-          "unit_amount_with_tax": "45.00",
-          "tax_percent": "19.00",
+          "name": "My main product",
+          "unit_amount": "100.00",
+          "unit_amount_with_tax": "125.00",
+          "tax_percent": "25.00",
           "tax_class_key": null,
           "tax_class_id": null,
           "currency": "EUR",
@@ -172,6 +171,20 @@
           "options": [],
           "inputs": [],
           "attributes": []
+        },
+        {
+          "item_number": "ff951c236e5b9fca68f186da252aa026",
+          "quantity": 1,
+          "name": "API: Cloned & Altered Variant Child Red-M",
+          "unit_amount": "10.00",
+          "tax_percent": "20.00"
+        },
+        {
+          "item_number": "d78d1157ab89ec13a84c8dcbeccb7b75",
+          "quantity": 1,
+          "name": "API: reduced tax",
+          "unit_amount": "10.00",
+          "tax_percent": "0.00"
         }
       ]
     }

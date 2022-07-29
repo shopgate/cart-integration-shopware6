@@ -123,15 +123,16 @@ class OrderComposer
 
         $cleanCartContext = $this->contextComposer->addCustomerAddress($order, $duplicatedContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
+        $isShippingFree = $order->isShippingFree($this->contextManager->getSalesContext()->getTaxState());
         $dataBag = [
             SalesChannelContextService::SHIPPING_METHOD_ID =>
-                $order->isShippingFree() ? FreeShippingMethod::UUID : GenericShippingMethod::UUID,
+                $isShippingFree ? FreeShippingMethod::UUID : GenericShippingMethod::UUID,
             SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
         ];
         try {
             $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $cleanCartContext);
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
-            if (!$order->isShippingFree()) {
+            if (!$isShippingFree) {
                 $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
             }
             $lineItems = $this->lineItemComposer->mapIncomingLineItems($order);

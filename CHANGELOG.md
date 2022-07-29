@@ -1,3 +1,7 @@
+# 2.3.1
+
+- fixed incoming order shipping amount to match the Shopware customer group tax state
+
 # 2.3.0
 
 - removed being able to de-activate channel via set_setting's `shop_is_active` flag
