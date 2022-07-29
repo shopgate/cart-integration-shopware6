@@ -14,6 +14,7 @@ use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CartComposer
@@ -70,6 +71,7 @@ class CartComposer
         $cleanCartContext = $this->contextComposer->addCustomerAddress($sgCart, $duplicatedContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $cleanCartContext);
         $context = $this->contextComposer->addActivePayment($paymentId, $cleanCartContext);
+        $context->setItemRounding(new CashRoundingConfig(3, 0.01, true));
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
         $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);

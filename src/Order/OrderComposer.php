@@ -32,6 +32,7 @@ use ShopgateOrder;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -131,6 +132,7 @@ class OrderComposer
         ];
         try {
             $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $cleanCartContext);
+            $newContext->setItemRounding(new CashRoundingConfig(3, 0.01, true));
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$isShippingFree) {
                 $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
