@@ -51,7 +51,7 @@ class LiveShoppingSubscriber implements EventSubscriberInterface
         $newPrice = [
             'type' => QuantityPriceDefinition::TYPE,
             'quantity' => (int)$incItem->getQuantity(),
-            'price' => $incItem->getUnitAmount(),
+            'price' => $incItem->getUnitAmount(), // Net price as we calculate tax manually
             'taxRules' => empty($tax)
                 ? $this->taxMapping->mapTaxRate($incItem, $ids, $event->getContext())
                 : [['taxRate' => $tax, 'percentage' => 100]]
