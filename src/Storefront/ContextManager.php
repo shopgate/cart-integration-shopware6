@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shopgate\Shopware\Storefront;
 
 use Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsEntity;
+use Shopgate\Shopware\Storefront\Events\ContextChangedEvent;
 use Shopware\Core\Framework\Routing\SalesChannelRequestContextResolver;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -17,6 +18,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Holds our context for DI usage
@@ -29,9 +31,11 @@ class ContextManager
     private SalesChannelContextRestorer $contextRestorer;
     private AbstractContextSwitchRoute $contextSwitchRoute;
     private SalesChannelContextPersister $contextPersist;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         AbstractSalesChannelContextFactory $channelContextFactory,
+        EventDispatcherInterface $eventDispatcher,
         SalesChannelRequestContextResolver $contextResolver,
         SalesChannelContextRestorer $contextRestorer,
         AbstractContextSwitchRoute $contextSwitchRoute,
@@ -42,6 +46,7 @@ class ContextManager
         $this->contextSwitchRoute = $contextSwitchRoute;
         $this->channelContextFactory = $channelContextFactory;
         $this->contextPersist = $contextPersist;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -53,7 +58,7 @@ class ContextManager
         $salesChannelContext = $this->createNewContext($apiCredentialsEntity->getSalesChannelId(),
             [SalesChannelContextService::LANGUAGE_ID => $apiCredentialsEntity->getLanguageId()]
         );
-        $this->salesContext = $salesChannelContext;
+        $this->overwriteSalesContext($salesChannelContext);
 
         return $this;
     }
@@ -63,11 +68,23 @@ class ContextManager
         return $this->salesContext;
     }
 
+    public function overwriteSalesContext(SalesChannelContext $context): ContextManager
+    {
+        $this->salesContext = $context;
+        $this->eventDispatcher->dispatch(new ContextChangedEvent($context));
+
+        return $this;
+    }
+
+    /**
+     * @todo 3.x will return $this
+     */
     public function loadByCustomerId(string $customerId): SalesChannelContext
     {
         $context = $this->contextRestorer->restore($customerId, $this->salesContext);
+        $this->overwriteSalesContext($context);
 
-        return $this->salesContext = $context;
+        return $context;
     }
 
     /**
@@ -88,6 +105,9 @@ class ContextManager
             ]), $context);
     }
 
+    /**
+     * @todo 3.x will return $this
+     */
     public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
     {
         $currentContext = $context ?: $this->getSalesContext();
@@ -100,10 +120,14 @@ class ContextManager
         );
         $token = $this->contextSwitchRoute->switchContext($dataBag, $currentContext)->getToken();
         $context = $this->loadByCustomerToken($token);
+        $this->overwriteSalesContext($context);
 
-        return $this->salesContext = $context;
+        return $context;
     }
 
+    /**
+     * @todo 3.x will return $this
+     */
     public function loadByCustomerToken(string $token): SalesChannelContext
     {
         $channel = $this->salesContext->getSalesChannel();
@@ -113,8 +137,9 @@ class ContextManager
         $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
         // resolver is intended to be used as an API, therefore it returns context in request
         $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        $this->overwriteSalesContext($context);
 
-        return $this->salesContext = $context;
+        return $context;
     }
 
     /**

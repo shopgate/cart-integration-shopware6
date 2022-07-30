@@ -132,7 +132,6 @@ class OrderComposer
         ];
         try {
             $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $cleanCartContext);
-            $newContext->setItemRounding(new CashRoundingConfig(3, 0.01, true));
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$isShippingFree) {
                 $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
