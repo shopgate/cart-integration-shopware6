@@ -14,6 +14,7 @@ use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CartComposer

@@ -1,6 +1,7 @@
 # 2.3.1
 
 - fixed incoming order shipping amount to match the Shopware customer group tax state
+- changed rounding calculations for whole `check_cart` to 3 decimals
 
 # 2.3.0
 

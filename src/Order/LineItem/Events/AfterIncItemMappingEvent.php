@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem\Events;
 
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrderItem;
 use ShopgateOrderItem;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -37,6 +38,9 @@ class AfterIncItemMappingEvent extends Event
         return $this->mapping;
     }
 
+    /**
+     * @return ShopgateOrderItem|ExtendedOrderItem
+     */
     public function getItem(): ShopgateOrderItem
     {
         return $this->item;

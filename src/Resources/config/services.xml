@@ -133,6 +133,9 @@
         <service id="Shopgate\Shopware\Order\Subscriber\LiveShoppingSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\RoundingOverwriteSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\Order\Subscriber\SaveCartSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
