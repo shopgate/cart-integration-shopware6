@@ -38,7 +38,7 @@
             "titleNotificationError": "Fehler",
             "titleNotificationSuccess": "Erfolgreich",
             "messageSaveError": "Zugangsdaten können nicht gespeichert werden.",
-            "messageSaveUniqueError": "Dei selben Zugangsdaten werden bereits verwendet!",
+            "messageSaveUniqueError": "Bitte hinterlegen Sie eine eindeutige Shop-Nummer!",
             "messageSaveSuccess": "Zugangsdaten wurden gespeichert.",
             "noLanguages": "Keine Sprache ausgewählt, bitte Verkaufskanal (Sales Channel) auswählen."
         }

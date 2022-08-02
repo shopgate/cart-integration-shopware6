@@ -1,3 +1,7 @@
+# 2.4.0
+
+- removed language uniqueness constraint for API connections
+
 # 2.3.1
 
 - fixed incoming order shipping amount to match the Shopware customer group tax state
