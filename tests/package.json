@@ -6,6 +6,7 @@
   "scripts": {
     "init": "node_modules/.bin/newman run ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --global-var 'mock_server_merchant_uri=http://host.docker.internal:3000' --folder Init --color=on --bail",
     "full": "node_modules/.bin/newman run ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --color=on --bail",
+    "ci": "node_modules/.bin/newman run -r cli,htmlextra,junit ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --color=on --insecure --no-insecure-file-read",
     "mockoon-start": "node_modules/.bin/mockoon-cli start --data ./Mockoon/environment.json --all",
     "mockoon-stop": "node_modules/.bin/mockoon-cli stop 'all'"
   },
@@ -13,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "newman": "latest",
-    "@mockoon/cli": "1.5.*"
+    "@mockoon/cli": "1.5.*",
+    "newman-reporter-htmlextra": "latest"
   }
 }

@@ -11,7 +11,8 @@ variables:
   MYSQL_ROOT_PASSWORD: rootPass
   DATABASE_URL: "mysql://root:rootPass@database:3306/shopware?sslmode=disable&charset=utf8mb4"
   GIT_STRATEGY: clone
-  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
+  NPM_CONFIG_CACHE: $CI_PROJECT_DIR/.cache/npm
+  PM2_HOME: $CI_PROJECT_DIR/.cache/pm2
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
   # things plugins might want to override
   APP_ENV: dev
@@ -21,8 +22,10 @@ variables:
   MYSQL_CMD: mysqld
   PHP: '7.4'
   PLATFORM_BRANCH: 6.4.11.0
+  PLUGINS_DIR: $CI_PROJECT_DIR/custom/plugins
+  STATIC_DIR: $CI_PROJECT_DIR/custom/static-plugins
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
-  PLUGIN_SOURCE_DIR: src/
+  PLUGIN_FOLDER: $PLUGINS_DIR/$PLUGIN_NAME
   PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
   MOCK_SERVER_URL: 'http://127.0.0.1:3000'
   VERBOSE: ''
@@ -100,15 +103,19 @@ newman:
   except:
     - tags
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli@1.5.* > /dev/null
-    - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
+    - APP_ENV=prod php bin/console store:download --quiet -p SwagPlatformDemoData
     - bin/console plugin:install --quiet --activate SwagPlatformDemoData
-    - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
-    - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
-      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
-      --color on --insecure --no-insecure-file-read
-      --env-var "host=$APP_URL" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash > /dev/null 2>&1
+    - ". ~/.nvm/nvm.sh"
+    - nvm install stable > /dev/null
+    - npm install --location=global @mockoon/cli@1.5.* > /dev/null
+    - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL;
+    - cd $PLUGIN_FOLDER/tests
+    - npm install > /dev/null
+    - npm run ci -- --env-var="host=$APP_URL"
+      --reporter-htmlextra-export="$PROJECT_ROOT/postman-report.html"
+      --reporter-junit-export="$PROJECT_ROOT/newman.junit.xml"
+      --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
   artifacts:
     when: on_failure
     expire_in: 7 days
