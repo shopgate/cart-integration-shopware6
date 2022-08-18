@@ -105,8 +105,9 @@ newman:
   script:
     - APP_ENV=prod php bin/console store:download --quiet -p SwagPlatformDemoData
     - bin/console plugin:install --quiet --activate SwagPlatformDemoData
-    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash > /dev/null 2>&1
-    - ". ~/.nvm/nvm.sh"
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    - '[ -s "~/.nvm/nvm.sh" ] && . ~/.nvm/nvm.sh'
+    - '[ -s "/root/.nvm/nvm.sh" ] && . /root/.nvm/nvm.sh'
     - nvm install stable > /dev/null
     - npm install --location=global @mockoon/cli@1.5.* > /dev/null
     - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL;
