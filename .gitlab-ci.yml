@@ -21,7 +21,7 @@ variables:
   MYSQL_IMAGE: mariadb:10.3
   MYSQL_CMD: mysqld
   PHP: '7.4'
-  PLATFORM_BRANCH: 6.4.11.0
+  PLATFORM_BRANCH: 6.4.14.0
   PLUGINS_DIR: $CI_PROJECT_DIR/custom/plugins
   STATIC_DIR: $CI_PROJECT_DIR/custom/static-plugins
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
@@ -97,7 +97,7 @@ newman:
     matrix:
       - PLATFORM_BRANCH:
           - 6.4.8.0
-          - 6.4.11.0
+          - 6.4.14.0
       - PHP:
           - '8.0'
   except:
