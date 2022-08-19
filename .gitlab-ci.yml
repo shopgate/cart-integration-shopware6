@@ -13,7 +13,7 @@ variables:
   COMPOSER_HOME: $PROJECT_ROOT/.cache/composer
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
   DOCKWARE_CI: '1'
-  APP_ENV: 'dev'
+  APP_ENV: 'prod'
   APP_DEBUG: '0'
   APP_SECRET: 'abZBR1234'
   XDEBUG_ENABLED: '0'
@@ -72,7 +72,7 @@ newman:
           - 6.4.8.0
           - 6.4.14.0
       - PHP_VERSION:
-          - '8.1'
+          - '8.0'
   except:
     - tags
   script:
