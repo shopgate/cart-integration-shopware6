@@ -123,12 +123,11 @@ build zip:
     - tags
   script:
     - composer require frosh/plugin-uploader:0.3.19
-    - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
+    - cd $CI_PROJECT_DIR
     - cp ./devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
     - $PROJECT_ROOT/vendor/bin/pluginupload ext:zip --strategy=plain -- "$PWD"
     - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PLUGIN_NAME.zip
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
-    - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
     name: '${PLUGIN_NAME}'
     expire_in: never
