@@ -4,37 +4,34 @@ stages:
   - deploy
 
 variables:
-  PROJECT_ROOT: $CI_PROJECT_DIR
-  WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/public
-  LOG_STDOUT: $CI_PROJECT_DIR/var/log/stdout.log
-  MYSQL_DATABASE: shopware
-  MYSQL_ROOT_PASSWORD: rootPass
-  DATABASE_URL: "mysql://root:rootPass@database:3306/shopware?sslmode=disable&charset=utf8mb4"
+  PROJECT_ROOT: /var/www/html
+  WEB_DOCUMENT_ROOT: $PROJECT_ROOT/public
+  LOG_STDOUT: $PROJECT_ROOT/var/log/stdout.log
   GIT_STRATEGY: clone
-  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
+  NPM_CONFIG_CACHE: $PROJECT_ROOT/.cache/npm
+  PM2_HOME: $PROJECT_ROOT/.cache/pm2
+  COMPOSER_HOME: $PROJECT_ROOT/.cache/composer
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$PLUGIN_NAME
+  DOCKWARE_CI: '1'
+  APP_ENV: 'prod'
+  APP_DEBUG: '0'
+  APP_SECRET: 'abZBR1234'
+  XDEBUG_ENABLED: '0'
+  PHP_VERSION: '7.4'
+  PLATFORM_BRANCH: '6.4.14.0'
   # things plugins might want to override
-  APP_ENV: dev
-  APP_DEBUG: 0
-  APP_SECRET: 123456
-  MYSQL_IMAGE: mariadb:10.3
-  MYSQL_CMD: mysqld
-  PHP: '7.4'
-  PLATFORM_BRANCH: 6.4.11.0
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
-  PLUGIN_SOURCE_DIR: src/
-  PLUGIN_COMPOSER_SDK_NAME: 'shopgate/cart-integration-sdk'
+  PLUGIN_FOLDER: $PROJECT_ROOT/custom/static-plugins/$PLUGIN_NAME
+  PLUGIN_COMPOSER: shopgate/cart-integration-shopware6
   MOCK_SERVER_URL: 'http://127.0.0.1:3000'
-  VERBOSE: ''
   # throws an exception when Criteria class has empty ids passed to it
-  FEATURE_NEXT_16710: 1
+  FEATURE_NEXT_16710: '1'
 
 .cache: &cache
   key: $PLUGIN_NAME-$PLATFORM_BRANCH
   policy: pull
   paths:
-    - .cache/npm
-    - vendor/
+    - .cache
 
 workflow:
   rules:
@@ -44,45 +41,24 @@ workflow:
     - when: always
 
 .defaults: &defaults
-  image: shopware/development:$PHP-composer-2
+  image: dockware/dev:$PLATFORM_BRANCH
   cache:
     <<: *cache
-  services:
-    - name: $MYSQL_IMAGE
-      alias: database
-      entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
   before_script:
-    - export APP_URL="http://$HOSTNAME"
-    - apt update > /dev/null
-    - apt-get install -y jq > /dev/null
-    - PLUGIN_COMPOSER_NAME=$(jq -r ".name" composer.json)
-    - PLUGIN_COMPOSER_SDK_VERSION=$(cat composer.json | jq --raw-output --arg sdk "$PLUGIN_COMPOSER_SDK_NAME" '.require[$sdk]')
-    - '[ -d vendor ] && mv vendor /tmp/'
-    - '[ -d .cache ] && mv .cache /tmp/'
-    - zip -rq plugin.zip .
-    - mv plugin.zip /tmp/plugin.zip
-    - rm -Rf .* * || true
-    - git clone https://github.com/shopware/platform.git . --branch $PLATFORM_BRANCH --depth 50
-    - '[ -d /tmp/vendor ] && mv /tmp/vendor ./'
-    - '[ -d /tmp/.cache ] && mv /tmp/.cache ./'
-    - mkdir -p custom/plugins || true
-    - unzip -q /tmp/plugin.zip -d custom/plugins/$PLUGIN_NAME
-    - composer require "$PLUGIN_COMPOSER_SDK_NAME":"$PLUGIN_COMPOSER_SDK_VERSION" --no-update
-    - composer install -n --quiet
-    - mkdir -p config/jwt || true
-    - bin/console system:generate-jwt || true
-    - bin/console system:install --drop-database --basic-setup --force --no-interaction --quiet
+    - cd $PROJECT_ROOT
+    - '[ -d $CI_PROJECT_DIR/.cache ] && mv $CI_PROJECT_DIR/.cache $PROJECT_ROOT/'
+    - ln -fs $CI_PROJECT_DIR $PLUGIN_FOLDER
+    - make --quiet -C $PROJECT_ROOT/../ xdebug-off
+    - composer require --prefer-source --quiet $PLUGIN_COMPOSER:@dev
+    - '[ ! -L "vendor/$PLUGIN_COMPOSER" ] && echo "Not symlinked! Pulled from packagist?" && exit 1'
     - bin/console plugin:refresh --quiet
     - bin/console plugin:install --quiet --activate $PLUGIN_NAME
+    - bin/console sales-channel:update:domain "$HOSTNAME"
     - >
       if bin/console debug:container --parameter kernel.plugin_infos --format json | grep -q "$PLUGIN_NAME";
         then echo "$PLUGIN_NAME is active";
         else echo "$PLUGIN_NAME is not active"; exit 1;
       fi
-    - bin/console bundle:dump
-    - bin/console assets:install --quiet
-    - chown -R 1000:1000 .
-    - /entrypoint supervisord > /dev/null 2>&1 &
 
 newman:
   <<: *defaults
@@ -94,21 +70,21 @@ newman:
     matrix:
       - PLATFORM_BRANCH:
           - 6.4.8.0
-          - 6.4.11.0
-      - PHP:
+          - 6.4.14.0
+      - PHP_VERSION:
           - '8.0'
   except:
     - tags
   script:
-    - npm install -g newman@^5.3.0 newman-reporter-htmlextra @mockoon/cli@1.5.* > /dev/null
-    - APP_ENV=prod php bin/console store:download -p SwagPlatformDemoData
-    - bin/console plugin:install --quiet --activate SwagPlatformDemoData
-    - mockoon-cli start --data ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Mockoon/environment.json --all --hostname $APP_URL
-    - cd ${PROJECT_ROOT}/custom/plugins/$PLUGIN_NAME/tests/Postman;
-    - newman run ./collection.json -g ./globals.json -e ./environment.json -r cli,htmlextra,junit
-      --reporter-htmlextra-export ${PROJECT_ROOT}/postman-report.html --reporter-junit-export ${PROJECT_ROOT}/newman.junit.xml
-      --color on --insecure --no-insecure-file-read
-      --env-var "host=$APP_URL" --global-var "mock_server_merchant_uri=$MOCK_SERVER_URL" --global-var "verbose=$VERBOSE";
+    - export APP_URL="http://$HOSTNAME"
+    - cd $CI_PROJECT_DIR/tests
+    - npm install > /dev/null
+    - npm run mockoon-start -- --hostname="$APP_URL";
+    - npm run ci -- --env-var="host=$APP_URL"
+      --reporter-htmlextra-export="$CI_PROJECT_DIR/postman-report.html"
+      --reporter-junit-export="$CI_PROJECT_DIR/newman.junit.xml"
+      --global-var="mock_server_merchant_uri=$MOCK_SERVER_URL";
+    - mv $PROJECT_ROOT/.cache $CI_PROJECT_DIR/
   artifacts:
     when: on_failure
     expire_in: 7 days
@@ -147,12 +123,11 @@ build zip:
     - tags
   script:
     - composer require frosh/plugin-uploader:0.3.19
-    - cd $CI_PROJECT_DIR/custom/plugins/$PLUGIN_NAME
+    - cd $CI_PROJECT_DIR
     - cp ./devops/rewrites/DescriptionLengthChecker.php $PROJECT_ROOT/vendor/frosh/plugin-uploader/src/Components/PluginValidator/General/
     - $PROJECT_ROOT/vendor/bin/pluginupload ext:zip --strategy=plain -- "$PWD"
     - $PROJECT_ROOT/vendor/bin/pluginupload ext:validate $PLUGIN_NAME.zip
     - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip. Please run ./bin/init $PLUGIN_NAME" && exit 1)'
-    - mv $PLUGIN_NAME.zip ${CI_PROJECT_DIR}/$PLUGIN_NAME.zip
   artifacts:
     name: '${PLUGIN_NAME}'
     expire_in: never
