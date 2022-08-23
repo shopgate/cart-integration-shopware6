@@ -1,0 +1,167 @@
+{
+  "error_text": null,
+  "error": 0,
+  "sma_version": "1.0",
+  "trace_id": "spa-4f99573d74ae1",
+  "limit": 100,
+  "offset": 0,
+  "has_more_results": false,
+  "orders": [
+    {
+      "order_number": "{{ faker 'random.number' min=1000000000 max=9999999999 }}",
+      "confirm_shipping_url": "https://admin.shopgate.com/clickcs/2005338436/9cfd0fb1abacb6c0cafd46d449795ccf",
+      "created_time": "2022-08-22T11:54:20+00:00",
+      "is_paid": 0,
+      "payment_time": null,
+      "payment_transaction_number": null,
+      "payment_infos": {
+        "shopgate_payment_name": "Vorkasse (Eigene Abwicklung)",
+        "purpose": "SG2005338436"
+      },
+      "is_shipping_blocked": 0,
+      "is_shipping_completed": 0,
+      "shipping_completed_time": null,
+      "is_test": 1,
+      "is_storno": 0,
+      "is_customer_invoice_blocked": "0",
+      "update_shipping": 0,
+      "update_payment": 0,
+      "delivery_notes": null,
+      "customer_number": "31350821",
+      "external_order_number": null,
+      "external_order_id": null,
+      "external_customer_number": "SWDEMO10000",
+      "external_customer_id": "6c97534c2c0747f39e8751e43cb2b013",
+      "mail": "test@example.com",
+      "phone": null,
+      "mobile": null,
+      "custom_fields": [
+        {
+          "label": "IBAN (INPUT)",
+          "internal_field_name": "iban",
+          "value": "EE12345678901234"
+        },
+        {
+          "label": "BIC (INPUT)",
+          "internal_field_name": "bic",
+          "value": "BIC1231231"
+        },
+        {
+          "label": "Geburtsdatum (DATEPICKER)",
+          "internal_field_name": "birthday",
+          "value": "2023-01-02T00:00:00+00:00"
+        },
+        {
+          "label": "Uhrzeit (TIMEPICKER)",
+          "internal_field_name": "time",
+          "value": "13:02:00"
+        },
+        {
+          "label": "Bemerkung (TEXTAREA)",
+          "internal_field_name": "bemerkung",
+          "value": "test text"
+        },
+        {
+          "label": "Newsletter (RADIO)",
+          "internal_field_name": "radio",
+          "value": "no"
+        },
+        {
+          "label": "Newsletter (DROPDOWN)",
+          "internal_field_name": "dropdown",
+          "value": "yes"
+        }
+      ],
+      "shipping_group": "OTHER",
+      "shipping_type": "PLUGINAPI",
+      "shipping_infos": {
+        "name": "aad2e5c1ef53d4e89e302bb919a1a112",
+        "display_name": "API: shipping tax Highest",
+        "amount": 4.0999999999999996447286321199499070644378662109375,
+        "amount_net": 4.0999999999999996447286321199499070644378662109375,
+        "amount_gross": 4.0999999999999996447286321199499070644378662109375
+      },
+      "payment_method": "PREPAY",
+      "payment_group": "PREPAY",
+      "amount_items": "416.76",
+      "amount_shipping": "4.10",
+      "amount_shop_payment": "0.00",
+      "payment_tax_percent": "0.00",
+      "amount_shopgate_payment": "0.00",
+      "amount_complete": "418.61",
+      "currency": "EUR",
+      "invoice_address": {
+        "id": null,
+        "is_invoice_address": 1,
+        "is_delivery_address": 0,
+        "first_name": "{{faker 'name.firstName'}}",
+        "last_name": "{{faker 'name.lastName'}}",
+        "gender": "f",
+        "birthday": null,
+        "company": null,
+        "street_1": "Zevener Straße 8",
+        "street_2": null,
+        "zipcode": "{{faker 'address.zipCode'}}",
+        "city": "{{faker 'address.city'}}",
+        "country": "CH",
+        "state": "CH-AI",
+        "phone": null,
+        "mobile": null,
+        "mail": null,
+        "custom_fields": []
+      },
+      "delivery_address": {
+        "id": null,
+        "is_invoice_address": false,
+        "is_delivery_address": true,
+        "first_name": "Bank",
+        "last_name": "Payment",
+        "gender": "f",
+        "birthday": null,
+        "company": null,
+        "street_1": "Zevener Straße 8",
+        "street_2": null,
+        "zipcode": "2740",
+        "city": "Frankenbostel",
+        "country": "CH",
+        "state": "CH-AI",
+        "phone": null,
+        "mobile": null,
+        "mail": null,
+        "custom_fields": []
+      },
+      "external_coupons": [
+        {
+          "code": "API-PROMO-BY_CODE",
+          "name": "coupon 2.25 €, Code: API-PROMO-BY_CODE API: promo by code",
+          "amount": "2.25",
+          "amount_net": "2.25",
+          "amount_gross": "2.25",
+          "currency": "EUR",
+          "internal_info": "{\"itemType\":\"coupon\",\"promotionId\":\"a10923e207367d25ee81511ae40b473c\",\"discountId\":\"19b19702f4ee4ecd9e73227789e49db6\"}"
+        }
+      ],
+      "shopgate_coupons": [],
+      "items": [
+        {
+          "item_number": "2a88d9b59d474c7e869d8071649be43c",
+          "item_number_public": "SWDEMO10001",
+          "parent_item_number": null,
+          "order_item_id": "59589575",
+          "quantity": 1,
+          "name": "Main product",
+          "unit_amount": "416.76",
+          "unit_amount_with_tax": "416.76",
+          "tax_percent": "0.00",
+          "tax_class_key": null,
+          "tax_class_id": null,
+          "currency": "EUR",
+          "internal_order_info": null,
+          "options": [],
+          "inputs": [],
+          "attributes": []
+        }
+      ]
+    }
+  ]
+}

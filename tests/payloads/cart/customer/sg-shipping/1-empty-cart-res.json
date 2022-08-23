@@ -1,0 +1,37 @@
+{
+  "currency": "EUR",
+  "shipping_methods": [],
+  "payment_methods": {
+    "37ee52ff21164facbf533d47e83d4c26": {
+      "id": "handler_shopware_cashpayment",
+      "amount": null,
+      "amountWithTax": null,
+      "taxClass": null,
+      "taxPercent": null
+    },
+    "b8b8551fe9344d22b73ac0c7fe67247e": {
+      "id": "handler_shopware_prepayment",
+      "amount": null,
+      "amountWithTax": null,
+      "taxClass": null,
+      "taxPercent": null
+    },
+    "3284e38692954aed8bd9bf9f2a5a1815": {
+      "id": "handler_shopware_invoicepayment",
+      "amount": null,
+      "amountWithTax": null,
+      "taxClass": null,
+      "taxPercent": null
+    }
+  },
+  "customer": {
+    "customerTaxClassKey": null,
+    "customerGroups": [
+      {
+        "id": "cfbd5018d38d41d8adca10d94fc8bdd6"
+      }
+    ]
+  },
+  "items": [],
+  "external_coupons": []
+}
