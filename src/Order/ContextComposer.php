@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
@@ -77,6 +75,13 @@ class ContextComposer
     public function addActivePayment(string $uid, SalesChannelContext $context): SalesChannelContext
     {
         $dataBag = [SalesChannelContextService::PAYMENT_METHOD_ID => $uid];
+
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
+    }
+
+    public function addActiveShipping(string $shippingId, SalesChannelContext $context): SalesChannelContext
+    {
+        $dataBag = [SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId];
 
         return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
     }

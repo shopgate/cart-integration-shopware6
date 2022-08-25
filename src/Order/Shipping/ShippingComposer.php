@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping;
 
@@ -9,6 +7,7 @@ use Shopgate\Shopware\Order\Shipping\Events\BeforeDeliveryContextSwitchEvent;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeManualShippingPriceSet;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeShippingMethodMappingEvent;
 use Shopgate\Shopware\Order\State\StateComposer;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
@@ -21,6 +20,7 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -87,8 +87,19 @@ class ShippingComposer
     /**
      * @return ShopgateShippingMethod[]
      * @throws ShopgateLibraryException
+     * @deprecated since version 3.x
      */
     public function mapShippingMethods(SalesChannelContext $context): array
+    {
+        return $this->mapOutgoingShipping($context);
+    }
+
+    /**
+     * @param SalesChannelContext $context
+     * @return ShopgateShippingMethod[]
+     * @throws ShopgateLibraryException
+     */
+    public function mapOutgoingShipping(SalesChannelContext $context): array
     {
         $deliveries = $this->getCalculatedDeliveries($context);
         $this->eventDispatcher->dispatch(new BeforeShippingMethodMappingEvent($deliveries));
@@ -105,10 +116,16 @@ class ShippingComposer
      */
     public function getCalculatedDeliveries(SalesChannelContext $context): DeliveryCollection
     {
-        $shippingMethods = $this->shippingBridge->getShippingMethods($context);
         $list = [];
         $request = new Request();
         $request->setSession(new Session()); // support for 3rd party plugins that do not check session existence
+
+        $shippingMethods = $this->shippingBridge->getShippingMethods($context);
+        $shippingMethods->sort(fn(
+            ShippingMethodEntity $x,
+            ShippingMethodEntity $y
+        ) => $x->getPosition() <=> $y->getPosition());
+
         try {
             foreach ($shippingMethods->getElements() as $shipMethod) {
                 $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
@@ -137,23 +154,9 @@ class ShippingComposer
         return new DeliveryCollection($list);
     }
 
-    /**
-     * Combines shipping discounts into one price.
-     * Note that we do not combine tax numbers well.
-     */
-    private function combineShippingCost(DeliveryCollection $deliveries): CalculatedPrice
+    public function mapIncomingShipping(ExtendedCart $sgCart, SalesChannelContext $context): string
     {
-        /** @noinspection NullPointerExceptionInspection */
-        return new CalculatedPrice(
-            $deliveries->reduce(static function (float $result, Delivery $delivery) {
-                return $result + $delivery->getShippingCosts()->getUnitPrice();
-            }, 0.0),
-            $deliveries->reduce(static function (float $result, Delivery $delivery) {
-                return $result + $delivery->getShippingCosts()->getTotalPrice();
-            }, 0.0),
-            $deliveries->first()->getShippingCosts()->getCalculatedTaxes(),
-            $deliveries->first()->getShippingCosts()->getTaxRules()
-        );
+        return $this->shippingMapping->getShopwareShippingId($sgCart, $context->getTaxState());
     }
 
     public function isFullyShipped(?OrderDeliveryCollection $deliveries): bool
@@ -217,5 +220,24 @@ class ShippingComposer
         $delivery = $this->getFirstShippingDelivery($deliveries);
 
         return $delivery ? $this->shippingBridge->setOrderToShipped($delivery->getId(), $context) : null;
+    }
+
+    /**
+     * Combines shipping discounts into one price.
+     * Note that we do not combine tax numbers well.
+     */
+    private function combineShippingCost(DeliveryCollection $deliveries): CalculatedPrice
+    {
+        /** @noinspection NullPointerExceptionInspection */
+        return new CalculatedPrice(
+            $deliveries->reduce(static function (float $result, Delivery $delivery) {
+                return $result + $delivery->getShippingCosts()->getUnitPrice();
+            }, 0.0),
+            $deliveries->reduce(static function (float $result, Delivery $delivery) {
+                return $result + $delivery->getShippingCosts()->getTotalPrice();
+            }, 0.0),
+            $deliveries->first()->getShippingCosts()->getCalculatedTaxes(),
+            $deliveries->first()->getShippingCosts()->getTaxRules()
+        );
     }
 }

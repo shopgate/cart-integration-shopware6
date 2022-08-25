@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
@@ -14,7 +12,8 @@ use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CartComposer
@@ -68,24 +67,33 @@ class CartComposer
 
         $this->eventDispatcher->dispatch(new BeforeCheckCartEvent($sgCart, $duplicatedContext));
 
+        // we cannot rely on context by reference, so we create new context variables
         $cleanCartContext = $this->contextComposer->addCustomerAddress($sgCart, $duplicatedContext);
+        $shippingId = $this->shippingComposer->mapIncomingShipping($sgCart, $cleanCartContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($sgCart, $cleanCartContext);
-        $context = $this->contextComposer->addActivePayment($paymentId, $cleanCartContext);
+        $dataBag = new RequestDataBag([
+            SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId,
+            SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
+        ]);
+        $context = $this->contextManager->switchContext($dataBag, $cleanCartContext);
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
         $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);
+        $shippingMethods = $this->shippingComposer->mapOutgoingShipping($context);
+        // reset context selected shipping as shipping method export has to mess with it
+        $shippingContext = $this->contextComposer->addActiveShipping($shippingId, $context);
 
         $result = [
-                'currency' => $context->getCurrency()->getIsoCode(),
-                'shipping_methods' => $this->shippingComposer->mapShippingMethods($context),
-                'payment_methods' => $this->paymentComposer->mapOutgoingPayments($context)
+                'currency' => $shippingContext->getCurrency()->getIsoCode(),
+                'shipping_methods' => $shippingMethods,
+                'payment_methods' => $this->paymentComposer->mapOutgoingPayments($shippingContext)
             ]
-            + $this->orderCustomerComposer->mapOutgoingCartCustomer($context)
+            + $this->orderCustomerComposer->mapOutgoingCartCustomer($shippingContext)
             + $this->lineItemComposer->mapOutgoingLineItems($updatedCart, $sgCart);
 
-        $result = $this->eventDispatcher->dispatch(new AfterCheckCartEvent($result, $context))->getResult();
+        $result = $this->eventDispatcher->dispatch(new AfterCheckCartEvent($result, $shippingContext))->getResult();
 
-        $this->quoteBridge->deleteCart($context); // delete newly created cart
+        $this->quoteBridge->deleteCart($shippingContext); // delete newly created cart
         $this->contextManager->resetContext($initContext); // revert back to desktop cart
 
         return $result;
