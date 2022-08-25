@@ -10,6 +10,7 @@ use Shopgate\Shopware\Order\State\StateComposer;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
+use ShopgateCartBase;
 use ShopgateLibraryException;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -64,11 +65,13 @@ class ShippingComposer
      * manual shipping cost to 0. This is why we need to use our custom
      * Free Shipping method in this case.
      *
+     * @param ExtendedCart|ExtendedOrder $quote
+     *
      * @see DeliveryCalculator::calculateDelivery
      */
-    public function addShippingFeeToCart(ExtendedOrder $sgOrder, Cart $swCart): void
+    public function addShippingFeeToCart(ShopgateCartBase $quote, Cart $swCart): void
     {
-        $shippingCost = $sgOrder->getShippingCost($this->contextManager->getSalesContext()->getTaxState());
+        $shippingCost = $quote->getShippingCost($this->contextManager->getSalesContext()->getTaxState());
         $shopCurrency = $this->contextManager->getSalesContext()->getCurrencyId();
         // for some reason manual shipping cost calculator uses default shop currency
         if ($shopCurrency !== Defaults::CURRENCY) {
@@ -80,7 +83,7 @@ class ShippingComposer
             $swCart->getShippingCosts()->getCalculatedTaxes(),
             $swCart->getShippingCosts()->getTaxRules()
         );
-        $this->eventDispatcher->dispatch(new BeforeManualShippingPriceSet($price, $swCart, $sgOrder));
+        $this->eventDispatcher->dispatch(new BeforeManualShippingPriceSet($price, $swCart, $quote));
         $swCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
     }
 
@@ -154,9 +157,12 @@ class ShippingComposer
         return new DeliveryCollection($list);
     }
 
-    public function mapIncomingShipping(ExtendedCart $sgCart, SalesChannelContext $context): string
+    /**
+     * @param ExtendedCart|ExtendedOrder $quote
+     */
+    public function mapIncomingShipping(ShopgateCartBase $quote, SalesChannelContext $context): string
     {
-        return $this->shippingMapping->getShopwareShippingId($sgCart, $context->getTaxState());
+        return $this->shippingMapping->getShopwareShippingId($quote, $context->getTaxState());
     }
 
     public function isFullyShipped(?OrderDeliveryCollection $deliveries): bool
