@@ -21,7 +21,7 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
-use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity as ShippingMethod;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -123,14 +123,14 @@ class ShippingComposer
         $request = new Request();
         $request->setSession(new Session()); // support for 3rd party plugins that do not check session existence
 
-        $shippingMethods = $this->shippingBridge->getShippingMethods($context);
-        $shippingMethods->sort(fn(
-            ShippingMethodEntity $x,
-            ShippingMethodEntity $y
-        ) => $x->getPosition() <=> $y->getPosition());
+        $methods = $this->shippingBridge->getShippingMethods($context);
+        // added in 6.4.11
+        if (method_exists(ShippingMethod::class, 'getPosition')) {
+            $methods->sort(fn(ShippingMethod $x, ShippingMethod $y) => $x->getPosition() <=> $y->getPosition());
+        }
 
         try {
-            foreach ($shippingMethods->getElements() as $shipMethod) {
+            foreach ($methods->getElements() as $shipMethod) {
                 $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
                 $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
                 $resultContext = $this->contextManager->switchContext($dataBag, $context);

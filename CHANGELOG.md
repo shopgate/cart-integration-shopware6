@@ -1,6 +1,6 @@
 # 2.5.0
 
-- changed shipping method order to honor SW6 position
+- changed shipping method order to honor SW6.4.11 position
 - added support for currently "selected" shipping method for SW6 rules to work on shipping
 
 # 2.4.0
