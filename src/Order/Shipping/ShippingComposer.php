@@ -21,6 +21,7 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity as ShippingMethod;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
@@ -124,10 +125,7 @@ class ShippingComposer
         $request->setSession(new Session()); // support for 3rd party plugins that do not check session existence
 
         $methods = $this->shippingBridge->getShippingMethods($context);
-        // added in 6.4.11
-        if (method_exists(ShippingMethod::class, 'getPosition')) {
-            $methods->sort(fn(ShippingMethod $x, ShippingMethod $y) => $x->getPosition() <=> $y->getPosition());
-        }
+        $this->sortSelectedShipping($methods, $context);
 
         try {
             foreach ($methods->getElements() as $shipMethod) {
@@ -245,5 +243,25 @@ class ShippingComposer
             $deliveries->first()->getShippingCosts()->getCalculatedTaxes(),
             $deliveries->first()->getShippingCosts()->getTaxRules()
         );
+    }
+
+    /**
+     * Sort by position as defined by SW v6.4.11.0+
+     * Add default & currently selected to the end of the list
+     */
+    private function sortSelectedShipping(ShippingMethodCollection $collection, SalesChannelContext $context): void
+    {
+        if (method_exists(ShippingMethod::class, 'getPosition')) {
+            $collection->sort(fn(ShippingMethod $x, ShippingMethod $y) => $x->getPosition() <=> $y->getPosition());
+        }
+        $ids = array_reverse(array_merge(
+            [
+                $context->getShippingMethod()->getId() => $context->getShippingMethod()->getId(),
+                $context->getSalesChannel()->getShippingMethodId() => $context->getSalesChannel()->getShippingMethodId()
+            ],
+            $collection->getIds()
+        ));
+
+        $collection->sortByIdArray($ids);
     }
 }
