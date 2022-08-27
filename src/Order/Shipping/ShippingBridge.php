@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping;
 
@@ -28,7 +26,7 @@ class ShippingBridge
         $this->stateBridge = $stateBridge;
     }
 
-    public function getShippingMethods(SalesChannelContext $initContext): ShippingMethodCollection
+    public function getShippingMethods(SalesChannelContext $context): ShippingMethodCollection
     {
         $criteria = (new Criteria())->addFilter(
             new NotFilter(
@@ -39,7 +37,7 @@ class ShippingBridge
         $criteria->setTitle('shopgate::shipping-method::not-shopgate');
         return $this->shippingMethodRoute->load(
             new Request(['onlyAvailable' => true]),
-            $initContext,
+            $context,
             $criteria
         )->getShippingMethods();
     }

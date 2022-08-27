@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order;
 
@@ -21,8 +19,6 @@ use Shopgate\Shopware\Shopgate\NativeOrderExtension;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
-use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateDeliveryNote;
 use ShopgateExternalOrder;
@@ -122,17 +118,17 @@ class OrderComposer
         $this->eventDispatcher->dispatch(new BeforeAddOrderEvent($order, $duplicatedContext));
 
         $cleanCartContext = $this->contextComposer->addCustomerAddress($order, $duplicatedContext);
+        $shippingId = $this->shippingComposer->mapIncomingShipping($order, $cleanCartContext);
         $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
-        $isShippingFree = $order->isShippingFree($this->contextManager->getSalesContext()->getTaxState());
-        $dataBag = [
-            SalesChannelContextService::SHIPPING_METHOD_ID =>
-                $isShippingFree ? FreeShippingMethod::UUID : GenericShippingMethod::UUID,
+        $dataBag = new RequestDataBag([
+            SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId,
             SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
-        ];
+        ]);
+
         try {
-            $newContext = $this->contextManager->switchContext(new RequestDataBag($dataBag), $cleanCartContext);
+            $newContext = $this->contextManager->switchContext($dataBag, $cleanCartContext);
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
-            if (!$isShippingFree) {
+            if (!$order->isShopwareShipping()) {
                 $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
             }
             $lineItems = $this->lineItemComposer->mapIncomingLineItems($order);

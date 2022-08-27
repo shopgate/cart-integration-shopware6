@@ -1,15 +1,18 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping;
 
 use Shopgate\Shopware\Order\State\StateComposer;
 use Shopgate\Shopware\Order\Taxes\TaxMapping;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
+use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use Shopgate\Shopware\System\Formatter;
+use ShopgateCartBase;
 use ShopgateDeliveryNote;
 use ShopgateExternalOrderExtraCost;
 use ShopgateShippingMethod;
@@ -88,5 +91,18 @@ class ShippingMapping
         }
 
         return $sgDelivery;
+    }
+
+    /**
+     * @param ExtendedCart|ExtendedOrder $quote
+     */
+    public function getShopwareShippingId(ShopgateCartBase $quote, ?string $taxState): string
+    {
+        if ($quote->isShopwareShipping()) {
+            return $quote->getShippingId();
+        }
+        $isShippingFree = $quote->hasShippingInfo() && $quote->isShippingFree($taxState);
+
+        return $isShippingFree ? FreeShippingMethod::UUID : GenericShippingMethod::UUID;
     }
 }

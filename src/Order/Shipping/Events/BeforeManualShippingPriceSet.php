@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping\Events;
 
-use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
+use ShopgateCartBase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -13,9 +13,9 @@ class BeforeManualShippingPriceSet extends Event
 {
     private CalculatedPrice $price;
     private Cart $swCart;
-    private ExtendedOrder $sgOrder;
+    private ShopgateCartBase $sgOrder;
 
-    public function __construct(CalculatedPrice $price, Cart $swCart, ExtendedOrder $sgOrder)
+    public function __construct(CalculatedPrice $price, Cart $swCart, ShopgateCartBase $sgOrder)
     {
         $this->price = $price;
         $this->swCart = $swCart;
@@ -32,7 +32,7 @@ class BeforeManualShippingPriceSet extends Event
         return $this->swCart;
     }
 
-    public function getSgOrder(): ExtendedOrder
+    public function getSgOrder(): ShopgateCartBase
     {
         return $this->sgOrder;
     }

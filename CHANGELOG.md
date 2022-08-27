@@ -1,3 +1,8 @@
+# 2.5.0
+
+- changed shipping method order to honor SW6.4.11 position & selected to be last
+- added support for currently "selected" shipping method for SW6 rules to work on shipping
+
 # 2.4.0
 
 - removed language uniqueness constraint for API connections

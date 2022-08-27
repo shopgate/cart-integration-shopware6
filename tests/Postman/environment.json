@@ -19,6 +19,12 @@
       "enabled": true
     },
     {
+      "key": "sw_endpoint_store_api",
+      "value": "{{host}}{{system_port}}/store-api",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "sw_endpoint_auth",
       "value": "{{sw_endpoint_api}}/oauth/token",
       "type": "default",
@@ -287,6 +293,18 @@
       "enabled": true
     },
     {
+      "key": "created_promotion_shipOnly_id",
+      "value": "90b9cb75300c45448250d591285d1772",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_promotion_shipOnly_code",
+      "value": "SHIP-ONLY",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "created_promotion_tagCode_id",
       "value": "6ab2972f8021e00f05da971348967800",
       "type": "default",
@@ -446,6 +464,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2022-05-26T11:37:39.105Z",
-  "_postman_exported_using": "Postman/9.19.3"
+  "_postman_exported_at": "2022-08-19T13:38:11.824Z",
+  "_postman_exported_using": "Postman/9.28.2"
 }

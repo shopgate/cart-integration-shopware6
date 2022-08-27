@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping;
 
@@ -9,8 +7,10 @@ use Shopgate\Shopware\Order\Shipping\Events\BeforeDeliveryContextSwitchEvent;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeManualShippingPriceSet;
 use Shopgate\Shopware\Order\Shipping\Events\BeforeShippingMethodMappingEvent;
 use Shopgate\Shopware\Order\State\StateComposer;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Storefront\ContextManager;
+use ShopgateCartBase;
 use ShopgateLibraryException;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -21,6 +21,8 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\DeliveryCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
+use Shopware\Core\Checkout\Shipping\ShippingMethodEntity as ShippingMethod;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -64,11 +66,13 @@ class ShippingComposer
      * manual shipping cost to 0. This is why we need to use our custom
      * Free Shipping method in this case.
      *
+     * @param ExtendedCart|ExtendedOrder $quote
+     *
      * @see DeliveryCalculator::calculateDelivery
      */
-    public function addShippingFeeToCart(ExtendedOrder $sgOrder, Cart $swCart): void
+    public function addShippingFeeToCart(ShopgateCartBase $quote, Cart $swCart): void
     {
-        $shippingCost = $sgOrder->getShippingCost($this->contextManager->getSalesContext()->getTaxState());
+        $shippingCost = $quote->getShippingCost($this->contextManager->getSalesContext()->getTaxState());
         $shopCurrency = $this->contextManager->getSalesContext()->getCurrencyId();
         // for some reason manual shipping cost calculator uses default shop currency
         if ($shopCurrency !== Defaults::CURRENCY) {
@@ -80,15 +84,26 @@ class ShippingComposer
             $swCart->getShippingCosts()->getCalculatedTaxes(),
             $swCart->getShippingCosts()->getTaxRules()
         );
-        $this->eventDispatcher->dispatch(new BeforeManualShippingPriceSet($price, $swCart, $sgOrder));
+        $this->eventDispatcher->dispatch(new BeforeManualShippingPriceSet($price, $swCart, $quote));
         $swCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
     }
 
     /**
      * @return ShopgateShippingMethod[]
      * @throws ShopgateLibraryException
+     * @deprecated since version 3.x
      */
     public function mapShippingMethods(SalesChannelContext $context): array
+    {
+        return $this->mapOutgoingShipping($context);
+    }
+
+    /**
+     * @param SalesChannelContext $context
+     * @return ShopgateShippingMethod[]
+     * @throws ShopgateLibraryException
+     */
+    public function mapOutgoingShipping(SalesChannelContext $context): array
     {
         $deliveries = $this->getCalculatedDeliveries($context);
         $this->eventDispatcher->dispatch(new BeforeShippingMethodMappingEvent($deliveries));
@@ -105,12 +120,15 @@ class ShippingComposer
      */
     public function getCalculatedDeliveries(SalesChannelContext $context): DeliveryCollection
     {
-        $shippingMethods = $this->shippingBridge->getShippingMethods($context);
         $list = [];
         $request = new Request();
         $request->setSession(new Session()); // support for 3rd party plugins that do not check session existence
+
+        $methods = $this->shippingBridge->getShippingMethods($context);
+        $this->sortSelectedShipping($methods, $context);
+
         try {
-            foreach ($shippingMethods->getElements() as $shipMethod) {
+            foreach ($methods->getElements() as $shipMethod) {
                 $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
                 $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
                 $resultContext = $this->contextManager->switchContext($dataBag, $context);
@@ -138,22 +156,11 @@ class ShippingComposer
     }
 
     /**
-     * Combines shipping discounts into one price.
-     * Note that we do not combine tax numbers well.
+     * @param ExtendedCart|ExtendedOrder $quote
      */
-    private function combineShippingCost(DeliveryCollection $deliveries): CalculatedPrice
+    public function mapIncomingShipping(ShopgateCartBase $quote, SalesChannelContext $context): string
     {
-        /** @noinspection NullPointerExceptionInspection */
-        return new CalculatedPrice(
-            $deliveries->reduce(static function (float $result, Delivery $delivery) {
-                return $result + $delivery->getShippingCosts()->getUnitPrice();
-            }, 0.0),
-            $deliveries->reduce(static function (float $result, Delivery $delivery) {
-                return $result + $delivery->getShippingCosts()->getTotalPrice();
-            }, 0.0),
-            $deliveries->first()->getShippingCosts()->getCalculatedTaxes(),
-            $deliveries->first()->getShippingCosts()->getTaxRules()
-        );
+        return $this->shippingMapping->getShopwareShippingId($quote, $context->getTaxState());
     }
 
     public function isFullyShipped(?OrderDeliveryCollection $deliveries): bool
@@ -217,5 +224,44 @@ class ShippingComposer
         $delivery = $this->getFirstShippingDelivery($deliveries);
 
         return $delivery ? $this->shippingBridge->setOrderToShipped($delivery->getId(), $context) : null;
+    }
+
+    /**
+     * Combines shipping discounts into one price.
+     * Note that we do not combine tax numbers well.
+     */
+    private function combineShippingCost(DeliveryCollection $deliveries): CalculatedPrice
+    {
+        /** @noinspection NullPointerExceptionInspection */
+        return new CalculatedPrice(
+            $deliveries->reduce(static function (float $result, Delivery $delivery) {
+                return $result + $delivery->getShippingCosts()->getUnitPrice();
+            }, 0.0),
+            $deliveries->reduce(static function (float $result, Delivery $delivery) {
+                return $result + $delivery->getShippingCosts()->getTotalPrice();
+            }, 0.0),
+            $deliveries->first()->getShippingCosts()->getCalculatedTaxes(),
+            $deliveries->first()->getShippingCosts()->getTaxRules()
+        );
+    }
+
+    /**
+     * Sort by position as defined by SW v6.4.11.0+
+     * Add default & currently selected to the end of the list
+     */
+    private function sortSelectedShipping(ShippingMethodCollection $collection, SalesChannelContext $context): void
+    {
+        if (method_exists(ShippingMethod::class, 'getPosition')) {
+            $collection->sort(fn(ShippingMethod $x, ShippingMethod $y) => $x->getPosition() <=> $y->getPosition());
+        }
+        $ids = array_reverse(array_merge(
+            [
+                $context->getShippingMethod()->getId() => $context->getShippingMethod()->getId(),
+                $context->getSalesChannel()->getShippingMethodId() => $context->getSalesChannel()->getShippingMethodId()
+            ],
+            $collection->getIds()
+        ));
+
+        $collection->sortByIdArray($ids);
     }
 }

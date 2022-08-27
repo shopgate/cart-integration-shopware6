@@ -1,0 +1,136 @@
+{
+  "currency": "EUR",
+  "shipping_methods": {
+    "0f6e77a09d754690954f263823b6732b": {
+      "id": "0f6e77a09d754690954f263823b6732b",
+      "title": "Standard",
+      "shippingGroup": "OTHER",
+      "description": null,
+      "sortOrder": null,
+      "amount": 20.99,
+      "amountWithTax": 20.99,
+      "taxClass": null,
+      "taxPercent": null,
+      "internalShippingInfo": null
+    },
+    "aad2e5c1ef53d4e89e302bb919a1a112": {
+      "id": "aad2e5c1ef53d4e89e302bb919a1a112",
+      "title": "API: shipping tax Auto",
+      "shippingGroup": "OTHER",
+      "description": null,
+      "sortOrder": null,
+      "amount": 4,
+      "amountWithTax": 4,
+      "taxClass": null,
+      "taxPercent": null,
+      "internalShippingInfo": null
+    },
+    "406c461fd6bba681026257bc2488bafc": {
+      "id": "406c461fd6bba681026257bc2488bafc",
+      "title": "API: shipping tax Fixed",
+      "shippingGroup": "OTHER",
+      "description": null,
+      "sortOrder": null,
+      "amount": 4.2,
+      "amountWithTax": 4.2,
+      "taxClass": null,
+      "taxPercent": null,
+      "internalShippingInfo": null
+    },
+    "7ded7c2f4494eecf6c796c282d57a57b": {
+      "id": "7ded7c2f4494eecf6c796c282d57a57b",
+      "title": "API: shipping tax Highest",
+      "shippingGroup": "OTHER",
+      "description": null,
+      "sortOrder": null,
+      "amount": 4.1,
+      "amountWithTax": 4.1,
+      "taxClass": null,
+      "taxPercent": null,
+      "internalShippingInfo": null
+    },
+    "75a42f4b7b6a4861ba97d8d6f69e55b7": {
+      "id": "75a42f4b7b6a4861ba97d8d6f69e55b7",
+      "title": "Express",
+      "shippingGroup": "OTHER",
+      "description": null,
+      "sortOrder": null,
+      "amount": 0,
+      "amountWithTax": 0,
+      "taxClass": null,
+      "taxPercent": null,
+      "internalShippingInfo": null
+    }
+  },
+  "payment_methods": {
+    "37ee52ff21164facbf533d47e83d4c26": {
+      "id": "handler_shopware_cashpayment",
+      "amount": null,
+      "amountWithTax": null,
+      "taxClass": null,
+      "taxPercent": null
+    },
+    "b8b8551fe9344d22b73ac0c7fe67247e": {
+      "id": "handler_shopware_prepayment",
+      "amount": null,
+      "amountWithTax": null,
+      "taxClass": null,
+      "taxPercent": null
+    },
+    "3284e38692954aed8bd9bf9f2a5a1815": {
+      "id": "handler_shopware_invoicepayment",
+      "amount": null,
+      "amountWithTax": null,
+      "taxClass": null,
+      "taxPercent": null
+    }
+  },
+  "customer": {
+    "customerTaxClassKey": null,
+    "customerGroups": [
+      {
+        "id": "cfbd5018d38d41d8adca10d94fc8bdd6"
+      }
+    ]
+  },
+  "items": {
+    "2a88d9b59d474c7e869d8071649be43c": {
+      "itemNumber": "2a88d9b59d474c7e869d8071649be43c",
+      "isBuyable": 1,
+      "qtyBuyable": 1,
+      "stockQuantity": 10,
+      "unitAmount": 416.76,
+      "unitAmountWithTax": 416.76,
+      "error": null,
+      "errorText": null,
+      "options": [],
+      "inputs": [],
+      "attributes": []
+    }
+  },
+  "external_coupons": [
+    {
+      "new": false,
+      "type": "coupon",
+      "isValid": true,
+      "notValidMessage": null,
+      "orderIndex": "1",
+      "code": "API-PROMO-BY_CODE",
+      "name": "API: promo by code",
+      "description": null,
+      "amount": "0",
+      "amountNet": 2.25,
+      "amountGross": null,
+      "taxType": "auto",
+      "currency": "EUR",
+      "isFreeShipping": false,
+      "internalInfo": "{\"itemType\":\"coupon\",\"promotionId\":\"a10923e207367d25ee81511ae40b473c\",\"discountId\":\"19b19702f4ee4ecd9e73227789e49db6\"}",
+      "utilityInternalInfo": "{\"itemType\":\"coupon\",\"promotionId\":\"a10923e207367d25ee81511ae40b473c\",\"discountId\":\"19b19702f4ee4ecd9e73227789e49db6\"}",
+      "decodedInfo": {
+        "itemType": "coupon",
+        "promotionId": "a10923e207367d25ee81511ae40b473c",
+        "discountId": "19b19702f4ee4ecd9e73227789e49db6"
+      }
+    }
+  ]
+}

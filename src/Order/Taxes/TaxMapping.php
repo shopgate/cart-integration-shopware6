@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Taxes;
 
@@ -36,6 +34,9 @@ class TaxMapping
         $this->productBridge = $productBridge;
     }
 
+    /**
+     * @return float[]
+     */
     public function calculatePrices(
         CalculatedPrice $price,
         ?string $taxStatus

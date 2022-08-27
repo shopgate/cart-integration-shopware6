@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem;
 
@@ -126,16 +124,17 @@ class LineItemPromoMapping
 
     /**
      * Only one amount should be set
+     * @noinspection PhpParamsInspection
      */
     private function applyOneCouponAmount(ShopgateExternalCoupon $coupon, CalculatedPrice $amount, string $status): void
     {
         [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($amount, $status);
         if ($status === CartPrice::TAX_STATE_GROSS) {
             $coupon->setAmountNet(null);
-            $coupon->setAmountGross(-($priceWithTax));
+            $coupon->setAmountGross(abs($priceWithTax));
         } else {
             $coupon->setAmountGross(null);
-            $coupon->setAmountNet(-($priceWithoutTax));
+            $coupon->setAmountNet(abs($priceWithoutTax));
         }
     }
 }

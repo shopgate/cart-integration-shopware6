@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "9d20903a-e71e-4501-8f80-e61a12b21f63",
+    "_postman_id": "61580f67-dd68-4637-919b-a9a08314ce3d",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "5289226"
@@ -2603,6 +2603,55 @@
                 "body": {
                   "mode": "raw",
                   "raw": "{\r\n    \"id\": \"{{created_promotion_byCode_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: promo by code\",\r\n    \"code\": \"{{created_promotion_byCode_code}}\",\r\n    \"exclusive\": false,\r\n    \"useCodes\": true,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"cart\",\r\n            \"type\": \"absolute\",\r\n            \"value\": 2.25\r\n        }\r\n    ],\r\n    \"salesChannels\":[\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/promotion",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "promotion"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: create ship only coupon",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Created entity successfully\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"id\": \"{{created_promotion_shipOnly_id}}\",\r\n    \"active\": true,\r\n    \"name\": \"API: ship only promo by code\",\r\n    \"code\": \"{{created_promotion_shipOnly_code}}\",\r\n    \"exclusive\": false,\r\n    \"useCodes\": true,\r\n    \"useIndividualCodes\": false,\r\n    \"useSetGroups\": false,\r\n    \"discounts\": [\r\n        {\r\n            \"considerAdvancedRules\": false,\r\n            \"scope\": \"delivery\",\r\n            \"type\": \"percentage\",\r\n            \"value\": 10\r\n        }\r\n    ],\r\n    \"salesChannels\":[\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"priority\": 1\r\n        }\r\n    ]\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -9303,7 +9352,7 @@
                       "    pm.expect(jsonData.shopgate_settings[0].old).to.be.an('array').length(2);",
                       "    pm.expect(jsonData.shopgate_settings[0].new).to.eq('simple');",
                       "    pm.expect(jsonData.shopgate_settings[1].name).to.eq('shop_is_active');",
-                      "    pm.expect(jsonData.shopgate_settings[1].old).to.eq(false);",
+                      "    pm.expect(jsonData.shopgate_settings[1].old).is.oneOf([0, false]);",
                       "    pm.expect(jsonData.shopgate_settings[1].new).to.eq('1');",
                       "});"
                     ],
@@ -9385,7 +9434,7 @@
                       "    pm.expect(jsonData.plugin_info['Shopware core version']).to.be.a('string').to.not.be.empty;",
                       "});",
                       "pm.test('Configurations check', function () {",
-                      "    pm.expect(jsonData.configuration.shop_is_active).to.be.eq(false);",
+                      "    pm.expect(jsonData.configuration.shop_is_active).is.oneOf([0, false]);",
                       "    pm.expect(jsonData.configuration.server).to.be.eq('custom');",
                       "    pm.expect(jsonData.configuration.product_types_to_export).to.be.a('array').length(1);",
                       "    pm.expect(jsonData.configuration.product_types_to_export[0]).to.eq('simple');",
@@ -14281,6 +14330,504 @@
                         "{{domain}}"
                       ]
                     }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Selected shipping",
+              "item": [
+                {
+                  "name": "SG: ship only coupon",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "",
+                          "pm.test(\"Check express\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(5);",
+                          "    const express = Utility.getById(jsonData.shipping_methods, pm.environment.get('gen_shippingMethod_express'));",
+                          "    pm.expect(express.title).to.eq('Express');",
+                          "    pm.expect(express.amount_with_tax).to.eq(0); // should not be less than 0",
+                          "    pm.expect(express.tax_percent).to.eq(19);",
+                          "});",
+                          "",
+                          "pm.test(\"Check standard\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(5);",
+                          "    const standard = Utility.getById(jsonData.shipping_methods, pm.environment.get('gen_shippingMethod_standard'));",
+                          "    pm.expect(standard.title).to.eq('Standard');",
+                          "    pm.expect(standard.amount_with_tax).to.eq(0); // should not be less than 0",
+                          "    pm.expect(standard.tax_percent).to.eq(19);",
+                          "});",
+                          "",
+                          "// checks complex shipping discount",
+                          "// current solution is to handle discounts in shipping price",
+                          "pm.test(\"Check ship tax auto\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(5);",
+                          "    const taxAuto = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_taxAuto'));",
+                          "    pm.expect(taxAuto.title).to.eq('API: shipping tax Auto');",
+                          "    pm.expect(taxAuto.amount_with_tax).to.eq(4.5); // 5 - 10%",
+                          "    pm.expect(taxAuto.tax_percent).to.eq(19);",
+                          "});",
+                          "pm.test(\"Check ship tax highest\", function () {",
+                          "    const taxHighest = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_taxHighest'));",
+                          "    pm.expect(taxHighest.title).to.eq('API: shipping tax Highest');",
+                          "    pm.expect(taxHighest.amount_with_tax).to.eq(4.59); //5.1 - 10%",
+                          "    pm.expect(taxHighest.tax_percent).to.eq(19);",
+                          "});",
+                          "pm.test(\"Check ship tax fixed\", function () {",
+                          "    const taxFixed = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_taxFixed'));",
+                          "    pm.expect(taxFixed.title).to.eq('API: shipping tax Fixed');",
+                          "    pm.expect(taxFixed.amount_with_tax).to.eq(4.68); //5.2 - 10%",
+                          "    pm.expect(taxFixed.tax_percent).to.eq(7);",
+                          "});",
+                          "",
+                          "pm.test(\"General item check\", function () {",
+                          "    pm.expect(jsonData.items).length(1, 'Should be 1 item in cart');",
+                          "});",
+                          "",
+                          "pm.test(\"Cart rule check\", function () {",
+                          "    pm.expect(jsonData.external_coupons).length(1, 'Should have 1 discount');",
+                          "    const rule = Utility.getByName(jsonData.external_coupons, 'API: ship only promo by code');",
+                          "    pm.expect(rule, 'Could not locate Ship Only rule').to.not.be.undefined;",
+                          "    pm.expect(rule.code).to.eq(pm.environment.get('created_promotion_shipOnly_code'));",
+                          "    pm.expect(rule.is_valid).to.eq(1);",
+                          "    pm.expect(rule.amount_gross).to.eq(0);",
+                          "    pm.expect(rule.currency).to.eq('EUR');",
+                          "    Test.checkCouponAmount(rule);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_check_cart}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_customer_id]",
+                          "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_group]",
+                          "value": "PRE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_method]",
+                          "value": "PRE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][country]",
+                          "value": "DE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][country]",
+                          "value": "DE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number]",
+                          "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number_public]",
+                          "value": "SWDEMO10002",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][quantity]",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_coupons][0][code]",
+                          "value": "{{created_promotion_shipOnly_code}}",
+                          "description": "25% ship discount",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_coupons][0][order_index]",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][name]",
+                          "value": "{{created_shipping_taxFixed}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][display_name]",
+                          "value": "API: shipping tax Fixed",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][amount]",
+                          "value": "8.90",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][weight]",
+                          "value": "0.17",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_group]",
+                          "value": "OTHER",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_type]",
+                          "value": "PLUGINAPI",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    },
+                    "description": "SW6M-46 checks that individual shipping only discounts are still exported"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: ship only coupon /w 0 ship",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "",
+                          "pm.test(\"Check express\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(5);",
+                          "    const express = Utility.getById(jsonData.shipping_methods, pm.environment.get('gen_shippingMethod_express'));",
+                          "    pm.expect(express.title).to.eq('Express');",
+                          "    pm.expect(express.amount_with_tax).to.eq(0); // should not be less than 0",
+                          "    pm.expect(express.tax_percent).to.eq(19);",
+                          "});",
+                          "",
+                          "pm.test(\"Check standard\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(5);",
+                          "    const standard = Utility.getById(jsonData.shipping_methods, pm.environment.get('gen_shippingMethod_standard'));",
+                          "    pm.expect(standard.title).to.eq('Standard');",
+                          "    pm.expect(standard.amount_with_tax).to.eq(0); // should not be less than 0",
+                          "    pm.expect(standard.tax_percent).to.eq(19);",
+                          "});",
+                          "",
+                          "// checks complex shipping discount",
+                          "// current solution is to handle discounts in shipping price",
+                          "pm.test(\"Check ship tax auto\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(5);",
+                          "    const taxAuto = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_taxAuto'));",
+                          "    pm.expect(taxAuto.title).to.eq('API: shipping tax Auto');",
+                          "    pm.expect(taxAuto.amount_with_tax).to.eq(4.5); // 5 - 10%",
+                          "    pm.expect(taxAuto.tax_percent).to.eq(19);",
+                          "});",
+                          "pm.test(\"Check ship tax highest\", function () {",
+                          "    const taxHighest = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_taxHighest'));",
+                          "    pm.expect(taxHighest.title).to.eq('API: shipping tax Highest');",
+                          "    pm.expect(taxHighest.amount_with_tax).to.eq(4.59); //5.1 - 10%",
+                          "    pm.expect(taxHighest.tax_percent).to.eq(19);",
+                          "});",
+                          "pm.test(\"Check ship tax fixed\", function () {",
+                          "    const taxFixed = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_taxFixed'));",
+                          "    pm.expect(taxFixed.title).to.eq('API: shipping tax Fixed');",
+                          "    pm.expect(taxFixed.amount_with_tax).to.eq(4.68); //5.2 - 10%",
+                          "    pm.expect(taxFixed.tax_percent).to.eq(7);",
+                          "});",
+                          "",
+                          "pm.test(\"General item check\", function () {",
+                          "    pm.expect(jsonData.items).length(1, 'Should be 1 item in cart');",
+                          "});",
+                          "",
+                          "pm.test(\"Cart rule check\", function () {",
+                          "    pm.expect(jsonData.external_coupons).length(1, 'Should have 1 rejected discount');",
+                          "    const rule = jsonData.external_coupons[0];",
+                          "    pm.expect(rule, 'Could not locate Ship Only rule').to.not.be.undefined;",
+                          "    pm.expect(rule.is_valid).to.eq(false);",
+                          "    Test.checkCouponAmount(rule);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_check_cart}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_customer_id]",
+                          "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_group]",
+                          "value": "PRE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_method]",
+                          "value": "PRE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][country]",
+                          "value": "DE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][country]",
+                          "value": "DE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number]",
+                          "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number_public]",
+                          "value": "SWDEMO10002",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][quantity]",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_coupons][0][code]",
+                          "value": "{{created_promotion_shipOnly_code}}",
+                          "description": "25% ship discount",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_coupons][0][order_index]",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][name]",
+                          "value": "{{gen_shippingMethod_express}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][display_name]",
+                          "value": "Express",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][amount]",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][weight]",
+                          "value": "0.17",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_group]",
+                          "value": "OTHER",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_type]",
+                          "value": "PLUGINAPI",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    },
+                    "description": "SW6M-46 checks that individual shipping only discounts are still exported"
                   },
                   "response": []
                 }
@@ -20578,6 +21125,260 @@
                   "response": []
                 }
               ]
+            },
+            {
+              "name": "Selected shipping",
+              "item": [
+                {
+                  "name": "SG: add order (gross)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Order added properly\", function () {",
+                          "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                          "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                          "});",
+                          "",
+                          "pm.test(\"Save order id\", function () {",
+                          "    const order_number = Utility.getRequestVariableValue('order_number');",
+                          "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_add_order}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "order_number",
+                          "value": "0102",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: get last order",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.expect(jsonData.error).to.eq(0);",
+                          "    pm.expect(jsonData.orders).to.be.length(1);",
+                          "});",
+                          "",
+                          "const order = jsonData.orders[0];",
+                          "pm.test(\"Basic order data\", function () {",
+                          "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_0102_id'));",
+                          "    pm.expect(order.status_name).to.eq('Open');",
+                          "    pm.expect(order.mail).to.eq(pm.environment.get('userEmail'));",
+                          "    pm.expect(order.phone).to.eq('+2-111-111-1111');",
+                          "    pm.expect(order.currency).to.eq('EUR');",
+                          "    pm.expect(order.is_paid).to.eq(0);",
+                          "    pm.expect(order.payment_method).to.eq('Vorkasse (Eigene Abwicklung)');",
+                          "    pm.expect(order.payment_time).to.eq('2022-01-20T11:14:03+00:00');",
+                          "    pm.expect(order.is_shipping_completed).to.eq(0);",
+                          "    pm.expect(order.invoice_address.id).to.eq(order.delivery_address.id, 'Address IDs should equal');",
+                          "});",
+                          "",
+                          "pm.test(\"Billing Address check\", function () {",
+                          "    const address = order.invoice_address;",
+                          "    pm.expect(address.first_name).to.eq('Bank');",
+                          "    pm.expect(address.last_name).to.eq('Payment');",
+                          "    pm.expect(address.gender).to.eq('m');",
+                          "    pm.expect(address.birthday).to.eq(null);",
+                          "    pm.expect(address.company).to.eq('My Company 2');",
+                          "    pm.expect(address.street_1).to.eq('My Street 1 B');",
+                          "    pm.expect(address.street_2).to.eq('My Street 2 B');",
+                          "    pm.expect(address.zipcode).to.eq('27404');",
+                          "    pm.expect(address.city).to.eq('Frankenbostel');",
+                          "    pm.expect(address.country).to.eq('GB');",
+                          "    pm.expect(address.state).to.eq('GB-ABC');",
+                          "    pm.expect(address.phone).to.eq('+2-111-111-1111');",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping Address check\", function () {",
+                          "    const address = order.delivery_address;",
+                          "    pm.expect(address.first_name).to.eq('Bank');",
+                          "    pm.expect(address.last_name).to.eq('Payment');",
+                          "    pm.expect(address.gender).to.eq('m');",
+                          "    pm.expect(address.birthday).to.eq(null);",
+                          "    pm.expect(address.company).to.eq('My Company 2');",
+                          "    pm.expect(address.street_1).to.eq('My Street 1 B');",
+                          "    pm.expect(address.street_2).to.eq('My Street 2 B');",
+                          "    pm.expect(address.zipcode).to.eq('27404');",
+                          "    pm.expect(address.city).to.eq('Frankenbostel');",
+                          "    pm.expect(address.country).to.eq('GB');",
+                          "    pm.expect(address.state).to.eq('GB-ABC');",
+                          "    pm.expect(address.phone).to.eq('+2-111-111-1111');",
+                          "});",
+                          "",
+                          "pm.test(\"Delivery notes\", function () {",
+                          "    pm.expect(order.delivery_notes).to.be.length(1);",
+                          "    const note = order.delivery_notes[0];",
+                          "    pm.expect(note.shipping_service_id).to.eq('API: shipping tax Auto');",
+                          "    pm.expect(note.shipping_service_name).to.eq('');",
+                          "    pm.expect(note.tracking_number).to.eq('');",
+                          "    pm.expect(note.shipping_time).to.eq(null);",
+                          "});",
+                          "",
+                          "pm.test(\"Taxes\", function () {",
+                          "    pm.expect(order.order_taxes).to.be.length(1);",
+                          "    const tax = order.order_taxes[0];",
+                          "    pm.expect(tax.label).to.eq('plus 20% VAT');",
+                          "    pm.expect(tax.tax_percent).to.eq(20);",
+                          "    pm.expect(tax.amount).to.eq(83.41);",
+                          "});",
+                          "    ",
+                          "pm.test(\"Shipping discount 1 check\", function () {",
+                          "    const shippingDiscount = Utility.getByName(order.external_coupons, 'discount shipping costs 1');",
+                          "    pm.expect(shippingDiscount, 'Could not locate shipping discount').to.not.be.undefined;",
+                          "    pm.expect(shippingDiscount.is_valid).to.be.oneOf([1, true]);",
+                          "    pm.expect(shippingDiscount.code).to.eq('1');",
+                          "    pm.expect(shippingDiscount.name).to.eq('discount shipping costs 1');",
+                          "    pm.expect(shippingDiscount.amount_gross).to.eq(0.5);",
+                          "    pm.expect(shippingDiscount.tax_type).to.eq('auto');",
+                          "    pm.expect(shippingDiscount.currency).to.eq('EUR');",
+                          "    pm.expect(shippingDiscount.is_free_shipping).to.eq(null);",
+                          "    Test.checkCouponAmount(shippingDiscount);",
+                          "});",
+                          "",
+                          "pm.test(\"Item check\", function () {",
+                          "    pm.expect(order.items).to.be.length(1);",
+                          "    const product = Utility.getByName(order.items, 'Main product');",
+                          "    pm.expect(product, 'Could not find main product').to.not.be.undefined;",
+                          "    pm.expect(product.item_number).to.eq(pm.environment.get('catalog_product_main_id'));",
+                          "    pm.expect(product.item_number_public).to.eq('SWDEMO10001');",
+                          "    pm.expect(product.quantity).to.eq(1);",
+                          "    pm.expect(product.unit_amount).to.eq(413.29);",
+                          "    pm.expect(product.unit_amount_with_tax).to.eq(495.95);",
+                          "    pm.expect(product.tax_percent).to.eq(20);",
+                          "    pm.expect(product.currency).to.eq('EUR');",
+                          "    pm.expect(product.description).to.have.string('Lorem ipsum');",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping extra cost check\", function () {",
+                          "    pm.expect(order.extra_costs).to.be.length(1);",
+                          "    const extraCost = order.extra_costs[0];",
+                          "    pm.expect(extraCost.type).to.eq('shipping');",
+                          "    pm.expect(extraCost.tax_percent).to.eq(20);",
+                          "    pm.expect(extraCost.amount).to.eq(5);",
+                          "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_orders}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_token",
+                          "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_language",
+                          "value": "",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "description": "SG-153, support for selected shipping method"
             }
           ]
         }

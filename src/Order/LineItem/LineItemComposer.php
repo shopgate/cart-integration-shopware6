@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem;
 
@@ -86,9 +84,6 @@ class LineItemComposer
                     );
                     break;
                 case LineItem::PROMOTION_LINE_ITEM_TYPE:
-                    if ($lineItem->getPrice() && abs($lineItem->getPrice()->getTotalPrice()) === 0.0) {
-                        break;
-                    }
                     $coupon = $this->promoMapping->mapValidCoupon($lineItem, $sgCart);
                     if ($coupon->isNew()) {
                         // otherwise, it is updated by reference instead
