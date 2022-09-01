@@ -142,6 +142,9 @@
         <service id="Shopgate\Shopware\Order\Subscriber\ShopgateCouponSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\SortOutLineItemSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\Order\CartComposer"/>
         <service id="Shopgate\Shopware\Order\Customer\CustomerMapping"/>
         <service id="Shopgate\Shopware\Order\Customer\OrderCustomerComposer"/>

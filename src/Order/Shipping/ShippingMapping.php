@@ -54,8 +54,8 @@ class ShippingMapping
         $exportShipping->setTitle($method->getTranslation('name') ?: $method->getName());
         $exportShipping->setDescription($method->getTranslation('description') ?: $method->getDescription());
         [$priceWithTax, $priceWithoutTax] = $this->taxMapping->calculatePrices($costs, $taxStatus);
-        $exportShipping->setAmount($priceWithoutTax);
-        $exportShipping->setAmountWithTax($priceWithTax);
+        $exportShipping->setAmount(max($priceWithoutTax, 0));
+        $exportShipping->setAmountWithTax(max($priceWithTax, 0));
         $exportShipping->setShippingGroup(ShopgateDeliveryNote::OTHER);
         if ($highestRate = $costs->getTaxRules()->highestRate()) {
             $exportShipping->setTaxPercent($highestRate->getTaxRate());

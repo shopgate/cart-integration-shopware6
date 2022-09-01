@@ -1,3 +1,7 @@
+# 2.5.1
+
+- fixed scenario for shipping & cart discounts with one coupon code
+
 # 2.5.0
 
 - changed shipping method order to honor SW6.4.11 position & selected to be last
