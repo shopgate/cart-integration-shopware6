@@ -21255,6 +21255,102 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "SG: get_orders cost",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.expect(jsonData.error).to.eq(0);",
+                          "    pm.expect(jsonData.orders).to.be.length(1);",
+                          "});",
+                          "",
+                          "const order = jsonData.orders[0];",
+                          "pm.test(\"Basic order data\", function () {",
+                          "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_0100_id'));",
+                          "    pm.expect(order.status_name).to.eq('Open');",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping Costs are net\", function () {",
+                          "    pm.expect(order.extra_costs).to.be.length(1);",
+                          "    const costs = order.extra_costs[0];",
+                          "    pm.expect(costs.type).to.eq('shipping');",
+                          "    pm.expect(costs.tax_percent).to.eq(7);",
+                          "    pm.expect(costs.amount).to.eq(6.1);",
+                          "    pm.expect(costs.label).to.eq('plus shipping costs');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_orders}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_token",
+                          "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_language",
+                          "value": "",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ]
             },
@@ -21396,6 +21492,102 @@
                       "path": [
                         "search",
                         "order"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: get_orders cost",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.expect(jsonData.error).to.eq(0);",
+                          "    pm.expect(jsonData.orders).to.be.length(1);",
+                          "});",
+                          "",
+                          "const order = jsonData.orders[0];",
+                          "pm.test(\"Basic order data\", function () {",
+                          "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_0101_id'));",
+                          "    pm.expect(order.status_name).to.eq('Open');",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping Costs are net\", function () {",
+                          "    pm.expect(order.extra_costs).to.be.length(1);",
+                          "    const costs = order.extra_costs[0];",
+                          "    pm.expect(costs.type).to.eq('shipping');",
+                          "    pm.expect(costs.tax_percent).to.eq(7);",
+                          "    pm.expect(costs.amount).to.eq(5.15);",
+                          "    pm.expect(costs.label).to.eq('plus shipping costs');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_orders}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_token",
+                          "value": "{{created_customer_withCustomGrp_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_language",
+                          "value": "",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
                       ]
                     }
                   },
@@ -21588,6 +21780,102 @@
                           "    pm.expect(extraCost.tax_percent).to.eq(20);",
                           "    pm.expect(extraCost.amount).to.eq(5);",
                           "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_get_orders}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_token",
+                          "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "customer_language",
+                          "value": "",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: get_orders cost",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", function () {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "const jsonData = pm.response.json();",
+                          "pm.test(\"Not an error\", function () {",
+                          "    pm.expect(jsonData.error).to.eq(0);",
+                          "    pm.expect(jsonData.orders).to.be.length(1);",
+                          "});",
+                          "",
+                          "const order = jsonData.orders[0];",
+                          "pm.test(\"Basic order data\", function () {",
+                          "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_0102_id'));",
+                          "    pm.expect(order.status_name).to.eq('Open');",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping Costs are net\", function () {",
+                          "    pm.expect(order.extra_costs).to.be.length(1);",
+                          "    const costs = order.extra_costs[0];",
+                          "    pm.expect(costs.type).to.eq('shipping');",
+                          "    pm.expect(costs.tax_percent).to.eq(20);",
+                          "    pm.expect(costs.amount).to.eq(5);",
+                          "    pm.expect(costs.label).to.eq('plus shipping costs');",
                           "});"
                         ],
                         "type": "text/javascript"
