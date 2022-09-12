@@ -4378,6 +4378,72 @@
               ]
             },
             {
+              "name": "Shipping",
+              "item": [
+                {
+                  "name": "SW: add ship to channel",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Successfully updated all entities\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {
+                      "accept": true
+                    }
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_shipping_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"0289316cdbfa4476bd63b444a276b247\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"shippingMethodId\": \"{{created_shipping_taxAuto}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/_action/sync",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "_action",
+                        "sync"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "SW: re-index",
               "event": [
                 {
@@ -5182,10 +5248,10 @@
                       "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_net_id'));",
                       "});",
                       "pm.test(\"Check shipping methods\", function () {",
-                      "    pm.expect(jsonData.shipping_methods).length(2);",
-                      "    jsonData.shipping_methods.map(method => {",
-                      "        pm.expect(method.title).is.oneOf(['Standard', 'Express'], 'Should be Standard or Express.');",
-                      "    });",
+                      "    pm.expect(jsonData.shipping_methods).length(3);",
+                      "    const autoShip = Utility.getById(jsonData.shipping_methods, pm.environment.get('created_shipping_taxAuto'));",
+                      "    pm.expect(autoShip, 'Could not find custom shipping').to.not.be.undefined;",
+                      "    pm.expect(autoShip.title).to.eq('API: shipping tax Auto (DE)');",
                       "});",
                       "pm.test(\"General check\", function () {",
                       "    pm.expect(jsonData.items).length(2, 'Should be 2 items in cart');",
