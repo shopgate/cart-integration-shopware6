@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Payment;
 
@@ -79,14 +77,20 @@ class PaymentComposer
      */
     public function getCustomerActivePaymentMethodId(SalesChannelContext $context): string
     {
-        $methods = [];
-        if ($context->getCustomer() && $context->getCustomer()->getDefaultPaymentMethod()) {
-            $methods[$context->getCustomer()->getDefaultPaymentMethod()->getId()] = $context->getCustomer()->getDefaultPaymentMethod()->getId();
+        $methods = [$context->getPaymentMethod()->getId()]; // customer selected payment
+        if ($context->getCustomer()) {
+            if ($context->getCustomer()->getLastPaymentMethodId()) {
+                $methods[] = $context->getCustomer()->getLastPaymentMethodId(); // customer last order payment
+            }
+            if ($context->getCustomer()->getDefaultPaymentMethodId()) {
+                $methods[] = $context->getCustomer()->getDefaultPaymentMethodId(); // customer default
+            }
         }
-        $methods[$context->getSalesChannel()->getPaymentMethodId()] = $context->getSalesChannel()->getPaymentMethodId();
-        $criteria = new Criteria($methods);
+        $methods[] = $context->getSalesChannel()->getPaymentMethodId(); // channel default payment
+        $ids = array_combine($methods, $methods);
+        $criteria = new Criteria($ids);
         $activePayments = $this->paymentBridge->getAvailableMethods($context, $criteria);
-        $activePayments->sortByIdArray($methods);
+        $activePayments->sortByIdArray($ids);
         if (!$payment = $activePayments->first()) {
             throw new RuntimeException('Is SalesChannel default payment method not active?');
         }
