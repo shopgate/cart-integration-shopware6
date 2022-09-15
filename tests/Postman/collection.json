@@ -247,6 +247,7 @@
                       "    pm.expect(jsonData.data[0].name).to.be.eq('Storefront');\r",
                       "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
                       "    pm.environment.set(\"gen_salesChannel_currency_id\", jsonData.data[0].currencyId);\r",
+                      "    pm.environment.set(\"gen_salesChannel_access_key\", jsonData.data[0].accessKey);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -3309,7 +3310,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"bb9f742a1426a9f3af6f32596693e395\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"paymentMethodId\": \"{{created_payment_customerUSA_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"add-payment-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"bb9f742a1426a9f3af6f32596693e395\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"paymentMethodId\": \"{{created_payment_customerUSA_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3324,6 +3325,82 @@
                   "path": [
                     "_action",
                     "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: find inactive payment",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"Check payment methods\", function () {\r",
+                      "    pm.expect(jsonData).to.haveOwnProperty('total').to.eq(1);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check direct debit\", function () {\r",
+                      "    const direct = Utility.getByName(jsonData.data, 'Direct Debit');\r",
+                      "    pm.expect(direct, 'expected Direct Debit payment method to exist').to.not.be.undefined;\r",
+                      "    pm.environment.set(\"gen_paymentMethod_directDebit\", direct.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"active\",\r\n                    \"value\": false\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/payment-method",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "payment-method"
                   ]
                 }
               },
@@ -15898,6 +15975,686 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Inactive payment session",
+          "item": [
+            {
+              "name": "SWA: activate payment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully activated/deactivated payment method\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"active\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/payment-method/{{gen_paymentMethod_directDebit}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "payment-method",
+                    "{{gen_paymentMethod_directDebit}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SWS: login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"get customer context token\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.contextToken).to.be.a('string');\r",
+                      "    pm.environment.set(\"gen_customer_t1_contextToken\", jsonData.contextToken);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "value",
+                      "value": "{{gen_salesChannel_access_key}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "key",
+                      "value": "sw-access-key",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "sw-context-token",
+                    "value": "test-context",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{userEmail}}\",\n  \"password\": \"{{userPass}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_store_api}}/account/login",
+                  "host": [
+                    "{{sw_endpoint_store_api}}"
+                  ],
+                  "path": [
+                    "account",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SWS: default payment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "value",
+                      "value": "{{gen_salesChannel_access_key}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "key",
+                      "value": "sw-access-key",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "sw-context-token",
+                    "value": "{{gen_customer_t1_contextToken}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{sw_endpoint_store_api}}/account/change-payment-method/:paymentMethodId",
+                  "host": [
+                    "{{sw_endpoint_store_api}}"
+                  ],
+                  "path": [
+                    "account",
+                    "change-payment-method",
+                    ":paymentMethodId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "paymentMethodId",
+                      "value": "{{gen_paymentMethod_directDebit}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SWS: change context",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "value",
+                      "value": "{{gen_salesChannel_access_key}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "key",
+                      "value": "sw-access-key",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "sw-context-token",
+                    "value": "{{gen_customer_t1_contextToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paymentMethodId\": \"{{gen_paymentMethod_directDebit}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_store_api}}/context",
+                  "host": [
+                    "{{sw_endpoint_store_api}}"
+                  ],
+                  "path": [
+                    "context"
+                  ]
+                },
+                "description": "Used for switching the context. A typical example would be changing the language or changing the currency."
+              },
+              "response": [
+                {
+                  "name": "Returns the context token. Use that as your `sw-context-token` header for subsequent requests.",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "sw-access-key",
+                        "value": "<API Key>"
+                      },
+                      {
+                        "description": "(Required) Content type of the request",
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "(Required) Accepted response content types",
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"currencyId\": \"2b0a109853b1a8ae77dabcf72990b431\",\n  \"languageId\": \"d811b87a5242988d8cbbd9fada308e3d\",\n  \"billingAddressId\": \"7cfcdeed98824455f2a8bc93444344dc\",\n  \"shippingAddressId\": \"1828fda1ee2b103321072849e380f363\",\n  \"paymentMethodId\": \"ae2f1299a1d9bfdea99710e8b0d5f270\",\n  \"shippingMethodId\": \"82253ccf157ef325ccdb29b042ad7dab\",\n  \"countryId\": \"2f7eff01192d8dedc8f666c2e359c3c7\",\n  \"countryStateId\": \"3c2e02453634dd61b718c64af7fae578\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/context",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "context"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"contextToken\": \"reprehenderit ad Excepteur\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "SWA: deactivate payment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully activated/deactivated payment method\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"active\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/payment-method/{{gen_paymentMethod_directDebit}}",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "payment-method",
+                    "{{gen_paymentMethod_directDebit}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: cart - no error",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Check default customer group set for customer\", function () {",
+                      "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                      "});",
+                      "",
+                      "pm.test(\"payment method check\", function () {",
+                      "    const payments = jsonData.payment_methods;",
+                      "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                      "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_check_cart}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[external_customer_id]",
+                      "value": "{{customer_default_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_group]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[payment_method]",
+                      "value": "COD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[invoice_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][gender]",
+                      "value": "{{customer_default_gender}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][first_name]",
+                      "value": "{{customer_default_firstName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][last_name]",
+                      "value": "{{customer_default_lastName}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][street_1]",
+                      "value": "{{customer_default_street1}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][city]",
+                      "value": "{{customer_default_city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][zipcode]",
+                      "value": "{{customer_default_zip}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[delivery_address][country]",
+                      "value": "BD",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number]",
+                      "value": "{{catalog_product_main_id}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][item_number_public]",
+                      "value": "SWDEMO10002",
+                      "type": "text"
+                    },
+                    {
+                      "key": "cart[items][0][quantity]",
+                      "value": "1",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SWS: Get current context",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Context Payment changed\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.salesChannel.paymentMethodId).to.not.eql(pm.environment.get('gen_paymentMethod_directDebit'));\r",
+                      "    pm.expect(jsonData.customer.defaultPaymentMethodId).to.eql(pm.environment.get('gen_paymentMethod_directDebit'));\r",
+                      "    pm.expect(jsonData.paymentMethod.id, 'Selected payment method switched').to.not.eql(pm.environment.get('gen_paymentMethod_directDebit'));\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "value",
+                      "value": "{{gen_salesChannel_access_key}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "key",
+                      "value": "sw-access-key",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "sw-context-token",
+                    "value": "{{gen_customer_t1_contextToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{sw_endpoint_store_api}}/context",
+                  "host": [
+                    "{{sw_endpoint_store_api}}"
+                  ],
+                  "path": [
+                    "context"
+                  ]
+                },
+                "description": "Fetches the current context. This includes for example the `customerGroup`, `currency`, `taxRules` and many more."
+              },
+              "response": [
+                {
+                  "name": "Returns the current context.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "sw-access-key",
+                        "value": "<API Key>"
+                      },
+                      {
+                        "description": "(Required) Content type of the request",
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "(Required) Accepted response content types",
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/context",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "context"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"apiAlias\": \"id\",\n  \"token\": \"commodo\",\n  \"currentCustomerGroup\": {\n    \"name\": \"id culpa Excepteur\",\n    \"displayGross\": true\n  },\n  \"fallbackCustomerGroup\": {\n    \"name\": \"adipisicing laboris\",\n    \"displayGross\": false\n  },\n  \"currency\": {\n    \"isoCode\": \"Ut id aliquip\",\n    \"factor\": -93788979,\n    \"symbol\": \"non sint culpa\",\n    \"shortName\": \"elit qui dolor occaecat Excepteur\",\n    \"name\": \"non eu\",\n    \"position\": -99341738,\n    \"decimalPrecision\": 78965854,\n    \"isSystemDefault\": true\n  },\n  \"salesChannel\": {\n    \"typeId\": \"commodo eiusmod ad incididunt\",\n    \"languageId\": \"fugiat culpa anim dolor\",\n    \"currencyId\": \"eiusmod aute\",\n    \"paymentMethodId\": \"Duis aliqua\",\n    \"shippingMethodId\": \"ut ullamco ipsum culpa\",\n    \"countryId\": \"voluptate irure\",\n    \"navigationCategoryId\": \"ullamco laboris elit sed\",\n    \"navigationCategoryDepth\": -45175784,\n    \"footerCategoryId\": \"voluptate veniam nisi\",\n    \"serviceCategoryId\": \"et c\",\n    \"name\": \"ea non Excepteur\",\n    \"shortName\": \"est\",\n    \"accessKey\": \"e\",\n    \"active\": false,\n    \"maintenance\": true,\n    \"maintenanceIpWhitelist\": \"ea eiusmod dolore\",\n    \"mailHeaderFooterId\": \"nostru\",\n    \"customerGroupId\": \"dolor id minim magna\",\n    \"hreflangActive\": false,\n    \"hreflangDefaultDomainId\": \"do\",\n    \"analyticsId\": \"Duis officia quis\"\n  },\n  \"taxRules\": [\n    {\n      \"taxRate\": 89478375.22102183,\n      \"name\": \"occaecat voluptate fugiat enim ad\"\n    },\n    {\n      \"taxRate\": 54408915.716150105,\n      \"name\": \"laboris reprehenderi\"\n    }\n  ],\n  \"customer\": {\n    \"groupId\": \"velit nisi ullamco labore\",\n    \"defaultPaymentMethodId\": \"cupidatat aliquip nisi fugiat enim\",\n    \"salesChannelId\": \"consectetur minim\",\n    \"languageId\": \"eiusmod laboris anim\",\n    \"lastPaymentMethodId\": \"laboris dolore ut\",\n    \"defaultBillingAddressId\": \"voluptate esse consequat\",\n    \"defaultShippingAddressId\": \"anim exercitation\",\n    \"customerNumber\": \"laborum\",\n    \"salutationId\": \"voluptate cupidatat anim\",\n    \"firstName\": \"exercitation pariatur ea occaecat\",\n    \"lastName\": \"magna proident\",\n    \"company\": \"sint eu officia\",\n    \"password\": \"sit labore laboris\",\n    \"email\": \"sed ea est\",\n    \"title\": \"elit irure sunt\",\n    \"affiliateCode\": \"dolore\",\n    \"campaignCode\": \"minim veniam in quis\",\n    \"active\": false,\n    \"doubleOptInRegistration\": true,\n    \"doubleOptInEmailSentDate\": \"2003-02-18T20:19:39.852Z\",\n    \"doubleOptInConfirmDate\": \"1954-12-06T16:50:01.746Z\",\n    \"hash\": \"officia dolor ea\",\n    \"guest\": true,\n    \"firstLogin\": \"2021-02-03T08:21:32.766Z\",\n    \"lastLogin\": \"1944-03-13T16:11:52.014Z\",\n    \"newsletter\": false,\n    \"birthday\": \"1973-06-24T10:01:06.414Z\",\n    \"lastOrderDate\": \"1952-02-10T15:27:41.200Z\",\n    \"orderCount\": 44970846,\n    \"legacyEncoder\": \"velit sunt qui ullamco eu\",\n    \"legacyPassword\": \"occaecat ipsum esse proid\",\n    \"autoIncrement\": 40702337,\n    \"remoteAddress\": \"qui in proident laboris pariatur\"\n  },\n  \"paymentMethod\": {\n    \"pluginId\": \"officia aliquip minim\",\n    \"handlerIdentifier\": \"qui consequat id\",\n    \"name\": \"non in sint\",\n    \"description\": \"enim minim aliquip\",\n    \"position\": 16311689,\n    \"active\": true,\n    \"availabilityRuleId\": \"ea eu eiusmod exercitation\",\n    \"mediaId\": \"fugiat\",\n    \"formattedHandlerIdentifier\": \"in dolore culpa ut adipisicing\"\n  },\n  \"shippingMethod\": {\n    \"name\": \"sunt esse magna mollit\",\n    \"active\": true,\n    \"description\": \"officia\",\n    \"trackingUrl\": \"qui eiusmod\",\n    \"deliveryTimeId\": \"mollit ipsum in laborum\",\n    \"availabilityRuleId\": \"i\",\n    \"mediaId\": \"mollit dolore\"\n  },\n  \"context\": {\n    \"versionId\": \"esse quis minim do\",\n    \"currencyId\": \"tempor pariatur commodo\",\n    \"currencyFactor\": -30946738,\n    \"currencyPrecision\": 71160974,\n    \"scope\": \"sed nulla exercitation occaecat\",\n    \"source\": \"ut laborum sit in est\",\n    \"taxState\": \"Ut sint\",\n    \"useCache\": true\n  }\n}"
+                }
+              ]
+            }
+          ],
+          "description": "SW6M-51 ticket. Issue when a session has a bad reference to a payment method that is no longer active"
         },
         {
           "name": "SG: cart (main cust)",

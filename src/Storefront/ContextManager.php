@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront;
 
@@ -91,6 +89,7 @@ class ContextManager
      * Resetting is necessary as our transactions use hidden methods.
      * Without resetting the new objects created will use the last
      * context as base.
+     * @deprecated 3.x will be removed
      */
     public function resetContext(?SalesChannelContext $context = null): void
     {
@@ -111,7 +110,7 @@ class ContextManager
     public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
     {
         $currentContext = $context ?: $this->getSalesContext();
-        $customerId = $currentContext->getCustomer() ? $currentContext->getCustomer()->getId(): null;
+        $customerId = $currentContext->getCustomer() ? $currentContext->getCustomer()->getId() : null;
         $this->contextPersist->save(
             $currentContext->getToken(),
             $dataBag->all(),
@@ -167,8 +166,7 @@ class ContextManager
         string $salesChannelId,
         array $options = [],
         string $token = null
-    ): SalesChannelContext
-    {
+    ): SalesChannelContext {
         if (null === $token) {
             $token = Random::getAlphanumericString(32);
         }

@@ -94,7 +94,7 @@ class CartComposer
         $result = $this->eventDispatcher->dispatch(new AfterCheckCartEvent($result, $shippingContext))->getResult();
 
         $this->quoteBridge->deleteCart($shippingContext); // delete newly created cart
-        $this->contextManager->resetContext($initContext); // revert back to desktop cart
+        $this->contextComposer->resetContext($initContext, $shippingContext); // revert back to desktop cart
 
         return $result;
     }
