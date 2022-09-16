@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Payment;
 
@@ -29,12 +27,14 @@ class PaymentBridge
         $this->contextManager = $contextManager;
     }
 
-    public function getAvailableMethods(SalesChannelContext $context): PaymentMethodCollection
-    {
+    public function getAvailableMethods(
+        SalesChannelContext $context,
+        Criteria $criteria = null
+    ): PaymentMethodCollection {
         $request = new Request();
         $request->query->set('onlyAvailable', true);
 
-        $criteria = new Criteria();
+        $criteria = $criteria ?: new Criteria();
         $criteria->setTitle('shopgate::payment-method::available');
         return $this->paymentMethodRoute
             ->load($request, $context, $criteria)

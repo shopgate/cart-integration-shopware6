@@ -1,3 +1,7 @@
+# 2.5.2
+
+- fixed `check_cart` & `add_order` context reset to no longer assign an inactive payment method
+
 # 2.5.1
 
 - fixed scenario for shipping & cart discounts with one coupon code
@@ -239,7 +243,7 @@
 
 # 0.0.8
 
-- added support to sub-level root categories (2nd level+)
+- added support to sublevel root categories (2nd level+)
 - fixed co-existence with FindLogic Search & Navigation plugin
 - fixed products not exporting due to `array_value` null exception
 

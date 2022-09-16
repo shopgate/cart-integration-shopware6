@@ -247,6 +247,7 @@
                       "    pm.expect(jsonData.data[0].name).to.be.eq('Storefront');\r",
                       "    pm.environment.set(\"gen_salesChannel_id\", jsonData.data[0].id);\r",
                       "    pm.environment.set(\"gen_salesChannel_currency_id\", jsonData.data[0].currencyId);\r",
+                      "    pm.environment.set(\"gen_salesChannel_access_key\", jsonData.data[0].accessKey);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -3309,7 +3310,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"add-shipping-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"bb9f742a1426a9f3af6f32596693e395\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"paymentMethodId\": \"{{created_payment_customerUSA_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "raw": "{\r\n    \"add-payment-methods-to-channel\": {\r\n        \"entity\": \"sales_channel_payment_method\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"bb9f742a1426a9f3af6f32596693e395\",\r\n                \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n                \"paymentMethodId\": \"{{created_payment_customerUSA_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3324,6 +3325,82 @@
                   "path": [
                     "_action",
                     "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: find inactive payment",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"Check payment methods\", function () {\r",
+                      "    pm.expect(jsonData).to.haveOwnProperty('total').to.eq(1);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Check direct debit\", function () {\r",
+                      "    const direct = Utility.getByName(jsonData.data, 'Direct Debit');\r",
+                      "    pm.expect(direct, 'expected Direct Debit payment method to exist').to.not.be.undefined;\r",
+                      "    pm.environment.set(\"gen_paymentMethod_directDebit\", direct.id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"and\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"active\",\r\n                    \"value\": false\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/payment-method",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "payment-method"
                   ]
                 }
               },
@@ -5234,6 +5311,179 @@
         {
           "name": "Cart",
           "item": [
+            {
+              "name": "Inactive payment session",
+              "item": [
+                {
+                  "name": "SG: cart - no error",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "",
+                          "pm.test(\"Check default customer group set for customer\", function () {",
+                          "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('gen_customer_group_main_id'));",
+                          "});",
+                          "",
+                          "pm.test(\"payment method check\", function () {",
+                          "    const payments = jsonData.payment_methods;",
+                          "    pm.expect(payments).lengthOf(3, 'Should have 3 payment methods');",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_cashpayment'), 'COD').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_prepayment'), 'PREPAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopware_invoicepayment'), 'INV_PAY').to.not.be.undefined;",
+                          "    pm.expect(Utility.getById(payments, 'handler_shopgate_generichandler'), 'SG').to.be.undefined;",
+                          "});",
+                          ""
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_check_cart}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number_headless}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_customer_id]",
+                          "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_group]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_method]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][country]",
+                          "value": "BD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][country]",
+                          "value": "BD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number]",
+                          "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number_public]",
+                          "value": "SWDEMO10002",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][quantity]",
+                          "value": "1",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ],
+              "description": "SW6M-51 ticket. Issue when a session has a bad reference to a payment method that is no longer active"
+            },
             {
               "name": "SG: cart NET customer",
               "event": [

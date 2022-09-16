@@ -160,7 +160,10 @@ class OrderComposer
         } catch (Throwable $error) {
             throw $this->errorMapping->mapThrowable($error);
         } finally {
-            $this->contextManager->resetContext($initContext); // load original desktop cart
+            $this->contextComposer->resetContext(
+                $initContext,
+                $newContext ?? $this->contextManager->getSalesContext()
+            ); // load original desktop cart
         }
 
         $result = [

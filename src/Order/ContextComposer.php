@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Order;
 
 use Shopgate\Shopware\Order\Customer\AddressComposer;
+use Shopgate\Shopware\Order\Payment\PaymentComposer;
 use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCartBase;
@@ -18,15 +19,18 @@ class ContextComposer
     private ContextManager $contextManager;
     private AddressComposer $addressComposer;
     private QuoteErrorMapping $errorMapping;
+    private PaymentComposer $paymentComposer;
 
     public function __construct(
         ContextManager $contextManager,
         AddressComposer $addressComposer,
-        QuoteErrorMapping $errorMapping
+        QuoteErrorMapping $errorMapping,
+        PaymentComposer $paymentComposer
     ) {
         $this->contextManager = $contextManager;
         $this->addressComposer = $addressComposer;
         $this->errorMapping = $errorMapping;
+        $this->paymentComposer = $paymentComposer;
     }
 
     public function getContextByCustomerId(string $customerId): SalesChannelContext
@@ -84,5 +88,19 @@ class ContextComposer
         $dataBag = [SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId];
 
         return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
+    }
+
+    public function resetContext(
+        SalesChannelContext $originalContext,
+        SalesChannelContext $currentContext
+    ): SalesChannelContext {
+        $payment = $this->paymentComposer->getCustomerActivePaymentMethodId($currentContext);
+        $shipping = $currentContext->getSalesChannel()->getShippingMethodId();
+
+        return $this->contextManager->switchContext(
+            new RequestDataBag([
+                SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
+                SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
+            ]), $originalContext);
     }
 }
