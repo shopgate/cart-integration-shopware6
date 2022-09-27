@@ -15197,7 +15197,7 @@
                   "response": []
                 },
                 {
-                  "name": "SG: shipping + cart coupon",
+                  "name": "SG: ship + cart coupon (gross)",
                   "event": [
                     {
                       "listen": "test",
@@ -15275,6 +15275,237 @@
                         {
                           "key": "cart[external_customer_id]",
                           "value": "{{customer_default_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_group]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[payment_method]",
+                          "value": "COD",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[invoice_address][country]",
+                          "value": "DE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][gender]",
+                          "value": "{{customer_default_gender}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][first_name]",
+                          "value": "{{customer_default_firstName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][last_name]",
+                          "value": "{{customer_default_lastName}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][street_1]",
+                          "value": "{{customer_default_street1}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][city]",
+                          "value": "{{customer_default_city}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][zipcode]",
+                          "value": "{{customer_default_zip}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[delivery_address][country]",
+                          "value": "DE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number]",
+                          "value": "{{catalog_product_main_id}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][item_number_public]",
+                          "value": "Main Product",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[items][0][quantity]",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_coupons][0][code]",
+                          "value": "{{created_promotion_shipCart_code}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_coupons][0][order_index]",
+                          "value": "0",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][name]",
+                          "value": "{{created_shipping_taxFixed}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][display_name]",
+                          "value": "API: shipping tax Fixed",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][amount]",
+                          "value": "8.90",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_infos][weight]",
+                          "value": "0.17",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_group]",
+                          "value": "OTHER",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[shipping_type]",
+                          "value": "PLUGINAPI",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{domain}}",
+                      "host": [
+                        "{{domain}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "SG: ship + cart coupon (net)",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const jsonData = pm.response.json();",
+                          "",
+                          "pm.test(\"Check default customer group set for customer\", function () {",
+                          "    pm.expect(jsonData.customer.customer_groups[0].id).to.eql(pm.environment.get('created_customerGroup_net_id'));",
+                          "});",
+                          "",
+                          "pm.test(\"Check shipping methods\", function () {",
+                          "    pm.expect(jsonData.shipping_methods).length(5);",
+                          "    // all shipping free because item is discounted 100%",
+                          "    jsonData.shipping_methods.map(shippingMethod =>  {",
+                          "        pm.expect(shippingMethod.amount).to.eq(",
+                          "            0, shippingMethod.title + ' method should be free'",
+                          "        );",
+                          "        pm.expect(shippingMethod.amount_with_tax).to.eq(",
+                          "            0, shippingMethod.title + ' method should be free'",
+                          "        );",
+                          "    }",
+                          "    );",
+                          "});",
+                          "",
+                          "pm.test(\"General item check\", function () {",
+                          "    pm.expect(jsonData.items).length(1, 'Should be 1 item in cart');",
+                          "});",
+                          "const items = jsonData.items;",
+                          "pm.test(\"Check item success\", function () {",
+                          "    const item = Utility.getByItemNumber(items, pm.environment.get('catalog_product_main_id'));",
+                          "    pm.expect(item.unit_amount).to.eql(416.76);",
+                          "    pm.expect(item.unit_amount_with_tax).to.eql(495.944);",
+                          "    pm.expect(item.is_buyable).to.eql(1);",
+                          "    pm.expect(item.qty_buyable).to.eql(1);",
+                          "});",
+                          "",
+                          "pm.test(\"Cart rule check\", function () {",
+                          "    pm.expect(jsonData.external_coupons).length(1, 'Should have 1 discount');",
+                          "    const rule = Utility.getByCode(jsonData.external_coupons, pm.environment.get('created_promotion_shipCart_code'));",
+                          "    pm.expect(rule.amount_net).to.eq(83.352);",
+                          "    pm.expect(rule.currency).to.eq('EUR');",
+                          "    Test.checkCouponAmount(rule);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "*/*"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-User",
+                        "value": "{{gen_sg_header_auth_user}}"
+                      },
+                      {
+                        "key": "X-Shopgate-Auth-Token",
+                        "value": "{{gen_sg_header_auth_token}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "{{framework_action_check_cart}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "shop_number",
+                          "value": "{{shop_number}}",
+                          "type": "text"
+                        },
+                        {
+                          "key": "cart[external_customer_id]",
+                          "value": "{{created_customer_withCustomGrp_id}}",
                           "type": "text"
                         },
                         {
