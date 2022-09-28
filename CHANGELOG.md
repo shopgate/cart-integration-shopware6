@@ -1,3 +1,7 @@
+# 2.5.3
+
+- fixed 100% shipping discount to not have more than 0 in shipping gross field (for NET customer group)
+
 # 2.5.2
 
 - fixed `check_cart` & `add_order` context reset to no longer assign an inactive payment method

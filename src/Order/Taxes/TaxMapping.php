@@ -41,7 +41,7 @@ class TaxMapping
         CalculatedPrice $price,
         ?string $taxStatus
     ): array {
-        $tax = $price->getCalculatedTaxes()->getAmount();
+        $tax = $price->getTotalPrice() > 0 ? $price->getCalculatedTaxes()->getAmount() : 0;
         if ($taxStatus === CartPrice::TAX_STATE_GROSS) {
             $priceWithTax = $price->getUnitPrice();
             $priceWithoutTax = $price->getUnitPrice() - ($tax / $price->getQuantity());
