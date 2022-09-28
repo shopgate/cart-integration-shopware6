@@ -3,7 +3,7 @@
   "description": "Shopgate Legacy plugin for Shopware 6",
   "license": "proprietary",
   "type": "shopware-platform-plugin",
-  "version": "2.5.1",
+  "version": "2.5.2-beta.2",
   "keywords": [
     "mobile",
     "app"
