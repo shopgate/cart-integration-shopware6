@@ -69,8 +69,9 @@ class ShippingMapping
     public function mapOutOrderShippingMethod(OrderDeliveryEntity $deliveryEntity): ShopgateExternalOrderExtraCost
     {
         $price = $deliveryEntity->getShippingCosts()->getTotalPrice();
+        $taxes = $deliveryEntity->getShippingCosts()->getCalculatedTaxes()->getAmount();
         $sgExport = $this->classFactory->createOrderExtraCost();
-        $sgExport->setAmount($price);
+        $sgExport->setAmount($price + $taxes); // always gross return
         $sgExport->setType(ShopgateExternalOrderExtraCost::TYPE_SHIPPING);
         $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($deliveryEntity->getShippingCosts()));
         $label = $this->formatter->translate('sg-quote.summaryLabelShippingCosts', [], null);
