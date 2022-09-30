@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate;
 
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCartItem;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalCoupon;
+use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderExtCoupon;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderItem;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedExternalOrderTax;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
@@ -14,6 +15,7 @@ use ShopgateCart;
 use ShopgateCartItem;
 use ShopgateDeliveryNote;
 use ShopgateExternalCoupon;
+use ShopgateExternalOrderExternalCoupon;
 use ShopgateExternalOrderExtraCost;
 use ShopgateExternalOrderItem;
 use ShopgateExternalOrderTax;
@@ -34,6 +36,7 @@ class ExtendedClassFactory
     private ShopgateExternalOrderExtraCost $orderExtraCost;
     private ShopgatePaymentMethod $paymentMethod;
     private Shopgate_Model_Catalog_Property $property;
+    private ShopgateExternalOrderExternalCoupon $orderExportCoupon;
 
     public function __construct(
         ShopgateCart $cart,
@@ -41,6 +44,7 @@ class ExtendedClassFactory
         ShopgateExternalOrderItem $orderItem,
         ShopgateExternalOrderTax $orderTax,
         ShopgateExternalCoupon $externalCoupon,
+        ShopgateExternalOrderExternalCoupon $orderExportCoupon,
         ShopgateOrder $order,
         Shopgate_Model_Catalog_Property $property,
         ShopgateShippingMethod $shippingMethod,
@@ -53,6 +57,7 @@ class ExtendedClassFactory
         $this->orderItem = $orderItem;
         $this->orderTax = $orderTax;
         $this->externalCoupon = $externalCoupon;
+        $this->orderExportCoupon = $orderExportCoupon;
         $this->order = $order;
         $this->property = $property;
         $this->shippingMethod = $shippingMethod;
@@ -91,6 +96,14 @@ class ExtendedClassFactory
     public function createExternalCoupon(): ShopgateExternalCoupon
     {
         return clone $this->externalCoupon;
+    }
+
+    /**
+     * @return ExtendedExternalOrderExtCoupon|ShopgateExternalOrderExternalCoupon
+     */
+    public function createOrderExportCoupon(): ShopgateExternalOrderExternalCoupon
+    {
+        return clone $this->orderExportCoupon;
     }
 
     /**
