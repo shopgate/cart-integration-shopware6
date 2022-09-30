@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended;
 
@@ -173,9 +171,12 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
         parent::setExtraCosts(
             array_merge(
                 $value->getDeliveries() ? $value->getDeliveries()->slice(0, 1)->map(
-                    fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutOrderShippingMethod($entity)
+                    fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutOrderShippingMethod(
+                        $entity->getShippingCosts(), $value->getTaxStatus()
+                    )
                 ) : [])
         );
+        // parent::setExtraCosts([$this->shippingMapping->mapOutOrderShippingMethod($value->getShippingCosts())])
     }
 
     private function mapAddress(

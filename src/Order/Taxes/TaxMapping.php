@@ -35,12 +35,10 @@ class TaxMapping
     }
 
     /**
-     * @return float[]
+     * @return float[] - [withTax, withoutTax]
      */
-    public function calculatePrices(
-        CalculatedPrice $price,
-        ?string $taxStatus
-    ): array {
+    public function calculatePrices(CalculatedPrice $price, ?string $taxStatus): array
+    {
         $tax = $price->getTotalPrice() > 0 ? $price->getCalculatedTaxes()->getAmount() : 0;
         if ($taxStatus === CartPrice::TAX_STATE_GROSS) {
             $priceWithTax = $price->getUnitPrice();
@@ -59,21 +57,17 @@ class TaxMapping
     public function mapOutgoingOrderTaxes(CalculatedTax $swTax): ShopgateExternalOrderTax
     {
         $sgTax = $this->classFactory->createExternalOrderTax();
-        $sgTax->setAmount($swTax->getTax());
+        $sgTax->setAmount($this->currencyComposer->roundAsItem($swTax->getTax()));
         $sgTax->setTaxPercent($swTax->getTaxRate());
-        $sgTax->setLabel($this->formatter->translate(
-            'checkout.summaryTax',
-            ['%rate%' => $swTax->getTaxRate()]
-        ));
+        $sgTax->setLabel($this->formatter->translate('checkout.summaryTax', ['%rate%' => $swTax->getTaxRate()]));
 
         return $sgTax;
     }
 
     public function getPriceTaxRate(CalculatedPrice $price): float
     {
-        $tax = $price->getCalculatedTaxes()->filter(function (CalculatedTax $price) {
-            return $price->getTax() !== 0.0;
-        })->sortByTax()->first();
+        $tax = $price->getCalculatedTaxes()
+            ->filter(fn(CalculatedTax $price) => $price->getTax() !== 0.0)->sortByTax()->first();
 
         return $tax ? $tax->getTaxRate() : 0.0;
     }
@@ -81,16 +75,15 @@ class TaxMapping
     /** @noinspection PhpCastIsUnnecessaryInspection */
     public function mapTaxRate(ShopgateOrderItem $incItem, array $cartItemIds, SalesChannelContext $context): array
     {
-        $product = $this->productBridge
-            ->getSimplifiedProductList($cartItemIds)
-            ->get($incItem->getItemNumber());
+        $product = $this->productBridge->getSimplifiedProductList($cartItemIds)->get($incItem->getItemNumber());
         if (!$product) {
             return [];
         }
         $definition = new QuantityPriceDefinition(
             (float)$incItem->getUnitAmount(),
             $context->buildTaxRules($product->getTaxId()),
-            (int)$incItem->getQuantity());
+            (int)$incItem->getQuantity()
+        );
 
         return array_map(static fn(TaxRule $taxRule) => $taxRule->getVars(), $definition->getTaxRules()->getElements());
     }

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote;
 
@@ -64,9 +62,12 @@ class OrderMapping
         }
         $sgOrder->setCurrency($swOrder->getCurrency());
         $sgOrder->setCustomFields($this->customFieldMapping->mapToShopgateCustomFields($swOrder));
-        $sgOrder->setItems($swOrder);
-        $sgOrder->setExternalCoupons($swOrder);
-        $sgOrder->setOrderTaxes($swOrder->getPrice()->getCalculatedTaxes());
+
+        if (null !== $swOrder->getLineItems()) {
+            $sgOrder->setExternalCoupons($swOrder);
+            $sgOrder->setItems($swOrder);
+            $sgOrder->setOrderTaxes($swOrder->getLineItems()->getPrices()->getCalculatedTaxes());
+        }
 
         // customer
         $sgOrder->setMail($swOrder->getOrderCustomer());

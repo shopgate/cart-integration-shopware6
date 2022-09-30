@@ -177,6 +177,7 @@ class OrderComposer
 
     /**
      * @return ShopgateExternalOrder[]
+     * @see http://developers.shopgate.com/plugin_api/orders/get_orders.html
      */
     public function getOrders(
         string $id,

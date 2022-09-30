@@ -11,7 +11,6 @@ class ShopgateOrderMapping
 {
     public function getShopgateOrder(OrderEntity $order): ?ShopgateOrderEntity
     {
-        /** @noinspection PhpUnnecessaryLocalVariableInspection */
         /** @var ?ShopgateOrderEntity $extension */
         $extension = $order->getExtension(NativeOrderExtension::PROPERTY);
 

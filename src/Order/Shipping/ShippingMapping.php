@@ -9,6 +9,7 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use Shopgate\Shopware\System\Formatter;
@@ -17,6 +18,7 @@ use ShopgateDeliveryNote;
 use ShopgateExternalOrderExtraCost;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 
 class ShippingMapping
@@ -27,6 +29,7 @@ class ShippingMapping
     private StateComposer $stateMapping;
     private Formatter $formatter;
     private ContextManager $contextManager;
+    private CurrencyComposer $currencyComposer;
 
     public function __construct(
         ExtendedClassFactory $classFactory,
@@ -34,7 +37,8 @@ class ShippingMapping
         ShopgateOrderMapping $shopgateOrderMapping,
         StateComposer $stateMapping,
         ContextManager $contextManager,
-        Formatter $formatter
+        Formatter $formatter,
+        CurrencyComposer $currencyComposer
     ) {
         $this->classFactory = $classFactory;
         $this->taxMapping = $taxMapping;
@@ -42,6 +46,7 @@ class ShippingMapping
         $this->stateMapping = $stateMapping;
         $this->formatter = $formatter;
         $this->contextManager = $contextManager;
+        $this->currencyComposer = $currencyComposer;
     }
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
@@ -66,14 +71,18 @@ class ShippingMapping
         return $exportShipping;
     }
 
-    public function mapOutOrderShippingMethod(OrderDeliveryEntity $deliveryEntity): ShopgateExternalOrderExtraCost
-    {
-        $price = $deliveryEntity->getShippingCosts()->getTotalPrice();
-        $taxes = $deliveryEntity->getShippingCosts()->getCalculatedTaxes()->getAmount();
+    public function mapOutOrderShippingMethod(
+        CalculatedPrice $shippingCosts,
+        string $taxStatus
+    ): ShopgateExternalOrderExtraCost {
         $sgExport = $this->classFactory->createOrderExtraCost();
-        $sgExport->setAmount($price + $taxes); // always gross return
+        [$withTax,] = $this->taxMapping->calculatePrices($shippingCosts, $taxStatus);
+//        $price = $shippingCosts->getTotalPrice();
+//        $taxes = $shippingCosts->getCalculatedTaxes()->getAmount();
+//        $sgExport->setAmount($this->currencyComposer->roundAsItem($price + $taxes)); // always gross return
+        $sgExport->setAmount($withTax); // always gross return
         $sgExport->setType(ShopgateExternalOrderExtraCost::TYPE_SHIPPING);
-        $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($deliveryEntity->getShippingCosts()));
+        $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($shippingCosts));
         $label = $this->formatter->translate('sg-quote.summaryLabelShippingCosts', [], null);
         $sgExport->setLabel($label);
 
@@ -83,7 +92,8 @@ class ShippingMapping
     public function mapOutgoingOrderDeliveryNote(OrderDeliveryEntity $deliveryEntity): ShopgateDeliveryNote
     {
         $sgDelivery = $this->classFactory->createDeliveryNote();
-        $sgDelivery->setShippingServiceId($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
+        $sgDelivery->setShippingServiceId(ShopgateDeliveryNote::OTHER);
+        $sgDelivery->setShippingServiceName($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
         $sgDelivery->setTrackingNumber(implode(', ', $deliveryEntity->getTrackingCodes()));
 
         if (($state = $deliveryEntity->getStateMachineState()) && $this->stateMapping->isAtLeastPartialShipped($state)) {
