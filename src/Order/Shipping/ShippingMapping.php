@@ -9,7 +9,6 @@ use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderMapping;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use Shopgate\Shopware\System\Formatter;
@@ -29,7 +28,6 @@ class ShippingMapping
     private StateComposer $stateMapping;
     private Formatter $formatter;
     private ContextManager $contextManager;
-    private CurrencyComposer $currencyComposer;
 
     public function __construct(
         ExtendedClassFactory $classFactory,
@@ -37,8 +35,7 @@ class ShippingMapping
         ShopgateOrderMapping $shopgateOrderMapping,
         StateComposer $stateMapping,
         ContextManager $contextManager,
-        Formatter $formatter,
-        CurrencyComposer $currencyComposer
+        Formatter $formatter
     ) {
         $this->classFactory = $classFactory;
         $this->taxMapping = $taxMapping;
@@ -46,7 +43,6 @@ class ShippingMapping
         $this->stateMapping = $stateMapping;
         $this->formatter = $formatter;
         $this->contextManager = $contextManager;
-        $this->currencyComposer = $currencyComposer;
     }
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
@@ -77,9 +73,6 @@ class ShippingMapping
     ): ShopgateExternalOrderExtraCost {
         $sgExport = $this->classFactory->createOrderExtraCost();
         [$withTax,] = $this->taxMapping->calculatePrices($shippingCosts, $taxStatus);
-//        $price = $shippingCosts->getTotalPrice();
-//        $taxes = $shippingCosts->getCalculatedTaxes()->getAmount();
-//        $sgExport->setAmount($this->currencyComposer->roundAsItem($price + $taxes)); // always gross return
         $sgExport->setAmount($withTax); // always gross return
         $sgExport->setType(ShopgateExternalOrderExtraCost::TYPE_SHIPPING);
         $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($shippingCosts));

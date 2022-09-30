@@ -176,7 +176,6 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
                     )
                 ) : [])
         );
-        // parent::setExtraCosts([$this->shippingMapping->mapOutOrderShippingMethod($value->getShippingCosts())])
     }
 
     private function mapAddress(
