@@ -1,9 +1,9 @@
 {
   "info": {
-    "_postman_id": "61580f67-dd68-4637-919b-a9a08314ce3d",
-    "name": "SW6 CI Tests",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "5289226"
+	  "_postman_id": "c0082302-0833-4902-82fe-134aaeefb778",
+	  "name": "SW6 CI Tests",
+	  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+	  "_exporter_id": "5289226"
   },
   "item": [
     {
@@ -3732,15 +3732,15 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code check\", function () {",
-                  "    pm.response.to.have.status(500);",
-                  "});",
-                  "",
-                  "// pm.test(\"Check error\", function () {",
-                  "//     const jsonData = pm.response.json();",
-                  "//     pm.expect(jsonData.error).to.eql(999);",
-                  "// });"
-                ],
+					"pm.test(\"Status code check\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"pm.test(\"Check error\", function () {",
+					"    const jsonData = pm.response.json();",
+					"    pm.expect(jsonData.error).to.eql(999);",
+					"});"
+				],
                 "type": "text/javascript"
               }
             }
