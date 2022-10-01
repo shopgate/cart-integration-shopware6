@@ -1,9 +1,9 @@
 {
   "info": {
-    "_postman_id": "61580f67-dd68-4637-919b-a9a08314ce3d",
-    "name": "SW6 CI Tests",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "5289226"
+	  "_postman_id": "c0082302-0833-4902-82fe-134aaeefb778",
+	  "name": "SW6 CI Tests",
+	  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+	  "_exporter_id": "5289226"
   },
   "item": [
     {
@@ -3732,15 +3732,15 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test(\"Check error\", function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.error).to.eql(999);",
-                  "});"
-                ],
+					"pm.test(\"Status code check\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"pm.test(\"Check error\", function () {",
+					"    const jsonData = pm.response.json();",
+					"    pm.expect(jsonData.error).to.eql(999);",
+					"});"
+				],
                 "type": "text/javascript"
               }
             }
@@ -6110,8 +6110,8 @@
                           "pm.test(\"Delivery notes\", function () {",
                           "    pm.expect(order.delivery_notes).to.be.length(1);",
                           "    const note = order.delivery_notes[0];",
-                          "    pm.expect(note.shipping_service_id).to.eq('Express');",
-                          "    pm.expect(note.shipping_service_name).to.eq('');",
+                          "    pm.expect(note.shipping_service_id).to.eq('OTHER');",
+                          "    pm.expect(note.shipping_service_name).to.eq('Express');",
                           "    pm.expect(note.tracking_number).to.eq('');",
                           "    pm.expect(note.shipping_time).to.eq(null);",
                           "});",
@@ -6121,7 +6121,7 @@
                           "    const tax = order.order_taxes[0];",
                           "    pm.expect(tax.label).to.eq('zzgl. 20 % MwSt.');",
                           "    pm.expect(tax.tax_percent).to.eq(20);",
-                          "    pm.expect(tax.amount).to.eq(21.03); // tax 20%, -> 20 from item, 1.03 from shipping",
+                          "    pm.expect(tax.amount).to.eq(20); // tax 20%, -> 20 from item, 1.03 from shipping",
                           "});",
                           "",
                           "pm.test(\"Item check\", function () {",
@@ -6143,7 +6143,7 @@
                           "    const extraCost = order.extra_costs[0];",
                           "    pm.expect(extraCost.type).to.eq('shipping');",
                           "    pm.expect(extraCost.tax_percent).to.eq(20);",
-                          "    pm.expect(extraCost.amount).to.eq(5.15);",
+                          "    pm.expect(extraCost.amount).to.eq(6.18); // 1.03 shipping",
                           "    pm.expect(extraCost.label).to.eq('Versandkosten');",
                           "});"
                         ],
@@ -6539,7 +6539,7 @@
               "response": []
             },
             {
-              "name": "SG: get last order",
+              "name": "SG: get last order (US)",
               "event": [
                 {
                   "listen": "test",
@@ -6607,8 +6607,8 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
-                      "    pm.expect(note.shipping_service_name).to.eq('');",
+                      "    pm.expect(note.shipping_service_id).to.eq('OTHER');",
+                      "    pm.expect(note.shipping_service_name).to.eq('Express');",
                       "    pm.expect(note.tracking_number).to.eq('');",
                       "    pm.expect(note.shipping_time).to.eq(null);",
                       "});",
@@ -6618,7 +6618,7 @@
                       "    const tax = order.order_taxes[0];",
                       "    pm.expect(tax.label).to.eq('zzgl. 19 % MwSt.');",
                       "    pm.expect(tax.tax_percent).to.eq(19);",
-                      "    pm.expect(tax.amount).to.eq(19.98); // tax 19%, -> 19 from item, 0.98 from shipping",
+                      "    pm.expect(tax.amount).to.eq(19); // tax 19%, -> 19 from item, 0.98 from shipping",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -6640,7 +6640,7 @@
                       "    const extraCost = order.extra_costs[0];",
                       "    pm.expect(extraCost.type).to.eq('shipping');",
                       "    pm.expect(extraCost.tax_percent).to.eq(19);",
-                      "    pm.expect(extraCost.amount).to.eq(5.15);",
+                      "    pm.expect(extraCost.amount).to.eq(6.13); // 5.15 + 0.98 (20% tax)",
                       "    pm.expect(extraCost.label).to.eq('Versandkosten');",
                       "});"
                     ],
@@ -6777,7 +6777,7 @@
               "response": []
             },
             {
-              "name": "SG: get last order",
+              "name": "SG: get last order (GB)",
               "event": [
                 {
                   "listen": "test",
@@ -6845,8 +6845,8 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
-                      "    pm.expect(note.shipping_service_name).to.eq('');",
+                      "    pm.expect(note.shipping_service_id).to.eq('OTHER');",
+                      "    pm.expect(note.shipping_service_name).to.eq('Express');",
                       "    pm.expect(note.tracking_number).to.eq('');",
                       "    pm.expect(note.shipping_time).to.eq(null);",
                       "});",
@@ -6856,7 +6856,7 @@
                       "    const tax = order.order_taxes[0];",
                       "    pm.expect(tax.label).to.eq('zzgl. 20 % MwSt.');",
                       "    pm.expect(tax.tax_percent).to.eq(20);",
-                      "    pm.expect(tax.amount).to.eq(21.03); // tax 20%, -> 20 from item, 1.03 from shipping",
+                      "    pm.expect(tax.amount).to.eq(20); // tax 20%, -> 20 from item, 1.03 from shipping",
                       "});",
                       "",
                       "pm.test(\"Item check\", function () {",
@@ -6878,7 +6878,7 @@
                       "    const extraCost = order.extra_costs[0];",
                       "    pm.expect(extraCost.type).to.eq('shipping');",
                       "    pm.expect(extraCost.tax_percent).to.eq(20);",
-                      "    pm.expect(extraCost.amount).to.eq(5.15);",
+                      "    pm.expect(extraCost.amount).to.eq(6.18); // 5.15 + 1.03 (20% tax)",
                       "    pm.expect(extraCost.label).to.eq('Versandkosten');",
                       "});"
                     ],
@@ -18259,8 +18259,8 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
-                      "    pm.expect(note.shipping_service_name).to.eq('');",
+                      "    pm.expect(note.shipping_service_id).to.eq('OTHER');",
+                      "    pm.expect(note.shipping_service_name).to.eq('Express');",
                       "    pm.expect(note.tracking_number).to.eq('');",
                       "    pm.expect(note.shipping_time).to.eq(null);",
                       "});",
@@ -18270,7 +18270,7 @@
                       "    const tax = order.order_taxes[0];",
                       "    pm.expect(tax.label).to.eq('plus 20% VAT');",
                       "    pm.expect(tax.tax_percent).to.eq(20);",
-                      "    pm.expect(tax.amount).to.eq(78.28);",
+                      "    pm.expect(tax.amount).to.eq(77.68); // 78.28 - 0.6 (20% ship tax)",
                       "});",
                       "",
                       "pm.test(\"Promotion by code check\", function () {",
@@ -18355,7 +18355,7 @@
                       "    const extraCost = order.extra_costs[0];",
                       "    pm.expect(extraCost.type).to.eq('shipping');",
                       "    pm.expect(extraCost.tax_percent).to.eq(20);",
-                      "    pm.expect(extraCost.amount).to.eq(6.1);",
+                      "    pm.expect(extraCost.amount).to.eq(6.1); // 6.1 + 0.6(20% ship tax) - 1 (promo 1) - 1.5 (promo2)",
                       "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
                       "});"
                     ],
@@ -18648,8 +18648,8 @@
                       "pm.test(\"Delivery notes\", function () {",
                       "    pm.expect(order.delivery_notes).to.be.length(1);",
                       "    const note = order.delivery_notes[0];",
-                      "    pm.expect(note.shipping_service_id).to.eq('Express');",
-                      "    pm.expect(note.shipping_service_name).to.eq('');",
+                      "    pm.expect(note.shipping_service_id).to.eq('OTHER');",
+                      "    pm.expect(note.shipping_service_name).to.eq('Express');",
                       "    pm.expect(note.tracking_number).to.eq('test-code-1, test-code-2');",
                       "    pm.expect(note.shipping_time).to.be.a('string').to.not.be.empty;",
                       "    const time = moment(note.shipping_time);",
@@ -19434,13 +19434,22 @@
                       "    pm.expect(order.order_taxes).to.be.length(3);",
                       "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
                       "    pm.expect(taxOne.tax_percent).to.eq(25);",
-                      "    pm.expect(taxOne.amount).to.eq(26.03);",
+                      "    pm.expect(taxOne.amount).to.eq(25); // 26.03 (/w ship) - 1.03 (ship tax)",
                       "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
                       "    pm.expect(taxTwo.tax_percent).to.eq(20);",
-                      "    pm.expect(taxTwo.amount).to.eq(2.08);",
+                      "    pm.expect(taxTwo.amount).to.eq(2); // 2.08 (/w ship tax) - 0.08 (ship tax)",
                       "    const taxThree = Utility.getByLabel(order.order_taxes, 'plus 7% VAT');",
                       "    pm.expect(taxThree.tax_percent).to.eq(7);",
-                      "    pm.expect(taxThree.amount).to.eq(0.73);",
+                      "    pm.expect(taxThree.amount).to.eq(0.7); // 0.73 (/w ship tax) - 0.03",
+                      "});",
+                      "",
+                      "pm.test(\"Shipping Costs are gross\", function () {",
+                      "    pm.expect(order.extra_costs).to.be.length(1);",
+                      "    const costs = order.extra_costs[0];",
+                      "    pm.expect(costs.type).to.eq('shipping');",
+                      "    pm.expect(costs.tax_percent).to.eq(7);",
+                      "    pm.expect(costs.amount).to.eq(6.10); // base 6.10-1.03-0.08-0.03",
+                      "    pm.expect(costs.label).to.eq('plus shipping costs');",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -19643,13 +19652,23 @@
                       "    pm.expect(order.order_taxes).to.be.length(3);",
                       "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 25% VAT');",
                       "    pm.expect(taxOne.tax_percent).to.eq(25);",
-                      "    pm.expect(taxOne.amount).to.eq(26.07);",
+                      "    pm.expect(taxOne.amount).to.eq(25); // 26.07 (gross) - 1.07",
                       "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
                       "    pm.expect(taxTwo.tax_percent).to.eq(20);",
-                      "    pm.expect(taxTwo.amount).to.eq(2.09);",
+                      "    pm.expect(taxTwo.amount).to.eq(2); // 2.09 (gross) - 0.09",
                       "    const taxThree = Utility.getByLabel(order.order_taxes, 'plus 13% VAT');",
                       "    pm.expect(taxThree.tax_percent).to.eq(13);",
-                      "    pm.expect(taxThree.amount).to.eq(1.36);",
+                      "    pm.expect(taxThree.amount).to.eq(1.30); // 1.36 (gross) - 0.06",
+                      "});",
+                      "",
+                      "",
+                      "pm.test(\"Shipping Costs are gross\", function () {",
+                      "    pm.expect(order.extra_costs).to.be.length(1);",
+                      "    const costs = order.extra_costs[0];",
+                      "    pm.expect(costs.type).to.eq('shipping');",
+                      "    pm.expect(costs.tax_percent).to.eq(13);",
+                      "    pm.expect(costs.amount).to.eq(6.37); // 5.15 net, but we need gross",
+                      "    pm.expect(costs.label).to.eq('plus shipping costs');",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -21811,7 +21830,17 @@
                           "    pm.expect(order.status_name).to.eq('Open');",
                           "});",
                           "",
-                          "pm.test(\"Shipping Costs are net\", function () {",
+                          "pm.test(\"Taxes\", function () {",
+                          "    pm.expect(order.order_taxes).to.be.length(2);",
+                          "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 19% VAT');",
+                          "    pm.expect(taxOne.tax_percent).to.eq(19);",
+                          "    pm.expect(taxOne.amount).to.eq(83.1); // 83.48 (gross) - 0.38 (ship tax)",
+                          "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 7% VAT');",
+                          "    pm.expect(taxTwo.tax_percent).to.eq(7);",
+                          "    pm.expect(taxTwo.amount).to.eq(52.34); // 52.58 (gross) - 0.24 (ship tax)",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping Costs are gross\", function () {",
                           "    pm.expect(order.extra_costs).to.be.length(1);",
                           "    const costs = order.extra_costs[0];",
                           "    pm.expect(costs.type).to.eq('shipping');",
@@ -22052,12 +22081,22 @@
                           "    pm.expect(order.status_name).to.eq('Open');",
                           "});",
                           "",
-                          "pm.test(\"Shipping Costs are net\", function () {",
+                          "pm.test(\"Taxes\", function () {",
+                          "    pm.expect(order.order_taxes).to.be.length(2);",
+                          "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 19% VAT');",
+                          "    pm.expect(taxOne.tax_percent).to.eq(19);",
+                          "    pm.expect(taxOne.amount).to.eq(83.22); // 83.57 (gross) - 0.35 (ship tax)",
+                          "    const taxTwo = Utility.getByLabel(order.order_taxes, 'plus 7% VAT');",
+                          "    pm.expect(taxTwo.tax_percent).to.eq(7);",
+                          "    pm.expect(taxTwo.amount).to.eq(55.88); // 56.11 (gross) - 0.23 (ship tax)",
+                          "});",
+                          "",
+                          "pm.test(\"Shipping Costs are gross\", function () {",
                           "    pm.expect(order.extra_costs).to.be.length(1);",
                           "    const costs = order.extra_costs[0];",
                           "    pm.expect(costs.type).to.eq('shipping');",
                           "    pm.expect(costs.tax_percent).to.eq(7);",
-                          "    pm.expect(costs.amount).to.eq(5.15);",
+                          "    pm.expect(costs.amount).to.eq(5.73); // 5.15 net + 0.23 (7%) + 0.35 (19%)",
                           "    pm.expect(costs.label).to.eq('plus shipping costs');",
                           "});"
                         ],
@@ -22264,18 +22303,17 @@
                           "pm.test(\"Delivery notes\", function () {",
                           "    pm.expect(order.delivery_notes).to.be.length(1);",
                           "    const note = order.delivery_notes[0];",
-                          "    pm.expect(note.shipping_service_id).to.eq('API: shipping tax Auto');",
-                          "    pm.expect(note.shipping_service_name).to.eq('');",
+                          "    pm.expect(note.shipping_service_id).to.eq('OTHER');",
+                          "    pm.expect(note.shipping_service_name).to.eq('API: shipping tax Auto');",
                           "    pm.expect(note.tracking_number).to.eq('');",
                           "    pm.expect(note.shipping_time).to.eq(null);",
                           "});",
                           "",
                           "pm.test(\"Taxes\", function () {",
                           "    pm.expect(order.order_taxes).to.be.length(1);",
-                          "    const tax = order.order_taxes[0];",
-                          "    pm.expect(tax.label).to.eq('plus 20% VAT');",
-                          "    pm.expect(tax.tax_percent).to.eq(20);",
-                          "    pm.expect(tax.amount).to.eq(83.41);",
+                          "    const taxOne = Utility.getByLabel(order.order_taxes, 'plus 20% VAT');",
+                          "    pm.expect(taxOne.tax_percent).to.eq(20);",
+                          "    pm.expect(taxOne.amount).to.eq(82.66); // 83.41 (gross) - 0.75 (ship tax)",
                           "});",
                           "    ",
                           "pm.test(\"Shipping discount 1 check\", function () {",
@@ -22308,104 +22346,8 @@
                           "    const extraCost = order.extra_costs[0];",
                           "    pm.expect(extraCost.type).to.eq('shipping');",
                           "    pm.expect(extraCost.tax_percent).to.eq(20);",
-                          "    pm.expect(extraCost.amount).to.eq(5);",
+                          "    pm.expect(extraCost.amount).to.eq(5); // 5 gross, 0.75 tax included, -0.5 discount not applied",
                           "    pm.expect(extraCost.label).to.eq('plus shipping costs');",
-                          "});"
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "*/*"
-                      },
-                      {
-                        "key": "X-Shopgate-Auth-User",
-                        "value": "{{gen_sg_header_auth_user}}"
-                      },
-                      {
-                        "key": "X-Shopgate-Auth-Token",
-                        "value": "{{gen_sg_header_auth_token}}"
-                      }
-                    ],
-                    "body": {
-                      "mode": "formdata",
-                      "formdata": [
-                        {
-                          "key": "shop_number",
-                          "value": "{{shop_number}}",
-                          "type": "text"
-                        },
-                        {
-                          "key": "action",
-                          "value": "{{framework_action_get_orders}}",
-                          "type": "text"
-                        },
-                        {
-                          "key": "customer_token",
-                          "value": "{{customer_default_id}}",
-                          "type": "text"
-                        },
-                        {
-                          "key": "limit",
-                          "value": "1",
-                          "type": "text"
-                        },
-                        {
-                          "key": "offset",
-                          "value": "0",
-                          "type": "text"
-                        },
-                        {
-                          "key": "customer_language",
-                          "value": "",
-                          "type": "text"
-                        }
-                      ]
-                    },
-                    "url": {
-                      "raw": "{{domain}}",
-                      "host": [
-                        "{{domain}}"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "SG: get_orders cost",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.response.to.have.status(200);",
-                          "});",
-                          "",
-                          "const jsonData = pm.response.json();",
-                          "pm.test(\"Not an error\", function () {",
-                          "    pm.expect(jsonData.error).to.eq(0);",
-                          "    pm.expect(jsonData.orders).to.be.length(1);",
-                          "});",
-                          "",
-                          "const order = jsonData.orders[0];",
-                          "pm.test(\"Basic order data\", function () {",
-                          "    pm.expect(order.external_order_id).to.eql(pm.environment.get('gen_order_0102_id'));",
-                          "    pm.expect(order.status_name).to.eq('Open');",
-                          "});",
-                          "",
-                          "pm.test(\"Shipping Costs are net\", function () {",
-                          "    pm.expect(order.extra_costs).to.be.length(1);",
-                          "    const costs = order.extra_costs[0];",
-                          "    pm.expect(costs.type).to.eq('shipping');",
-                          "    pm.expect(costs.tax_percent).to.eq(20);",
-                          "    pm.expect(costs.amount).to.eq(5);",
-                          "    pm.expect(costs.label).to.eq('plus shipping costs');",
                           "});"
                         ],
                         "type": "text/javascript"

@@ -17,6 +17,7 @@ use ShopgateDeliveryNote;
 use ShopgateExternalOrderExtraCost;
 use ShopgateShippingMethod;
 use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 
 class ShippingMapping
@@ -66,13 +67,15 @@ class ShippingMapping
         return $exportShipping;
     }
 
-    public function mapOutOrderShippingMethod(OrderDeliveryEntity $deliveryEntity): ShopgateExternalOrderExtraCost
-    {
-        $price = $deliveryEntity->getShippingCosts()->getTotalPrice();
+    public function mapOutOrderShippingMethod(
+        CalculatedPrice $shippingCosts,
+        string $taxStatus
+    ): ShopgateExternalOrderExtraCost {
         $sgExport = $this->classFactory->createOrderExtraCost();
-        $sgExport->setAmount($price);
+        [$withTax,] = $this->taxMapping->calculatePrices($shippingCosts, $taxStatus);
+        $sgExport->setAmount($withTax); // always gross return
         $sgExport->setType(ShopgateExternalOrderExtraCost::TYPE_SHIPPING);
-        $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($deliveryEntity->getShippingCosts()));
+        $sgExport->setTaxPercent($this->taxMapping->getPriceTaxRate($shippingCosts));
         $label = $this->formatter->translate('sg-quote.summaryLabelShippingCosts', [], null);
         $sgExport->setLabel($label);
 
@@ -82,7 +85,8 @@ class ShippingMapping
     public function mapOutgoingOrderDeliveryNote(OrderDeliveryEntity $deliveryEntity): ShopgateDeliveryNote
     {
         $sgDelivery = $this->classFactory->createDeliveryNote();
-        $sgDelivery->setShippingServiceId($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
+        $sgDelivery->setShippingServiceId(ShopgateDeliveryNote::OTHER);
+        $sgDelivery->setShippingServiceName($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
         $sgDelivery->setTrackingNumber(implode(', ', $deliveryEntity->getTrackingCodes()));
 
         if (($state = $deliveryEntity->getStateMachineState()) && $this->stateMapping->isAtLeastPartialShipped($state)) {
