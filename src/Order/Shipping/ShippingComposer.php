@@ -147,7 +147,7 @@ class ShippingComposer
         } catch (Throwable $throwable) {
             if (strpos($throwable->getMessage(), 'LanguageEntity')) {
                 throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                    'No SaleChannel domain exists corresponding to the SaleChannel default language');
+                    'No SaleChannel domain exists corresponding to the SaleChannel default language', true);
             }
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, $throwable->getMessage());
         }

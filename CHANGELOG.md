@@ -1,8 +1,9 @@
-# 2.5.2
+# 2.6.0
 
 - fixed `check_cart` & `add_order` context reset to no longer assign an inactive payment method
 - fixed 100% shipping discount to not have more than 0 in shipping gross field (for NET customer group)
 - fixed wrong export format of `external_coupons` when calling `get_orders`
+- fixed `check_cart` & `add_order` customer session language change
 - updated min SDK to 2.9.90
 
 # 2.5.1

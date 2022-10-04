@@ -131,6 +131,10 @@
         <service id="Shopgate\Shopware\Order\Subscriber\AddSgOrderToCriteriaSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\ChangeLanguageSubscriber">
+            <argument key="$languageId" type="expression">service('shopgate.config_bridge').get('languageId')</argument>
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="Shopgate\Shopware\Order\Subscriber\LiveShoppingSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>

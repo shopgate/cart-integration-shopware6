@@ -118,27 +118,26 @@ class ContextManager
             $dataBag->get(SalesChannelContextService::CUSTOMER_ID) ?: $customerId
         );
         $token = $this->contextSwitchRoute->switchContext($dataBag, $currentContext)->getToken();
-        $context = $this->loadByCustomerToken($token);
-        $this->overwriteSalesContext($context);
 
-        return $context;
+        return $this->loadByCustomerToken($token, $currentContext);
     }
 
     /**
      * @todo 3.x will return $this
      */
-    public function loadByCustomerToken(string $token): SalesChannelContext
+    public function loadByCustomerToken(string $token, ?SalesChannelContext $context = null): SalesChannelContext
     {
-        $channel = $this->salesContext->getSalesChannel();
+        $channel = $context ? $context->getSalesChannel() : $this->getSalesContext()->getSalesChannel();
         $request = new Request();
         $request->headers->set(PlatformRequest::HEADER_LANGUAGE_ID, $channel->getLanguageId());
         $request->attributes->set(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID, $channel->getCurrencyId());
         $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
-        // resolver is intended to be used as an API, therefore it returns context in request
-        $context = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
-        $this->overwriteSalesContext($context);
 
-        return $context;
+        // resolver is intended to be used as an API, therefore it returns context in request
+        $newContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        $this->overwriteSalesContext($newContext);
+
+        return $newContext;
     }
 
     /**
