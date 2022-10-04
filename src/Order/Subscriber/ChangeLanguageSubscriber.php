@@ -2,11 +2,13 @@
 
 namespace Shopgate\Shopware\Order\Subscriber;
 
+use Shopgate\Shopware\Order\Events\BeforeAddOrderEvent;
 use Shopgate\Shopware\Order\Events\BeforeCheckCartEvent;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ChangeLanguageSubscriber implements EventSubscriberInterface
 {
@@ -22,15 +24,20 @@ class ChangeLanguageSubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return [BeforeCheckCartEvent::class => ['switchLanguage', 63]];
+        return [
+            BeforeCheckCartEvent::class => ['switchLanguage', 63],
+            BeforeAddOrderEvent::class => ['switchLanguage', 63]
+        ];
     }
 
     /**
      * Sometimes a customer may have a different language selected in
      * a session. Here we rewrite their session with SG channel mapped
      * language
+     *
+     * @param BeforeCheckCartEvent|BeforeAddOrderEvent $event
      */
-    public function switchLanguage(BeforeCheckCartEvent $event): void
+    public function switchLanguage(Event $event): void
     {
         if ($event->getContext()->getSalesChannel()->getLanguageId() === $this->languageId) {
             return;
