@@ -1,3 +1,7 @@
+# 2.7.0
+
+- added product export property event
+
 # 2.6.0
 
 - fixed `check_cart` & `add_order` context reset to no longer assign an inactive payment method

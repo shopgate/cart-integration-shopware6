@@ -13,6 +13,7 @@ use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ConfigProductMapping extends SimpleProductMapping
 {
@@ -32,11 +33,20 @@ class ConfigProductMapping extends SimpleProductMapping
         PropertyBridge $productProperties,
         Shopgate_Model_AbstractExport $childProductMapping,
         ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute
+        AbstractProductCrossSellingRoute $crossSellingRoute,
+        EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct(
-            $contextManager, $customFieldSetBridge, $sortTree, $priceMapping, $tierPriceMapping, $translation,
-            $currencyComposer, $classFactory, $crossSellingRoute
+            $contextManager,
+            $customFieldSetBridge,
+            $sortTree,
+            $priceMapping,
+            $tierPriceMapping,
+            $translation,
+            $currencyComposer,
+            $classFactory,
+            $crossSellingRoute,
+            $eventDispatcher
         );
         $this->productProperties = $productProperties;
         $this->childProductMapping = $childProductMapping;
