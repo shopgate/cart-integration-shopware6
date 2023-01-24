@@ -6,11 +6,11 @@ use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_Attribute;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ChildProductMapping extends SimpleProductMapping
 {
@@ -23,10 +23,21 @@ class ChildProductMapping extends SimpleProductMapping
         Formatter $translation,
         CurrencyComposer $currencyComposer,
         ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute
+        AbstractProductCrossSellingRoute $crossSellingRoute,
+        EventDispatcherInterface $eventDispatcher
     ) {
-        parent::__construct($contextManager, $customFieldSetBridge, $sortTree, $priceMapping, $tierPriceMapping,
-            $translation, $currencyComposer, $classFactory, $crossSellingRoute);
+        parent::__construct(
+            $contextManager,
+            $customFieldSetBridge,
+            $sortTree,
+            $priceMapping,
+            $tierPriceMapping,
+            $translation,
+            $currencyComposer,
+            $classFactory,
+            $crossSellingRoute,
+            $eventDispatcher
+        );
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';
     }

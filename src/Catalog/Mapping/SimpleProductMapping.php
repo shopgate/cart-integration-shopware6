@@ -4,6 +4,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
+use Shopgate\Shopware\Catalog\Mapping\Events\AfterSimpleProductPropertyMapEvent;
 use Shopgate\Shopware\Catalog\Product\ProductExportExtension;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
@@ -27,6 +28,7 @@ use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCross
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
@@ -43,6 +45,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     protected AbstractProductCrossSellingRoute $crossSellingRoute;
     protected CurrencyComposer $currencyComposer;
     private ExtendedClassFactory $classFactory;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ContextManager $contextManager,
@@ -53,7 +56,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         Formatter $formatter,
         CurrencyComposer $currencyComposer,
         ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute
+        AbstractProductCrossSellingRoute $crossSellingRoute,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->contextManager = $contextManager;
         $this->customFieldSetBridge = $customFieldSetBridge;
@@ -64,6 +68,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         $this->crossSellingRoute = $crossSellingRoute;
         $this->currencyComposer = $currencyComposer;
         $this->classFactory = $classFactory;
+        $this->eventDispatcher = $eventDispatcher;
         parent::__construct();
     }
 
@@ -331,7 +336,10 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 ->setValue($regPrice);
         }
 
-        parent::setProperties($properties);
+        $eventProperties = $this->eventDispatcher->dispatch(
+            new AfterSimpleProductPropertyMapEvent($properties, $this->item)
+        )->getProperties();
+        parent::setProperties($eventProperties);
     }
 
     public function setStock(): void
