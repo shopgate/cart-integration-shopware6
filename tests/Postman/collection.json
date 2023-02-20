@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "c0082302-0833-4902-82fe-134aaeefb778",
+    "_postman_id": "0e2ae5a0-b325-4659-854a-95dd9d41e51c",
     "name": "SW6 CI Tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "5289226"
@@ -8999,6 +8999,330 @@
                   "raw": "{{domain}}",
                   "host": [
                     "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Sort Order disabled",
+          "item": [
+            {
+              "name": "SWA: disable sort order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully enabled LiveShopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"9833deea95944c6382ae1412cef1e288\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.ignoreSortOrderInCategories\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check manual sort",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "const jsonObject = xml2Json(responseBody);",
+                      "pm.test(\"General check\", function () {",
+                      "    pm.expect(jsonObject.items.item).to.be.a('array').length.to.be.gte(10, 'Should have certain number of products');",
+                      "});",
+                      "",
+                      "pm.test(\"Check `adv price` product category sort\", function () {",
+                      "    checkManualCategoryExistence(pm.environment.get('catalog_product_advPrices_id'));",
+                      "});",
+                      "pm.test(\"Check `free ship` product category sort\", function () {",
+                      "    checkManualCategoryExistence(pm.environment.get('catalog_product_freeShip'));",
+                      "});",
+                      "pm.test(\"Check `variant` product category sort\", function () {",
+                      "    checkManualCategoryExistence(pm.environment.get('catalog_product_variant'));",
+                      "});",
+                      "pm.test(\"Check `prod props` product category sort\", function () {",
+                      "    checkManualCategoryExistence(pm.environment.get('catalog_product_props'));",
+                      "});",
+                      "",
+                      "function checkManualCategoryExistence(productId) {",
+                      "    const product = Utility.getXmlByUid(jsonObject.items.item, productId);",
+                      "    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
+                      "    pm.expect(product.categories.category, 'Product \"' + productId +'\" appears only in one category').to.be.an('array');",
+                      "",
+                      "    const category = Utility.getXmlByUid(product.categories.category, pm.environment.get('created_category_manual_id'));",
+                      "    pm.expect(category, 'Could not locate manual category for prod id: ' + productId).to.haveOwnProperty('$');",
+                      "    pm.expect(category.$.sort_order).to.be.undefined;",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100",
+                      "description": "\n",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "debug_log",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "use_errorhandler",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "use_shutdown_handler",
+                      "value": "1",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check dynamic sort",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Not an error\", function () {",
+                      "    pm.response.to.not.have.jsonBody('error');",
+                      "});",
+                      "",
+                      "pm.test(\"Is in the dynamic category\", function () {",
+                      "    const jsonObject = xml2Json(responseBody);",
+                      "",
+                      "    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
+                      "    const noFreeShipCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('created_category_noFreeShip_id'));",
+                      "    pm.expect(noFreeShipCat).to.not.be.undefined;",
+                      "",
+                      "    const freeTimeCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('category_freeTime_id'));",
+                      "    pm.expect(freeTimeCat).to.not.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test(\"Header check\", function () {",
+                      "    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
+                      "    pm.response.to.have.header('Content-Length');",
+                      "    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_items}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100",
+                      "description": "\n",
+                      "type": "text"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "uids[0]",
+                      "value": "{{catalog_product_main_id}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SWA: enable sort order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Successfully enabled LiveShopping\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {
+                  "accept": true
+                }
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"9833deea95944c6382ae1412cef1e288\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.ignoreSortOrderInCategories\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/sync",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "sync"
                   ]
                 }
               },

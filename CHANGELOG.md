@@ -1,3 +1,7 @@
+# 2.8.0
+
+- added configuration flag to disable product sort order in categories
+
 # 2.7.0
 
 - added product export property event
