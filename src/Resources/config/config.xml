@@ -56,5 +56,13 @@
             <label lang="de-DE">Exportiert Reviews von allen Sales Channels</label>
             <defaultValue>true</defaultValue>
         </input-field>
+        <input-field type="bool">
+            <name>ignoreSortOrderInCategories</name>
+            <label>Ignore sort order in categories</label>
+            <label lang="de-DE">Ignoriere die Sortierung in den Kategorien</label>
+            <helpText>Enable only if your system has an own property for sorting.</helpText>
+            <helpText lang="de-DE">Nur aktivieren, wenn das System ein eigenes Attribut zum sortieren hat.</helpText>
+        </input-field>
+
     </card>
 </config>

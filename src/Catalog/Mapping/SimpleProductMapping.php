@@ -207,7 +207,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             }
             $path = new Shopgate_Model_Catalog_CategoryPath();
             $path->setUid($item['categoryId']);
-            $path->setSortOrder($item['position']);
+            if (array_key_exists('position', $item)) {
+                $path->setSortOrder($item['position']);
+            }
             $paths[] = $path;
         }
         parent::setCategoryPaths($paths);

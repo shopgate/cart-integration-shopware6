@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product\Sort;
 
@@ -8,10 +6,13 @@ use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Adapter\Cache\CacheCompressor;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
@@ -24,6 +25,8 @@ class SortTree
     public const CACHE_KEY = 'shopgate.category.sort';
     private ContextManager $contextManager;
     private CategoryBridge $categoryBridge;
+    private ConfigBridge $configReader;
+    private AbstractProductListRoute $listRoute;
     private AbstractProductListingRoute $listingRoute;
     private TagAwareAdapterInterface $cache;
     private LoggerInterface $logger;
@@ -32,12 +35,16 @@ class SortTree
         TagAwareAdapterInterface $cache,
         ContextManager $contextManager,
         CategoryBridge $categoryBridge,
+        ConfigBridge $configReader,
+        AbstractProductListRoute $listRoute,
         AbstractProductListingRoute $listingRoute,
         LoggerInterface $logger
     ) {
         $this->cache = $cache;
         $this->contextManager = $contextManager;
         $this->categoryBridge = $categoryBridge;
+        $this->configReader = $configReader;
+        $this->listRoute = $listRoute;
         $this->listingRoute = $listingRoute;
         $this->logger = $logger;
     }
@@ -58,7 +65,13 @@ class SortTree
         }
 
         $this->logger->debug('Building new sort order cache');
-        $build = $this->build($rootCategoryId);
+
+        if ($this->configReader->get(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
+            $build = $this->buildWithoutPosition($rootCategoryId);
+        } else {
+            $build = $this->buildWithPosition($rootCategoryId);
+        }
+
         $tree = CacheCompressor::compress($tree, $build);
         $tree->tag([self::CACHE_KEY]);
         $this->cache->save($tree);
@@ -70,7 +83,7 @@ class SortTree
      * @param string $rootCategoryId - provide category id to build from
      * @return array - ['categoryId' => ['productId' => sortNumber]]
      */
-    private function build(string $rootCategoryId): array
+    private function buildWithPosition(string $rootCategoryId): array
     {
         $tree = [];
         $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
@@ -83,6 +96,39 @@ class SortTree
                     'categoryId' => $category->getId(),
                     'position' => $maxProducts - $i++
                 ];
+            }
+        }
+
+        return $tree;
+    }
+
+    /**
+     * @param string $rootCategoryId - provide category id to build from
+     * @return array - ['categoryId' => ['productId']]
+     */
+    private function buildWithoutPosition(string $rootCategoryId): array
+    {
+        $tree = [];
+        $categories = $this->categoryBridge->getChildCategories($rootCategoryId);
+        $products = $this->getAllProducts();
+
+        foreach ($products as $product) {
+
+            foreach ($categories as $category) {
+
+                $identifier = $product->getParentId() ?: $product->getId();
+                if (array_key_exists($identifier, $tree)
+                    && in_array($category->getId(), array_column($tree[$identifier], 'categoryId'), true)) {
+                    continue;
+                }
+
+                if (($product->getCategoryTree() && in_array($category->getId(), $product->getCategoryTree(), true)
+                        || $product->getStreamIds() && in_array($category->getProductStreamId(),
+                            $product->getStreamIds(), true))
+                    || $this->hasChildren($category, $product)) {
+
+                    $tree[$identifier][] = ['categoryId' => $category->getId()];
+                }
             }
         }
 
@@ -120,6 +166,17 @@ class SortTree
     }
 
     /**
+     * Loops through all products for every category out there. Expensive stuff!
+     */
+    private function getAllProducts(): ProductCollection
+    {
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::product::all');
+
+        return $this->listRoute->load($criteria, $this->contextManager->getSalesContext())->getProducts();
+    }
+
+    /**
      * Retrieves the default key to sort the category by
      *
      * @param CategoryEntity $category
@@ -138,5 +195,22 @@ class SortTree
         }
 
         return null;
+    }
+
+    private function hasChildren(CategoryEntity $category, SalesChannelProductEntity $product): bool
+    {
+        $hasChild = false;
+        /** @var CategoryEntity $child */
+        foreach ($category->getChildren() as $child) {
+
+            if ($child->getChildren() && $child->getChildren()->count()) {
+                $this->hasChildren($child, $product);
+            }
+            $hasChild =
+                ($product->getCategoryTree() && in_array($child->getId(), $product->getCategoryTree(), true))
+                || ($product->getStreamIds() && in_array($child->getProductStreamId(), $product->getStreamIds(), true));
+        }
+
+        return $hasChild;
     }
 }
