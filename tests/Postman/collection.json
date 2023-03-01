@@ -24966,12 +24966,7 @@
                   "pm.test(\"Check customer data\", function () {",
                   "    const jsonData = pm.response.json();",
                   "    pm.expect(jsonData.error).to.eql(220);",
-                  "});",
-                  "",
-                  "// unset temp variables",
-                  "pm.environment.unset(\"temp-email\");",
-                  "pm.environment.unset(\"temp-first-name\");",
-                  "pm.environment.unset(\"temp-last-name\");"
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -24980,9 +24975,7 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
-                  "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
-                  "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
+                  ""
                 ],
                 "type": "text/javascript"
               }
@@ -25019,7 +25012,7 @@
                 },
                 {
                   "key": "user",
-                  "value": "{{temp-email}}",
+                  "value": "{{$randomEmail}}",
                   "type": "text"
                 },
                 {
@@ -25034,12 +25027,12 @@
                 },
                 {
                   "key": "user_data[first_name]",
-                  "value": "{{temp-first-name}}",
+                  "value": "{{$randomFirstName}}",
                   "type": "text"
                 },
                 {
                   "key": "user_data[last_name]",
-                  "value": "{{temp-last-name}}",
+                  "value": "{{$randomLastName}}",
                   "type": "text"
                 },
                 {
@@ -25049,7 +25042,7 @@
                 },
                 {
                   "key": "user_data[mail]",
-                  "value": "{{temp-email}}",
+                  "value": "{{$randomEmail}}",
                   "type": "text"
                 },
                 {
@@ -25284,10 +25277,10 @@
               "script": {
                 "exec": [
                   "const jsonData = pm.response.json();",
-                  "const firstName = pm.environment.get('temp-first-name');",
-                  "const lastName = pm.environment.get('temp-last-name');",
+                  "const firstName = pm.variables.get('temp-first-name');",
+                  "const lastName = pm.variables.get('temp-last-name');",
                   "pm.test(\"Check customer data\", function () {",
-                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('temp-email'));",
+                  "    pm.expect(jsonData.user_data.mail).to.eql(pm.variables.get('temp-email'));",
                   "    pm.expect(jsonData.user_data.gender).to.eql('f');",
                   "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
                   "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
@@ -25329,12 +25322,7 @@
                   "    pm.expect(shipping.gender).to.eql('m');",
                   "    pm.expect(shipping.custom_fields).length(1, 'Should have phone number');",
                   "    pm.expect(shipping.phone).to.eql('12345');",
-                  "});",
-                  "",
-                  "// unset temp variables",
-                  "pm.environment.unset(\"temp-email\");",
-                  "pm.environment.unset(\"temp-first-name\");",
-                  "pm.environment.unset(\"temp-last-name\");"
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -25343,9 +25331,9 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "pm.environment.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
-                  "pm.environment.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
-                  "pm.environment.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
+                  "pm.variables.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                  "pm.variables.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                  "pm.variables.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
                 ],
                 "type": "text/javascript"
               }
