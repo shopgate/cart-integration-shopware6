@@ -2259,12 +2259,6 @@
                     "exec": [
                       "pm.test(\"Product created\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Save product id for later use\", function () {\r",
-                      "    const jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                      "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -4464,12 +4458,6 @@
                         "exec": [
                           "pm.test(\"Product created\", function () {\r",
                           "    pm.response.to.have.status(200);\r",
-                          "});\r",
-                          "\r",
-                          "pm.test(\"Save product id for later use\", function () {\r",
-                          "    const jsonData = pm.response.json();\r",
-                          "    pm.expect(jsonData.id).to.be.a('string').to.be.not.empty;\r",
-                          "    pm.environment.set(\"gen_product_max_purchase_ten_id\", jsonData.id);\r",
                           "});"
                         ],
                         "type": "text/javascript"
@@ -23656,6 +23644,1257 @@
     {
       "name": "Customer",
       "item": [
+        {
+          "name": "Address Duplicate",
+          "item": [
+            {
+              "name": "SG: no custom fields",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Should create a single address\", function () {",
+                      "    pm.expect(jsonData.addresses).to.be.lengthOf(1);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.variables.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                      "pm.variables.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                      "pm.variables.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));",
+                      "pm.variables.set(\"temp-address\", pm.variables.replaceIn('{{$randomStreetAddress}}'));",
+                      "pm.variables.set(\"temp-city\", pm.variables.replaceIn('{{$randomCity}}'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_register_customer}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "pass",
+                      "value": "{{userPass}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[registration_date]",
+                      "value": "2021-01-27T13:07:38+0000",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[gender]",
+                      "value": "f",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[mail]",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[birthday]",
+                      "value": "1987-05-19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_invoice_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_delivery_address]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][zipcode]",
+                      "value": "12340",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][phone]",
+                      "value": "12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][company]",
+                      "value": "My Company",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_2]",
+                      "value": "Street2",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_invoice_address]",
+                      "value": "1",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_delivery_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][zipcode]",
+                      "value": "12340",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][phone]",
+                      "value": "12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][company]",
+                      "value": "My Company",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_2]",
+                      "value": "Street2",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][name]",
+                      "value": "VAT IDs",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][internal_field_name]",
+                      "value": "vat_ids",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][value]",
+                      "value": "1234,12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][internal_field_name]",
+                      "value": "affiliate_code",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][value]",
+                      "value": "AFFILIATE_CODE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][internal_field_name]",
+                      "value": "title",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][value]",
+                      "value": "Big Boss",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][internal_field_name]",
+                      "value": "account_type",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][value]",
+                      "value": "business",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][internal_field_name]",
+                      "value": "cannotMap",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][value]",
+                      "value": "not mapped",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                },
+                "description": "Tests basic data being identical will create only one address in DB"
+              },
+              "response": []
+            },
+            {
+              "name": "SG: zip diffs",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Should create two addresses\", function () {",
+                      "    pm.expect(jsonData.addresses).to.be.lengthOf(2);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.variables.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                      "pm.variables.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                      "pm.variables.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));",
+                      "pm.variables.set(\"temp-address\", pm.variables.replaceIn('{{$randomStreetAddress}}'));",
+                      "pm.variables.set(\"temp-city\", pm.variables.replaceIn('{{$randomCity}}'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_register_customer}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "pass",
+                      "value": "{{userPass}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[registration_date]",
+                      "value": "2021-01-27T13:07:38+0000",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[gender]",
+                      "value": "f",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[mail]",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[birthday]",
+                      "value": "1987-05-19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_invoice_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_delivery_address]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][zipcode]",
+                      "value": "12341",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][phone]",
+                      "value": "12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][company]",
+                      "value": "My Company",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_2]",
+                      "value": "Street2",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_invoice_address]",
+                      "value": "1",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_delivery_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][zipcode]",
+                      "value": "12340",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][phone]",
+                      "value": "12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][company]",
+                      "value": "My Company",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_2]",
+                      "value": "Street2",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][name]",
+                      "value": "VAT IDs",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][internal_field_name]",
+                      "value": "vat_ids",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][value]",
+                      "value": "1234,12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][internal_field_name]",
+                      "value": "affiliate_code",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][value]",
+                      "value": "AFFILIATE_CODE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][internal_field_name]",
+                      "value": "title",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][value]",
+                      "value": "Big Boss",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][internal_field_name]",
+                      "value": "account_type",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][value]",
+                      "value": "business",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][internal_field_name]",
+                      "value": "cannotMap",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][value]",
+                      "value": "not mapped",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                },
+                "description": "Tests that zip code difference will create two addresses"
+              },
+              "response": []
+            },
+            {
+              "name": "SG: phone diffs",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Should create two addresses\", function () {",
+                      "    pm.expect(jsonData.addresses).to.be.lengthOf(2);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.variables.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                      "pm.variables.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                      "pm.variables.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));",
+                      "pm.variables.set(\"temp-address\", pm.variables.replaceIn('{{$randomStreetAddress}}'));",
+                      "pm.variables.set(\"temp-city\", pm.variables.replaceIn('{{$randomCity}}'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_register_customer}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "pass",
+                      "value": "{{userPass}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[registration_date]",
+                      "value": "2021-01-27T13:07:38+0000",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[gender]",
+                      "value": "f",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[mail]",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[birthday]",
+                      "value": "1987-05-19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_invoice_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_delivery_address]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][zipcode]",
+                      "value": "12341",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][phone]",
+                      "value": "12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][company]",
+                      "value": "My Company",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_2]",
+                      "value": "Street2",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_invoice_address]",
+                      "value": "1",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_delivery_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][zipcode]",
+                      "value": "12341",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][phone]",
+                      "value": "123456",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][company]",
+                      "value": "My Company",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_2]",
+                      "value": "Street2",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][name]",
+                      "value": "VAT IDs",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][internal_field_name]",
+                      "value": "vat_ids",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][value]",
+                      "value": "1234,12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][internal_field_name]",
+                      "value": "affiliate_code",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][value]",
+                      "value": "AFFILIATE_CODE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][internal_field_name]",
+                      "value": "title",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][value]",
+                      "value": "Big Boss",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][internal_field_name]",
+                      "value": "account_type",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][value]",
+                      "value": "business",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][internal_field_name]",
+                      "value": "cannotMap",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][value]",
+                      "value": "not mapped",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                },
+                "description": "Tests that phone difference will create two addresses"
+              },
+              "response": []
+            },
+            {
+              "name": "SG: custom field diffs",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Should create two address because of CustomField differences\", function () {",
+                      "    pm.expect(jsonData.addresses).to.be.lengthOf(2);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.variables.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+                      "pm.variables.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+                      "pm.variables.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));",
+                      "pm.variables.set(\"temp-address\", pm.variables.replaceIn('{{$randomStreetAddress}}'));",
+                      "pm.variables.set(\"temp-city\", pm.variables.replaceIn('{{$randomCity}}'));"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_register_customer}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "pass",
+                      "value": "{{userPass}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[registration_date]",
+                      "value": "2021-01-27T13:07:38+0000",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[gender]",
+                      "value": "f",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[mail]",
+                      "value": "{{temp-email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[birthday]",
+                      "value": "1987-05-19",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_invoice_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][is_delivery_address]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][zipcode]",
+                      "value": "12340",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][phone]",
+                      "value": "12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][company]",
+                      "value": "My Company",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][street_2]",
+                      "value": "Street2",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_invoice_address]",
+                      "value": "1",
+                      "description": "Seems like this field get rewritten no matter what we set",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][is_delivery_address]",
+                      "value": "0",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][first_name]",
+                      "value": "{{temp-first-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][last_name]",
+                      "value": "{{temp-last-name}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][gender]",
+                      "value": "m",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_1]",
+                      "value": "{{temp-address}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][zipcode]",
+                      "value": "12340",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][city]",
+                      "value": "{{temp-city}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][country]",
+                      "value": "DE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][state]",
+                      "value": "DE-SH",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][phone]",
+                      "value": "12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][company]",
+                      "value": "My Company",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][street_2]",
+                      "value": "Street2",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][name]",
+                      "value": "VAT IDs",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][internal_field_name]",
+                      "value": "vat_ids",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][0][value]",
+                      "value": "1234,12345",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][internal_field_name]",
+                      "value": "affiliate_code",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][1][value]",
+                      "value": "AFFILIATE_CODE",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][internal_field_name]",
+                      "value": "title",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][2][value]",
+                      "value": "Big Boss",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][internal_field_name]",
+                      "value": "account_type",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][3][value]",
+                      "value": "business",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][internal_field_name]",
+                      "value": "cannotMap",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[custom_fields][4][value]",
+                      "value": "not mapped",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
+                      "value": "title",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][0][value]",
+                      "value": "Mr.",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
+                      "value": "notMapped",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][1][value]",
+                      "value": "not mapped either",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
+                      "value": "department",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][2][value]",
+                      "value": "Some department",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][3][internal_field_name]",
+                      "value": "phone_number",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][1][custom_fields][3][value]",
+                      "value": "112233445",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
+                      "value": "title",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user_data[addresses][0][custom_fields][0][value]",
+                      "value": "Mrs.",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                },
+                "description": "Checks that due to custom field diferences it will create 2 addresses"
+              },
+              "response": []
+            }
+          ]
+        },
         {
           "name": "SW: set req. phone cfg",
           "event": [

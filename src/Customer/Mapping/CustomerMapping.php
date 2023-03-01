@@ -86,6 +86,7 @@ class CustomerMapping
         if (!empty($customer->getBirthday())) {
             $bd = explode('-', $customer->getBirthday()); // yyyy-mm-dd
         }
+        $isAddressIdentical = $this->addressMapping->areIdentical($shopgateBillingAddress, $shopgateShippingAddress);
 
         $data = array_merge(
             $data,
@@ -98,7 +99,7 @@ class CustomerMapping
             $customer->getLastName() ? ['lastName' => $customer->getLastName()] : [],
             count($bd) === 3 ? ['birthdayYear' => $bd[0], 'birthdayMonth' => $bd[1], 'birthdayDay' => $bd[2]] : [],
             ['billingAddress' => $this->addressMapping->mapToShopwareAddress($shopgateBillingAddress)],
-            $shopgateShippingAddress
+            $shopgateShippingAddress && !$isAddressIdentical
                 ? ['shippingAddress' => $this->addressMapping->mapToShopwareAddress($shopgateShippingAddress)] : []
         );
 
