@@ -2,12 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
-        <title>API Configuration</title>
-        <component name="sg-config-api-notice">
-            <name>notice</name>
-        </component>
-    </card>
-    <card>
         <title>Catalog</title>
         <title lang="de-DE">Katalog</title>
         <input-field type="bool">
@@ -63,6 +57,5 @@
             <helpText>Enable only if your system has an own property for sorting.</helpText>
             <helpText lang="de-DE">Nur aktivieren, wenn das System ein eigenes Attribut zum sortieren hat.</helpText>
         </input-field>
-
     </card>
 </config>
