@@ -1,6 +1,7 @@
-# 2.8.1
+# 2.9.0
 
 - fixed duplicate customer address creation despite being identical (register, check_cart, add_order)
+- removed config warning that API connection entries were moved elsewhere
 
 # 2.8.0
 
