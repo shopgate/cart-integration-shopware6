@@ -1,3 +1,7 @@
+# 2.8.1
+
+- fixed duplicate customer address creation despite being identical (register, check_cart, add_order)
+
 # 2.8.0
 
 - added configuration flag to disable product sort order in categories

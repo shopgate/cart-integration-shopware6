@@ -189,4 +189,24 @@ class AddressMapping
 
         return $shopgateAddress;
     }
+
+    public function areIdentical(ShopgateAddress $address1, ShopgateAddress $address2): bool
+    {
+        $whiteList = [
+            'gender',
+            'first_name',
+            'last_name',
+            'street_1',
+            'street_2',
+            'zipcode',
+            'city',
+            'country',
+            'state',
+            'phone',
+            'company',
+            'custom_fields'
+        ];
+
+        return $address1->compare($address1, $address2, $whiteList);
+    }
 }
