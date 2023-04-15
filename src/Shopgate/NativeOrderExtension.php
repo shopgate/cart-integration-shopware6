@@ -15,7 +15,7 @@ class NativeOrderExtension extends EntityExtension
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
-            new OneToOneAssociationField(self::PROPERTY, 'id', 'sw_order_id', ShopgateOrderDefinition::class, true)
+            new OneToOneAssociationField(self::PROPERTY, 'id', 'sw_order_id', ShopgateOrderDefinition::class, false)
         );
     }
 
