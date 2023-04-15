@@ -1,3 +1,7 @@
+# 2.10.0
+
+- added salutation mapping
+
 # 2.9.0
 
 - fixed duplicate customer address creation despite being identical (register, check_cart, add_order)
