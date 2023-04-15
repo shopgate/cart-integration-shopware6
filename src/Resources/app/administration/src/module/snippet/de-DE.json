@@ -24,5 +24,15 @@
     "messages": {
       "shopgateCouponNotSupported": "Die Nutzung von Shopgate Coupons ist aktuell nicht möglich. Nutzen Sie alternativ einen Shopware Coupon mit der Regel \"Shopgate Mobile\" -> \"Ja\" um einen Shopgate-spezifischen Coupon zu erstellen."
     }
+  },
+  "sg-salutations": {
+    "detail": {
+      "genderUndefined": "Undefiniert",
+      "genderMale": "Mann",
+      "genderFemale": "Weiblich",
+      "genderDiverse": "Keine Angabe",
+      "genderLabel": "Shopgate Geschlecht",
+      "genderTooltip": "Maps Shopgate gender to Shopware's"
+    }
   }
 }

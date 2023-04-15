@@ -209,6 +209,12 @@
         <service id="Shopgate\Shopware\Shopgate\NativeOrderExtension">
             <tag name="shopware.entity.extension"/>
         </service>
+        <service id="Shopgate\Shopware\Shopgate\SalutationExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+        <service id="Shopgate\Shopware\Shopgate\Salutations\ShopgateSalutationDefinition">
+            <tag name="shopware.entity.definition" entity="shopgate_go_salutations"/>
+        </service>
         <service id="Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_api_credentials"/>
         </service>

@@ -24,5 +24,15 @@
     "messages": {
       "shopgateCouponNotSupported": "Shopgate Coupon import is not supported for this platform. Please use Shopware coupons with rule \"Is Shopgate Mobile\" -> Yes to create Shopgate specific coupons."
     }
+  },
+  "sg-salutations": {
+    "detail": {
+      "genderUndefined": "Undefined",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "genderDiverse": "Diverse",
+      "genderLabel": "Shopgate Gender",
+      "genderTooltip": "Maps Shopgate gender to Shopware's"
+    }
   }
 }

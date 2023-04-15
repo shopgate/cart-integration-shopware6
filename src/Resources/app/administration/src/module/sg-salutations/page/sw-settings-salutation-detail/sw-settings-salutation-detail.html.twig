@@ -1,0 +1,20 @@
+<!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+{% block sw_settings_salutation_detail_content_card_letter_name %}
+    {% parent %}
+    <sw-form-field-renderer
+            v-model="sgValue"
+            class="sw-settings-salutation-detail__shopgateSalutation"
+            type="single-select"
+            :config="{
+                label: $tc('sg-salutations.detail.genderLabel'),
+                options: [
+                    { value: null, label: $tc('sg-salutations.detail.genderUndefined') },
+                    { value: 'm', label: $tc('sg-salutations.detail.genderMale') },
+                    { value: 'f', label: $tc('sg-salutations.detail.genderFemale') },
+                    { value: 'd', label: $tc('sg-salutations.detail.genderDiverse') }
+                ]
+            }"
+            :disabled="!acl.can('salutation.editor')"
+            help-text="{{ $tc('sg-salutations.detail.genderTooltip') }}">
+    </sw-form-field-renderer>
+{% endblock %}
