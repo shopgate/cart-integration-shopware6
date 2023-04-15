@@ -108,7 +108,8 @@
             <argument key="$cache" type="service" id="cache.object"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
-            <argument type="service" id="salutation.repository"/>
+            <argument key="$swSalutationRepository" type="service" id="salutation.repository"/>
+            <argument key="$sgSalutationRepository" type="service" id="shopgate_go_salutations.repository"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\AddressMapping">
             <argument key="$customFieldMapping" type="service" id="sg.customer.address.custom_field.whitelist"/>

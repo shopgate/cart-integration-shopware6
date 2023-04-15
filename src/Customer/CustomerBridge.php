@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer;
 
+use Shopgate\Shopware\Shopgate\SalutationExtension;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
@@ -99,10 +100,12 @@ class CustomerBridge
         $criteria = (new Criteria())->setLimit(1)
             ->addAssociation('group')
             ->addAssociation('salutation')
+            ->addAssociation('salutation.' . SalutationExtension::PROPERTY)
             ->addAssociation('addresses')
             ->addAssociation('addresses.country')
             ->addAssociation('addresses.countryState')
-            ->addAssociation('addresses.salutation');
+            ->addAssociation('addresses.salutation')
+            ->addAssociation('addresses.salutation.' . SalutationExtension::PROPERTY);
         $criteria->setTitle('shopgate::customer::detailed');
 
         return $this->customerRoute->load(new Request(), $context, $criteria, $customer)->getCustomer();
