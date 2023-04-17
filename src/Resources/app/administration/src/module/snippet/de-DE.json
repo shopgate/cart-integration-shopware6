@@ -27,10 +27,10 @@
   },
   "sg-salutations": {
     "detail": {
-      "genderUndefined": "Undefiniert",
-      "genderMale": "Mann",
-      "genderFemale": "Weiblich",
-      "genderDiverse": "Keine Angabe",
+      "genderUndefined": "Keine Angabe",
+      "genderMale": "männlich",
+      "genderFemale": "weiblich",
+      "genderDiverse": "divers",
       "genderLabel": "Shopgate Geschlecht",
       "genderTooltip": "Maps Shopgate gender to Shopware's"
     }
