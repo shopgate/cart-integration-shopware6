@@ -1,9 +1,6 @@
-# 2.10.0
-
-- added salutation mapping
-
 # 2.9.0
 
+- added salutation mapping
 - fixed duplicate customer address creation despite being identical (register, check_cart, add_order)
 - removed config warning that API connection entries were moved elsewhere
 
