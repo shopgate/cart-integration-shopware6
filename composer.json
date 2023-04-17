@@ -3,7 +3,7 @@
   "description": "Shopgate Legacy plugin for Shopware 6",
   "license": "proprietary",
   "type": "shopware-platform-plugin",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "keywords": [
     "mobile",
     "app"
@@ -16,7 +16,7 @@
   ],
   "require": {
     "shopware/core": "^6.4.4",
-    "shopgate/cart-integration-sdk": "^2.9.90",
+    "shopgate/cart-integration-sdk": "^2.9.91",
     "symfony/expression-language": "~5.3.0 || ~5.4.0"
   },
   "require-dev": {

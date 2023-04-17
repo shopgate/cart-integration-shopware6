@@ -2280,7 +2280,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{created_customerGroup_net_id}}\",\r\n        \"email\": \"test_customGrp@example.com\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+                  "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_customer_withCustomGrp_id}}\",\r\n        \"groupId\" : \"{{created_customerGroup_net_id}}\",\r\n        \"email\": \"{{created_customer_withCustomGrp_email}}\",\r\n        \"firstName\" : \"API Created\",\r\n        \"lastName\": \"CustomGroup\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -16540,7 +16540,7 @@
                     },
                     {
                       "key": "cart[delivery_address][gender]",
-                      "value": "{{customer_default_gender}}",
+                      "value": "f",
                       "type": "text"
                     },
                     {
@@ -16679,6 +16679,88 @@
                   "path": [
                     "search",
                     "customer-address"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check gender map",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Check customer data\", function () {",
+                      "    pm.expect(jsonData.user_data.mail).to.eql(pm.environment.get('userEmail'));",
+                      "    pm.expect(jsonData.user_data.gender).to.eql('m');",
+                      "});",
+                      "",
+                      "pm.test(\"Check gender\", function () {",
+                      "    const customAddress = jsonData.addresses.find(address => address.city === pm.environment.get('gen_rand_city_name'));",
+                      "    pm.expect(customAddress).to.not.be.undefined;",
+                      "    pm.expect(customAddress.gender).to.eq('f');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_customer}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user",
+                      "value": "{{userEmail}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "pass",
+                      "value": "{{userPass}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
                   ]
                 }
               },
@@ -22513,6 +22595,162 @@
           ]
         },
         {
+          "name": "14 - Address gender",
+          "item": [
+            {
+              "name": "SG: addOrder",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "pm.test(\"Order added properly\", function () {",
+                      "    pm.expect(jsonData).to.have.ownProperty('error').to.eq(0);",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_id').to.not.be.empty;",
+                      "    pm.expect(jsonData).to.have.ownProperty('external_order_number').to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.test(\"Save order id\", function () {",
+                      "    const order_number = Utility.getRequestVariableValue('order_number');",
+                      "    pm.environment.set(\"gen_order_\" + order_number + \"_id\", jsonData.external_order_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_add_order}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "order_number",
+                      "value": "0014",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SG: check gender map",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Check gender\", function () {",
+                      "    const addresxX = jsonData.addresses.find(address => address.city === 'City X');",
+                      "    pm.expect(addresxX).to.not.be.undefined;",
+                      "    pm.expect(addresxX.gender).to.eq('m');",
+                      "",
+                      "    const addresxY= jsonData.addresses.find(address => address.city === 'City Y');",
+                      "    pm.expect(addresxY).to.not.be.undefined;",
+                      "    pm.expect(addresxY.gender).to.eq('d');",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-User",
+                    "value": "{{gen_sg_header_auth_user}}"
+                  },
+                  {
+                    "key": "X-Shopgate-Auth-Token",
+                    "value": "{{gen_sg_header_auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "shop_number",
+                      "value": "{{shop_number}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "action",
+                      "value": "{{framework_action_get_customer}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "user",
+                      "value": "{{created_customer_withCustomGrp_email}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "pass",
+                      "value": "{{userPass}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{domain}}",
+                  "host": [
+                    "{{domain}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "100-130 Shipping",
           "item": [
             {
@@ -23644,6 +23882,78 @@
     {
       "name": "Customer",
       "item": [
+        {
+          "name": "SG Salutations",
+          "item": [
+            {
+              "name": "SWA: get salutations",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "const jsonData = pm.response.json();\r",
+                      "pm.test(\"Check DB auto-setter\", function () {\r",
+                      "    expectMapping('not_specified', 'd');\r",
+                      "    expectMapping('mr', 'm');\r",
+                      "    expectMapping('mrs', 'f');\r",
+                      "});\r",
+                      "\r",
+                      "function expectMapping(swMap, sgMap) {\r",
+                      "    const entity = getItem(swMap);\r",
+                      "    pm.expect(entity).to.not.be.undefined;\r",
+                      "    pm.expect(entity.extensions).to.haveOwnProperty('shopgateSalutation').to.haveOwnProperty('value').to.eql(sgMap);\r",
+                      "}\r",
+                      "\r",
+                      "function getItem(search) {\r",
+                      "    return jsonData.data.find((item) => item.salutationKey === search);\r",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disabledSystemHeaders": {}
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/search/salutation",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "search",
+                    "salutation"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
         {
           "name": "Address Duplicate",
           "item": [
@@ -25281,7 +25591,7 @@
                   "const lastName = pm.variables.get('temp-last-name');",
                   "pm.test(\"Check customer data\", function () {",
                   "    pm.expect(jsonData.user_data.mail).to.eql(pm.variables.get('temp-email'));",
-                  "    pm.expect(jsonData.user_data.gender).to.eql('f');",
+                  "    pm.expect(jsonData.user_data.gender).to.eql('d');",
                   "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
                   "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
                   "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
@@ -25304,7 +25614,7 @@
                   "    pm.expect(billing.last_name).to.eql(lastName);",
                   "    pm.expect(billing.company).to.eql('My Company');",
                   "    pm.expect(billing.street_2).to.eql('Street2');",
-                  "    pm.expect(billing.gender).to.eql('f');",
+                  "    pm.expect(billing.gender).to.eql('d');",
                   "    pm.expect(billing.custom_fields).length(2, 'Billing 1 custom field')",
                   "    pm.expect(billing.custom_fields[0].internal_field_name).to.eq('department');",
                   "    pm.expect(billing.custom_fields[0].value).to.eq('Some department');",
@@ -25319,7 +25629,7 @@
                   "    pm.expect(shipping.state).to.be.null;",
                   "    pm.expect(shipping.first_name).to.not.eql(firstName);",
                   "    pm.expect(shipping.last_name).to.not.eql(lastName);",
-                  "    pm.expect(shipping.gender).to.eql('m');",
+                  "    pm.expect(shipping.gender).to.eql('f');",
                   "    pm.expect(shipping.custom_fields).length(1, 'Should have phone number');",
                   "    pm.expect(shipping.phone).to.eql('12345');",
                   "});"
@@ -25395,7 +25705,7 @@
                 },
                 {
                   "key": "user_data[gender]",
-                  "value": "f",
+                  "value": "d",
                   "type": "text"
                 },
                 {
@@ -25430,7 +25740,7 @@
                 },
                 {
                   "key": "user_data[addresses][0][gender]",
-                  "value": "m",
+                  "value": "f",
                   "type": "text"
                 },
                 {
@@ -25483,7 +25793,8 @@
                 },
                 {
                   "key": "user_data[addresses][1][gender]",
-                  "value": "m",
+                  "value": "f",
+                  "description": "Seems like this field get rewritten no matter what we set",
                   "type": "text"
                 },
                 {

@@ -2,25 +2,26 @@
 
 namespace Shopgate\Shopware\Shopgate;
 
-use Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition;
+use Shopgate\Shopware\Shopgate\Salutations\ShopgateSalutationDefinition;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\System\Salutation\SalutationDefinition;
 
-class NativeOrderExtension extends EntityExtension
+class SalutationExtension extends EntityExtension
 {
-    public const PROPERTY = 'shopgateOrder';
+    public const PROPERTY = 'shopgateSalutation';
 
     public function extendFields(FieldCollection $collection): void
     {
         $collection->add(
-            new OneToOneAssociationField(self::PROPERTY, 'id', 'sw_order_id', ShopgateOrderDefinition::class, false)
+            new OneToOneAssociationField(self::PROPERTY, 'id', 'sw_salutation_id', ShopgateSalutationDefinition::class, true)
         );
     }
 
     public function getDefinitionClass(): string
     {
-        return OrderDefinition::class;
+        return SalutationDefinition::class;
     }
 }

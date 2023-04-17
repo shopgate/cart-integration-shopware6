@@ -7,6 +7,7 @@ namespace Shopgate\Shopware;
 use Doctrine\DBAL\Connection;
 use Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsDefinition;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderDefinition;
+use Shopgate\Shopware\Shopgate\Salutations\ShopgateSalutationDefinition;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Db\Installers\DeliveryTimeInstaller;
 use Shopgate\Shopware\System\Db\Installers\PaymentMethodInstaller;
@@ -56,6 +57,8 @@ class SgateShopgatePluginSW6 extends Plugin
         if ($connection = $this->container->get(Connection::class)) {
             $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0;');
             $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`', ShopgateOrderDefinition::ENTITY_NAME));
+            $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`',
+                ShopgateSalutationDefinition::ENTITY_NAME));
             $connection->executeStatement(sprintf('DROP TABLE IF EXISTS `%s`',
                 ShopgateApiCredentialsDefinition::ENTITY_NAME));
             $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1;');
