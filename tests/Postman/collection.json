@@ -8538,7 +8538,7 @@
                       "const jsonObject = xml2Json(responseBody);",
                       "",
                       "pm.test(\"Checking various translations\", function () {",
-                      "    pm.expect(jsonObject.items.item.deeplink).to.eq(pm.environment.get('host') + '/Main-product-with-advanced-prices/SWDEMO10002');",
+                      "    pm.expect(jsonObject.items.item.deeplink).to.eq(pm.environment.get('host') + pm.globals.get('system_port') + '/Main-product-with-advanced-prices/SWDEMO10002');",
                       "    pm.expect(jsonObject.items.item.name).to.eq('Main product with advanced prices');",
                       "    pm.expect(jsonObject.items.item.currency).to.eq('EUR');",
                       "    pm.expect(jsonObject.items.item.manufacturer, 'manufacturer should be defined').to.haveOwnProperty('title').to.eq('Shopware Freetime');",
