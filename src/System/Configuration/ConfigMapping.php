@@ -28,6 +28,7 @@ class ConfigMapping extends ShopgateConfig
     public function initShopwareConfig(array $data = []): void
     {
         $this->loadArray($data);
+        $this->setExternalResponseHandling(true); // allow us to handle responses ourselves
         $this->setLogFolderPath(implode('/', [$this->getLogFolderPath(), $this->getShopNumber()]));
         $this->setCacheFolderPath(implode('/', [$this->getCacheFolderPath(), $this->getShopNumber()]));
         $this->setExportFolderPath(implode('/', [$this->getExportFolderPath(), $this->getShopNumber()]));

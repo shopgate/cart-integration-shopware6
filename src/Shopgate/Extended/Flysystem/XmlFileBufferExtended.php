@@ -1,12 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
-use Shopgate_Model_Abstract;
+use Shopgate_Model_AbstractExport;
 use Shopgate_Model_XmlResultObject;
 use ShopgateFileBufferXml;
 
@@ -15,7 +13,7 @@ class XmlFileBufferExtended extends ShopgateFileBufferXml implements ExtendedFil
     private FilesystemInterface $privateFilesystem;
 
     public function __construct(
-        Shopgate_Model_Abstract $xmlModel,
+        Shopgate_Model_AbstractExport $xmlModel,
         Shopgate_Model_XmlResultObject $xmlNode,
         $capacity,
         FilesystemInterface $filesystem,

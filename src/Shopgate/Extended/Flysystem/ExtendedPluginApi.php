@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
@@ -24,16 +22,6 @@ class ExtendedPluginApi extends ShopgatePluginApi
     }
 
     /**
-     * Is needed for XML export calls
-     */
-    public function setPreventResponse(bool $prevent): ExtendedPluginApi
-    {
-        $this->preventResponseOutput = $prevent;
-
-        return $this;
-    }
-
-    /**
      * Needed to get name of the file to calculate file size for streams
      */
     public function setBuffer(ShopgateFileBufferInterface $buffer): ExtendedPluginApi
@@ -45,42 +33,19 @@ class ExtendedPluginApi extends ShopgatePluginApi
 
     public function handleRequest(array $data = array())
     {
-        parent::handleRequest($data);
+        $origResponse = parent::handleRequest($data);
 
-        if (!$this->buffer instanceof ExtendedFileBufferInterface
-            || !$this->preventResponseOutput) {
-            return;
+        if (!$this->buffer instanceof ExtendedFileBufferInterface || $origResponse->isError()) {
+            return $origResponse;
         }
 
         try {
-            $this->response = new ExtendedApiResponseXmlExport($this->trace_id);
-            $this->response->setMeta($this->buffer->getMeta());
-            $this->response->setData(
-                $this->privateFileSystem->readStream($this->responseData)
-            );
+            $response = new ExtendedApiResponseXmlExport($this->trace_id);
+            $response->setMeta($this->buffer->getMeta());
+            $response->setData($this->privateFileSystem->readStream($origResponse->getBody()));
+            return $response;
         } catch (FileNotFoundException $e) {
-            $this->response = new ShopgatePluginApiResponseAppJson($this->trace_id);
-            $this->response->markError(ShopgateLibraryException::FILE_READ_WRITE_ERROR, $e->getMessage());
+            throw new ShopgateLibraryException(ShopgateLibraryException::FILE_READ_WRITE_ERROR, $e->getMessage());
         }
-
-        $this->response->send();
-    }
-
-    protected function getCategories(): void
-    {
-        parent::getCategories();
-        $this->setPreventResponse(true);
-    }
-
-    protected function getItems(): void
-    {
-        parent::getItems();
-        $this->setPreventResponse(true);
-    }
-
-    protected function getReviews(): void
-    {
-        parent::getReviews();
-        $this->setPreventResponse(true);
     }
 }
