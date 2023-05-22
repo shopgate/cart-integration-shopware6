@@ -36,6 +36,7 @@ class MainController extends StorefrontController
      * @param Request $request
      * @return JsonResponse
      * @throws ShopgateLibraryException
+     * @throws Exception
      */
     public function execute(Request $request): Response
     {
@@ -53,6 +54,6 @@ class MainController extends StorefrontController
         } elseif ($result instanceof ShopgatePluginApiResponseAppXmlExport || $result instanceof ExtendedApiResponseXmlExport) {
             return new StreamedResponse(fn() => $result->send() );
         }
-        throw new \ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, 'No mapped response assigned');
+        throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, 'No mapped response assigned');
     }
 }
