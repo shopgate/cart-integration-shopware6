@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
@@ -16,7 +16,7 @@ class ExtendedPluginApiResponseXmlExport extends ShopgatePluginApiResponseExport
     /**
      * @inheritDoc
      */
-    protected function getHeaders(): array
+    public function getHeaders(): array
     {
         $fileName = str_replace('export/', '', $this->meta['path'] ?? '');
         return [

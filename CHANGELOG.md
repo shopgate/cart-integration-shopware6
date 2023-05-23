@@ -1,3 +1,9 @@
+# 2.10.0
+
+- changed plugin response types to SW native ones
+- updated SDK
+- removed exit codes
+
 # 2.9.0
 
 - added salutation mapping

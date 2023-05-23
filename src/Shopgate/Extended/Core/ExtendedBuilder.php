@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Core;
 
@@ -60,7 +58,7 @@ class ExtendedBuilder extends ShopgateBuilder
         }
 
         $pluginApi = new ShopgatePluginApi(
-            $this->config, $this->authService, $this->merchantApi, $plugin, null,
+            $this->config, $this->authService, $this->merchantApi, $plugin,
             $this->buildStackTraceGenerator(), $this->logging
         );
 
@@ -81,7 +79,6 @@ class ExtendedBuilder extends ShopgateBuilder
         if (isset($xmlModelNames[$_REQUEST['action']])) {
             /* @var $xmlModel Shopgate_Model_AbstractExport */
             $xmlModel = new $xmlModelNames[$_REQUEST['action']]();
-            /** @noinspection PhpComposerExtensionStubsInspection */
             $xmlNode = new Shopgate_Model_XmlResultObject($xmlModel->getItemNodeIdentifier());
             $fileBuffer = new ShopgateFileBufferXml(
                 $xmlModel,

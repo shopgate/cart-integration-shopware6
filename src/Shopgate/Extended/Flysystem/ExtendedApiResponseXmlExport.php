@@ -1,8 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
+
+use ShopgateLibraryException;
 
 class ExtendedApiResponseXmlExport extends ExtendedPluginApiResponseXmlExport
 {
@@ -16,6 +16,7 @@ class ExtendedApiResponseXmlExport extends ExtendedPluginApiResponseXmlExport
 
     /**
      * Rewritten to handle data stream
+     * @throws ShopgateLibraryException
      */
     public function send(): void
     {
@@ -24,7 +25,7 @@ class ExtendedApiResponseXmlExport extends ExtendedPluginApiResponseXmlExport
         } elseif (is_string($this->data)) {
             $fp = @fopen($this->data, 'rb');
         } else {
-            exit;
+            return;
         }
 
         // output headers ...
@@ -41,6 +42,5 @@ class ExtendedApiResponseXmlExport extends ExtendedPluginApiResponseXmlExport
 
         // clean up and leave
         fclose($fp);
-        exit;
     }
 }
