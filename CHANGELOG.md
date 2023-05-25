@@ -1,3 +1,7 @@
+# 2.10.1
+
+- changed order payment/shipping labels to inherit parent if not a shopgate order
+
 # 2.10.0
 
 - changed plugin response types to SW native ones
