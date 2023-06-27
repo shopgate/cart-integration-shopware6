@@ -89,11 +89,9 @@ class OrderComposer
     }
 
     /**
-     * @param ExtendedOrder|ShopgateOrder $order
-     * @return array
      * @throws ShopgateLibraryException
      */
-    public function addOrder(ShopgateOrder $order): array
+    public function addOrder(ExtendedOrder|ShopgateOrder $order): array
     {
         $customerId = $order->getExternalCustomerId();
         if ($order->isGuest() && $order->getMail()) {
@@ -126,7 +124,7 @@ class OrderComposer
         ]);
 
         try {
-            $newContext = $this->contextManager->switchContext($dataBag, $cleanCartContext);
+            $newContext = $this->contextManager->switchContext($dataBag, $cleanCartContext)->getSalesContext();
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$order->isShopwareShipping()) {
                 $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
@@ -171,8 +169,8 @@ class OrderComposer
             'external_order_number' => $swOrder->getOrderNumber()
         ];
 
-        return $this->eventDispatcher->dispatch(new AfterAddOrderEvent($result, $swOrder, $order, $newContext))
-            ->getResult();
+        $event = new AfterAddOrderEvent($result, $swOrder, $order, $newContext);
+        return $this->eventDispatcher->dispatch($event)->getResult();
     }
 
     /**

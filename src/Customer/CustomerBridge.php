@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer;
 
@@ -9,11 +7,10 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\InactiveCustomerException;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractCustomerRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -25,16 +22,16 @@ use Throwable;
 
 class CustomerBridge
 {
-    private EntityRepositoryInterface $customerGroupRepository;
-    private EntityRepositoryInterface $customerRepository;
+    private EntityRepository $customerGroupRepository;
+    private EntityRepository $customerRepository;
     private ContextManager $contextManager;
     private AbstractLoginRoute $loginRoute;
     private RequestDataBag $dataBag;
     private AbstractCustomerRoute $customerRoute;
 
     public function __construct(
-        EntityRepositoryInterface $customerGroupRepository,
-        EntityRepositoryInterface $customerRepository,
+        EntityRepository $customerGroupRepository,
+        EntityRepository $customerRepository,
         ContextManager $contextManager,
         AbstractLoginRoute $loginRoute,
         RequestDataBag $dataBag,
@@ -48,10 +45,7 @@ class CustomerBridge
         $this->customerRoute = $customerRoute;
     }
 
-    /**
-     * @return CustomerGroupCollection|EntityCollection
-     */
-    public function getGroups(): EntityCollection
+    public function getGroups(): CustomerGroupCollection|EntityCollection
     {
         $criteria = new Criteria();
         $criteria->setTitle('shopgate::customer-group');
@@ -72,23 +66,16 @@ class CustomerBridge
         } catch (UnauthorizedHttpException $e) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_WRONG_USERNAME_OR_PASSWORD,
-                null,
-                false,
-                false
-            );
-        } catch (InactiveCustomerException $e) {
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::PLUGIN_CUSTOMER_ACCOUNT_NOT_CONFIRMED,
-                null,
+                $e->getMessage(),
                 false,
                 false
             );
         } catch (Throwable $throwable) {
             throw new ShopgateLibraryException(
                 ShopgateLibraryException::PLUGIN_CUSTOMER_UNKNOWN_ERROR,
-                null,
+                $throwable->getMessage(),
                 false,
-                false
+                true
             );
         }
     }
@@ -96,7 +83,7 @@ class CustomerBridge
     public function getDetailedContextCustomer(SalesChannelContext $context): CustomerEntity
     {
         $customer = new CustomerEntity();
-        $customer->setId($context->getCustomer() ? $context->getCustomer()->getId() : null);
+        $customer->setId($context->getCustomer()?->getId());
         $criteria = (new Criteria())->setLimit(1)
             ->addAssociation('group')
             ->addAssociation('salutation')

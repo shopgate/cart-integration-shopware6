@@ -6,17 +6,17 @@ namespace Shopgate\Shopware\Catalog\Product\Property;
 
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\CustomField\CustomFieldCollection;
 
 class CustomFieldBridge
 {
-    private EntityRepositoryInterface $customFieldRepository;
+    private EntityRepository $customFieldRepository;
     private ContextManager $contextManager;
 
-    public function __construct(EntityRepositoryInterface $customFieldRepository, ContextManager $contextManager)
+    public function __construct(EntityRepository $customFieldRepository, ContextManager $contextManager)
     {
         $this->customFieldRepository = $customFieldRepository;
         $this->contextManager = $contextManager;

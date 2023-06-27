@@ -1,12 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate;
 
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -14,9 +12,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class ShopgateOrderBridge
 {
-    private EntityRepositoryInterface $shopgateOrderRepository;
+    private EntityRepository $shopgateOrderRepository;
 
-    public function __construct(EntityRepositoryInterface $shopgateOrderRepository)
+    public function __construct(EntityRepository $shopgateOrderRepository)
     {
         $this->shopgateOrderRepository = $shopgateOrderRepository;
     }

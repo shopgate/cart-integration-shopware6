@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Configuration;
 
@@ -10,7 +8,7 @@ use Shopgate\Shopware\System\DomainBridge;
 use ShopgateLibraryException;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\AndFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
@@ -35,20 +33,20 @@ class ConfigBridge
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 
     private string $shopwareVersion;
-    private EntityRepositoryInterface $pluginRepository;
+    private EntityRepository $pluginRepository;
     private ContextManager $contextManager;
     private SystemConfigService $systemConfigService;
-    private EntityRepositoryInterface $systemConfigRepo;
+    private EntityRepository $systemConfigRepo;
     private ?SystemConfigCollection $config = null;
     private ?ShopgateApiCredentialsEntity $apiCredentialsEntity = null;
     private DomainBridge $domainBridge;
     private array $error = [];
-    private EntityRepositoryInterface $shopgateApiRepo;
+    private EntityRepository $shopgateApiRepo;
 
     public function __construct(
-        EntityRepositoryInterface $pluginRepository,
-        EntityRepositoryInterface $systemConfigRepo,
-        EntityRepositoryInterface $shopgateApiRepo,
+        EntityRepository $pluginRepository,
+        EntityRepository $systemConfigRepo,
+        EntityRepository $shopgateApiRepo,
         string $shopwareVersion,
         ContextManager $contextManager,
         SystemConfigService $systemConfigService,
@@ -158,12 +156,8 @@ class ConfigBridge
 
     /**
      * Get configuration by key as defined in config.xml
-     *
-     * @param string $key
-     * @param array|bool|float|int|string $fallback
-     * @return array|bool|float|int|string
      */
-    public function get(string $key, $fallback = '')
+    public function get(string $key, array|bool|float|int|string $fallback = ''): float|int|bool|array|string
     {
         // the only time this happens is when shop_number is not provided in the request
         if (null === $this->config && null === $this->apiCredentialsEntity) {
@@ -178,10 +172,7 @@ class ConfigBridge
         return $config && null !== $config->getConfigurationValue() ? $config->getConfigurationValue() : $fallback;
     }
 
-    /**
-     * @param array|bool|float|int|string|null $value
-     */
-    public function set(string $key, $value): void
+    public function set(string $key, array|bool|float|int|string|null $value): void
     {
         $context = $this->contextManager->getSalesContext();
         if ($this->apiCredentialsEntity && $this->apiCredentialsEntity->has($key)) {

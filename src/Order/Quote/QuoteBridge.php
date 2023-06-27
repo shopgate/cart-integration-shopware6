@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote;
 
@@ -20,7 +18,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\SalesChannel\AbstractOrderRoute;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -34,7 +32,7 @@ class QuoteBridge
     private AbstractCartItemAddRoute $cartItemAddRoute;
     private AbstractCartDeleteRoute $cartDeleteRoute;
     private AbstractOrderRoute $orderRoute;
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
     private EventDispatcherInterface $dispatcher;
 
     public function __construct(
@@ -43,7 +41,7 @@ class QuoteBridge
         AbstractCartItemAddRoute $cartItemAddRoute,
         AbstractCartDeleteRoute $cartDeleteRoute,
         AbstractOrderRoute $orderRoute,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $orderRepository,
         EventDispatcherInterface $dispatcher
     ) {
         $this->cartOrderRoute = $cartOrderRoute;
@@ -93,10 +91,7 @@ class QuoteBridge
         return $result;
     }
 
-    /**
-     * @return EntityCollection|OrderCollection
-     */
-    public function getOrders(Criteria $criteria, SalesChannelContext $context): EntityCollection
+    public function getOrders(Criteria $criteria, SalesChannelContext $context): EntityCollection|OrderCollection
     {
         $criteria->setTitle('shopgate::orders');
         $this->dispatcher->dispatch(new BeforeGetOrdersLoadEvent($criteria, $context));

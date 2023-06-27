@@ -1,12 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Review;
 
 use Shopgate\Shopware\Catalog\Review\Events\BeforeReviewLoadEvent;
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -16,12 +14,12 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class ReviewBridge
 {
     private ContextManager $contextManager;
-    private EntityRepositoryInterface $reviewRepository;
+    private EntityRepository $reviewRepository;
     private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ContextManager $contextManager,
-        EntityRepositoryInterface $reviewRepository,
+        EntityRepository $reviewRepository,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->reviewRepository = $reviewRepository;

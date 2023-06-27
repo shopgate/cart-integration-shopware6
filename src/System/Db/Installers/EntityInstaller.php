@@ -1,12 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
 use Shopgate\Shopware\System\Db\ClassCastInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,8 +13,7 @@ abstract class EntityInstaller
 {
     protected array $entityInstallList = [];
     protected string $entityName;
-    /** @var EntityRepositoryInterface */
-    protected $entityRepo;
+    protected ?EntityRepository $entityRepo;
 
     /**
      * @param ContainerInterface $container

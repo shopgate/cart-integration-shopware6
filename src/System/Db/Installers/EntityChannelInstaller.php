@@ -1,23 +1,20 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
 use Shopgate\Shopware\System\Db\ClassCastInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class EntityChannelInstaller extends EntityInstaller
 {
 
-    /** @var EntityRepositoryInterface */
-    protected $salesChannelRepo;
-    /** @var EntityRepositoryInterface */
-    protected $entityChannelRepo;
+    protected ?SalesChannelRepository $salesChannelRepo;
+    protected ?EntityRepository $entityChannelRepo;
 
     /**
      * @param ContainerInterface $container
@@ -37,16 +34,13 @@ abstract class EntityChannelInstaller extends EntityInstaller
         }
     }
 
-    /**
-     * @param ClassCastInterface $method
-     * @param Context $context
-     */
     private function enableEntityForAllChannels(
         ClassCastInterface $method,
         Context $context
     ): void {
         $criteria = new Criteria();
         $criteria->setTitle('shopgate::' . $this->entityName);
+        // todo: test
         $channels = $this->salesChannelRepo->searchIds($criteria, $context);
         $tableKey = $this->snakeToCamel($this->entityName . 'Id');
         foreach ($channels->getIds() as $channel) {

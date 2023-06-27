@@ -1,12 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product\Sort;
 
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -15,16 +13,16 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class SortBridge
 {
     private SystemConfigService $systemConfigService;
-    private EntityRepositoryInterface $productSortingRepository;
+    private EntityRepository $productSortingRepository;
     private ContextManager $contextManager;
 
     /**
-     * @param EntityRepositoryInterface $productSortingRepository
+     * @param EntityRepository $productSortingRepository
      * @param SystemConfigService $systemConfigService
      * @param ContextManager $contextManager
      */
     public function __construct(
-        EntityRepositoryInterface $productSortingRepository,
+        EntityRepository $productSortingRepository,
         SystemConfigService $systemConfigService,
         ContextManager $contextManager
     ) {
