@@ -1,13 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System;
 
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageCollection;
-use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -18,8 +15,7 @@ class Formatter
     private TranslatorInterface $translator;
     private AbstractLanguageRoute $languageRoute;
     private ?LanguageCollection $languageCollection = null;
-    /** @var string|false|null */
-    private $locale = false;
+    private string|false|null $locale = false;
 
     public function __construct(
         ContextManager $contextManager,
@@ -41,12 +37,11 @@ class Formatter
     public function getLocaleCode(): ?string
     {
         if (false === $this->locale) {
-            /** @var LanguageEntity|null $entity */
             $entity = $this->getLanguageCollection()
-                ->filterByProperty('id', $this->contextManager->getSalesContext()->getSalesChannel()->getLanguageId())
+                ->filterByProperty('id', $this->contextManager->getSalesContext()->getContext()->getLanguageId())
                 ->first();
-            $localeEntity = $entity ? $entity->getTranslationCode() : null;
-            $this->locale = $localeEntity ? $localeEntity->getCode() : null;
+            $localeEntity = $entity?->getTranslationCode();
+            $this->locale = $localeEntity?->getCode();
         }
 
         return $this->locale;

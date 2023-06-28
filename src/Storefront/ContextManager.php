@@ -48,15 +48,14 @@ class ContextManager
     }
 
     /**
-     * This function will not assign language starting SW 6.5.
-     * To rework, just search for `getLanguageId`
+     * Note 6.5+ the valid language is only in the SalesChannelContext->Context->getLanguageId()
      */
     public function createAndLoad(ShopgateApiCredentialsEntity $apiCredentialsEntity): ContextManager
     {
-        $salesChannelContext = $this->createNewContext($apiCredentialsEntity->getSalesChannelId(),
+        $context = $this->createNewContext($apiCredentialsEntity->getSalesChannelId(),
             [SalesChannelContextService::LANGUAGE_ID => $apiCredentialsEntity->getLanguageId()]
         );
-        $this->overwriteSalesContext($salesChannelContext);
+        $this->overwriteSalesContext($context);
 
         return $this;
     }
