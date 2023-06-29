@@ -6,11 +6,18 @@ use ShopgatePluginApiResponseExport;
 
 class ExtendedPluginApiResponseXmlExport extends ShopgatePluginApiResponseExport
 {
-    protected array $meta;
+    private int $size;
+    private string $path;
 
-    public function setMeta(array $meta): void
+
+    public function setSize(int $size): void
     {
-        $this->meta = $meta;
+        $this->size = $size;
+    }
+
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
     }
 
     /**
@@ -18,10 +25,10 @@ class ExtendedPluginApiResponseXmlExport extends ShopgatePluginApiResponseExport
      */
     public function getHeaders(): array
     {
-        $fileName = str_replace('export/', '', $this->meta['path'] ?? '');
+        $fileName = str_replace('export/', '', $this->path);
         return [
             'Content-Type: application/xml',
-            'Content-Length: ' . $this->meta['size'] ?? '0',
+            'Content-Length: ' . $this->size,
             'Content-Disposition: attachment; filename="' . basename($fileName) . '"'
         ];
     }
