@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
 use Shopgate\Shopware\Catalog\Mapping\Events\AfterSimpleProductPropertyMapEvent;
@@ -108,10 +109,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     private function getDeepLinkUrl(ProductEntity $productEntity): string
     {
-        $channel = $this->contextManager->getSalesContext()->getSalesChannel();
-        $entityList = $productEntity->getSeoUrls()
-            ? $productEntity->getSeoUrls()->filterBySalesChannelId($channel->getId())
-            : null;
+        $channel = $this->contextManager->getSalesContext();
+        $entityList = $productEntity->getSeoUrls()?->filterBySalesChannelId($channel->getSalesChannelId());
 
         return $entityList ? $this->getSeoUrl($channel, $entityList->first()) : '';
     }
@@ -195,6 +194,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
      * Setting the same sort order for every category as supposedly
      * we have a sort order for the whole catalog.
      * @throws InvalidArgumentException
+     * @throws CacheException
      */
     public function setCategoryPaths(): void
     {
@@ -313,6 +313,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
         /**
          * Supposed to get the cheapest price, cannot confirm or test this SW 6.4.10 feature
+         * @todo: test this, supposedly is now $this->salesChannelProductRepository->search(new Criteria(), $context);
          */
         if (method_exists($this->item, 'getCheapestPrice')
             && $this->item->getCheapestPrice()

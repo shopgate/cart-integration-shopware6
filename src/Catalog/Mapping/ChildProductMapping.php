@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
@@ -14,6 +14,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ChildProductMapping extends SimpleProductMapping
 {
+    /**
+     * @var array|mixed|\Shopgate_Model_Abstract|string|null
+     */
+    private ?string $defaultChildId;
+
     public function __construct(
         ContextManager $contextManager,
         CustomFieldBridge $customFieldSetBridge,
@@ -63,8 +68,20 @@ class ChildProductMapping extends SimpleProductMapping
         return true;
     }
 
+    public function setDefaultChildId(string $defaultChildId): ChildProductMapping
+    {
+        $this->defaultChildId = $defaultChildId;
+
+        return $this;
+    }
+
+    public function getDefaultChildId(): ?string
+    {
+        return $this->defaultChildId;
+    }
+
     public function setIsDefaultChild(): void
     {
-        parent::setIsDefaultChild($this->item->getMainVariantId() === $this->item->getId());
+        parent::setIsDefaultChild($this->getDefaultChildId() === $this->item->getId());
     }
 }

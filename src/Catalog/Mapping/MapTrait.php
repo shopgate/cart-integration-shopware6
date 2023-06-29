@@ -1,24 +1,16 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
  * Use the trait for common logic between mappers
  */
 trait MapTrait
 {
-    /**
-     * @param SalesChannelEntity $channel
-     * @param SeoUrlEntity|null $urlEntity
-     * @return string
-     */
-    protected function getSeoUrl(SalesChannelEntity $channel, ?SeoUrlEntity $urlEntity): string
+    protected function getSeoUrl(SalesChannelContext $context, ?SeoUrlEntity $urlEntity): string
     {
         if (null === $urlEntity) {
             return '';
@@ -27,13 +19,14 @@ trait MapTrait
         if (null !== $urlEntity->get('url')) {
             return $urlEntity->getUrl();
         }
-        if (null === $channel->getDomains()) {
+        $domains = $context->getSalesChannel()->getDomains();
+        if (null === $domains) {
             return '';
         }
-        $domainCollection = $channel->getDomains()->filterByProperty('languageId', $channel->getLanguageId());
-        /** @var null|SalesChannelDomainEntity $domain */
-        $domain = $domainCollection->count() ? $domainCollection->first() : $channel->getDomains()->first();
+        $domainCollection = $domains->filterByProperty('languageId', $context->getContext()->getLanguageId());
+        $domain = $domainCollection->count() ? $domainCollection->first() : $domains->first();
         $seoPath = ltrim($urlEntity->getSeoPathInfo() ?: $urlEntity->getPathInfo(), '/');
+
         return $domain && $domain->get('url') ? "{$domain->getUrl()}/{$seoPath}" : '';
     }
 }
