@@ -7,18 +7,14 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class EntityChannelInstaller extends EntityInstaller
 {
 
-    protected ?SalesChannelRepository $salesChannelRepo;
+    protected ?EntityRepository $salesChannelRepo;
     protected ?EntityRepository $entityChannelRepo;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
@@ -40,7 +36,6 @@ abstract class EntityChannelInstaller extends EntityInstaller
     ): void {
         $criteria = new Criteria();
         $criteria->setTitle('shopgate::' . $this->entityName);
-        // todo: test
         $channels = $this->salesChannelRepo->searchIds($criteria, $context);
         $tableKey = $this->snakeToCamel($this->entityName . 'Id');
         foreach ($channels->getIds() as $channel) {
@@ -53,10 +48,6 @@ abstract class EntityChannelInstaller extends EntityInstaller
         }
     }
 
-    /**
-     * @param string $input
-     * @return string
-     */
     private function snakeToCamel(string $input): string
     {
         return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $input))));

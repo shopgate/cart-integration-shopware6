@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
@@ -20,12 +18,8 @@ class PaymentMethodInstaller extends EntityChannelInstaller
         GenericPayment::class
     ];
     protected string $entityName = 'payment_method';
-    /** @var PluginIdProvider */
-    private $pluginIdProvider;
+    private ?PluginIdProvider $pluginIdProvider;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
@@ -34,9 +28,6 @@ class PaymentMethodInstaller extends EntityChannelInstaller
 
     /**
      * Rewritten because of pluginId field
-     *
-     * @param ClassCastInterface $entity
-     * @param Context $context
      */
     protected function upsertEntity(ClassCastInterface $entity, Context $context): void
     {

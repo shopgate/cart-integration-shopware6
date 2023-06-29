@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
@@ -14,9 +12,6 @@ trait EntityActivateTrait
     /** @retrun ClassCastInterface */
     abstract public function getEntities(): array;
 
-    /**
-     * @param ActivateContext $context
-     */
     public function activate(ActivateContext $context): void
     {
         foreach ($this->getEntities() as $entity) {
@@ -24,11 +19,6 @@ trait EntityActivateTrait
         }
     }
 
-    /**
-     * @param bool $active
-     * @param ClassCastInterface $entity
-     * @param Context $context
-     */
     protected function setIsActive(bool $active, ClassCastInterface $entity, Context $context): void
     {
         if ($this->entityExists($entity->getId(), $context) === false) {
@@ -39,11 +29,6 @@ trait EntityActivateTrait
         $this->entityRepo->update([$data], $context);
     }
 
-    /**
-     * @param string $id
-     * @param Context $context
-     * @return bool
-     */
     protected function entityExists(string $id, Context $context): bool
     {
         if (empty($id)) {
@@ -60,8 +45,6 @@ trait EntityActivateTrait
     /**
      * Only deactivates entities, deleting can cause data issues.
      * e.g. orders should not be referencing a non-existing shipping method, payment, etc
-     *
-     * @param Context $context
      */
     public function deactivate(Context $context): void
     {
