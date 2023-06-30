@@ -1,3 +1,13 @@
+# 3.0.0
+
+- added support for SW 6.5.2.0
+- added new custom field exported for customer (`account_type` -> business or private)
+- updated `get_settings` export for countries, tax-free countries are for `private` customers, not `business` customers
+- updated filesystem writer classes
+- updated context language logic
+- removed support for SW 6.4
+- removed support for PHP < 8.1
+
 # 2.10.1
 
 - changed order payment/shipping labels to inherit parent if not a shopgate order
