@@ -311,12 +311,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 ->setValue($value);
         }
 
-        /**
-         * Supposed to get the cheapest price, cannot confirm or test this SW 6.4.10 feature
-         * @todo: test this, supposedly is now $this->salesChannelProductRepository->search(new Criteria(), $context);
-         */
-        if (method_exists($this->item, 'getCheapestPrice')
-            && $this->item->getCheapestPrice()
+        if ($this->item->getCheapestPrice()
             && ($price = $this->currencyComposer->extractCalculatedPrice($this->item->getCheapestPrice()->getPrice()))
             && $this->item->getCalculatedCheapestPrice()->getUnitPrice() !== $this->item->getCalculatedPrice()
                 ->getUnitPrice()
@@ -327,11 +322,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 ->setValue($price);
         }
 
-        // SW 6.4.10+
         $calculated = $this->currencyComposer->extractCalculatedPrice($this->item->getPrice());
-        if ($calculated
-            && method_exists($calculated, 'getRegulationPrice')
-            && $regPrice = $calculated->getRegulationPrice()
+        if ($calculated && $regPrice = $calculated->getRegulationPrice()
         ) {
             $properties[] = $this->classFactory->createProperty()
                 ->setUid('previousPrice')

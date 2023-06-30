@@ -36,7 +36,7 @@ class ContextComposer
     public function getContextByCustomerId(string $customerId): SalesChannelContext
     {
         try {
-            return $this->contextManager->loadByCustomerId($customerId);
+            return $this->contextManager->loadByCustomerId($customerId)->getSalesContext();
         } catch (Throwable $e) {
             return $this->contextManager->getSalesContext();
         }
@@ -65,9 +65,9 @@ class ContextComposer
                         [SalesChannelContextService::SHIPPING_ADDRESS_ID => $addressBag[SalesChannelContextService::SHIPPING_ADDRESS_ID]]
                     ),
                     $channel
-                );
+                )->getSalesContext();
             } else {
-                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag), $channel);
+                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag), $channel)->getSalesContext();
             }
         } catch (ConstraintViolationException $exception) {
             throw $this->errorMapping->mapConstraintError($exception);
@@ -80,14 +80,14 @@ class ContextComposer
     {
         $dataBag = [SalesChannelContextService::PAYMENT_METHOD_ID => $uid];
 
-        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context)->getSalesContext();
     }
 
     public function addActiveShipping(string $shippingId, SalesChannelContext $context): SalesChannelContext
     {
         $dataBag = [SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId];
 
-        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context)->getSalesContext();
     }
 
     public function resetContext(
@@ -101,6 +101,6 @@ class ContextComposer
             new RequestDataBag([
                 SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
                 SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
-            ]), $originalContext);
+            ]), $originalContext)->getSalesContext();
     }
 }

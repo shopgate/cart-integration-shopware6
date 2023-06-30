@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer;
 
@@ -52,7 +50,7 @@ class CustomerComposer
         if (null === $token) {
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, 'User token not found');
         }
-        $context = $this->contextManager->loadByCustomerToken($token->getToken());
+        $context = $this->contextManager->loadByCustomerToken($token->getToken())->getSalesContext();
         $customer = $context->getCustomer();
         if (null === $customer) {
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,

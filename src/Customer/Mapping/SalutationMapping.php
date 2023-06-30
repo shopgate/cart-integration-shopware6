@@ -6,18 +6,18 @@ use Shopgate\Shopware\Shopgate\SalutationExtension;
 use Shopgate\Shopware\Shopgate\Salutations\ShopgateSalutationEntity;
 use Shopgate\Shopware\Storefront\ContextManager;
 use ShopgateCustomer;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Salutation\SalutationEntity;
 
 class SalutationMapping
 {
-    private EntityRepositoryInterface $swSalutationRepo;
-    private EntityRepositoryInterface $sgSalutationRepo;
+    private EntityRepository $swSalutationRepo;
+    private EntityRepository $sgSalutationRepo;
     private ContextManager $contextManager;
 
-    public function __construct(EntityRepositoryInterface $swSalutationRepository, EntityRepositoryInterface $sgSalutationRepository, ContextManager $contextManager)
+    public function __construct(EntityRepository $swSalutationRepository, EntityRepository $sgSalutationRepository, ContextManager $contextManager)
     {
         $this->swSalutationRepo = $swSalutationRepository;
         $this->sgSalutationRepo = $sgSalutationRepository;
@@ -27,36 +27,6 @@ class SalutationMapping
     public function getSalutationIdByGender(string $gender): string
     {
         return $this->getMappedSalutationId($gender) ?: $this->getAnySalutationId();
-    }
-
-    /**
-     * @deprecated 3.x will be removed
-     */
-    public function getMaleSalutationId(): string
-    {
-        $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'mr'));
-        $criteria->setTitle('shopgate::swSalutation::male');
-        $result = $this->swSalutationRepo->search(
-            $criteria,
-            $this->contextManager->getSalesContext()->getContext()
-        )->first();
-
-        return $result ? $result->getId() : $this->getUnspecifiedSalutationId();
-    }
-
-    /**
-     * @deprecated 3.x will be removed
-     */
-    public function getUnspecifiedSalutationId(): string
-    {
-        $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'not_specified'));
-        $criteria->setTitle('shopgate::swSalutation::unspecified');
-        $result = $this->swSalutationRepo->search(
-            $criteria,
-            $this->contextManager->getSalesContext()->getContext()
-        )->first();
-
-        return $result ? $result->getId() : $this->getAnySalutationId();
     }
 
     /**
@@ -73,21 +43,6 @@ class SalutationMapping
         )->first();
 
         return $result->getId();
-    }
-
-    /**
-     * @deprecated 3.x will be removed
-     */
-    public function getFemaleSalutationId(): string
-    {
-        $criteria = (new Criteria())->addFilter(new EqualsFilter('salutationKey', 'mrs'));
-        $criteria->setTitle('shopgate::swSalutation::female');
-        $result = $this->swSalutationRepo->search(
-            $criteria,
-            $this->contextManager->getSalesContext()->getContext()
-        )->first();
-
-        return $result ? $result->getId() : $this->getUnspecifiedSalutationId();
     }
 
     public function toShopgateGender(SalutationEntity $entity): ?string

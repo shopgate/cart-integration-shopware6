@@ -66,11 +66,9 @@ class ShippingComposer
      * manual shipping cost to 0. This is why we need to use our custom
      * Free Shipping method in this case.
      *
-     * @param ExtendedCart|ExtendedOrder $quote
-     *
      * @see DeliveryCalculator::calculateDelivery
      */
-    public function addShippingFeeToCart(ShopgateCartBase $quote, Cart $swCart): void
+    public function addShippingFeeToCart(ExtendedCart|ExtendedOrder|ShopgateCartBase $quote, Cart $swCart): void
     {
         $shippingCost = $quote->getShippingCost($this->contextManager->getSalesContext()->getTaxState());
         $shopCurrency = $this->contextManager->getSalesContext()->getCurrencyId();
@@ -86,16 +84,6 @@ class ShippingComposer
         );
         $this->eventDispatcher->dispatch(new BeforeManualShippingPriceSet($price, $swCart, $quote));
         $swCart->addExtension(DeliveryProcessor::MANUAL_SHIPPING_COSTS, $price);
-    }
-
-    /**
-     * @return ShopgateShippingMethod[]
-     * @throws ShopgateLibraryException
-     * @deprecated since version 3.x
-     */
-    public function mapShippingMethods(SalesChannelContext $context): array
-    {
-        return $this->mapOutgoingShipping($context);
     }
 
     /**
@@ -131,7 +119,7 @@ class ShippingComposer
             foreach ($methods->getElements() as $shipMethod) {
                 $dataBag = new RequestDataBag([SalesChannelContextService::SHIPPING_METHOD_ID => $shipMethod->getId()]);
                 $this->eventDispatcher->dispatch(new BeforeDeliveryContextSwitchEvent($dataBag));
-                $resultContext = $this->contextManager->switchContext($dataBag, $context);
+                $resultContext = $this->contextManager->switchContext($dataBag, $context)->getSalesContext();
                 $cart = $this->cartPageLoader->load($request, $resultContext)->getCart();
                 $deliveries = $this->sortCartDeliveries($cart->getDeliveries());
                 $delivery = $deliveries->first();
@@ -155,10 +143,7 @@ class ShippingComposer
         return new DeliveryCollection($list);
     }
 
-    /**
-     * @param ExtendedCart|ExtendedOrder $quote
-     */
-    public function mapIncomingShipping(ShopgateCartBase $quote, SalesChannelContext $context): string
+    public function mapIncomingShipping(ExtendedCart|ExtendedOrder|ShopgateCartBase $quote, SalesChannelContext $context): string
     {
         return $this->shippingMapping->getShopwareShippingId($quote, $context->getTaxState());
     }
@@ -232,7 +217,6 @@ class ShippingComposer
      */
     private function combineShippingCost(DeliveryCollection $deliveries): CalculatedPrice
     {
-        /** @noinspection NullPointerExceptionInspection */
         return new CalculatedPrice(
             $deliveries->reduce(static function (float $result, Delivery $delivery) {
                 return $result + $delivery->getShippingCosts()->getUnitPrice();

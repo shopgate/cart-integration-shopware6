@@ -75,7 +75,7 @@ class CartComposer
             SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId,
             SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
         ]);
-        $context = $this->contextManager->switchContext($dataBag, $cleanCartContext);
+        $context = $this->contextManager->switchContext($dataBag, $cleanCartContext)->getSalesContext();
         $shopwareCart = $this->quoteBridge->loadCartFromContext($context);
         $lineItems = $this->lineItemComposer->mapIncomingLineItems($sgCart);
         $updatedCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $context, $lineItems);

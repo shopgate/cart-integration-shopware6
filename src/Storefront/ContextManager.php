@@ -10,8 +10,8 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\CartRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -26,7 +26,7 @@ class ContextManager
     private SalesChannelRequestContextResolver $contextResolver;
     private ?SalesChannelContext $salesContext = null;
     private AbstractSalesChannelContextFactory $channelContextFactory;
-    private SalesChannelContextRestorer $contextRestorer;
+    private CartRestorer $cartRestorer;
     private AbstractContextSwitchRoute $contextSwitchRoute;
     private SalesChannelContextPersister $contextPersist;
     private EventDispatcherInterface $eventDispatcher;
@@ -35,12 +35,12 @@ class ContextManager
         AbstractSalesChannelContextFactory $channelContextFactory,
         EventDispatcherInterface $eventDispatcher,
         SalesChannelRequestContextResolver $contextResolver,
-        SalesChannelContextRestorer $contextRestorer,
+        CartRestorer $cartRestorer,
         AbstractContextSwitchRoute $contextSwitchRoute,
         SalesChannelContextPersister $contextPersist
     ) {
         $this->contextResolver = $contextResolver;
-        $this->contextRestorer = $contextRestorer;
+        $this->cartRestorer = $cartRestorer;
         $this->contextSwitchRoute = $contextSwitchRoute;
         $this->channelContextFactory = $channelContextFactory;
         $this->contextPersist = $contextPersist;
@@ -73,43 +73,18 @@ class ContextManager
         return $this;
     }
 
-    /**
-     * @todo 3.x will return $this
-     */
-    public function loadByCustomerId(string $customerId): SalesChannelContext
+    public function loadByCustomerId(string $customerId): ContextManager
     {
-        $context = $this->contextRestorer->restore($customerId, $this->salesContext);
+        $context = $this->cartRestorer->restore($customerId, $this->salesContext);
         $this->overwriteSalesContext($context);
 
-        return $context;
+        return $this;
     }
 
-    /**
-     * Resetting is necessary as our transactions use hidden methods.
-     * Without resetting the new objects created will use the last
-     * context as base.
-     * @deprecated 3.x will be removed
-     */
-    public function resetContext(?SalesChannelContext $context = null): void
-    {
-        $payment = $this->salesContext->getCustomer() && $this->salesContext->getCustomer()->getDefaultPaymentMethod()
-            ? $this->salesContext->getCustomer()->getDefaultPaymentMethod()->getId()
-            : $this->salesContext->getSalesChannel()->getPaymentMethodId();
-        $shipping = $this->salesContext->getSalesChannel()->getShippingMethodId();
-        $this->switchContext(
-            new RequestDataBag([
-                SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
-                SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
-            ]), $context);
-    }
-
-    /**
-     * @todo 3.x will return $this
-     */
-    public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): SalesChannelContext
+    public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): ContextManager
     {
         $currentContext = $context ?: $this->getSalesContext();
-        $customerId = $currentContext->getCustomer() ? $currentContext->getCustomer()->getId() : null;
+        $customerId = $currentContext->getCustomer()?->getId();
         $this->contextPersist->save(
             $currentContext->getToken(),
             $dataBag->all(),
@@ -117,18 +92,20 @@ class ContextManager
             $dataBag->get(SalesChannelContextService::CUSTOMER_ID) ?: $customerId
         );
         $token = $this->contextSwitchRoute->switchContext($dataBag, $currentContext)->getToken();
+        $this->loadByCustomerToken($token, $currentContext);
 
-        return $this->loadByCustomerToken($token, $currentContext);
+        return $this;
     }
 
-    /**
-     * @todo 3.x will return $this
-     */
-    public function loadByCustomerToken(string $token, ?SalesChannelContext $context = null): SalesChannelContext
+    public function loadByCustomerToken(string $token, ?SalesChannelContext $context = null): ContextManager
     {
-        $channel = $context ? $context->getSalesChannel() : $this->getSalesContext()->getSalesChannel();
+        $baseContext = $context ?? $this->getSalesContext();
+        $channel = $baseContext->getSalesChannel();
         $request = new Request();
-        $request->headers->set(PlatformRequest::HEADER_LANGUAGE_ID, $channel->getLanguageId());
+        $request->headers->set(
+            PlatformRequest::HEADER_LANGUAGE_ID,
+            $baseContext->getCustomer()?->getLanguageId() ?? $baseContext->getContext()->getLanguageId()
+        );
         $request->attributes->set(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID, $channel->getCurrencyId());
         $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
 
@@ -136,7 +113,7 @@ class ContextManager
         $newContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
         $this->overwriteSalesContext($newContext);
 
-        return $newContext;
+        return $this;
     }
 
     /**
@@ -151,7 +128,7 @@ class ContextManager
     public function duplicateContextWithNewToken(SalesChannelContext $context, ?string $customerId): SalesChannelContext
     {
         $options = [
-            SalesChannelContextService::LANGUAGE_ID => $context->getSalesChannel()->getLanguageId(),
+            SalesChannelContextService::LANGUAGE_ID => $context->getContext()->getLanguageId(),
             SalesChannelContextService::CURRENCY_ID => $context->getSalesChannel()->getCurrencyId(),
             SalesChannelContextService::PERMISSIONS => $context->getPermissions(),
             SalesChannelContextService::CUSTOMER_ID => !empty($customerId) ? $customerId : null,
