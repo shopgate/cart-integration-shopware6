@@ -13,7 +13,7 @@
             <strong class="order-table-header-label">
                 {{ "account.orderPaymentMethod"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
             </strong>
-            <span class="order-table-body-value">{{ shopgateOrder.receivedData.payment_infos.shopgate_payment_name }}</span>
+            <span class="order-table-body-value">{{ shopgateOrder.getPaymentMethodName() }}</span>
         </div>
     {% else %}
         {{ parent() }}
@@ -28,7 +28,7 @@
             <strong class="order-table-header-label">
                 {{ "account.orderShippingMethod"|trans|sw_sanitize }}{{ "account.colonCharacter"|trans|sw_sanitize }}
             </strong>
-            <span class="order-table-body-value">{{ shopgateOrder.receivedData.shipping_infos.display_name }}</span>
+            <span class="order-table-body-value">{{ shopgateOrder.getShippingMethodName() }}</span>
         </div>
     {% else %}
         {{ parent() }}
