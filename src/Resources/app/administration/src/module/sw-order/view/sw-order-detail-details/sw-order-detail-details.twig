@@ -1,0 +1,37 @@
+{% block sw_order_detail_details_payment_method_select %}
+    <template v-if="getPaymentName">
+        <sw-select-field
+                disabled
+                :label="$tc('sw-order.createBase.detailsFooter.labelPaymentMethod')"
+                :placeholder="getPaymentName"
+        >
+            <option value="no-value">{{ getPaymentName }}</option>
+        </sw-select-field>
+    </template>
+    <template v-else>
+        {% parent %}
+    </template>
+{% endblock %}
+
+ {% block sw_order_detail_details_shipping_method_select %}
+     <template v-if="getShippingName">
+         <sw-select-field
+                 disabled
+                 :label="$tc('sw-order.createBase.detailsFooter.labelShippingMethod')"
+                 :placeholder="getShippingName"
+         >
+             <option value="no-value">{{ getShippingName }}</option>
+         </sw-select-field>
+     </template>
+     <template v-else>
+         {% parent %}
+     </template>
+ {% endblock %}
+
+{% block sw_order_detail_details_custom_fields %}
+    {% parent %}
+    <sg-order-details v-if="acl.can('order.editor') && order.extensions.shopgateOrder"
+                      :sgOrder="order.extensions.shopgateOrder"
+                      class="sg-order"
+    ></sg-order-details>
+{% endblock %}
