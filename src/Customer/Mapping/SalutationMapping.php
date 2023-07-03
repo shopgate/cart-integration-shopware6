@@ -52,14 +52,11 @@ class SalutationMapping
             return $value;
         }
 
-        switch ($entity->getSalutationKey()) {
-            case 'mr':
-                return ShopgateCustomer::MALE;
-            case 'mrs':
-                return ShopgateCustomer::FEMALE;
-            default:
-                return null;
-        }
+        return match ($entity->getSalutationKey()) {
+            'mr' => ShopgateCustomer::MALE,
+            'mrs' => ShopgateCustomer::FEMALE,
+            default => null,
+        };
     }
 
     private function getMappedSalutationId(string $gender): string
