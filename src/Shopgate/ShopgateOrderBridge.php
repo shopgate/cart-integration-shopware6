@@ -2,12 +2,15 @@
 
 namespace Shopgate\Shopware\Shopgate;
 
+use Shopgate\Shopware\Shopgate\Order\ShopgateOrderCollection;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class ShopgateOrderBridge
@@ -17,6 +20,14 @@ class ShopgateOrderBridge
     public function __construct(EntityRepository $shopgateOrderRepository)
     {
         $this->shopgateOrderRepository = $shopgateOrderRepository;
+    }
+
+    public function getListByIds(array $ids, Context $context): ShopgateOrderCollection|EntityCollection
+    {
+        $criteria = (new Criteria())->addFilter(new EqualsAnyFilter('shopwareOrderId', $ids));
+        $criteria->setTitle('shopgate::shopgate-orders::by-ids');
+
+        return $this->shopgateOrderRepository->search($criteria, $context)->getEntities();
     }
 
     public function getOrderByNumber(string $shopgateOrderNumber, Context $context): EntitySearchResult

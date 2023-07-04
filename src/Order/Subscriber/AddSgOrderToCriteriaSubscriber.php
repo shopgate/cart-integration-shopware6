@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Subscriber;
 
@@ -9,7 +7,12 @@ use Shopgate\Shopware\Shopgate\RequestPersist;
 use Shopgate\Shopware\Shopgate\ShopgateOrderBridge;
 use Shopgate\Shopware\Storefront\Controller\MainController;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedCriteriaEvent;
-use Shopware\Core\Checkout\Document\Event\DocumentOrderCriteriaEvent;
+use Shopware\Core\Checkout\Document\Event\CreditNoteOrdersEvent;
+use Shopware\Core\Checkout\Document\Event\DeliveryNoteOrdersEvent;
+use Shopware\Core\Checkout\Document\Event\DocumentOrderEvent;
+use Shopware\Core\Checkout\Document\Event\InvoiceOrdersEvent;
+use Shopware\Core\Checkout\Document\Event\StornoOrdersEvent;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Storefront\Event\RouteRequest\OrderRouteRequestEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -27,32 +30,38 @@ class AddSgOrderToCriteriaSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Added backwards compatibility as CheckoutOrderPlacedCriteriaEvent exists in SW 6.4.4.0.
-     * Logically if event exists, 1. save SG order first 2. add the SG order to criteria
-     * Otherwise just save order via CheckoutOrderPlacedEvent
-     *
      * @return string[]
      */
     public static function getSubscribedEvents(): array
     {
-        return array_merge([
-                OrderRouteRequestEvent::class => 'alterCriteria',
-                DocumentOrderCriteriaEvent::class => 'alterCriteria',
-                CheckoutOrderPlacedCriteriaEvent::class => [
-                    ['alterCriteria', 0],
-                    ['saveShopgateOrderBeforeCriteria', 1]
-                ]
-            ]
-        );
+        return [
+            OrderRouteRequestEvent::class => 'alterCriteria',
+            CheckoutOrderPlacedCriteriaEvent::class => [
+                ['alterCriteria', 0],
+                ['saveShopgateOrderBeforeCriteria', 1],
+            ],
+            InvoiceOrdersEvent::class => 'addSgOrder',
+            CreditNoteOrdersEvent::class => 'addSgOrder',
+            DeliveryNoteOrdersEvent::class => 'addSgOrder',
+            StornoOrdersEvent::class => 'addSgOrder',
+        ];
     }
 
-    /**
-     * @param OrderRouteRequestEvent|DocumentOrderCriteriaEvent|CheckoutOrderPlacedCriteriaEvent|Event $event
-     */
-    public function alterCriteria(Event $event): void
+    public function alterCriteria(DocumentOrderEvent|Event $event): void
     {
         if (method_exists($event, 'getCriteria')) {
             $event->getCriteria()->addAssociation('shopgateOrder');
+        }
+    }
+
+    public function addSgOrder(DocumentOrderEvent $event): void
+    {
+        if (method_exists($event, 'getOrders')) {
+            $sgList = $this->shopgateOrderBridge->getListByIds($event->getOrders()->getIds(), $event->getContext());
+            array_map(function (OrderEntity $order) use ($sgList) {
+                $item = $sgList->getBySwOrderId($order->getId());
+                $item && $order->addExtension('shopgateOrder', $item);
+            }, $event->getOrders()->getElements());
         }
     }
 
