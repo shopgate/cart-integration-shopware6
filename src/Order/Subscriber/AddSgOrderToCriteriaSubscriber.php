@@ -13,9 +13,8 @@ use Shopware\Core\Checkout\Document\Event\DocumentOrderEvent;
 use Shopware\Core\Checkout\Document\Event\InvoiceOrdersEvent;
 use Shopware\Core\Checkout\Document\Event\StornoOrdersEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Storefront\Event\RouteRequest\OrderRouteRequestEvent;
+use Shopware\Core\Content\Flow\Events\BeforeLoadStorableFlowDataEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
 class AddSgOrderToCriteriaSubscriber implements EventSubscriberInterface
 {
@@ -29,29 +28,21 @@ class AddSgOrderToCriteriaSubscriber implements EventSubscriberInterface
         $this->shopgateOrderBridge = $shopgateOrderBridge;
     }
 
-    /**
-     * @return string[]
-     */
     public static function getSubscribedEvents(): array
     {
         return [
-            OrderRouteRequestEvent::class => 'alterCriteria',
-            CheckoutOrderPlacedCriteriaEvent::class => [
-                ['alterCriteria', 0],
-                ['saveShopgateOrderBeforeCriteria', 1],
-            ],
-            InvoiceOrdersEvent::class => 'addSgOrder',
-            CreditNoteOrdersEvent::class => 'addSgOrder',
-            DeliveryNoteOrdersEvent::class => 'addSgOrder',
-            StornoOrdersEvent::class => 'addSgOrder',
+            'flow.storer.order.criteria.event' => ['alterCriteria', 30], // email template inject
+            CheckoutOrderPlacedCriteriaEvent::class => ['saveShopgateOrderBeforeCriteria', 25],
+            InvoiceOrdersEvent::class => ['addSgOrder', 40],
+            CreditNoteOrdersEvent::class => ['addSgOrder', 40],
+            DeliveryNoteOrdersEvent::class => ['addSgOrder', 40],
+            StornoOrdersEvent::class => ['addSgOrder', 40],
         ];
     }
 
-    public function alterCriteria(DocumentOrderEvent|Event $event): void
+    public function alterCriteria(BeforeLoadStorableFlowDataEvent $event): void
     {
-        if (method_exists($event, 'getCriteria')) {
-            $event->getCriteria()->addAssociation('shopgateOrder');
-        }
+        $event->getCriteria()->addAssociation('shopgateOrder');
     }
 
     public function addSgOrder(DocumentOrderEvent $event): void

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Shipping;
 
@@ -14,7 +12,7 @@ class FreeShippingMethod extends ShippingMethodEntity implements ClassCastInterf
     protected $id = self::UUID;
     protected $deliveryTimeId = GenericDeliveryTime::UUID;
     protected $name = 'Free Shipping (SG)';
-    protected $description = 'Used for Free Shopgate Shipping';
+    protected $description = '';
     protected $availabilityRuleId = IsShopgateRuleGroup::UUID;
     protected $active = false;
 
