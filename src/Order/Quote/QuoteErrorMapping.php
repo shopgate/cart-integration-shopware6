@@ -22,26 +22,16 @@ class QuoteErrorMapping
         $this->serializer = $serializer;
     }
 
-    /**
-     * @param InvalidCartException $error
-     * @return ShopgateLibraryException
-     */
     public function mapInvalidCartError(InvalidCartException $error): ShopgateLibraryException
     {
         $this->logWithTrace($error);
-        $errors = array_map(static function (Error $error) {
-            return $error->jsonSerialize();
-        }, $error->getCartErrors()->getElements());
         return new ShopgateLibraryException(
             ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-            $this->serializer->serialize($errors, 'json'),
+            $error->getMessage(),
             true
         );
     }
 
-    /**
-     * @param ShopwareHttpException $error
-     */
     private function logWithTrace(ShopwareHttpException $error): void
     {
         $detailedErrors = [];
@@ -51,10 +41,6 @@ class QuoteErrorMapping
         $this->logger->debug($detailedErrors);
     }
 
-    /**
-     * @param ConstraintViolationException $exception
-     * @return ShopgateLibraryException
-     */
     public function mapConstraintError(ConstraintViolationException $exception): ShopgateLibraryException
     {
         $this->logWithTrace($exception);
@@ -66,10 +52,6 @@ class QuoteErrorMapping
         );
     }
 
-    /**
-     * @param ShopwareHttpException $error
-     * @return ShopgateLibraryException
-     */
     public function mapGenericHttpException(ShopwareHttpException $error): ShopgateLibraryException
     {
         $this->logWithTrace($error);
@@ -81,10 +63,6 @@ class QuoteErrorMapping
         );
     }
 
-    /**
-     * @param Throwable $throwable
-     * @return ShopgateLibraryException
-     */
     public function mapThrowable(Throwable $throwable): ShopgateLibraryException
     {
         $error = "Message: {$throwable->getMessage()},
