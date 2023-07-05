@@ -4638,8 +4638,8 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 204\", function () {\r",
-                      "    pm.response.to.have.status(204);\r",
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -4661,7 +4661,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"ids\": [\r\n        \"{{created_product_headless_advPriceOne_id}}\",\r\n        \"{{created_product_headless_prevPrice_id}}\"\r\n    ]\r\n}",
+                  "raw": "{\r\n    \"offset\": 0\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4669,13 +4669,20 @@
                   }
                 },
                 "url": {
-                  "raw": "{{sw_endpoint_api}}/_action/index-products",
+                  "raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
                   "host": [
                     "{{sw_endpoint_api}}"
                   ],
                   "path": [
                     "_action",
-                    "index-products"
+                    "indexing",
+                    ":indexer"
+                  ],
+                  "variable": [
+                    {
+                      "key": "indexer",
+                      "value": "product.indexer"
+                    }
                   ]
                 }
               },
