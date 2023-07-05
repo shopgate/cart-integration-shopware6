@@ -20,21 +20,15 @@ use Shopware\Core\Framework\Adapter\Filesystem\PrefixFilesystem;
 
 class ExtendedBuilder extends ShopgateBuilder
 {
-    private PrefixFilesystem $privateFileSystem;
-    private ShopgateMerchantApiInterface $merchantApi;
-    private ShopgateAuthenticationServiceInterface $authService;
 
     /**
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
-        PrefixFilesystem $privateFileSystem,
-        ShopgateMerchantApiInterface $merchantApi,
-        ShopgateAuthenticationServiceInterface $authService
+        private readonly PrefixFilesystem             $privateFileSystem,
+        private readonly ShopgateMerchantApiInterface $merchantApi,
+        private readonly ShopgateAuthenticationServiceInterface $authService
     ) {
-        $this->privateFileSystem = $privateFileSystem;
-        $this->merchantApi = $merchantApi;
-        $this->authService = $authService;
     }
 
     /**

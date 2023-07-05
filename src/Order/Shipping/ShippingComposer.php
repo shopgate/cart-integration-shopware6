@@ -37,27 +37,16 @@ use Throwable;
 
 class ShippingComposer
 {
-    private ShippingBridge $shippingBridge;
-    private CheckoutCartPageLoader $cartPageLoader;
-    private ContextManager $contextManager;
-    private ShippingMapping $shippingMapping;
-    private EventDispatcherInterface $eventDispatcher;
-    private StateComposer $stateComposer;
 
     public function __construct(
-        ShippingBridge $shippingBridge,
-        ShippingMapping $shippingMapping,
-        CheckoutCartPageLoader $cartPageLoader,
-        StateComposer $stateComposer,
-        ContextManager $contextManager,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->shippingBridge = $shippingBridge;
-        $this->shippingMapping = $shippingMapping;
-        $this->cartPageLoader = $cartPageLoader;
-        $this->stateComposer = $stateComposer;
-        $this->contextManager = $contextManager;
-        $this->eventDispatcher = $eventDispatcher;
+        private readonly ShippingBridge           $shippingBridge,
+        private readonly ShippingMapping          $shippingMapping,
+        private readonly CheckoutCartPageLoader   $cartPageLoader,
+        private readonly StateComposer            $stateComposer,
+        private readonly ContextManager           $contextManager,
+        private readonly EventDispatcherInterface $eventDispatcher
+    )
+    {
     }
 
     /**
@@ -204,8 +193,9 @@ class ShippingComposer
 
     public function setToShipped(
         ?OrderDeliveryCollection $deliveries,
-        SalesChannelContext $context
-    ): ?StateMachineStateEntity {
+        SalesChannelContext      $context
+    ): ?StateMachineStateEntity
+    {
         $delivery = $this->getFirstShippingDelivery($deliveries);
 
         return $delivery ? $this->shippingBridge->setOrderToShipped($delivery->getId(), $context) : null;

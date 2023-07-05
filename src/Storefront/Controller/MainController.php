@@ -21,13 +21,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class MainController extends StorefrontController
 {
     public const IS_SHOPGATE = 'IS_SHOPGATE_CALL';
-    private ConfigBridge $systemConfigService;
-    private Plugin $plugin;
 
-    public function __construct(ConfigBridge $systemConfigService, Plugin $plugin)
+    public function __construct(private readonly ConfigBridge $systemConfigService, private readonly Plugin $plugin)
     {
-        $this->systemConfigService = $systemConfigService;
-        $this->plugin = $plugin;
     }
 
     #[Route(path: '/shopgate/plugin', name: 'shopgate_action', defaults: ['csrf_protected' => false], methods: [

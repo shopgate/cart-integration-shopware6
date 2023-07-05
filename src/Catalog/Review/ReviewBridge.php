@@ -13,18 +13,12 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ReviewBridge
 {
-    private ContextManager $contextManager;
-    private EntityRepository $reviewRepository;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        ContextManager $contextManager,
-        EntityRepository $reviewRepository,
-        EventDispatcherInterface $eventDispatcher
+        private readonly ContextManager   $contextManager,
+        private readonly EntityRepository $reviewRepository,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
-        $this->reviewRepository = $reviewRepository;
-        $this->contextManager = $contextManager;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function getReviews(?int $limit, ?int $offset, array $uids): EntitySearchResult

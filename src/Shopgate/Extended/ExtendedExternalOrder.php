@@ -24,25 +24,16 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 
 class ExtendedExternalOrder extends ShopgateExternalOrder
 {
-    private AddressMapping $addressMapping;
-    private LineItemProductMapping $productMapping;
-    private TaxMapping $taxMapping;
-    private LineItemPromoMapping $promoMapping;
-    private ShippingMapping $shippingMapping;
 
     public function __construct(
-        AddressMapping $addressMapping,
-        LineItemProductMapping $productMapping,
-        LineItemPromoMapping $promoMapping,
-        TaxMapping $taxMapping,
-        ShippingMapping $shippingMapping
-    ) {
+        private readonly AddressMapping         $addressMapping,
+        private readonly LineItemProductMapping $productMapping,
+        private readonly LineItemPromoMapping   $promoMapping,
+        private readonly TaxMapping             $taxMapping,
+        private readonly ShippingMapping        $shippingMapping
+    )
+    {
         parent::__construct([]);
-        $this->addressMapping = $addressMapping;
-        $this->productMapping = $productMapping;
-        $this->promoMapping = $promoMapping;
-        $this->taxMapping = $taxMapping;
-        $this->shippingMapping = $shippingMapping;
     }
 
     /**
@@ -180,9 +171,10 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
 
     private function mapAddress(
         OrderAddressEntity $addressEntity,
-        string $billingId,
-        string $shippingId
-    ): ShopgateAddress {
+        string             $billingId,
+        string             $shippingId
+    ): ShopgateAddress
+    {
         $type = $this->addressMapping->mapAddressType($addressEntity, $billingId, $shippingId);
 
         return $this->addressMapping->mapAddress($addressEntity, $type);

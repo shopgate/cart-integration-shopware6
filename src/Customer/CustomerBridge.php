@@ -22,27 +22,16 @@ use Throwable;
 
 class CustomerBridge
 {
-    private EntityRepository $customerGroupRepository;
-    private EntityRepository $customerRepository;
-    private ContextManager $contextManager;
-    private AbstractLoginRoute $loginRoute;
-    private RequestDataBag $dataBag;
-    private AbstractCustomerRoute $customerRoute;
 
     public function __construct(
-        EntityRepository $customerGroupRepository,
-        EntityRepository $customerRepository,
-        ContextManager $contextManager,
-        AbstractLoginRoute $loginRoute,
-        RequestDataBag $dataBag,
-        AbstractCustomerRoute $customerRoute
-    ) {
-        $this->customerGroupRepository = $customerGroupRepository;
-        $this->customerRepository = $customerRepository;
-        $this->contextManager = $contextManager;
-        $this->loginRoute = $loginRoute;
-        $this->dataBag = $dataBag;
-        $this->customerRoute = $customerRoute;
+        private readonly EntityRepository      $customerGroupRepository,
+        private readonly EntityRepository      $customerRepository,
+        private readonly ContextManager        $contextManager,
+        private readonly AbstractLoginRoute    $loginRoute,
+        private readonly RequestDataBag        $dataBag,
+        private readonly AbstractCustomerRoute $customerRoute
+    )
+    {
     }
 
     public function getGroups(): CustomerGroupCollection|EntityCollection

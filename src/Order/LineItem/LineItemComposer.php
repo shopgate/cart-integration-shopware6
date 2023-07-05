@@ -24,30 +24,17 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LineItemComposer
 {
-    private LineItemProductMapping $productMapping;
-    private LineItemPromoMapping $promoMapping;
-    private LoggerInterface $logger;
-    private EventDispatcherInterface $eventDispatcher;
-    private QuoteBridge $quoteBridge;
 
     public function __construct(
-        LineItemProductMapping $productMapping,
-        LineItemPromoMapping $promoMapping,
-        LoggerInterface $logger,
-        EventDispatcherInterface $eventDispatcher,
-        QuoteBridge $quoteBridge
+        private readonly LineItemProductMapping   $productMapping,
+        private readonly LineItemPromoMapping     $promoMapping,
+        private readonly LoggerInterface          $logger,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly QuoteBridge $quoteBridge
     ) {
-        $this->productMapping = $productMapping;
-        $this->promoMapping = $promoMapping;
-        $this->logger = $logger;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->quoteBridge = $quoteBridge;
     }
 
-    /**
-     * @param ExtendedCart|ExtendedOrder $cart
-     */
-    public function mapIncomingLineItems(ShopgateCartBase $cart): array
+    public function mapIncomingLineItems(ExtendedCart|ExtendedOrder $cart): array
     {
         $this->eventDispatcher->dispatch(new BeforeIncLineItemMappingEvent($cart));
         return array_merge(

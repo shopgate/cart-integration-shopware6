@@ -35,41 +35,18 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
     use MapTrait;
 
-    /** @var SalesChannelProductEntity */
-    protected $item;
-    protected ContextManager $contextManager;
-    protected SortTree $sortTree;
-    protected PriceMapping $priceMapping;
-    protected TierPriceMapping $tierPriceMapping;
-    protected Formatter $formatter;
-    protected CustomFieldBridge $customFieldSetBridge;
-    protected AbstractProductCrossSellingRoute $crossSellingRoute;
-    protected CurrencyComposer $currencyComposer;
-    private ExtendedClassFactory $classFactory;
-    private EventDispatcherInterface $eventDispatcher;
-
     public function __construct(
-        ContextManager $contextManager,
-        CustomFieldBridge $customFieldSetBridge,
-        SortTree $sortTree,
-        PriceMapping $priceMapping,
-        TierPriceMapping $tierPriceMapping,
-        Formatter $formatter,
-        CurrencyComposer $currencyComposer,
-        ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute,
-        EventDispatcherInterface $eventDispatcher
+        protected ContextManager $contextManager,
+        protected CustomFieldBridge $customFieldSetBridge,
+        protected SortTree $sortTree,
+        protected PriceMapping $priceMapping,
+        protected TierPriceMapping $tierPriceMapping,
+        protected Formatter $formatter,
+        protected CurrencyComposer $currencyComposer,
+        protected ExtendedClassFactory $classFactory,
+        protected AbstractProductCrossSellingRoute $crossSellingRoute,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
-        $this->contextManager = $contextManager;
-        $this->customFieldSetBridge = $customFieldSetBridge;
-        $this->sortTree = $sortTree;
-        $this->priceMapping = $priceMapping;
-        $this->tierPriceMapping = $tierPriceMapping;
-        $this->formatter = $formatter;
-        $this->crossSellingRoute = $crossSellingRoute;
-        $this->currencyComposer = $currencyComposer;
-        $this->classFactory = $classFactory;
-        $this->eventDispatcher = $eventDispatcher;
         parent::__construct();
     }
 

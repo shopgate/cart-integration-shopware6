@@ -18,27 +18,16 @@ use Throwable;
 
 class CustomerComposer
 {
-    private ContextManager $contextManager;
-    private AbstractRegisterRoute $registerRoute;
-    private CustomerBridge $customerBridge;
-    private CustomerMapping $customerMapping;
-    private ConfigBridge $configBridge;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        ContextManager $contextManager,
-        AbstractRegisterRoute $registerRoute,
-        CustomerBridge $customerBridge,
-        CustomerMapping $customerMapping,
-        ConfigBridge $configBridge,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->contextManager = $contextManager;
-        $this->registerRoute = $registerRoute;
-        $this->customerBridge = $customerBridge;
-        $this->customerMapping = $customerMapping;
-        $this->configBridge = $configBridge;
-        $this->eventDispatcher = $eventDispatcher;
+        private readonly ContextManager           $contextManager,
+        private readonly AbstractRegisterRoute    $registerRoute,
+        private readonly CustomerBridge           $customerBridge,
+        private readonly CustomerMapping          $customerMapping,
+        private readonly ConfigBridge             $configBridge,
+        private readonly EventDispatcherInterface $eventDispatcher
+    )
+    {
     }
 
     /**

@@ -15,11 +15,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class ShopgateOrderBridge
 {
-    private EntityRepository $shopgateOrderRepository;
 
-    public function __construct(EntityRepository $shopgateOrderRepository)
+    public function __construct(private readonly EntityRepository $shopgateOrderRepository)
     {
-        $this->shopgateOrderRepository = $shopgateOrderRepository;
     }
 
     public function getListByIds(array $ids, Context $context): ShopgateOrderCollection|EntityCollection

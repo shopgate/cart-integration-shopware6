@@ -13,15 +13,11 @@ use Shopware\Core\System\Salutation\SalutationEntity;
 
 class SalutationMapping
 {
-    private EntityRepository $swSalutationRepo;
-    private EntityRepository $sgSalutationRepo;
-    private ContextManager $contextManager;
-
-    public function __construct(EntityRepository $swSalutationRepository, EntityRepository $sgSalutationRepository, ContextManager $contextManager)
+    public function __construct(
+        private readonly EntityRepository $swSalutationRepository,
+        private readonly EntityRepository $sgSalutationRepository,
+        private readonly ContextManager   $contextManager)
     {
-        $this->swSalutationRepo = $swSalutationRepository;
-        $this->sgSalutationRepo = $sgSalutationRepository;
-        $this->contextManager = $contextManager;
     }
 
     public function getSalutationIdByGender(string $gender): string
@@ -37,7 +33,7 @@ class SalutationMapping
     {
         $criteria = new Criteria();
         $criteria->setTitle('shopgate::swSalutation::any');
-        $result = $this->swSalutationRepo->search(
+        $result = $this->swSalutationRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
         )->first();
@@ -64,7 +60,7 @@ class SalutationMapping
         $criteria = (new Criteria())->addFilter(new EqualsFilter('value', $gender));
         $criteria->setTitle('shopgate::sgSalutation::' . $gender);
         /** @var ?ShopgateSalutationEntity $result */
-        $result = $this->sgSalutationRepo->search(
+        $result = $this->sgSalutationRepository->search(
             $criteria,
             $this->contextManager->getSalesContext()->getContext()
         )->first();

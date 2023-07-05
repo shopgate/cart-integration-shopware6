@@ -15,18 +15,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class LiveShoppingSubscriber implements EventSubscriberInterface
 {
-    private ConfigBridge $configBridge;
-    private RequestPersist $requestPersist;
-    private TaxMapping $taxMapping;
 
     public function __construct(
-        ConfigBridge $configBridge,
-        RequestPersist $requestPersist,
-        TaxMapping $taxMapping
+        private readonly ConfigBridge   $configBridge,
+        private readonly RequestPersist $requestPersist,
+        private readonly TaxMapping $taxMapping
     ) {
-        $this->configBridge = $configBridge;
-        $this->requestPersist = $requestPersist;
-        $this->taxMapping = $taxMapping;
     }
 
     public static function getSubscribedEvents(): array

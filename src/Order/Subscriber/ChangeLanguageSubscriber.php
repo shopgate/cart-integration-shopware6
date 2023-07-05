@@ -12,13 +12,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ChangeLanguageSubscriber implements EventSubscriberInterface
 {
 
-    private string $languageId;
-    private ContextManager $contextManager;
-
-    public function __construct(string $languageId, ContextManager $contextManager)
+    public function __construct(private readonly string $languageId, private readonly ContextManager $contextManager)
     {
-        $this->languageId = $languageId;
-        $this->contextManager = $contextManager;
     }
 
     public static function getSubscribedEvents(): array

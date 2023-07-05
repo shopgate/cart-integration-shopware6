@@ -9,11 +9,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SaveCartSubscriber implements EventSubscriberInterface
 {
-    private CartService $cartService;
 
-    public function __construct(CartService $cartService)
+    public function __construct(private readonly CartService $cartService)
     {
-        $this->cartService = $cartService;
     }
 
     public static function getSubscribedEvents(): array

@@ -32,33 +32,20 @@ class ConfigBridge
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 
-    private string $shopwareVersion;
-    private EntityRepository $pluginRepository;
-    private ContextManager $contextManager;
-    private SystemConfigService $systemConfigService;
-    private EntityRepository $systemConfigRepo;
     private ?SystemConfigCollection $config = null;
     private ?ShopgateApiCredentialsEntity $apiCredentialsEntity = null;
-    private DomainBridge $domainBridge;
     private array $error = [];
-    private EntityRepository $shopgateApiRepo;
 
     public function __construct(
-        EntityRepository $pluginRepository,
-        EntityRepository $systemConfigRepo,
-        EntityRepository $shopgateApiRepo,
-        string $shopwareVersion,
-        ContextManager $contextManager,
-        SystemConfigService $systemConfigService,
-        DomainBridge $domainBridge
-    ) {
-        $this->pluginRepository = $pluginRepository;
-        $this->shopwareVersion = $shopwareVersion;
-        $this->contextManager = $contextManager;
-        $this->systemConfigService = $systemConfigService;
-        $this->systemConfigRepo = $systemConfigRepo;
-        $this->domainBridge = $domainBridge;
-        $this->shopgateApiRepo = $shopgateApiRepo;
+        private readonly EntityRepository    $pluginRepository,
+        private readonly EntityRepository    $systemConfigRepo,
+        private readonly EntityRepository    $shopgateApiRepo,
+        private readonly string              $shopwareVersion,
+        private readonly ContextManager      $contextManager,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly DomainBridge        $domainBridge
+    )
+    {
     }
 
     public function getShopwareVersion(): string

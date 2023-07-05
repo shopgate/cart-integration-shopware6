@@ -4,7 +4,6 @@ namespace Shopgate\Shopware\Order\Quote;
 
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use ShopgateLibraryException;
-use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
@@ -13,13 +12,9 @@ use Throwable;
 
 class QuoteErrorMapping
 {
-    private LoggerInterface $logger;
-    private SerializerInterface $serializer;
 
-    public function __construct(LoggerInterface $logger, SerializerInterface $serializer)
+    public function __construct(private readonly LoggerInterface $logger, private readonly SerializerInterface $serializer)
     {
-        $this->logger = $logger;
-        $this->serializer = $serializer;
     }
 
     public function mapInvalidCartError(InvalidCartException $error): ShopgateLibraryException

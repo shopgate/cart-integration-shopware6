@@ -16,21 +16,14 @@ use Throwable;
 
 class ContextComposer
 {
-    private ContextManager $contextManager;
-    private AddressComposer $addressComposer;
-    private QuoteErrorMapping $errorMapping;
-    private PaymentComposer $paymentComposer;
 
     public function __construct(
-        ContextManager $contextManager,
-        AddressComposer $addressComposer,
-        QuoteErrorMapping $errorMapping,
-        PaymentComposer $paymentComposer
-    ) {
-        $this->contextManager = $contextManager;
-        $this->addressComposer = $addressComposer;
-        $this->errorMapping = $errorMapping;
-        $this->paymentComposer = $paymentComposer;
+        private readonly ContextManager    $contextManager,
+        private readonly AddressComposer   $addressComposer,
+        private readonly QuoteErrorMapping $errorMapping,
+        private readonly PaymentComposer   $paymentComposer
+    )
+    {
     }
 
     public function getContextByCustomerId(string $customerId): SalesChannelContext
@@ -93,7 +86,8 @@ class ContextComposer
     public function resetContext(
         SalesChannelContext $originalContext,
         SalesChannelContext $currentContext
-    ): SalesChannelContext {
+    ): SalesChannelContext
+    {
         $payment = $this->paymentComposer->getCustomerActivePaymentMethodId($currentContext);
         $shipping = $currentContext->getSalesChannel()->getShippingMethodId();
 

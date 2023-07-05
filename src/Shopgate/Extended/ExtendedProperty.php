@@ -9,13 +9,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 
 class ExtendedProperty extends Shopgate_Model_Catalog_Property
 {
-    private PriceMapping $priceMapping;
-    private Formatter $formatter;
 
-    public function __construct(PriceMapping $mapping, Formatter $formatter)
+    public function __construct(private readonly PriceMapping $priceMapping, private readonly Formatter $formatter)
     {
-        $this->priceMapping = $mapping;
-        $this->formatter = $formatter;
     }
 
     /**

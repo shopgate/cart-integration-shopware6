@@ -23,28 +23,17 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 class ContextManager
 {
-    private SalesChannelRequestContextResolver $contextResolver;
     private ?SalesChannelContext $salesContext = null;
-    private AbstractSalesChannelContextFactory $channelContextFactory;
-    private CartRestorer $cartRestorer;
-    private AbstractContextSwitchRoute $contextSwitchRoute;
-    private SalesChannelContextPersister $contextPersist;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        AbstractSalesChannelContextFactory $channelContextFactory,
-        EventDispatcherInterface $eventDispatcher,
-        SalesChannelRequestContextResolver $contextResolver,
-        CartRestorer $cartRestorer,
-        AbstractContextSwitchRoute $contextSwitchRoute,
-        SalesChannelContextPersister $contextPersist
-    ) {
-        $this->contextResolver = $contextResolver;
-        $this->cartRestorer = $cartRestorer;
-        $this->contextSwitchRoute = $contextSwitchRoute;
-        $this->channelContextFactory = $channelContextFactory;
-        $this->contextPersist = $contextPersist;
-        $this->eventDispatcher = $eventDispatcher;
+        private readonly AbstractSalesChannelContextFactory $channelContextFactory,
+        private readonly EventDispatcherInterface           $eventDispatcher,
+        private readonly SalesChannelRequestContextResolver $contextResolver,
+        private readonly CartRestorer                       $cartRestorer,
+        private readonly AbstractContextSwitchRoute         $contextSwitchRoute,
+        private readonly SalesChannelContextPersister       $contextPersist
+    )
+    {
     }
 
     /**
@@ -139,9 +128,10 @@ class ContextManager
 
     public function createNewContext(
         string $salesChannelId,
-        array $options = [],
+        array  $options = [],
         string $token = null
-    ): SalesChannelContext {
+    ): SalesChannelContext
+    {
         if (null === $token) {
             $token = Random::getAlphanumericString(32);
         }

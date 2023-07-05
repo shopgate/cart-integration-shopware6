@@ -27,30 +27,17 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class QuoteBridge
 {
-    private AbstractCartOrderRoute $cartOrderRoute;
-    private AbstractCartLoadRoute $cartLoadRoute;
-    private AbstractCartItemAddRoute $cartItemAddRoute;
-    private AbstractCartDeleteRoute $cartDeleteRoute;
-    private AbstractOrderRoute $orderRoute;
-    private EntityRepository $orderRepository;
-    private EventDispatcherInterface $dispatcher;
 
     public function __construct(
-        AbstractCartOrderRoute $cartOrderRoute,
-        AbstractCartLoadRoute $cartLoadRoute,
-        AbstractCartItemAddRoute $cartItemAddRoute,
-        AbstractCartDeleteRoute $cartDeleteRoute,
-        AbstractOrderRoute $orderRoute,
-        EntityRepository $orderRepository,
-        EventDispatcherInterface $dispatcher
-    ) {
-        $this->cartOrderRoute = $cartOrderRoute;
-        $this->cartLoadRoute = $cartLoadRoute;
-        $this->cartItemAddRoute = $cartItemAddRoute;
-        $this->cartDeleteRoute = $cartDeleteRoute;
-        $this->orderRoute = $orderRoute;
-        $this->orderRepository = $orderRepository;
-        $this->dispatcher = $dispatcher;
+        private readonly AbstractCartOrderRoute   $cartOrderRoute,
+        private readonly AbstractCartLoadRoute    $cartLoadRoute,
+        private readonly AbstractCartItemAddRoute $cartItemAddRoute,
+        private readonly AbstractCartDeleteRoute  $cartDeleteRoute,
+        private readonly AbstractOrderRoute       $orderRoute,
+        private readonly EntityRepository         $orderRepository,
+        private readonly EventDispatcherInterface $dispatcher
+    )
+    {
     }
 
     public function loadCartFromContext(SalesChannelContext $context): Cart
@@ -79,10 +66,11 @@ class QuoteBridge
     }
 
     public function getOrdersAsCustomer(
-        Request $request,
-        Criteria $criteria,
+        Request             $request,
+        Criteria            $criteria,
         SalesChannelContext $context
-    ): OrderRouteResponse {
+    ): OrderRouteResponse
+    {
         $criteria->setTitle('shopgate::orders::as-customer');
         $this->dispatcher->dispatch(new BeforeCustomerGetOrdersLoadEvent($criteria, $request, $context));
         $result = $this->orderRoute->load($request, $context, $criteria);

@@ -9,11 +9,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class RoundingOverwriteSubscriber implements EventSubscriberInterface
 {
-    private RequestStack $request;
 
-    public function __construct(RequestStack $request)
+    public function __construct(private readonly RequestStack $request)
     {
-        $this->request = $request;
     }
 
     public static function getSubscribedEvents(): array

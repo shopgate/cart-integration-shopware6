@@ -19,26 +19,20 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ConfigProductMapping extends SimpleProductMapping
 {
-    protected ContextManager $contextManager;
-    protected SortTree $sortTree;
-    private PropertyBridge $productProperties;
-    private Shopgate_Model_AbstractExport|ChildProductMapping $childProductMapping;
-    private ProductBridge $productBridge;
-
     public function __construct(
-        ContextManager $contextManager,
-        CustomFieldBridge $customFieldSetBridge,
-        SortTree $sortTree,
-        PriceMapping $priceMapping,
-        TierPriceMapping $tierPriceMapping,
-        Formatter $translation,
-        CurrencyComposer $currencyComposer,
-        PropertyBridge $productProperties,
-        ProductBridge $productBridge,
-        Shopgate_Model_AbstractExport $childProductMapping,
-        ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute,
-        EventDispatcherInterface $eventDispatcher
+        protected ContextManager $contextManager,
+        protected CustomFieldBridge $customFieldSetBridge,
+        protected SortTree $sortTree,
+        protected PriceMapping $priceMapping,
+        protected TierPriceMapping $tierPriceMapping,
+        protected Formatter $translation,
+        protected CurrencyComposer $currencyComposer,
+        protected PropertyBridge $productProperties,
+        protected ProductBridge $productBridge,
+        protected Shopgate_Model_AbstractExport $childProductMapping,
+        protected ExtendedClassFactory $classFactory,
+        protected AbstractProductCrossSellingRoute $crossSellingRoute,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct(
             $contextManager,
@@ -52,9 +46,6 @@ class ConfigProductMapping extends SimpleProductMapping
             $crossSellingRoute,
             $eventDispatcher
         );
-        $this->productProperties = $productProperties;
-        $this->childProductMapping = $childProductMapping;
-        $this->productBridge = $productBridge;
     }
 
     public function setAttributeGroups(): void

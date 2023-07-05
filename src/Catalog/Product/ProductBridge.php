@@ -22,27 +22,16 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ProductBridge
 {
-    private AbstractProductListRoute $productListRoute;
-    private ContextManager $contextManager;
-    private SortBridge $productSorting;
-    private ConfigBridge $configReader;
-    private EventDispatcherInterface $eventDispatcher;
-    private SalesChannelRepository $productRepository;
 
     public function __construct(
-        AbstractProductListRoute $productListRoute,
-        ContextManager $contextManager,
-        SalesChannelRepository $productRepository,
-        SortBridge $productSorting,
-        ConfigBridge $configReader,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->productListRoute = $productListRoute;
-        $this->contextManager = $contextManager;
-        $this->productSorting = $productSorting;
-        $this->configReader = $configReader;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->productRepository = $productRepository;
+        private readonly AbstractProductListRoute $productListRoute,
+        private readonly ContextManager           $contextManager,
+        private readonly SalesChannelRepository   $productRepository,
+        private readonly SortBridge               $productSorting,
+        private readonly ConfigBridge             $configReader,
+        private readonly EventDispatcherInterface $eventDispatcher
+    )
+    {
     }
 
     /**

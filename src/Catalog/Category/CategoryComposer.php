@@ -10,25 +10,15 @@ use Shopware\Core\Content\Category\CategoryEntity;
 
 class CategoryComposer
 {
-    private LoggerInterface $log;
-    private CategoryBridge $categoryBridge;
-    /** @var CategoryMapping */
-    private Shopgate_Model_AbstractExport $categoryMapping;
 
     public function __construct(
-        LoggerInterface $logger,
-        CategoryBridge $categoryBridge,
-        Shopgate_Model_AbstractExport $categoryMapping
+        private readonly LoggerInterface $log,
+        private readonly CategoryBridge $categoryBridge,
+        private readonly Shopgate_Model_AbstractExport $categoryMapping
     ) {
-        $this->log = $logger;
-        $this->categoryBridge = $categoryBridge;
-        $this->categoryMapping = $categoryMapping;
     }
 
     /**
-     * @param array|null $ids
-     * @param int|null $limit
-     * @param int|null $offset
      * @return Shopgate_Model_Catalog_Category[]
      */
     public function buildCategoryTree(?array $ids, ?int $limit, ?int $offset): array

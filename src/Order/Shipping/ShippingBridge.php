@@ -17,13 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ShippingBridge
 {
-    private AbstractShippingMethodRoute $shippingMethodRoute;
-    private StateBridge $stateBridge;
 
-    public function __construct(AbstractShippingMethodRoute $shippingMethodRoute, StateBridge $stateBridge)
+    public function __construct(private readonly AbstractShippingMethodRoute $shippingMethodRoute, private readonly StateBridge $stateBridge)
     {
-        $this->shippingMethodRoute = $shippingMethodRoute;
-        $this->stateBridge = $stateBridge;
     }
 
     public function getShippingMethods(SalesChannelContext $context): ShippingMethodCollection

@@ -14,11 +14,9 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     /** @var CategoryEntity */
     protected $item;
     private ?string $parentId = null;
-    private ContextManager $contextManager;
 
-    public function __construct(ContextManager $contextManager)
+    public function __construct(private readonly ContextManager $contextManager)
     {
-        $this->contextManager = $contextManager;
         parent::__construct();
     }
 

@@ -18,33 +18,18 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CartComposer
 {
-    private ShippingComposer $shippingComposer;
-    private ContextComposer $contextComposer;
-    private ContextManager $contextManager;
-    private LineItemComposer $lineItemComposer;
-    private QuoteBridge $quoteBridge;
-    private PaymentComposer $paymentComposer;
-    private OrderCustomerComposer $orderCustomerComposer;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        ShippingComposer $shippingComposer,
-        ContextManager $contextManager,
-        ContextComposer $contextComposer,
-        LineItemComposer $lineItemComposer,
-        QuoteBridge $quoteBridge,
-        PaymentComposer $paymentComposer,
-        OrderCustomerComposer $orderCustomerComposer,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->contextManager = $contextManager;
-        $this->lineItemComposer = $lineItemComposer;
-        $this->quoteBridge = $quoteBridge;
-        $this->shippingComposer = $shippingComposer;
-        $this->contextComposer = $contextComposer;
-        $this->paymentComposer = $paymentComposer;
-        $this->orderCustomerComposer = $orderCustomerComposer;
-        $this->eventDispatcher = $eventDispatcher;
+        private readonly ShippingComposer         $shippingComposer,
+        private readonly ContextManager           $contextManager,
+        private readonly ContextComposer          $contextComposer,
+        private readonly LineItemComposer         $lineItemComposer,
+        private readonly QuoteBridge              $quoteBridge,
+        private readonly PaymentComposer          $paymentComposer,
+        private readonly OrderCustomerComposer    $orderCustomerComposer,
+        private readonly EventDispatcherInterface $eventDispatcher
+    )
+    {
     }
 
     /**

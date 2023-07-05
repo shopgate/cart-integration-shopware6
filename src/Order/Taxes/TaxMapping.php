@@ -17,21 +17,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class TaxMapping
 {
-    private CurrencyComposer $currencyComposer;
-    private ExtendedClassFactory $classFactory;
-    private Formatter $formatter;
-    private ProductBridge $productBridge;
 
     public function __construct(
-        CurrencyComposer $currencyComposer,
-        ExtendedClassFactory $classFactory,
-        Formatter $formatter,
-        ProductBridge $productBridge
-    ) {
-        $this->currencyComposer = $currencyComposer;
-        $this->classFactory = $classFactory;
-        $this->formatter = $formatter;
-        $this->productBridge = $productBridge;
+        private readonly CurrencyComposer     $currencyComposer,
+        private readonly ExtendedClassFactory $classFactory,
+        private readonly Formatter            $formatter,
+        private readonly ProductBridge        $productBridge
+    )
+    {
     }
 
     /**

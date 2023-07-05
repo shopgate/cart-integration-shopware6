@@ -12,18 +12,13 @@ use Shopware\Core\System\Country\CountryEntity;
 
 class LocationMapping
 {
-    private EntityRepository $countryRepository;
-    private EntityRepository $stateRepository;
-    private ContextManager $contextManager;
 
     public function __construct(
-        EntityRepository $countryRepository,
-        EntityRepository $stateRepository,
-        ContextManager $contextManager
-    ) {
-        $this->countryRepository = $countryRepository;
-        $this->stateRepository = $stateRepository;
-        $this->contextManager = $contextManager;
+        private readonly EntityRepository $countryRepository,
+        private readonly EntityRepository $stateRepository,
+        private readonly ContextManager $contextManager
+    )
+    {
     }
 
     public function getCountryIsoById(string $id): ?string
