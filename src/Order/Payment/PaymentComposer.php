@@ -43,7 +43,7 @@ class PaymentComposer
     public function mapOutgoingPayments(SalesChannelContext $context): array
     {
         return $this->paymentBridge->getAvailableMethods($context)
-            ->filter(fn(PaymentMethodEntity $pay) => strpos($pay->getHandlerIdentifier(), 'Shopgate') === false)
+            ->filter(fn(PaymentMethodEntity $pay) => !str_contains($pay->getHandlerIdentifier(), 'Shopgate'))
             ->map(fn(PaymentMethodEntity $paymentMethod) => $this->paymentMapping->mapPaymentMethod($paymentMethod));
     }
 

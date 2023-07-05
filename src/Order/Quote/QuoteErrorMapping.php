@@ -7,13 +7,12 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Cart\Exception\InvalidCartException;
 use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
-use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 class QuoteErrorMapping
 {
 
-    public function __construct(private readonly LoggerInterface $logger, private readonly SerializerInterface $serializer)
+    public function __construct(private readonly LoggerInterface $logger)
     {
     }
 

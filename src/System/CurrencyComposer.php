@@ -64,7 +64,7 @@ class CurrencyComposer
             return null;
         }
         $channel = $this->contextManager->getSalesContext();
-        $price = $priceCollection->getCurrencyPrice($channel->getCurrencyId(), true);
+        $price = $priceCollection->getCurrencyPrice($channel->getCurrencyId());
 
         return $price ? $this->toCalculatedPrice($price) : null;
     }

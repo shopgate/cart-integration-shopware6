@@ -4,6 +4,7 @@ namespace Shopgate\Shopware\System\Db\Installers;
 
 use DateTime;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Shopgate\Shopware\System\Db\Rule\IsShopgateRuleCondition;
 use Shopgate\Shopware\System\Db\Rule\IsShopgateRuleGroup;
 use Shopware\Core\Defaults;
@@ -30,6 +31,9 @@ class RuleConditionInstaller
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function installRuleCondition(): void
     {
         $this->connection->insert('rule_condition', [

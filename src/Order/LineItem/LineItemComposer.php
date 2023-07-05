@@ -9,7 +9,6 @@ use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\System\Log\LoggerInterface;
-use ShopgateCartBase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotEligibleError;
@@ -30,8 +29,9 @@ class LineItemComposer
         private readonly LineItemPromoMapping     $promoMapping,
         private readonly LoggerInterface          $logger,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly QuoteBridge $quoteBridge
-    ) {
+        private readonly QuoteBridge              $quoteBridge
+    )
+    {
     }
 
     public function mapIncomingLineItems(ExtendedCart|ExtendedOrder $cart): array

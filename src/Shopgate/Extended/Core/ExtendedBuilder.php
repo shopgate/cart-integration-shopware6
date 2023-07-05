@@ -46,7 +46,7 @@ class ExtendedBuilder extends ShopgateBuilder
      * own extended versions
      * @throws Exception
      */
-    public function buildLibraryFor(ShopgatePlugin $plugin)
+    public function buildLibraryFor(ShopgatePlugin $plugin): void
     {
         // set error handler if configured
         if ($this->config->getUseCustomErrorHandler()) {

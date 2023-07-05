@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\Storefront;
 
+use JsonException;
 use Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsEntity;
 use Shopgate\Shopware\Storefront\Events\ContextChangedEvent;
 use Shopware\Core\Framework\Routing\SalesChannelRequestContextResolver;
@@ -70,6 +71,9 @@ class ContextManager
         return $this;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function switchContext(RequestDataBag $dataBag, ?SalesChannelContext $context = null): ContextManager
     {
         $currentContext = $context ?: $this->getSalesContext();
@@ -126,6 +130,9 @@ class ContextManager
         return $this->createNewContext($context->getSalesChannelId(), $options);
     }
 
+    /**
+     * @throws JsonException
+     */
     public function createNewContext(
         string $salesChannelId,
         array  $options = [],

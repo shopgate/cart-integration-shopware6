@@ -30,10 +30,8 @@ class PaymentMapping
     {
         $this->dispatcher->dispatch(new BeforePaymentTypeMapping($sgCart, $collection));
         $class = GenericHandler::class;
-        switch ($sgCart->getPaymentMethod()) {
-            case 'COD':
-                $class = CashPayment::class;
-                break;
+        if ($sgCart->getPaymentMethod() == 'COD') {
+            $class = CashPayment::class;
         }
 
         /** @var ?PaymentMethodEntity $entry */

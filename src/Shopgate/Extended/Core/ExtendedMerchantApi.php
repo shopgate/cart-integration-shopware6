@@ -10,16 +10,15 @@ use Throwable;
 
 class ExtendedMerchantApi extends ShopgateMerchantApi
 {
-    private LoggerInterface $logger;
 
     public function __construct(
         ShopgateAuthenticationServiceInterface $authService,
-        ?string $shopNumber,
-        ?string $apiUrl,
-        LoggerInterface $logger
-    ) {
+        ?string                                $shopNumber,
+        ?string                                $apiUrl,
+        private readonly LoggerInterface       $logger
+    )
+    {
         parent::__construct($authService, $shopNumber, $apiUrl);
-        $this->logger = $logger;
     }
 
     public function addOrderDeliveryNote(
@@ -28,7 +27,8 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
         $trackingNumber = '',
         $markAsCompleted = false,
         $sendCustomerEmail = false
-    ): bool {
+    ): bool
+    {
         $isSent = true;
         try {
             parent::addOrderDeliveryNote(
@@ -38,7 +38,7 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
             // set status to "sent" if it's a soft error
             if (!$this->isSoftOrderStatusError($e)) {
                 $this->logger->error(
-                    "(#{$orderNumber}) SMA-Error on add delivery note! Message: {$e->getCode()} - {$e->getMessage()}"
+                    "(#$orderNumber) SMA-Error on add delivery note! Message: {$e->getCode()} - {$e->getMessage()}"
                 );
                 $isSent = false;
             }
@@ -53,7 +53,8 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
         $cancellationItems = array(),
         $cancelShipping = false,
         $cancellationNote = ''
-    ): bool {
+    ): bool
+    {
         $isCancelled = true;
         try {
             parent::cancelOrder(
@@ -62,7 +63,7 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
         } catch (Throwable $e) {
             if (!$this->isSoftOrderStatusError($e)) {
                 $this->logger->error(
-                    "! (#{$orderNumber})  SMA-Error on cancel order! Message: {$e->getCode()} - {$e->getMessage()}"
+                    "! (#$orderNumber)  SMA-Error on cancel order! Message: {$e->getCode()} - {$e->getMessage()}"
                 );
                 $isCancelled = false;
             }
@@ -74,10 +75,10 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
     private function isSoftOrderStatusError(Throwable $throwable): bool
     {
         return in_array($throwable->getCode(), [
-            ShopgateMerchantApiException::ORDER_SHIPPING_STATUS_ALREADY_COMPLETED,
-            ShopgateMerchantApiException::ORDER_ALREADY_COMPLETED,
-            ShopgateMerchantApiException::ORDER_ALREADY_CANCELLED
-        ], false
+                ShopgateMerchantApiException::ORDER_SHIPPING_STATUS_ALREADY_COMPLETED,
+                ShopgateMerchantApiException::ORDER_ALREADY_COMPLETED,
+                ShopgateMerchantApiException::ORDER_ALREADY_CANCELLED
+            ]
         );
     }
 }

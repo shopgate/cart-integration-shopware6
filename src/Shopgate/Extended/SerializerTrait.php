@@ -86,7 +86,7 @@ trait SerializerTrait
 
     /**
      * Merges decodedInfo array with data in internal_*_info,
-     * afterwards json encodes internal_*_info for export
+     * afterward json encodes internal_*_info for export
      */
     public function mergeInternalInfos(): void
     {
@@ -113,7 +113,7 @@ trait SerializerTrait
     private function findInternalInfo(): ?array
     {
         return array_filter(parent::toArray(), static function ($key) {
-            return strpos($key, 'internal') !== false && strpos($key, 'info') !== false;
+            return str_contains($key, 'internal') && str_contains($key, 'info');
         }, ARRAY_FILTER_USE_KEY);
     }
 }

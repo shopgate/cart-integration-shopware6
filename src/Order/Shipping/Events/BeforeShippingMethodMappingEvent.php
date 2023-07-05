@@ -12,9 +12,6 @@ class BeforeShippingMethodMappingEvent extends Event
     {
     }
 
-    /**
-     * @return DataBag
-     */
     public function getDeliveries(): DeliveryCollection
     {
         return $this->deliveries;

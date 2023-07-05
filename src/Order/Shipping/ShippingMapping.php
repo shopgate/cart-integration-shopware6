@@ -87,10 +87,7 @@ class ShippingMapping
         return $sgDelivery;
     }
 
-    /**
-     * @param ExtendedCart|ExtendedOrder $quote
-     */
-    public function getShopwareShippingId(ShopgateCartBase $quote, ?string $taxState): string
+    public function getShopwareShippingId(ExtendedCart|ExtendedOrder $quote, ?string $taxState): string
     {
         if ($quote->isShopwareShipping()) {
             return $quote->getShippingId();

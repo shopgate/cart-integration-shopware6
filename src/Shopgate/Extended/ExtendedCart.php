@@ -16,7 +16,7 @@ class ExtendedCart extends ShopgateCart
 
     public function __construct(ExtendedExternalCoupon|ShopgateExternalCoupon $extendedExternalCoupon, ExtendedOrderItem|ShopgateOrderItem $extendedOrderItem)
     {
-        parent::__construct([]);
+        parent::__construct();
         $this->externalCoupon = $extendedExternalCoupon;
         $this->orderItem = $extendedOrderItem;
     }

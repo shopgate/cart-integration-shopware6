@@ -66,7 +66,7 @@ class OrderMapping
 
         // as you can see, we are not accounting for multi-address shipping here
         if ($swOrder->getDeliveries() && ($shipping = $swOrder->getDeliveries()->getShippingAddress()->first())) {
-            $shippingId = $shipping->getId(); // this setter is  important
+            $shippingId = $shipping->getId(); // this setter is important
             $sgOrder->setShippingAddress($shipping, $billingId);
         }
         $sgOrder->setBillingAddress($swOrder->getBillingAddress(), $shippingId);

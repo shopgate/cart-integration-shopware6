@@ -28,12 +28,15 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
     use MapTrait;
+    /** @var SalesChannelProductEntity */
+    protected $item;
 
     public function __construct(
         protected ContextManager $contextManager,

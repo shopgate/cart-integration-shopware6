@@ -27,6 +27,6 @@ trait MapTrait
         $domain = $domainCollection->count() ? $domainCollection->first() : $domains->first();
         $seoPath = ltrim($urlEntity->getSeoPathInfo() ?: $urlEntity->getPathInfo(), '/');
 
-        return $domain && $domain->get('url') ? "{$domain->getUrl()}/{$seoPath}" : '';
+        return $domain && $domain->get('url') ? "{$domain->getUrl()}/$seoPath" : '';
     }
 }

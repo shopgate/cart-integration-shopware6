@@ -12,19 +12,16 @@ use ShopgateCartBase;
  */
 class RequestPersist
 {
-    private ShopgateCartBase $entity;
+    private ExtendedCart|ExtendedOrder $entity;
 
-    public function setEntity(ShopgateCartBase $entity): self
+    public function setEntity(ExtendedCart|ExtendedOrder $entity): self
     {
         $this->entity = $entity;
 
         return $this;
     }
 
-    /**
-     * @return ExtendedCart|ExtendedOrder
-     */
-    public function getEntity(): ShopgateCartBase
+    public function getEntity(): ExtendedCart|ExtendedOrder
     {
         return $this->entity;
     }

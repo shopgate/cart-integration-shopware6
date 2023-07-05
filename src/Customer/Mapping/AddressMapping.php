@@ -10,17 +10,17 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressCol
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
 class AddressMapping
 {
 
     public function __construct(
-        private readonly LocationMapping   $locationMapping,
-        private readonly SalutationMapping $salutationMapping,
+        private readonly LocationMapping    $locationMapping,
+        private readonly SalutationMapping  $salutationMapping,
         private readonly CustomFieldMapping $customFieldMapping
-    ) {
+    )
+    {
     }
 
     public function mapToShopwareAddress(ShopgateAddress $shopgateAddress): RequestDataBag
@@ -124,14 +124,11 @@ class AddressMapping
             $isBoth = ShopgateAddress::BOTH;
         }
 
-        switch ($addressEntity->getId()) {
-            case $defaultBillingId:
-                return $isBoth ?: ShopgateAddress::INVOICE;
-            case $defaultShippingId:
-                return $isBoth ?: ShopgateAddress::DELIVERY;
-            default:
-                return ShopgateAddress::BOTH;
-        }
+        return match ($addressEntity->getId()) {
+            $defaultBillingId => $isBoth ?: ShopgateAddress::INVOICE,
+            $defaultShippingId => $isBoth ?: ShopgateAddress::DELIVERY,
+            default => ShopgateAddress::BOTH,
+        };
     }
 
     /**

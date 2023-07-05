@@ -4,11 +4,6 @@ namespace Shopgate\Shopware\Shopgate\Extended;
 
 trait CloningTrait
 {
-    /**
-     * @param array $data
-     *
-     * @return $this
-     */
     protected function dataToEntity(array $data): self
     {
         foreach ($data as $key => $value) {

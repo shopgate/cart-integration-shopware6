@@ -8,6 +8,7 @@ use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
+use Shopgate_Model_Abstract;
 use Shopgate_Model_Catalog_Attribute;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -15,7 +16,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class ChildProductMapping extends SimpleProductMapping
 {
     /**
-     * @var array|mixed|\Shopgate_Model_Abstract|string|null
+     * @var array|mixed|Shopgate_Model_Abstract|string|null
      */
     private ?string $defaultChildId;
 

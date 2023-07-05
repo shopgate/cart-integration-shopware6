@@ -33,7 +33,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
         private readonly ShippingMapping        $shippingMapping
     )
     {
-        parent::__construct([]);
+        parent::__construct();
     }
 
     /**
@@ -49,7 +49,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setStatusName($value): void
     {
-        parent::setStatusName($value ? $value->getTranslation('name') : null);
+        parent::setStatusName($value?->getTranslation('name'));
     }
 
     /**
@@ -57,7 +57,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setCurrency($value): void
     {
-        parent::setCurrency($value ? $value->getIsoCode() : null);
+        parent::setCurrency($value?->getIsoCode());
     }
 
     /**
@@ -80,7 +80,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setMail($value): void
     {
-        parent::setMail($value ? $value->getEmail() : null);
+        parent::setMail($value?->getEmail());
     }
 
     public function setShippingAddress(?OrderAddressEntity $value, string $billingId): void
@@ -104,7 +104,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setPhone($value): void
     {
-        parent::setPhone($value ? $value->getPhoneNumber() : null);
+        parent::setPhone($value?->getPhoneNumber());
     }
 
     /**

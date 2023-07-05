@@ -4,6 +4,7 @@ namespace Shopgate\Shopware\System\Db\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Exception as DBALException;
 use Shopgate\Shopware\Shopgate\Salutations\ShopgateSalutationDefinition;
 use ShopgateCustomer;
 use Shopware\Core\Framework\Migration\MigrationStep;
@@ -20,7 +21,7 @@ class Migration1681060637Salutations extends MigrationStep
 
     /**
      * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
+     * @throws DBALException
      */
     public function update(Connection $connection): void
     {
@@ -71,8 +72,7 @@ class Migration1681060637Salutations extends MigrationStep
     /**
      * @param Connection $connection
      * @return array
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Exception
+     * @throws DBALException
      */
     private function getExistingSalutations(Connection $connection): array
     {
@@ -81,7 +81,7 @@ class Migration1681060637Salutations extends MigrationStep
             ->from(SalutationDefinition::ENTITY_NAME, 'swS')
             ->leftJoin('swS',
                 ShopgateSalutationDefinition::ENTITY_NAME, 'sgS', 'swS.id = sgS.sw_salutation_id')
-            ->execute()
+            ->executeQuery()
             ->fetchAllAssociative();
     }
 }
