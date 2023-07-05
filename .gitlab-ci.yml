@@ -17,8 +17,8 @@ variables:
   APP_DEBUG: '0'
   APP_SECRET: 'abZBR1234'
   XDEBUG_ENABLED: '0'
-  PHP_VERSION: '8.0'
-  PLATFORM_BRANCH: '6.5.2.1'
+  PHP_VERSION: '8.1'
+  PLATFORM_BRANCH: '6.5.0.0'
   # things plugins might want to override
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_FOLDER: $PROJECT_ROOT/custom/static-plugins/$PLUGIN_NAME
@@ -71,6 +71,7 @@ newman:
       - PLATFORM_BRANCH:
           - 6.5.0.0
           - 6.5.2.1
+          - 6.5.3.0
       - PHP_VERSION:
           - '8.1'
   except:
