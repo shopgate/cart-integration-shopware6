@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem\Events;
 
@@ -18,15 +16,9 @@ class AfterIncItemMappingEvent extends Event
 {
     /** Can be set in data bag to skip the item import */
     public const SKIP = 'skip';
-    private DataBag $mapping;
-    private ShopgateOrderItem $item;
-    private SalesChannelContext $context;
 
-    public function __construct(DataBag $mapping, ShopgateOrderItem $item, SalesChannelContext $context)
+    public function __construct(private readonly DataBag $mapping, private readonly ShopgateOrderItem $item, private readonly SalesChannelContext $context)
     {
-        $this->mapping = $mapping;
-        $this->item = $item;
-        $this->context = $context;
     }
 
     /**
@@ -38,10 +30,7 @@ class AfterIncItemMappingEvent extends Event
         return $this->mapping;
     }
 
-    /**
-     * @return ShopgateOrderItem|ExtendedOrderItem
-     */
-    public function getItem(): ShopgateOrderItem
+    public function getItem(): ShopgateOrderItem|ExtendedOrderItem
     {
         return $this->item;
     }

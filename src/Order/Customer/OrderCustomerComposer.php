@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Customer;
 
@@ -18,25 +16,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class OrderCustomerComposer
 {
-    private CustomerBridge $customerBridge;
-    private CustomerMapping $customerMapping;
-    private CustomerComposer $customerComposer;
-    private LoggerInterface $logger;
-
-    public function __construct(
-        CustomerBridge $customerBridge,
-        CustomerMapping $customerMapping,
-        CustomerComposer $customerComposer,
-        LoggerInterface $logger
-    ) {
-        $this->customerBridge = $customerBridge;
-        $this->customerMapping = $customerMapping;
-        $this->customerComposer = $customerComposer;
-        $this->logger = $logger;
+    public function __construct(private readonly CustomerBridge $customerBridge, private readonly CustomerMapping $customerMapping, private readonly CustomerComposer $customerComposer, private readonly LoggerInterface $logger)
+    {
     }
 
     /**
-     * @param SalesChannelContext $context
      * @return array<string, ShopgateCartCustomer>
      */
     public function mapOutgoingCartCustomer(SalesChannelContext $context): array

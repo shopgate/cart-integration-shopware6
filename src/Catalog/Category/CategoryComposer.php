@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Category;
 
@@ -59,6 +57,7 @@ class CategoryComposer
         foreach ($collection as $entity) {
             $this->log->debug('Loading category with ID: ' . $entity->getId());
             $categoryExportModel = clone $this->categoryMapping;
+            /** @noinspection PhpParamsInspection */
             $categoryExportModel->setItem($entity);
             $categoryExportModel->setParentId($entity->getParentId());
             $export[] = $categoryExportModel->generateData();

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended;
 
@@ -10,14 +8,10 @@ use Shopware\Core\Checkout\Cart\Price\CashRounding;
 
 class ExtendedExternalOrderItem extends ShopgateExternalOrderItem
 {
-    private CashRounding $rounding;
-    private ContextManager $contextManager;
 
-    public function __construct(CashRounding $rounding, ContextManager $contextManager)
+    public function __construct(private readonly CashRounding $rounding, private readonly ContextManager $contextManager)
     {
-        parent::__construct([]);
-        $this->rounding = $rounding;
-        $this->contextManager = $contextManager;
+        parent::__construct();
     }
 
     public function setUnitAmount($value): void

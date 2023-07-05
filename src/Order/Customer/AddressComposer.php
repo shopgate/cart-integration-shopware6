@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Customer;
 
@@ -16,25 +14,17 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class AddressComposer
 {
-    private AddressMapping $addressMapping;
-    private AddressBridge $addressBridge;
-    private CustomerBridge $customerBridge;
 
     public function __construct(
-        CustomerBridge $customerBridge,
-        AddressMapping $addressMapping,
-        AddressBridge $addressBridge
+        private readonly CustomerBridge $customerBridge,
+        private readonly AddressMapping $addressMapping,
+        private readonly AddressBridge $addressBridge
     ) {
-        $this->addressMapping = $addressMapping;
-        $this->addressBridge = $addressBridge;
-        $this->customerBridge = $customerBridge;
     }
 
     /**
      * Only for existing customers, map incoming data to existing addresses or create new ones.
      *
-     * @param ShopgateCartBase $order
-     * @param SalesChannelContext $context
      * @return string[]
      * @throws ShopgateLibraryException
      */
@@ -49,6 +39,7 @@ class AddressComposer
                 SalesChannelContextService::BILLING_ADDRESS_ID => $invoiceId
             ];
         }
+
         return $addressBag;
     }
 
@@ -79,6 +70,7 @@ class AddressComposer
                 true
             );
         }
+
         return $addressId;
     }
 }

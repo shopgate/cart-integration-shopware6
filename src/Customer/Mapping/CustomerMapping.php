@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer\Mapping;
 
@@ -12,29 +10,19 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
 class CustomerMapping
 {
-    private GroupMapping $groupMapping;
-    private AddressMapping $addressMapping;
-    private SalutationMapping $salutationMapping;
-    private CustomFieldMapping $customFieldMapping;
 
     public function __construct(
-        GroupMapping $groupMapping,
-        AddressMapping $addressMapping,
-        SalutationMapping $salutationMapping,
-        CustomFieldMapping $customFieldMapping
+        private readonly GroupMapping      $groupMapping,
+        private readonly AddressMapping    $addressMapping,
+        private readonly SalutationMapping $salutationMapping,
+        private readonly CustomFieldMapping $customFieldMapping
     ) {
-        $this->groupMapping = $groupMapping;
-        $this->addressMapping = $addressMapping;
-        $this->salutationMapping = $salutationMapping;
-        $this->customFieldMapping = $customFieldMapping;
     }
 
     public function mapToShopgateEntity(CustomerEntity $detailedCustomer): ShopgateCustomer
     {
         $shopgateCustomer = new ShopgateCustomer();
-        $shopgateCustomer->setRegistrationDate(
-            $detailedCustomer->getCreatedAt() ? $detailedCustomer->getCreatedAt()->format('Y-m-d') : null
-        );
+        $shopgateCustomer->setRegistrationDate($detailedCustomer->getCreatedAt()?->format('Y-m-d'));
         if (method_exists($detailedCustomer, 'getNewsletter')) {
             $shopgateCustomer->setNewsletterSubscription((int)$detailedCustomer->getNewsletter());
         }
@@ -44,9 +32,7 @@ class CustomerMapping
         $shopgateCustomer->setMail($detailedCustomer->getEmail());
         $shopgateCustomer->setFirstName($detailedCustomer->getFirstName());
         $shopgateCustomer->setLastName($detailedCustomer->getLastName());
-        $shopgateCustomer->setBirthday(
-            $detailedCustomer->getBirthday() ? $detailedCustomer->getBirthday()->format('Y-m-d') : null
-        );
+        $shopgateCustomer->setBirthday($detailedCustomer->getBirthday()?->format('Y-m-d'));
 
         // Phone
         $shopgateCustomer->setPhone($detailedCustomer->getDefaultShippingAddress()
@@ -72,9 +58,7 @@ class CustomerMapping
     }
 
     /**
-     * @param ShopgateCustomer $customer
-     * @param string|null $password - set to null for guest
-     * @return RequestDataBag
+     * @param ?string $password - set to null for guest
      * @throws ShopgateLibraryException
      */
     public function mapToShopwareEntity(ShopgateCustomer $customer, ?string $password): RequestDataBag

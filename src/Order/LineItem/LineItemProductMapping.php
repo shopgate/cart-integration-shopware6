@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem;
 
@@ -24,21 +22,13 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LineItemProductMapping
 {
-    private ExtendedClassFactory $extendedClassFactory;
-    private ContextManager $contextManager;
-    private TaxMapping $taxMapping;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        ContextManager $contextManager,
-        ExtendedClassFactory $extendedClassFactory,
-        EventDispatcherInterface $eventDispatcher,
-        TaxMapping $taxMapping
+        private readonly ContextManager           $contextManager,
+        private readonly ExtendedClassFactory     $extendedClassFactory,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly TaxMapping $taxMapping
     ) {
-        $this->contextManager = $contextManager;
-        $this->extendedClassFactory = $extendedClassFactory;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->taxMapping = $taxMapping;
     }
 
     /**

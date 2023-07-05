@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Migration;
 
@@ -10,16 +8,12 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1613391581Order extends MigrationStep
 {
-    /**
-     * @return int
-     */
     public function getCreationTimestamp(): int
     {
         return 1613391581;
     }
 
     /**
-     * @param Connection $connection
      * @throws Exception
      */
     public function update(Connection $connection): void

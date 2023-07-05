@@ -1,18 +1,16 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\PaymentMethod;
 
 class AbstractPayment implements PaymentMethodInterface
 {
-    protected $id;
-    protected $name;
-    protected $description;
-    protected $paymentHandler;
-    protected $position;
-    protected $afterOrder;
-    protected $availabilityRuleId;
+    protected string $id;
+    protected string $name;
+    protected string $description;
+    protected string $paymentHandler;
+    protected int $position;
+    protected bool $afterOrder;
+    protected string $availabilityRuleId;
 
     public function getId(): string
     {
@@ -44,7 +42,7 @@ class AbstractPayment implements PaymentMethodInterface
         return $this->afterOrder;
     }
 
-    public function getAvailabilityRuleId()
+    public function getAvailabilityRuleId(): string
     {
         return $this->availabilityRuleId;
     }

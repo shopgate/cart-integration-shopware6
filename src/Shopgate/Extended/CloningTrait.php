@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended;
 
@@ -23,10 +21,6 @@ trait CloningTrait
         return $this;
     }
 
-    /**
-     * @param string $input
-     * @return string
-     */
     private function snakeToCamel(string $input): string
     {
         return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $input))));

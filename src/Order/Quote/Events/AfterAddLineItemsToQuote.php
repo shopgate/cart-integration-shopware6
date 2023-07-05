@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote\Events;
 
@@ -10,13 +8,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterAddLineItemsToQuote extends Event
 {
-    private SalesChannelContext $context;
-    private Cart $cart;
-
-    public function __construct(Cart $cart, SalesChannelContext $context)
+    public function __construct(private readonly Cart $cart, private readonly SalesChannelContext $context)
     {
-        $this->cart = $cart;
-        $this->context = $context;
     }
 
     public function getContext(): SalesChannelContext

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\PaymentMethod;
 
@@ -9,13 +7,13 @@ use Shopgate\Shopware\System\PaymentHandler\GenericHandler;
 
 class GenericPayment extends AbstractPayment
 {
-    public const UUID = '7046c79435a7410fb90a8b82f13d30a9';
+    final public const UUID = '7046c79435a7410fb90a8b82f13d30a9';
 
-    protected $id = self::UUID;
-    protected $name = 'Shopgate Payment';
-    protected $description = 'Generic Shopgate payment method used for order imports';
-    protected $paymentHandler = GenericHandler::class;
-    protected $position = 10;
-    protected $afterOrder = false;
-    protected $availabilityRuleId = IsShopgateRuleGroup::UUID;
+    protected string $id = self::UUID;
+    protected string $name = 'Shopgate Payment';
+    protected string $description = 'Generic Shopgate payment method used for order imports';
+    protected string $paymentHandler = GenericHandler::class;
+    protected int $position = 10;
+    protected bool $afterOrder = false;
+    protected string $availabilityRuleId = IsShopgateRuleGroup::UUID;
 }

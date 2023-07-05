@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended;
 
@@ -23,16 +21,12 @@ class ExtendedOrder extends ShopgateOrder
         ShopgateOrderItem $extendedOrderItem,
         ShopgateContainerToArrayVisitor $visitor
     ) {
-        parent::__construct([]);
+        parent::__construct();
         $this->externalCoupon = $extendedExternalCoupon;
         $this->orderItem = $extendedOrderItem;
         $this->visitor = $visitor;
     }
 
-    /**
-     * @param ShopgateOrder $order
-     * @return $this
-     */
     public function loadFromShopgateOrder(ShopgateOrder $order): ExtendedOrder
     {
         $visitor = clone $this->visitor;

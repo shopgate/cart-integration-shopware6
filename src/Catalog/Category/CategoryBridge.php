@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Category;
 
@@ -13,13 +11,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class CategoryBridge
 {
-    private AbstractCategoryListRoute $categoryListRoute;
-    private ContextManager $contextManager;
 
-    public function __construct(AbstractCategoryListRoute $categoryListRoute, ContextManager $contextManager)
+    public function __construct(private readonly AbstractCategoryListRoute $categoryListRoute, private readonly ContextManager $contextManager)
     {
-        $this->categoryListRoute = $categoryListRoute;
-        $this->contextManager = $contextManager;
     }
 
     public function getRootCategoryId(): string

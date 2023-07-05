@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System;
 
@@ -12,18 +10,9 @@ use Shopware\Core\System\Currency\CurrencyFormatter;
 
 class CurrencyComposer
 {
-    private CurrencyFormatter $currencyFormatter;
-    private ContextManager $contextManager;
-    private CashRounding $rounding;
 
-    public function __construct(
-        CurrencyFormatter $currencyFormatter,
-        CashRounding $rounding,
-        ContextManager $contextManager
-    ) {
-        $this->currencyFormatter = $currencyFormatter;
-        $this->contextManager = $contextManager;
-        $this->rounding = $rounding;
+    public function __construct(private readonly CurrencyFormatter $currencyFormatter, private readonly CashRounding $rounding, private readonly ContextManager $contextManager)
+    {
     }
 
     /**

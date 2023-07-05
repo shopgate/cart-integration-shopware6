@@ -51,10 +51,6 @@ trait CartUtilityTrait
         return $foundItems ? array_pop($foundItems) : null;
     }
 
-    /**
-     * @param string $code
-     * @return ShopgateExternalCoupon|null
-     */
     public function findExternalCoupon(string $code): ?ShopgateExternalCoupon
     {
         $foundItems = array_filter(
@@ -66,10 +62,6 @@ trait CartUtilityTrait
         return $foundItems ? array_pop($foundItems) : null;
     }
 
-    /**
-     * @param string $name
-     * @return ShopgateExternalCoupon|null
-     */
     public function findExternalCouponByName(string $name): ?ShopgateExternalCoupon
     {
         $foundItems = array_filter(

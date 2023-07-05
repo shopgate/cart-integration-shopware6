@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Shopgate\Extended;
 
@@ -13,32 +11,25 @@ class ExtendedCart extends ShopgateCart
     use CloningTrait;
     use CartUtilityTrait;
 
-    /** @var ExtendedExternalCoupon|ShopgateExternalCoupon */
-    protected ShopgateExternalCoupon $externalCoupon;
-    /** @var ExtendedOrderItem|ShopgateOrderItem */
-    protected ShopgateOrderItem $orderItem;
+    protected ExtendedExternalCoupon|ShopgateExternalCoupon $externalCoupon;
+    protected ExtendedOrderItem|ShopgateOrderItem $orderItem;
 
-    public function __construct(ShopgateExternalCoupon $extendedExternalCoupon, ShopgateOrderItem $extendedOrderItem)
+    public function __construct(ExtendedExternalCoupon|ShopgateExternalCoupon $extendedExternalCoupon, ExtendedOrderItem|ShopgateOrderItem $extendedOrderItem)
     {
         parent::__construct([]);
         $this->externalCoupon = $extendedExternalCoupon;
         $this->orderItem = $extendedOrderItem;
     }
 
-    /**
-     * @param ShopgateCart $cart
-     * @return $this
-     */
     public function loadFromShopgateCart(ShopgateCart $cart): ExtendedCart
     {
         $this->dataToEntity($cart->toArray());
+
         return $this;
     }
 
     /**
      * Make all coupons not valid
-     *
-     * @return ExtendedCart
      */
     public function invalidateCoupons(): ExtendedCart
     {

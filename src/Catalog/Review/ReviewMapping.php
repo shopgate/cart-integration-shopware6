@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Review;
 
@@ -24,7 +22,7 @@ class ReviewMapping extends Shopgate_Model_Catalog_Review
 
     public function setScore(): void
     {
-        parent::setScore((int)round($this->item->getPoints() * 2, 0, PHP_ROUND_HALF_UP));
+        parent::setScore((int)round($this->item->getPoints() * 2));
     }
 
     public function setReviewerName(): void

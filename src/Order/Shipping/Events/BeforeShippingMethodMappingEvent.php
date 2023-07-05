@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping\Events;
 
@@ -10,14 +8,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeShippingMethodMappingEvent extends Event
 {
-    private DeliveryCollection $deliveries;
-
-    /**
-     * @param DeliveryCollection $deliveries
-     */
-    public function __construct(DeliveryCollection $deliveries)
+    public function __construct(private readonly DeliveryCollection $deliveries)
     {
-        $this->deliveries = $deliveries;
     }
 
     /**

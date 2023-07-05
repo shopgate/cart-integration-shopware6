@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer\Events;
 
@@ -11,18 +9,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterRegisterCustomerEvent extends Event
 {
-    private SalesChannelContext $context;
-    private ShopgateCustomer $shopgateCustomer;
-    private CustomerEntity $shopwareCustomer;
-
-    public function __construct(
-        CustomerEntity $shopwareCustomer,
-        ShopgateCustomer $shopgateCustomer,
-        SalesChannelContext $context
-    ) {
-        $this->context = $context;
-        $this->shopgateCustomer = $shopgateCustomer;
-        $this->shopwareCustomer = $shopwareCustomer;
+    public function __construct(private readonly CustomerEntity $shopwareCustomer, private readonly ShopgateCustomer $shopgateCustomer, private readonly SalesChannelContext $context)
+    {
     }
 
     public function getContext(): SalesChannelContext

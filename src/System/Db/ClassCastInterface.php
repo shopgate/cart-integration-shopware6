@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db;
 
@@ -10,8 +8,6 @@ interface ClassCastInterface
 
     /**
      * Outputs properties that need to be saved to Shopware database to array
-     *
-     * @return array
      */
     public function toArray(): array;
 }

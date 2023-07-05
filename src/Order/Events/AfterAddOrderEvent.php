@@ -9,21 +9,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterAddOrderEvent extends Event
 {
-    private array $result;
-    private ShopgateOrder $shopgateOrder;
-    private OrderEntity $shopwareOrder;
-    private SalesChannelContext $context;
-
-    public function __construct(
-        array $result,
-        OrderEntity $shopwareOrder,
-        ShopgateOrder $shopgateOrder,
-        SalesChannelContext $context
-    ) {
-        $this->context = $context;
-        $this->result = $result;
-        $this->shopgateOrder = $shopgateOrder;
-        $this->shopwareOrder = $shopwareOrder;
+    public function __construct(private array $result, private readonly OrderEntity $shopwareOrder, private readonly ShopgateOrder $shopgateOrder, private readonly SalesChannelContext $context)
+    {
     }
 
     public function getContext(): SalesChannelContext

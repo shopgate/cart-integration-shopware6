@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product\Property;
 
@@ -13,19 +11,12 @@ use Shopware\Core\System\CustomField\CustomFieldCollection;
 
 class CustomFieldBridge
 {
-    private EntityRepository $customFieldRepository;
-    private ContextManager $contextManager;
 
-    public function __construct(EntityRepository $customFieldRepository, ContextManager $contextManager)
+    public function __construct(private readonly EntityRepository $customFieldRepository, private readonly ContextManager $contextManager)
     {
-        $this->customFieldRepository = $customFieldRepository;
-        $this->contextManager = $contextManager;
     }
 
-    /**
-     * @return CustomFieldCollection|EntityCollection
-     */
-    public function getAllProductFieldSets(): CustomFieldCollection
+    public function getAllProductFieldSets(): CustomFieldCollection|EntityCollection
     {
         $criteria = (new Criteria())
             ->addAssociation('customFieldSet')
