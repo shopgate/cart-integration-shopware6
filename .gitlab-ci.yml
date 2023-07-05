@@ -18,7 +18,7 @@ variables:
   APP_SECRET: 'abZBR1234'
   XDEBUG_ENABLED: '0'
   PHP_VERSION: '8.1'
-  PLATFORM_BRANCH: '6.5.0.0'
+  PLATFORM_BRANCH: '6.5.2.0'
   # things plugins might want to override
   PLUGIN_NAME: 'SgateShopgatePluginSW6'
   PLUGIN_FOLDER: $PROJECT_ROOT/custom/static-plugins/$PLUGIN_NAME
@@ -69,7 +69,7 @@ newman:
   parallel:
     matrix:
       - PLATFORM_BRANCH:
-          - 6.5.0.0
+          - 6.5.2.0
           - 6.5.2.1
           - 6.5.3.0
   except:
@@ -150,35 +150,37 @@ publish to marketplace:
     - zip -d $(realpath "$PLUGIN_NAME.zip") "$PLUGIN_NAME/composer.lock"
     - plugin-uploader ext:upload "$(realpath "$PLUGIN_NAME.zip")"
 
-.downstreamDefaults: &downstreamDefaults
-  except:
-    - tags
-  variables:
-    UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
-    UPSTREAM_REF: $CI_COMMIT_SHA
-  inherit:
-    variables: false
-
-downstream replyCert:
-  <<: *downstreamDefaults
-  trigger:
-    project: apite/shopgate/shopware6/reply-certificate
-    branch: ver-1.x
-
-downstream acrisSurcharge:
-  <<: *downstreamDefaults
-  trigger:
-    project: apite/shopgate/shopware6/acris-surcharge
-    branch: ver-1.x
-
-downstream dynamicAccess:
-  <<: *downstreamDefaults
-  trigger:
-    project: apite/shopgate/shopware6/shopware-dynamic-access
-    branch: main
-
-downstream vatIdMapping:
-  <<: *downstreamDefaults
-  trigger:
-    project: apite/shopgate/shopware6/shopgate-vat-id-mapping
-    branch: main
+# Disabled downstream runners (all adaptions will need to be updated if requested by merchants)
+#
+#.downstreamDefaults: &downstreamDefaults
+#  except:
+#    - tags
+#  variables:
+#    UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
+#    UPSTREAM_REF: $CI_COMMIT_SHA
+#  inherit:
+#    variables: false
+#
+#downstream replyCert:
+#  <<: *downstreamDefaults
+#  trigger:
+#    project: apite/shopgate/shopware6/reply-certificate
+#    branch: ver-1.x
+#
+#downstream acrisSurcharge:
+#  <<: *downstreamDefaults
+#  trigger:
+#    project: apite/shopgate/shopware6/acris-surcharge
+#    branch: ver-1.x
+#
+#downstream dynamicAccess:
+#  <<: *downstreamDefaults
+#  trigger:
+#    project: apite/shopgate/shopware6/shopware-dynamic-access
+#    branch: main
+#
+#downstream vatIdMapping:
+#  <<: *downstreamDefaults
+#  trigger:
+#    project: apite/shopgate/shopware6/shopgate-vat-id-mapping
+#    branch: main
