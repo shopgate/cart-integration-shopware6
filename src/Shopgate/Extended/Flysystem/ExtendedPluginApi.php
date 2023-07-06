@@ -2,19 +2,18 @@
 
 namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemException;
 use ShopgateFileBufferInterface;
 use ShopgateLibraryException;
 use ShopgatePluginApi;
-use ShopgatePluginApiResponseAppJson;
+use Shopware\Core\Framework\Adapter\Filesystem\PrefixFilesystem;
 
 class ExtendedPluginApi extends ShopgatePluginApi
 {
-    protected FilesystemInterface $privateFileSystem;
+    protected PrefixFilesystem $privateFileSystem;
     protected ?ShopgateFileBufferInterface $buffer;
 
-    public function setPrivateFileSystem(FilesystemInterface $filesystem): ExtendedPluginApi
+    public function setPrivateFileSystem(PrefixFilesystem $filesystem): ExtendedPluginApi
     {
         $this->privateFileSystem = $filesystem;
 
@@ -41,10 +40,11 @@ class ExtendedPluginApi extends ShopgatePluginApi
 
         try {
             $response = new ExtendedApiResponseXmlExport($this->trace_id);
-            $response->setMeta($this->buffer->getMeta());
+            $response->setSize($this->buffer->getFileSize());
+            $response->setPath($this->buffer->getFilePath());
             $response->setData($this->privateFileSystem->readStream($origResponse->getBody()));
             return $response;
-        } catch (FileNotFoundException $e) {
+        } catch (FilesystemException $e) {
             throw new ShopgateLibraryException(ShopgateLibraryException::FILE_READ_WRITE_ERROR, $e->getMessage());
         }
     }

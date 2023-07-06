@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Review;
 
@@ -8,19 +6,12 @@ use Shopware\Core\Content\Product\Aggregate\ProductReview\ProductReviewEntity;
 
 class ReviewComposer
 {
-    private ReviewMapping $reviewMapping;
-    private ReviewBridge $reviewBridge;
 
-    public function __construct(ReviewBridge $reviewBridge, ReviewMapping $reviewMapping)
+    public function __construct(private readonly ReviewBridge $reviewBridge, private readonly ReviewMapping $reviewMapping)
     {
-        $this->reviewBridge = $reviewBridge;
-        $this->reviewMapping = $reviewMapping;
     }
 
     /**
-     * @param int|null $limit
-     * @param int|null $offset
-     * @param array $uids
      * @return ReviewMapping[]
      */
     public function getReviews(?int $limit, ?int $offset, array $uids): array
@@ -32,6 +23,7 @@ class ReviewComposer
 
         return $allReviews->map(function (ProductReviewEntity $reviewEntity) {
             $reviewModel = clone $this->reviewMapping;
+            /** @noinspection PhpParamsInspection */
             $reviewModel->setItem($reviewEntity);
 
             return $reviewModel->generateData();

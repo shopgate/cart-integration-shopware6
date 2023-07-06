@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote;
 
@@ -20,7 +18,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Order\SalesChannel\AbstractOrderRoute;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderRouteResponse;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -29,30 +27,17 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class QuoteBridge
 {
-    private AbstractCartOrderRoute $cartOrderRoute;
-    private AbstractCartLoadRoute $cartLoadRoute;
-    private AbstractCartItemAddRoute $cartItemAddRoute;
-    private AbstractCartDeleteRoute $cartDeleteRoute;
-    private AbstractOrderRoute $orderRoute;
-    private EntityRepositoryInterface $orderRepository;
-    private EventDispatcherInterface $dispatcher;
 
     public function __construct(
-        AbstractCartOrderRoute $cartOrderRoute,
-        AbstractCartLoadRoute $cartLoadRoute,
-        AbstractCartItemAddRoute $cartItemAddRoute,
-        AbstractCartDeleteRoute $cartDeleteRoute,
-        AbstractOrderRoute $orderRoute,
-        EntityRepositoryInterface $orderRepository,
-        EventDispatcherInterface $dispatcher
-    ) {
-        $this->cartOrderRoute = $cartOrderRoute;
-        $this->cartLoadRoute = $cartLoadRoute;
-        $this->cartItemAddRoute = $cartItemAddRoute;
-        $this->cartDeleteRoute = $cartDeleteRoute;
-        $this->orderRoute = $orderRoute;
-        $this->orderRepository = $orderRepository;
-        $this->dispatcher = $dispatcher;
+        private readonly AbstractCartOrderRoute   $cartOrderRoute,
+        private readonly AbstractCartLoadRoute    $cartLoadRoute,
+        private readonly AbstractCartItemAddRoute $cartItemAddRoute,
+        private readonly AbstractCartDeleteRoute  $cartDeleteRoute,
+        private readonly AbstractOrderRoute       $orderRoute,
+        private readonly EntityRepository         $orderRepository,
+        private readonly EventDispatcherInterface $dispatcher
+    )
+    {
     }
 
     public function loadCartFromContext(SalesChannelContext $context): Cart
@@ -81,10 +66,11 @@ class QuoteBridge
     }
 
     public function getOrdersAsCustomer(
-        Request $request,
-        Criteria $criteria,
+        Request             $request,
+        Criteria            $criteria,
         SalesChannelContext $context
-    ): OrderRouteResponse {
+    ): OrderRouteResponse
+    {
         $criteria->setTitle('shopgate::orders::as-customer');
         $this->dispatcher->dispatch(new BeforeCustomerGetOrdersLoadEvent($criteria, $request, $context));
         $result = $this->orderRoute->load($request, $context, $criteria);
@@ -93,10 +79,7 @@ class QuoteBridge
         return $result;
     }
 
-    /**
-     * @return EntityCollection|OrderCollection
-     */
-    public function getOrders(Criteria $criteria, SalesChannelContext $context): EntityCollection
+    public function getOrders(Criteria $criteria, SalesChannelContext $context): EntityCollection|OrderCollection
     {
         $criteria->setTitle('shopgate::orders');
         $this->dispatcher->dispatch(new BeforeGetOrdersLoadEvent($criteria, $context));

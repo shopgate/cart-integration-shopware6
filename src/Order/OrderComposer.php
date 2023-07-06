@@ -13,7 +13,6 @@ use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Order\Quote\QuoteErrorMapping;
 use Shopgate\Shopware\Order\Shipping\ShippingComposer;
 use Shopgate\Shopware\Order\State\StateComposer;
-use Shopgate\Shopware\Shopgate\Extended\Core\ExtendedMerchantApi;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\Shopgate\NativeOrderExtension;
 use Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity;
@@ -40,60 +39,30 @@ use Throwable;
 
 class OrderComposer
 {
-    private ContextComposer $contextComposer;
-    private ContextManager $contextManager;
-    private LineItemComposer $lineItemComposer;
-    private QuoteBridge $quoteBridge;
-    private QuoteErrorMapping $errorMapping;
-    private ShippingComposer $shippingComposer;
-    private ShopgateOrderBridge $shopgateOrderBridge;
-    private StateComposer $stateComposer;
-    private PaymentComposer $paymentComposer;
-    private OrderCustomerComposer $orderCustomerComposer;
-    private OrderMapping $orderMapping;
-    private LoggerInterface $logger;
-    /** @var ExtendedMerchantApi */
-    private ShopgateMerchantApiInterface $merchantApi;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        ContextManager $contextManager,
-        ContextComposer $contextComposer,
-        LineItemComposer $lineItemComposer,
-        QuoteBridge $quoteBridge,
-        QuoteErrorMapping $errorMapping,
-        ShopgateOrderBridge $shopgateOrderBridge,
-        ShippingComposer $shippingComposer,
-        StateComposer $stateComposer,
-        PaymentComposer $paymentComposer,
-        OrderCustomerComposer $orderCustomerComposer,
-        OrderMapping $orderMapping,
-        LoggerInterface $logger,
-        ShopgateMerchantApiInterface $merchantApi,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->contextManager = $contextManager;
-        $this->lineItemComposer = $lineItemComposer;
-        $this->shopgateOrderBridge = $shopgateOrderBridge;
-        $this->quoteBridge = $quoteBridge;
-        $this->errorMapping = $errorMapping;
-        $this->shippingComposer = $shippingComposer;
-        $this->contextComposer = $contextComposer;
-        $this->paymentComposer = $paymentComposer;
-        $this->orderCustomerComposer = $orderCustomerComposer;
-        $this->orderMapping = $orderMapping;
-        $this->logger = $logger;
-        $this->stateComposer = $stateComposer;
-        $this->merchantApi = $merchantApi;
-        $this->eventDispatcher = $eventDispatcher;
+        private readonly ContextManager               $contextManager,
+        private readonly ContextComposer              $contextComposer,
+        private readonly LineItemComposer             $lineItemComposer,
+        private readonly QuoteBridge                  $quoteBridge,
+        private readonly QuoteErrorMapping            $errorMapping,
+        private readonly ShopgateOrderBridge          $shopgateOrderBridge,
+        private readonly ShippingComposer             $shippingComposer,
+        private readonly StateComposer                $stateComposer,
+        private readonly PaymentComposer              $paymentComposer,
+        private readonly OrderCustomerComposer        $orderCustomerComposer,
+        private readonly OrderMapping                 $orderMapping,
+        private readonly LoggerInterface              $logger,
+        private readonly ShopgateMerchantApiInterface $merchantApi,
+        private readonly EventDispatcherInterface     $eventDispatcher
+    )
+    {
     }
 
     /**
-     * @param ExtendedOrder|ShopgateOrder $order
-     * @return array
      * @throws ShopgateLibraryException
      */
-    public function addOrder(ShopgateOrder $order): array
+    public function addOrder(ExtendedOrder|ShopgateOrder $order): array
     {
         $customerId = $order->getExternalCustomerId();
         if ($order->isGuest() && $order->getMail()) {
@@ -103,30 +72,31 @@ class OrderComposer
                 $this->contextManager->getSalesContext()
             )->getId();
         }
-        // load desktop cart, duplicate its context, add info to context & create new cart based on it
-        $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
-        $duplicatedContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
-        if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(),
-            $duplicatedContext->getContext())) {
-            throw new ShopgateLibraryException(
-                ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
-                $order->getOrderNumber(),
-                true
-            );
-        }
-
-        $this->eventDispatcher->dispatch(new BeforeAddOrderEvent($order, $duplicatedContext));
-
-        $cleanCartContext = $this->contextComposer->addCustomerAddress($order, $duplicatedContext);
-        $shippingId = $this->shippingComposer->mapIncomingShipping($order, $cleanCartContext);
-        $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
-        $dataBag = new RequestDataBag([
-            SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId,
-            SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
-        ]);
 
         try {
-            $newContext = $this->contextManager->switchContext($dataBag, $cleanCartContext);
+            // load desktop cart, duplicate its context, add info to context & create new cart based on it
+            $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
+            $duplicatedContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
+            if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(),
+                $duplicatedContext->getContext())) {
+                throw new ShopgateLibraryException(
+                    ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
+                    $order->getOrderNumber(),
+                    true
+                );
+            }
+
+            $this->eventDispatcher->dispatch(new BeforeAddOrderEvent($order, $duplicatedContext));
+
+            $cleanCartContext = $this->contextComposer->addCustomerAddress($order, $duplicatedContext);
+            $shippingId = $this->shippingComposer->mapIncomingShipping($order, $cleanCartContext);
+            $paymentId = $this->paymentComposer->mapIncomingPayment($order, $cleanCartContext);
+            $dataBag = new RequestDataBag([
+                SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId,
+                SalesChannelContextService::PAYMENT_METHOD_ID => $paymentId
+            ]);
+
+            $newContext = $this->contextManager->switchContext($dataBag, $cleanCartContext)->getSalesContext();
             $shopwareCart = $this->quoteBridge->loadCartFromContext($newContext);
             if (!$order->isShopwareShipping()) {
                 $this->shippingComposer->addShippingFeeToCart($order, $shopwareCart);
@@ -171,8 +141,8 @@ class OrderComposer
             'external_order_number' => $swOrder->getOrderNumber()
         ];
 
-        return $this->eventDispatcher->dispatch(new AfterAddOrderEvent($result, $swOrder, $order, $newContext))
-            ->getResult();
+        $event = new AfterAddOrderEvent($result, $swOrder, $order, $newContext);
+        return $this->eventDispatcher->dispatch($event)->getResult();
     }
 
     /**
@@ -180,12 +150,13 @@ class OrderComposer
      * @see http://developers.shopgate.com/plugin_api/orders/get_orders.html
      */
     public function getOrders(
-        string $id,
-        int $limit,
-        int $offset,
-        string $sortOrder,
+        string  $id,
+        int     $limit,
+        int     $offset,
+        string  $sortOrder,
         ?string $orderDateFrom = null
-    ): array {
+    ): array
+    {
         $criteria = (new GetOrdersCriteria())
             ->setLimit($limit)
             ->setOffset($offset)

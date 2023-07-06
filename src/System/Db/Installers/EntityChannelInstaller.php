@@ -1,12 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
 use Shopgate\Shopware\System\Db\ClassCastInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -14,14 +12,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class EntityChannelInstaller extends EntityInstaller
 {
 
-    /** @var EntityRepositoryInterface */
-    protected $salesChannelRepo;
-    /** @var EntityRepositoryInterface */
-    protected $entityChannelRepo;
+    protected ?EntityRepository $salesChannelRepo;
+    protected ?EntityRepository $entityChannelRepo;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
@@ -37,10 +30,6 @@ abstract class EntityChannelInstaller extends EntityInstaller
         }
     }
 
-    /**
-     * @param ClassCastInterface $method
-     * @param Context $context
-     */
     private function enableEntityForAllChannels(
         ClassCastInterface $method,
         Context $context
@@ -59,10 +48,6 @@ abstract class EntityChannelInstaller extends EntityInstaller
         }
     }
 
-    /**
-     * @param string $input
-     * @return string
-     */
     private function snakeToCamel(string $input): string
     {
         return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $input))));

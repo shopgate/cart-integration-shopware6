@@ -49,7 +49,7 @@ class CacheInvalidateSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function cacheOldConfigValue(BeforeSystemConfigChangedEvent $event)
+    public function cacheOldConfigValue(BeforeSystemConfigChangedEvent $event): void
     {
         if ($event->getKey() !== self::SORT_ORDER_KEY) {
             return;

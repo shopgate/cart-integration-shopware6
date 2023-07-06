@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
@@ -9,11 +7,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 
 class PriceMapping
 {
-    private bool $exportNet;
-
-    public function __construct(bool $exportNet)
+    public function __construct(private readonly bool $exportNet)
     {
-        $this->exportNet = $exportNet;
     }
 
     public function getPriceType(): string

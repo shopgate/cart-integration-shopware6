@@ -1822,6 +1822,56 @@
                   "response": []
                 },
                 {
+                  "name": "SWA: change default child",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Updated defalt child\", function () {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{gen_access_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"id\": \"{{catalog_product_variant}}\",\r\n    \"variantListingConfig\": {\r\n        \"extensions\": [],\r\n        \"displayParent\": false,\r\n        \"configuratorGroupConfig\": [],\r\n        \"mainVariantId\": \"{{created_product_variant_child_id}}\"\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}",
+                      "host": [
+                        "{{sw_endpoint_api}}"
+                      ],
+                      "path": [
+                        "product",
+                        "{{catalog_product_variant}}"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
                   "name": "SW: create no stock prod",
                   "event": [
                     {
@@ -4296,7 +4346,13 @@
                       ]
                     },
                     "method": "POST",
-                    "header": [],
+                    "header": [
+                      {
+                        "key": "indexing-behavior",
+                        "value": "use-queue-indexing",
+                        "type": "text"
+                      }
+                    ],
                     "body": {
                       "mode": "raw",
                       "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_headless_advPriceOne_id}}\",\r\n        \"name\": \"API: Headless Advanced Prices One\",\r\n        \"description\": \"Adv. price one description\",\r\n        \"translations\": {\r\n            \"de-DE\": {\r\n                \"name\": \"API: Headless Advanced Prices One (DE)\",\r\n                \"description\": \"Adv. price one description (DE)\"\r\n            }\r\n        },\r\n        \"productNumber\": \"SGDEMO10001\",\r\n        \"stock\": 500,\r\n        \"prices\": [\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 80,\r\n                        \"gross\": 95.2,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    },\r\n                    {\r\n                        \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                        \"net\": 100,\r\n                        \"gross\": 119,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 1,\r\n                \"quantityEnd\": 5\r\n            },\r\n            {\r\n                \"ruleId\": \"{{gen_rule_allValid_id}}\",\r\n                \"price\": [\r\n                    {\r\n                        \"currencyId\": \"{{system_default_currency_id}}\",\r\n                        \"net\": 150,\r\n                        \"gross\": 178.5,\r\n                        \"linked\": true,\r\n                        \"listPrice\": null,\r\n                        \"percentage\": null\r\n                    }\r\n                ],\r\n                \"quantityStart\": 6,\r\n                \"quantityEnd\": null\r\n            }\r\n        ],\r\n        \"visibilities\": [\r\n            {\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"visibility\": 30\r\n            }\r\n        ],\r\n        \"releaseDate\": \"2022-01-28T11:00:04.389+00:00\"\r\n    },\r\n    \"cloneChildren\": false\r\n}",
@@ -4353,7 +4409,13 @@
                       ]
                     },
                     "method": "POST",
-                    "header": [],
+                    "header": [
+                      {
+                        "key": "indexing-behavior",
+                        "value": "use-queue-indexing",
+                        "type": "text"
+                      }
+                    ],
                     "body": {
                       "mode": "raw",
                       "raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_headless_prevPrice_id}}\",\r\n        \"name\": \"API: headless cheapest & previous price\",\r\n        \"translations\": {\r\n            \"de-DE\": {\r\n                \"name\": \"API: headless cheapest & previous price (DE)\"\r\n            }\r\n        },\r\n        \"productNumber\": \"SG.DEMO.HEADLESS.PREV.PRICE\",\r\n        \"stock\": 999,\r\n        \"releaseDate\": \"2022-04-12T11:00:04.389+00:00\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 417.64705882353,\r\n                \"gross\": 497,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 420.16806722689,\r\n                    \"gross\": 500,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                    \"net\": 394.95798319328,\r\n                    \"gross\": 470,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            },\r\n            {\r\n                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                \"net\": 617.64705882353,\r\n                \"gross\": 650,\r\n                \"linked\": true,\r\n                \"listPrice\": {\r\n                    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                    \"net\": 720.16806722689,\r\n                    \"gross\": 750,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                },\r\n                \"percentage\": {\r\n                    \"net\": 0.6,\r\n                    \"gross\": 0.6\r\n                },\r\n                \"regulationPrice\": {\r\n                    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                    \"net\": 595.95798319328,\r\n                    \"gross\": 605,\r\n                    \"linked\": true,\r\n                    \"listPrice\": null,\r\n                    \"percentage\": null,\r\n                    \"regulationPrice\": null\r\n                }\r\n            }\r\n        ],\r\n        \"purchasePrices\": [\r\n            {\r\n                \"currencyId\": \"{{system_default_currency_id}}\",\r\n                \"net\": 294.11764705882,\r\n                \"gross\": 350,\r\n                \"linked\": true,\r\n                \"listPrice\": null,\r\n                \"percentage\": null,\r\n                \"regulationPrice\": null\r\n            },\r\n            {\r\n                \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n                \"net\": 394.11764705882,\r\n                \"gross\": 450,\r\n                \"linked\": true,\r\n                \"listPrice\": null,\r\n                \"percentage\": null,\r\n                \"regulationPrice\": null\r\n            }\r\n        ],\r\n        \"visibilities\": [\r\n            {\r\n                \"salesChannelId\": \"{{gen_salesChannel_headless_id}}\",\r\n                \"visibility\": 30\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
@@ -4599,7 +4661,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"receiver\": \"default\"\r\n}",
+                  "raw": "{\r\n    \"offset\": 0\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4607,14 +4669,20 @@
                   }
                 },
                 "url": {
-                  "raw": "{{sw_endpoint_api}}/_action/message-queue/consume",
+                  "raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
                   "host": [
                     "{{sw_endpoint_api}}"
                   ],
                   "path": [
                     "_action",
-                    "message-queue",
-                    "consume"
+                    "indexing",
+                    ":indexer"
+                  ],
+                  "variable": [
+                    {
+                      "key": "indexer",
+                      "value": "product.indexer"
+                    }
                   ]
                 }
               },
@@ -4914,7 +4982,9 @@
                       "    pm.expect(jsonData.user_data.customer_groups[0].name).to.eql('API: A custom NET group');",
                       "});",
                       "pm.test('Custom fields', function() {",
-                      "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because account type is not exported');",
+                      "    pm.expect(jsonData.user_data.custom_fields).length(4, 'Expected 4 custom fields');",
+                      "    pm.expect(jsonData.user_data.custom_fields[3].internal_field_name).to.eq('account_type');",
+                      "    pm.expect(jsonData.user_data.custom_fields[3].value).to.eq('business');",
                       "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vat_ids');",
                       "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
                       "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliate_code');",
@@ -4953,7 +5023,12 @@
                       "    pm.expect(shipping.gender).to.eql('m');",
                       "    pm.expect(shipping.custom_fields).length(0, 'Shipping should have no custom fields');",
                       "});",
-                      "pm.environment.set('gen_customer_headless_net_id', jsonData.user_data.customer_id);",
+                      "",
+                      "pm.test('Setting value', () => {",
+                      "    pm.expect(jsonData.user_data.customer_id, 'Customer ID should be here').to.not.be.undefined;",
+                      "    pm.environment.set('gen_customer_headless_net_id', jsonData.user_data.customer_id);",
+                      "});",
+                      "",
                       "// unset temp variables",
                       "pm.environment.unset(\"temp-last-name\");"
                     ],
@@ -10025,6 +10100,10 @@
                       "    pm.expect(childProduct, 'should have identifiers').to.haveOwnProperty('identifiers');",
                       "    pm.expect(childProduct.identifiers.identifier.$.type).to.eq('sku', 'Should have SKU identifier only');",
                       "    pm.expect(childProduct.attributes.attribute).lengthOf(2, 'Should have M and Red');",
+                      "",
+                      "    // created child which was set to be default",
+                      "    const createdChild = Utility.getXmlByUid(variantProduct.children.item, pm.environment.get('created_product_variant_child_id'));",
+                      "    pm.expect(createdChild.$.default_child, 'should be default variant').to.eq('1');",
                       "});"
                     ],
                     "type": "text/javascript"
@@ -25595,7 +25674,9 @@
                   "    pm.expect(jsonData.user_data.first_name).to.eql(firstName);",
                   "    pm.expect(jsonData.user_data.last_name).to.eql(lastName);",
                   "    pm.expect(jsonData.user_data.birthday).to.eql('1987-05-19');",
-                  "    pm.expect(jsonData.user_data.custom_fields).length(3, 'Expected 3 elements because account type is not exported');",
+                  "    pm.expect(jsonData.user_data.custom_fields).length(4, 'Expected 4 elements because account type is now exported');",
+                  "    pm.expect(jsonData.user_data.custom_fields[3].internal_field_name).to.eq('account_type');",
+                  "    pm.expect(jsonData.user_data.custom_fields[3].value).to.eq('business');",
                   "    pm.expect(jsonData.user_data.custom_fields[2].internal_field_name).to.eq('vat_ids');",
                   "    pm.expect(jsonData.user_data.custom_fields[2].value).to.eq('1234,12345');",
                   "    pm.expect(jsonData.user_data.custom_fields[1].internal_field_name).to.eq('affiliate_code');",
@@ -25966,7 +26047,11 @@
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.not.be.empty;",
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('id').to.eq(pm.environment.get('gen_customer_group_main_id'));",
                   "    pm.expect(jsonData.user_data.customer_groups[0]).to.have.ownProperty('name').to.eq('Standard customer group');",
-                  "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array').to.be.empty;",
+                  "    pm.expect(jsonData.user_data.custom_fields).to.be.an('array');",
+                  "    const accountType = jsonData.user_data.custom_fields[0];",
+                  "    pm.expect(accountType.label).to.eq('account_type');",
+                  "    pm.expect(accountType.value).to.eq('private');",
+                  "",
                   "});",
                   ""
                 ],
@@ -26237,7 +26322,8 @@
               "host": [
                 "{{domain}}"
               ]
-            }
+            },
+            "description": "Should no longer be able to disable plugin via settings"
           },
           "response": []
         }

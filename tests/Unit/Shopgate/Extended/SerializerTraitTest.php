@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Tests\Unit\Shopgate\Extended;
 
@@ -17,7 +16,6 @@ class SerializerTraitTest extends TestCase
     /**
      * Testing that other classes can be extended and internal_info decoded
      *
-     * @param string $expected
      * @param SerializerTrait $class
      * @dataProvider internalInfoClassProvider
      */
@@ -45,7 +43,6 @@ class SerializerTraitTest extends TestCase
     }
 
     /**
-     * @param array $payload
      * @return ShopgateExternalCoupon
      */
     private function createTraitMock(array $payload = [])

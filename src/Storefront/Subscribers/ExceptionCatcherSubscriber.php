@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Storefront\Subscribers;
 
@@ -14,11 +12,8 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 class ExceptionCatcherSubscriber implements EventSubscriberInterface
 {
 
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array

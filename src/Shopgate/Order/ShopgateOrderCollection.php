@@ -19,4 +19,11 @@ class ShopgateOrderCollection extends EntityCollection
     {
         return ShopgateOrderEntity::class;
     }
+
+    public function getBySwOrderId(string $id): ?ShopgateOrderEntity
+    {
+        $list = array_filter($this->elements, fn(ShopgateOrderEntity $order) => $order->getShopwareOrderId() === $id);
+
+        return reset($list) ?: null;
+    }
 }

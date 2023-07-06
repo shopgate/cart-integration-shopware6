@@ -13,7 +13,7 @@ Module.register('sg-api-credentials', {
     title: 'sg-api-credentials.general.mainMenuItemGeneral',
     description: 'sg-api-credentials.general.description',
     color: '#9AA8B5',
-    icon: 'default-shopping-paper-bag',
+    icon: 'regular-shopping-bag',
 
     snippets: {
         'de-DE': deDE,
@@ -50,7 +50,7 @@ Module.register('sg-api-credentials', {
             to: 'sg.api.credentials.index',
             label: 'sg-api-credentials.general.mainMenuItemGeneral',
             group: 'plugins',
-            icon: 'default-shopping-paper-bag'
+            icon: 'regular-shopping-bag'
         }
     ]
 });

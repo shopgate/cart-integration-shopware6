@@ -2,21 +2,21 @@
 
 namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemException;
 use Shopgate_Model_AbstractExport;
 use Shopgate_Model_XmlResultObject;
 use ShopgateFileBufferXml;
+use Shopware\Core\Framework\Adapter\Filesystem\PrefixFilesystem;
 
 class XmlFileBufferExtended extends ShopgateFileBufferXml implements ExtendedFileBufferInterface
 {
-    private FilesystemInterface $privateFilesystem;
+    private PrefixFilesystem $privateFilesystem;
 
     public function __construct(
         Shopgate_Model_AbstractExport $xmlModel,
         Shopgate_Model_XmlResultObject $xmlNode,
         $capacity,
-        FilesystemInterface $filesystem,
+        PrefixFilesystem $filesystem,
         $convertEncoding = true,
         array $sourceEncodings = []
     ) {
@@ -39,15 +39,19 @@ class XmlFileBufferExtended extends ShopgateFileBufferXml implements ExtendedFil
     }
 
     /**
-     * @throws FileNotFoundException
+     * @throws FilesystemException
      */
-    public function getMeta(): array
+    public function getFileSize(): int
     {
         if (!$this->privateFilesystem->has($this->filePath)) {
-            return [];
+            return 0;
         }
+        return $this->privateFilesystem->fileSize($this->filePath);
+    }
 
-        return $this->privateFilesystem->getMetadata($this->filePath);
+    public function getFilePath(): string
+    {
+        return $this->filePath;
     }
 
     /**
@@ -58,6 +62,6 @@ class XmlFileBufferExtended extends ShopgateFileBufferXml implements ExtendedFil
     protected function onFinish(): void
     {
         parent::onFinish();
-        $this->privateFilesystem->putStream($this->filePath, $this->fileHandle);
+        $this->privateFilesystem->writeStream($this->filePath, $this->fileHandle);
     }
 }

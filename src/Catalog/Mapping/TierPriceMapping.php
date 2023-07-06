@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
@@ -22,18 +20,12 @@ use Shopware\Core\Framework\Rule\Rule;
 
 class TierPriceMapping
 {
-    private CustomerBridge $customerBridge;
-    private CurrencyComposer $currencyComposer;
-    private PriceMapping $priceMapping;
 
     public function __construct(
-        CustomerBridge $customerBridge,
-        CurrencyComposer $currencyComposer,
-        PriceMapping $priceMapping
+        private readonly CustomerBridge   $customerBridge,
+        private readonly CurrencyComposer $currencyComposer,
+        private readonly PriceMapping $priceMapping
     ) {
-        $this->customerBridge = $customerBridge;
-        $this->currencyComposer = $currencyComposer;
-        $this->priceMapping = $priceMapping;
     }
 
     /**
@@ -68,7 +60,6 @@ class TierPriceMapping
     /**
      * Only returns tier price with valid rules
      *
-     * @param ProductPriceCollection $priceCollection
      * @return ProductPriceEntity[]
      */
     private function getValidTiers(ProductPriceCollection $priceCollection): array
@@ -98,12 +89,8 @@ class TierPriceMapping
      * We consider valid if:
      * In AND condition only AlwaysValid or Group rule is present
      * In OR condition if one of AlwaysValid or Group rules are present
-     *
-     * @param bool $carry - recursive memory
-     * @param AndRule|OrRule|Rule $rule
-     * @return bool
      */
-    private function isValidRule(bool $carry, Rule $rule): bool
+    private function isValidRule(bool $carry, AndRule|OrRule|Rule $rule): bool
     {
         if ($rule instanceof OrRule || $rule instanceof AndRule) {
             return array_reduce($rule->getRules(), function ($carry, Rule $rule) {
@@ -118,38 +105,32 @@ class TierPriceMapping
         ProductPriceEntity $priceEntity,
         Price $normalPrice
     ): ?Shopgate_Model_Catalog_TierPrice {
+        $reducedPrice = $this->currencyComposer->extractCalculatedPrice($priceEntity->getPrice());
+        if (!$reducedPrice) {
+            return null;
+        }
         $tierPrice = new Shopgate_Model_Catalog_TierPrice();
         $tierPrice->setFromQuantity($priceEntity->getQuantityStart());
         $tierPrice->setToQuantity($priceEntity->getQuantityEnd());
         $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
-        if ($reducedPrice = $this->currencyComposer->extractCalculatedPrice($priceEntity->getPrice())) {
-            $reduction = $this->priceMapping->mapPrice($normalPrice) - $this->priceMapping->mapPrice($reducedPrice);
-            $tierPrice->setReduction($reduction);
-            return $tierPrice;
-        }
+        $reduction = $this->priceMapping->mapPrice($normalPrice) - $this->priceMapping->mapPrice($reducedPrice);
+        $tierPrice->setReduction($reduction);
 
-        return null;
+        return $tierPrice;
     }
 
     /**
      * Retrieves CustomerGroup ID's that are valid from the passed rule container.
      * Does not handle AND, OR container logic.
      *
-     * @param AndRule|OrRule $ruleContainer
-     * @param CustomerGroupCollection $groupCollection
-     * @return array
      * @throws ReflectionException
      */
-    private function getConditionalCustomerGroups($ruleContainer, CustomerGroupCollection $groupCollection): array
+    private function getConditionalCustomerGroups(AndRule|OrRule $ruleContainer, CustomerGroupCollection $groupCollection): array
     {
-        $customerGroupRule = $this->findCustomerGroup(null, $ruleContainer);
-        /** @var null|CustomerGroupRule $customerGroupRule */
-        if (null !== $customerGroupRule) {
+        if (null !== $customerGroupRule = $this->findCustomerGroup(null, $ruleContainer)) {
             $reflection = new ReflectionClass(get_class($customerGroupRule));
             $grpProp = $reflection->getProperty('customerGroupIds');
             $opProp = $reflection->getProperty('operator');
-            $grpProp->setAccessible(true);
-            $opProp->setAccessible(true);
             switch ($opProp->getValue($customerGroupRule)) {
                 case '=':
                     return $grpProp->getValue($customerGroupRule);
@@ -161,12 +142,7 @@ class TierPriceMapping
         return [];
     }
 
-    /**
-     * @param null|CustomerGroupRule $carry
-     * @param AndRule|OrRule|Rule $rule
-     * @return CustomerGroupRule|null
-     */
-    private function findCustomerGroup(?CustomerGroupRule $carry, Rule $rule): ?CustomerGroupRule
+    private function findCustomerGroup(?CustomerGroupRule $carry, AndRule|OrRule|Rule $rule): ?CustomerGroupRule
     {
         if ($rule instanceof AndRule || $rule instanceof OrRule) {
             return array_reduce($rule->getRules(), function ($carry, Rule $item) {

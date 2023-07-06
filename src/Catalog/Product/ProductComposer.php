@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product;
 
@@ -11,18 +9,13 @@ use Throwable;
 
 class ProductComposer
 {
-    private LoggerInterface $logger;
-    private ProductMapFactory $productMapFactory;
-    private ProductBridge $productBridge;
 
     public function __construct(
-        LoggerInterface $logger,
-        ProductMapFactory $productMapFactory,
-        ProductBridge $productBridge
-    ) {
-        $this->logger = $logger;
-        $this->productMapFactory = $productMapFactory;
-        $this->productBridge = $productBridge;
+        private readonly LoggerInterface   $logger,
+        private readonly ProductMapFactory $productMapFactory,
+        private readonly ProductBridge     $productBridge
+    )
+    {
     }
 
     /**

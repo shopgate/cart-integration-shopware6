@@ -14,19 +14,9 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 
 class OrderMapping
 {
-    private CustomFieldMapping $customFieldMapping;
-    /** @var ExtendedExternalOrder */
-    private ShopgateContainer $sgExternalOrder;
-    private ShippingComposer $shippingComposer;
 
-    public function __construct(
-        CustomFieldMapping $customFieldMapping,
-        ShopgateContainer $sgExternalOrder,
-        ShippingComposer $shippingComposer
-    ) {
-        $this->customFieldMapping = $customFieldMapping;
-        $this->sgExternalOrder = $sgExternalOrder;
-        $this->shippingComposer = $shippingComposer;
+    public function __construct(private readonly CustomFieldMapping $customFieldMapping, private readonly ShopgateContainer $sgExternalOrder, private readonly ShippingComposer $shippingComposer)
+    {
     }
 
     public function mapIncomingOrder(ShopgateOrder $shopgateOrder): array
@@ -36,6 +26,7 @@ class OrderMapping
 
     public function mapOutgoingOrder(OrderEntity $swOrder): ShopgateContainer
     {
+        /** @var ExtendedExternalOrder $sgOrder */
         $sgOrder = clone $this->sgExternalOrder;
         /** @var ?ShopgateOrderEntity $extension */
         if ($extension = $swOrder->getExtension(NativeOrderExtension::PROPERTY)) {
@@ -75,7 +66,7 @@ class OrderMapping
 
         // as you can see, we are not accounting for multi-address shipping here
         if ($swOrder->getDeliveries() && ($shipping = $swOrder->getDeliveries()->getShippingAddress()->first())) {
-            $shippingId = $shipping->getId(); // this setter is  important
+            $shippingId = $shipping->getId(); // this setter is important
             $sgOrder->setShippingAddress($shipping, $billingId);
         }
         $sgOrder->setBillingAddress($swOrder->getBillingAddress(), $shippingId);

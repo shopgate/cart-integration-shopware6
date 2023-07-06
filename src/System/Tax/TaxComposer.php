@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Tax;
 
@@ -10,18 +8,11 @@ use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as Indiv
 
 class TaxComposer
 {
-    private LocationMapping $locationMapping;
-    private TaxBridge $taxBridge;
 
-    public function __construct(LocationMapping $locationMapping, TaxBridge $taxBridge)
+    public function __construct(private readonly LocationMapping $locationMapping, private readonly TaxBridge $taxBridge)
     {
-        $this->locationMapping = $locationMapping;
-        $this->taxBridge = $taxBridge;
     }
 
-    /**
-     * @return array
-     */
     public function getTaxSettings(): array
     {
         $productTaxClasses = [];

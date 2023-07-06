@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping\Events;
 
@@ -9,19 +7,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterShippingMethodMappingEvent extends Event
 {
-    private DataBag $dataBag;
-
-    /**
-     * @param DataBag $dataBag
-     */
-    public function __construct(DataBag $dataBag)
+    public function __construct(private readonly DataBag $dataBag)
     {
-        $this->dataBag = $dataBag;
     }
 
-    /**
-     * @return DataBag
-     */
     public function getDataBag(): DataBag
     {
         return $this->dataBag;

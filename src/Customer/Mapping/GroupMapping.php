@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer\Mapping;
 
@@ -10,10 +8,6 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 class GroupMapping
 {
 
-    /**
-     * @param CustomerGroupEntity $entity
-     * @return ShopgateCustomerGroup
-     */
     public function toShopgateGroup(CustomerGroupEntity $entity): ShopgateCustomerGroup
     {
         $grp = new ShopgateCustomerGroup();

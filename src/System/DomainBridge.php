@@ -1,11 +1,9 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System;
 
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
@@ -13,9 +11,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class DomainBridge
 {
-    private EntityRepositoryInterface $domainRepository;
+    private EntityRepository $domainRepository;
 
-    public function __construct(EntityRepositoryInterface $domainRepository)
+    public function __construct(EntityRepository $domainRepository)
     {
         $this->domainRepository = $domainRepository;
     }

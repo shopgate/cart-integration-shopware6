@@ -15,6 +15,6 @@
                 ]
             }"
             :disabled="!acl.can('salutation.editor')"
-            help-text="{{ $tc('sg-salutations.detail.genderTooltip') }}">
+            :help-text="$tc('sg-salutations.detail.genderTooltip')">
     </sw-form-field-renderer>
 {% endblock %}

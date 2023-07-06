@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
@@ -20,50 +18,30 @@ use Shopgate_Model_Catalog_Product;
 use ShopgateCustomer;
 use ShopgateExternalOrder;
 use ShopgateLibraryException;
-use ShopgateMerchantApiException;
 use ShopgatePluginApi;
 
 class ExportService
 {
-    private LoggerInterface $log;
-    private CategoryComposer $categoryComposer;
-    private ConfigBridge $configBridge;
-    private TaxComposer $taxComposer;
-    private CustomerComposer $customerComposer;
-    private ProductComposer $productComposer;
-    private OrderComposer $orderComposer;
-    private CartComposer $cartComposer;
-    private ReviewComposer $reviewComposer;
 
     public function __construct(
-        LoggerInterface $logger,
-        CategoryComposer $categoryComposer,
-        ConfigBridge $configBridge,
-        TaxComposer $taxComposer,
-        CustomerComposer $customerHelper,
-        ProductComposer $productComposer,
-        OrderComposer $orderComposer,
-        CartComposer $cartComposer,
-        ReviewComposer $reviewComposer
-    ) {
-        $this->log = $logger;
-        $this->categoryComposer = $categoryComposer;
-        $this->configBridge = $configBridge;
-        $this->taxComposer = $taxComposer;
-        $this->customerComposer = $customerHelper;
-        $this->productComposer = $productComposer;
-        $this->orderComposer = $orderComposer;
-        $this->cartComposer = $cartComposer;
-        $this->reviewComposer = $reviewComposer;
+        private readonly LoggerInterface  $log,
+        private readonly CategoryComposer $categoryComposer,
+        private readonly ConfigBridge     $configBridge,
+        private readonly TaxComposer      $taxComposer,
+        private readonly CustomerComposer $customerComposer,
+        private readonly ProductComposer  $productComposer,
+        private readonly OrderComposer    $orderComposer,
+        private readonly CartComposer     $cartComposer,
+        private readonly ReviewComposer   $reviewComposer
+    )
+    {
     }
 
     /**
-     * @param null | int $limit
-     * @param null | int $offset
      * @param string[] $ids
      * @return Shopgate_Model_Catalog_Category[]
      */
-    public function getCategories(int $limit = null, int $offset = null, array $ids = []): array
+    public function getCategories(?int $limit = null, ?int $offset = null, array $ids = []): array
     {
         $this->log->debug('Start Category Export...');
 
@@ -75,12 +53,10 @@ class ExportService
     }
 
     /**
-     * @param int|null $limit
-     * @param int|null $offset
      * @param string[] $ids
      * @return Shopgate_Model_Catalog_Product[]
      */
-    public function getProducts(int $limit = null, int $offset = null, array $ids = []): array
+    public function getProducts(?int $limit = null, ?int $offset = null, array $ids = []): array
     {
         $this->log->debug('Start Product Export...');
         $export = $this->productComposer->loadProducts($limit, $offset, $ids);

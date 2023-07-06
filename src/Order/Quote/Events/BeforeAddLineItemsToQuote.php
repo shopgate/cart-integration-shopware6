@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote\Events;
 
@@ -11,15 +9,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeAddLineItemsToQuote extends Event
 {
-    private Request $request;
-    private Cart $cart;
-    private SalesChannelContext $context;
-
-    public function __construct(Request $request, Cart $cart, SalesChannelContext $context)
+    public function __construct(private readonly Request $request, private readonly Cart $cart, private readonly SalesChannelContext $context)
     {
-        $this->request = $request;
-        $this->cart = $cart;
-        $this->context = $context;
     }
 
     public function getRequest(): Request

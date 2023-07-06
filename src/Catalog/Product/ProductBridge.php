@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product;
 
@@ -12,33 +10,28 @@ use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ProductBridge
 {
-    private AbstractProductListRoute $productListRoute;
-    private ContextManager $contextManager;
-    private SortBridge $productSorting;
-    private ConfigBridge $configReader;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        AbstractProductListRoute $productListRoute,
-        ContextManager $contextManager,
-        SortBridge $productSorting,
-        ConfigBridge $configReader,
-        EventDispatcherInterface $eventDispatcher
-    ) {
-        $this->productListRoute = $productListRoute;
-        $this->contextManager = $contextManager;
-        $this->productSorting = $productSorting;
-        $this->configReader = $configReader;
-        $this->eventDispatcher = $eventDispatcher;
+        private readonly AbstractProductListRoute $productListRoute,
+        private readonly ContextManager           $contextManager,
+        private readonly SalesChannelRepository   $productRepository,
+        private readonly SortBridge               $productSorting,
+        private readonly ConfigBridge             $configReader,
+        private readonly EventDispatcherInterface $eventDispatcher
+    )
+    {
     }
 
     /**
@@ -109,5 +102,22 @@ class ProductBridge
         $criteria->setTitle('shopgate::products::simple');
 
         return $this->productListRoute->load($criteria, $context)->getProducts();
+    }
+
+    /**
+     * @throws InconsistentCriteriaIdsException
+     */
+    public function findBestVariant(string $productId): ?string
+    {
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('product.parentId', $productId))
+            ->addSorting(new FieldSorting('product.price'))
+            ->addSorting(new FieldSorting('product.available'))
+            ->setLimit(1);
+
+        $criteria->setTitle('shopgate::products::find-best-variant');
+        $variantId = $this->productRepository->searchIds($criteria, $this->contextManager->getSalesContext());
+
+        return $variantId->firstId();
     }
 }

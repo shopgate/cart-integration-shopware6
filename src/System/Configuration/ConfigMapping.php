@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Configuration;
 
@@ -22,9 +20,6 @@ class ConfigMapping extends ShopgateConfig
         return $this;
     }
 
-    /**
-     * @throws ReflectionException
-     */
     public function initShopwareConfig(array $data = []): void
     {
         $this->loadArray($data);
@@ -38,7 +33,7 @@ class ConfigMapping extends ShopgateConfig
      * @param string[]|string $value
      * @throws ReflectionException
      */
-    public function setProductTypesToExport($value): void
+    public function setProductTypesToExport(array|string $value): void
     {
         $this->product_types_to_export = $this->castToType($value, 'product_types_to_export');
     }
@@ -63,39 +58,24 @@ class ConfigMapping extends ShopgateConfig
     /**
      * Cast a given property value to the matching property type
      *
-     * @param mixed $value
-     * @param string $property
-     *
-     * @return array|boolean|number|string|integer
      * @throws ReflectionException
      */
-    private function castToType($value, string $property)
+    private function castToType(mixed $value, string $property): array|bool|string|int
     {
         $type = $this->getPropertyType($property);
 
-        switch ($type) {
-            case 'string[]':
-            case 'array':
-                return is_array($value) ? $value : array_map('trim', explode(',', $value));
-            case 'bool':
-            case 'boolean':
-                return (boolean)$value;
-            case 'int':
-            case 'integer':
-                return (int)$value;
-            case 'string':
-                return (string)$value;
-            default:
-                return $value;
-        }
+        return match ($type) {
+            'string[]', 'array' => is_array($value) ? $value : array_map('trim', explode(',', $value)),
+            'bool', 'boolean' => (boolean)$value,
+            'int', 'integer' => (int)$value,
+            'string' => (string)$value,
+            default => $value,
+        };
     }
 
     /**
      * Fetches the property type
      *
-     * @param string $property
-     *
-     * @return string
      * @throws ReflectionException
      */
     private function getPropertyType(string $property): string
@@ -109,9 +89,8 @@ class ConfigMapping extends ShopgateConfig
             return $r->getType()->getName();
         }
         $doc = $r->getDocComment();
-        /** @noinspection PhpExpressionResultUnusedInspection */
         /** @noinspection RegExpRedundantEscape */
-        $doc ? preg_match_all('#@var ([a-zA-Z-_]*(\[\])?)(.*?)\n#s', $doc, $annotations) : null;
+        $doc && preg_match_all('#@var ([a-zA-Z-_]*(\[\])?)(.*?)\n#s', $doc, $annotations);
         $value = 'string';
         if (isset($annotations[1][0])) {
             $value = $annotations[1][0];
@@ -122,9 +101,6 @@ class ConfigMapping extends ShopgateConfig
 
     /**
      * Writes the given fields
-     *
-     * @param array $fieldList
-     * @param boolean $validate
      *
      * @throws ReflectionException
      * @throws ShopgateLibraryException

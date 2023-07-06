@@ -1,0 +1,28 @@
+{% sw_extends '@Framework/documents/credit_note.html.twig' %}
+{# @var shopgateOrder \Shopgate\Shopware\Shopgate\Order\ShopgateOrderEntity  #}
+{% set shopgateOrder = order.extensions.shopgateOrder %}
+
+{% block document_payment %}
+    {% if shopgateOrder %}
+        {{ 'document.paymentShippingInfo.paymentMethod'|trans({'%paymentMethod%': shopgateOrder.getPaymentMethodName()})|sw_sanitize }}<br>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block document_shipping %}
+    {% if shopgateOrder %}
+        {{ 'document.paymentShippingInfo.shippingMethod'|trans({'%shippingMethod%': shopgateOrder.getShippingMethodName()})|sw_sanitize }}<br><br>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block document_line_item_table_shipping_label %}
+    {% if shopgateOrder %}
+        <td class="line-item-breakable">{{ shopgateOrder.getShippingMethodName() }}</td>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+

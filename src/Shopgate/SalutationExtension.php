@@ -3,7 +3,6 @@
 namespace Shopgate\Shopware\Shopgate;
 
 use Shopgate\Shopware\Shopgate\Salutations\ShopgateSalutationDefinition;
-use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;

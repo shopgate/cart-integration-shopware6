@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
@@ -52,7 +50,7 @@ class Plugin extends ShopgatePlugin
 
     /**
      * @param string $jobname
-     * @param $params
+     * @param mixed $params
      * @param string $message
      * @param int $errorcount
      * @throws ShopgateLibraryException
@@ -85,8 +83,6 @@ class Plugin extends ShopgatePlugin
     }
 
     /**
-     * @param ShopgateOrder $order
-     * @return array
      * @throws ShopgateLibraryException
      */
     public function addOrder(ShopgateOrder $order): array
@@ -111,8 +107,6 @@ class Plugin extends ShopgatePlugin
     }
 
     /**
-     * @param ShopgateCart $cart
-     * @return array
      * @throws ShopgateLibraryException
      */
     public function checkCart(ShopgateCart $cart): array
@@ -189,9 +183,9 @@ class Plugin extends ShopgatePlugin
     }
 
     /**
-     * @param null $limit
-     * @param null $offset
-     * @param array $uids
+     * @param ?int $limit
+     * @param ?int $offset
+     * @param string[] $uids
      * @return Shopgate_Model_Catalog_Product[]
      */
     protected function createItems($limit = null, $offset = null, array $uids = array()): array

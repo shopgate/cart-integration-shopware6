@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Psr\Cache\CacheException;
 use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
 use Shopgate\Shopware\Catalog\Mapping\Events\AfterSimpleProductPropertyMapEvent;
@@ -27,48 +28,28 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
     use MapTrait;
-
     /** @var SalesChannelProductEntity */
     protected $item;
-    protected ContextManager $contextManager;
-    protected SortTree $sortTree;
-    protected PriceMapping $priceMapping;
-    protected TierPriceMapping $tierPriceMapping;
-    protected Formatter $formatter;
-    protected CustomFieldBridge $customFieldSetBridge;
-    protected AbstractProductCrossSellingRoute $crossSellingRoute;
-    protected CurrencyComposer $currencyComposer;
-    private ExtendedClassFactory $classFactory;
-    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        ContextManager $contextManager,
-        CustomFieldBridge $customFieldSetBridge,
-        SortTree $sortTree,
-        PriceMapping $priceMapping,
-        TierPriceMapping $tierPriceMapping,
-        Formatter $formatter,
-        CurrencyComposer $currencyComposer,
-        ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute,
-        EventDispatcherInterface $eventDispatcher
+        protected ContextManager $contextManager,
+        protected CustomFieldBridge $customFieldSetBridge,
+        protected SortTree $sortTree,
+        protected PriceMapping $priceMapping,
+        protected TierPriceMapping $tierPriceMapping,
+        protected Formatter $formatter,
+        protected CurrencyComposer $currencyComposer,
+        protected ExtendedClassFactory $classFactory,
+        protected AbstractProductCrossSellingRoute $crossSellingRoute,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
-        $this->contextManager = $contextManager;
-        $this->customFieldSetBridge = $customFieldSetBridge;
-        $this->sortTree = $sortTree;
-        $this->priceMapping = $priceMapping;
-        $this->tierPriceMapping = $tierPriceMapping;
-        $this->formatter = $formatter;
-        $this->crossSellingRoute = $crossSellingRoute;
-        $this->currencyComposer = $currencyComposer;
-        $this->classFactory = $classFactory;
-        $this->eventDispatcher = $eventDispatcher;
         parent::__construct();
     }
 
@@ -108,10 +89,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
     private function getDeepLinkUrl(ProductEntity $productEntity): string
     {
-        $channel = $this->contextManager->getSalesContext()->getSalesChannel();
-        $entityList = $productEntity->getSeoUrls()
-            ? $productEntity->getSeoUrls()->filterBySalesChannelId($channel->getId())
-            : null;
+        $channel = $this->contextManager->getSalesContext();
+        $entityList = $productEntity->getSeoUrls()?->filterBySalesChannelId($channel->getSalesChannelId());
 
         return $entityList ? $this->getSeoUrl($channel, $entityList->first()) : '';
     }
@@ -195,6 +174,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
      * Setting the same sort order for every category as supposedly
      * we have a sort order for the whole catalog.
      * @throws InvalidArgumentException
+     * @throws CacheException
      */
     public function setCategoryPaths(): void
     {
@@ -311,11 +291,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 ->setValue($value);
         }
 
-        /**
-         * Supposed to get the cheapest price, cannot confirm or test this SW 6.4.10 feature
-         */
-        if (method_exists($this->item, 'getCheapestPrice')
-            && $this->item->getCheapestPrice()
+        if ($this->item->getCheapestPrice()
             && ($price = $this->currencyComposer->extractCalculatedPrice($this->item->getCheapestPrice()->getPrice()))
             && $this->item->getCalculatedCheapestPrice()->getUnitPrice() !== $this->item->getCalculatedPrice()
                 ->getUnitPrice()
@@ -326,11 +302,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 ->setValue($price);
         }
 
-        // SW 6.4.10+
         $calculated = $this->currencyComposer->extractCalculatedPrice($this->item->getPrice());
-        if ($calculated
-            && method_exists($calculated, 'getRegulationPrice')
-            && $regPrice = $calculated->getRegulationPrice()
+        if ($calculated && $regPrice = $calculated->getRegulationPrice()
         ) {
             $properties[] = $this->classFactory->createProperty()
                 ->setUid('previousPrice')

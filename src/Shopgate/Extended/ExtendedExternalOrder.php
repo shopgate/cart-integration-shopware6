@@ -24,25 +24,16 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 
 class ExtendedExternalOrder extends ShopgateExternalOrder
 {
-    private AddressMapping $addressMapping;
-    private LineItemProductMapping $productMapping;
-    private TaxMapping $taxMapping;
-    private LineItemPromoMapping $promoMapping;
-    private ShippingMapping $shippingMapping;
 
     public function __construct(
-        AddressMapping $addressMapping,
-        LineItemProductMapping $productMapping,
-        LineItemPromoMapping $promoMapping,
-        TaxMapping $taxMapping,
-        ShippingMapping $shippingMapping
-    ) {
-        parent::__construct([]);
-        $this->addressMapping = $addressMapping;
-        $this->productMapping = $productMapping;
-        $this->promoMapping = $promoMapping;
-        $this->taxMapping = $taxMapping;
-        $this->shippingMapping = $shippingMapping;
+        private readonly AddressMapping         $addressMapping,
+        private readonly LineItemProductMapping $productMapping,
+        private readonly LineItemPromoMapping   $promoMapping,
+        private readonly TaxMapping             $taxMapping,
+        private readonly ShippingMapping        $shippingMapping
+    )
+    {
+        parent::__construct();
     }
 
     /**
@@ -58,7 +49,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setStatusName($value): void
     {
-        parent::setStatusName($value ? $value->getTranslation('name') : null);
+        parent::setStatusName($value?->getTranslation('name'));
     }
 
     /**
@@ -66,7 +57,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setCurrency($value): void
     {
-        parent::setCurrency($value ? $value->getIsoCode() : null);
+        parent::setCurrency($value?->getIsoCode());
     }
 
     /**
@@ -89,7 +80,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setMail($value): void
     {
-        parent::setMail($value ? $value->getEmail() : null);
+        parent::setMail($value?->getEmail());
     }
 
     public function setShippingAddress(?OrderAddressEntity $value, string $billingId): void
@@ -113,7 +104,7 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
      */
     public function setPhone($value): void
     {
-        parent::setPhone($value ? $value->getPhoneNumber() : null);
+        parent::setPhone($value?->getPhoneNumber());
     }
 
     /**
@@ -180,9 +171,10 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
 
     private function mapAddress(
         OrderAddressEntity $addressEntity,
-        string $billingId,
-        string $shippingId
-    ): ShopgateAddress {
+        string             $billingId,
+        string             $shippingId
+    ): ShopgateAddress
+    {
         $type = $this->addressMapping->mapAddressType($addressEntity, $billingId, $shippingId);
 
         return $this->addressMapping->mapAddress($addressEntity, $type);

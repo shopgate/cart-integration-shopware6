@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\LineItem\Events;
 
@@ -11,15 +9,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterOutLineItemMappingEvent extends Event
 {
-    private Cart $swCart;
-    private DataBag $dataBag;
-    private ExtendedCart $sgCart;
-
-    public function __construct(DataBag $dataBag, Cart $swCart, ExtendedCart $sgCart)
+    public function __construct(private readonly DataBag $dataBag, private readonly Cart $swCart, private readonly ExtendedCart $sgCart)
     {
-        $this->dataBag = $dataBag;
-        $this->sgCart = $sgCart;
-        $this->swCart = $swCart;
     }
 
     public function getDataBag(): DataBag

@@ -10,7 +10,6 @@ trait ShippingTrait
 {
     /**
      * @param string $type - tax class as defined by SW6
-     * @return float
      * @see CartPrice::TAX_STATE_GROSS
      * @see CartPrice::TAX_STATE_NET
      * @noinspection UnnecessaryCastingInspection - SDK lies
@@ -37,10 +36,6 @@ trait ShippingTrait
         return $this->getShippingInfos() instanceof ShopgateShippingInfo;
     }
 
-    /**
-     * @param string $type - tax class as defined by SW6
-     * @return bool
-     */
     public function isShippingFree(string $type = CartPrice::TAX_STATE_GROSS): bool
     {
         return $this->getShippingCost($type) === 0.0;

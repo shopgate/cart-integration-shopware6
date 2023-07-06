@@ -13,24 +13,20 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PaymentBridge
 {
-    private AbstractPaymentMethodRoute $paymentMethodRoute;
-    private StateBridge $stateBridge;
-    private ContextManager $contextManager;
 
     public function __construct(
-        AbstractPaymentMethodRoute $paymentMethodRoute,
-        StateBridge $stateBridge,
-        ContextManager $contextManager
-    ) {
-        $this->paymentMethodRoute = $paymentMethodRoute;
-        $this->stateBridge = $stateBridge;
-        $this->contextManager = $contextManager;
+        private readonly AbstractPaymentMethodRoute $paymentMethodRoute,
+        private readonly StateBridge                $stateBridge,
+        private readonly ContextManager             $contextManager
+    )
+    {
     }
 
     public function getAvailableMethods(
         SalesChannelContext $context,
-        Criteria $criteria = null
-    ): PaymentMethodCollection {
+        Criteria            $criteria = null
+    ): PaymentMethodCollection
+    {
         $request = new Request();
         $request->query->set('onlyAvailable', true);
 

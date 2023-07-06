@@ -1,31 +1,22 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product\Property;
 
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\CustomField\CustomFieldCollection;
 
 class CustomFieldBridge
 {
-    private EntityRepositoryInterface $customFieldRepository;
-    private ContextManager $contextManager;
 
-    public function __construct(EntityRepositoryInterface $customFieldRepository, ContextManager $contextManager)
+    public function __construct(private readonly EntityRepository $customFieldRepository, private readonly ContextManager $contextManager)
     {
-        $this->customFieldRepository = $customFieldRepository;
-        $this->contextManager = $contextManager;
     }
 
-    /**
-     * @return CustomFieldCollection|EntityCollection
-     */
-    public function getAllProductFieldSets(): CustomFieldCollection
+    public function getAllProductFieldSets(): CustomFieldCollection|EntityCollection
     {
         $criteria = (new Criteria())
             ->addAssociation('customFieldSet')

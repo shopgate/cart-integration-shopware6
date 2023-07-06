@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
@@ -8,23 +8,29 @@ use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
+use Shopgate_Model_Abstract;
 use Shopgate_Model_Catalog_Attribute;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ChildProductMapping extends SimpleProductMapping
 {
+    /**
+     * @var array|mixed|Shopgate_Model_Abstract|string|null
+     */
+    private ?string $defaultChildId;
+
     public function __construct(
-        ContextManager $contextManager,
-        CustomFieldBridge $customFieldSetBridge,
-        SortTree $sortTree,
-        PriceMapping $priceMapping,
-        TierPriceMapping $tierPriceMapping,
-        Formatter $translation,
-        CurrencyComposer $currencyComposer,
-        ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute,
-        EventDispatcherInterface $eventDispatcher
+        protected ContextManager $contextManager,
+        protected CustomFieldBridge $customFieldSetBridge,
+        protected SortTree $sortTree,
+        protected PriceMapping $priceMapping,
+        protected TierPriceMapping $tierPriceMapping,
+        protected Formatter $translation,
+        protected CurrencyComposer $currencyComposer,
+        protected ExtendedClassFactory $classFactory,
+        protected AbstractProductCrossSellingRoute $crossSellingRoute,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct(
             $contextManager,
@@ -63,8 +69,20 @@ class ChildProductMapping extends SimpleProductMapping
         return true;
     }
 
+    public function setDefaultChildId(string $defaultChildId): ChildProductMapping
+    {
+        $this->defaultChildId = $defaultChildId;
+
+        return $this;
+    }
+
+    public function getDefaultChildId(): ?string
+    {
+        return $this->defaultChildId;
+    }
+
     public function setIsDefaultChild(): void
     {
-        parent::setIsDefaultChild($this->item->getMainVariantId() === $this->item->getId());
+        parent::setIsDefaultChild($this->getDefaultChildId() === $this->item->getId());
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
@@ -14,12 +14,9 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
     /** @var CategoryEntity */
     protected $item;
     private ?string $parentId = null;
-    /** @var ContextManager */
-    private ContextManager $contextManager;
 
-    public function __construct(ContextManager $contextManager)
+    public function __construct(private readonly ContextManager $contextManager)
     {
-        $this->contextManager = $contextManager;
         parent::__construct();
     }
 
@@ -78,10 +75,8 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
 
     private function getDeepLinkUrl(CategoryEntity $category): string
     {
-        $channel = $this->contextManager->getSalesContext()->getSalesChannel();
-        $entityList = $category->getSeoUrls()
-            ? $category->getSeoUrls()->filterBySalesChannelId($channel->getId())
-            : null;
+        $channel = $this->contextManager->getSalesContext();
+        $entityList = $category->getSeoUrls()?->filterBySalesChannelId($channel->getSalesChannelId());
 
         return $entityList ? $this->getSeoUrl($channel, $entityList->first()) : '';
     }

@@ -16,15 +16,9 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 
 class PaymentComposer
 {
-    private PaymentBridge $paymentBridge;
-    private PaymentMapping $paymentMapping;
-    private LoggerInterface $logger;
 
-    public function __construct(PaymentBridge $paymentBridge, PaymentMapping $paymentMapping, LoggerInterface $logger)
+    public function __construct(private readonly PaymentBridge $paymentBridge, private readonly PaymentMapping $paymentMapping, private readonly LoggerInterface $logger)
     {
-        $this->paymentBridge = $paymentBridge;
-        $this->paymentMapping = $paymentMapping;
-        $this->logger = $logger;
     }
 
     public function mapIncomingPayment(ShopgateCartBase $sgCart, SalesChannelContext $context): string
@@ -49,7 +43,7 @@ class PaymentComposer
     public function mapOutgoingPayments(SalesChannelContext $context): array
     {
         return $this->paymentBridge->getAvailableMethods($context)
-            ->filter(fn(PaymentMethodEntity $pay) => strpos($pay->getHandlerIdentifier(), 'Shopgate') === false)
+            ->filter(fn(PaymentMethodEntity $pay) => !str_contains($pay->getHandlerIdentifier(), 'Shopgate'))
             ->map(fn(PaymentMethodEntity $paymentMethod) => $this->paymentMapping->mapPaymentMethod($paymentMethod));
     }
 
@@ -60,8 +54,9 @@ class PaymentComposer
 
     public function setToPaid(
         ?OrderTransactionCollection $transactions,
-        SalesChannelContext $context
-    ): ?StateMachineStateEntity {
+        SalesChannelContext         $context
+    ): ?StateMachineStateEntity
+    {
         $transaction = $this->getActualTransaction($transactions);
 
         return $transaction ? $this->paymentBridge->setOrderToPaid($transaction->getId(), $context) : null;
@@ -100,6 +95,6 @@ class PaymentComposer
 
     private function getActualTransaction(?OrderTransactionCollection $transactions): ?OrderTransactionEntity
     {
-        return $transactions ? $transactions->last() : null;
+        return $transactions?->last();
     }
 }

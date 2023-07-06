@@ -25,99 +25,55 @@ use ShopgateShippingMethod;
 
 class ExtendedClassFactory
 {
-    private ShopgateCart $cart;
-    private ShopgateCartItem $cartItem;
-    private ShopgateExternalOrderItem $orderItem;
-    private ShopgateExternalOrderTax $orderTax;
-    private ShopgateExternalCoupon $externalCoupon;
-    private ShopgateOrder $order;
-    private ShopgateShippingMethod $shippingMethod;
-    private ShopgateDeliveryNote $deliveryNote;
-    private ShopgateExternalOrderExtraCost $orderExtraCost;
-    private ShopgatePaymentMethod $paymentMethod;
-    private Shopgate_Model_Catalog_Property $property;
-    private ShopgateExternalOrderExternalCoupon $orderExportCoupon;
 
     public function __construct(
-        ShopgateCart $cart,
-        ShopgateCartItem $cartItem,
-        ShopgateExternalOrderItem $orderItem,
-        ShopgateExternalOrderTax $orderTax,
-        ShopgateExternalCoupon $externalCoupon,
-        ShopgateExternalOrderExternalCoupon $orderExportCoupon,
-        ShopgateOrder $order,
-        Shopgate_Model_Catalog_Property $property,
-        ShopgateShippingMethod $shippingMethod,
-        ShopgateDeliveryNote $deliveryNote,
-        ShopgateExternalOrderExtraCost $orderExtraCost,
-        ShopgatePaymentMethod $paymentMethod
-    ) {
-        $this->cart = $cart;
-        $this->cartItem = $cartItem;
-        $this->orderItem = $orderItem;
-        $this->orderTax = $orderTax;
-        $this->externalCoupon = $externalCoupon;
-        $this->orderExportCoupon = $orderExportCoupon;
-        $this->order = $order;
-        $this->property = $property;
-        $this->shippingMethod = $shippingMethod;
-        $this->deliveryNote = $deliveryNote;
-        $this->orderExtraCost = $orderExtraCost;
-        $this->paymentMethod = $paymentMethod;
+        private readonly ShopgateCart                        $cart,
+        private readonly ShopgateCartItem                    $cartItem,
+        private readonly ShopgateExternalOrderItem           $orderItem,
+        private readonly ShopgateExternalOrderTax            $orderTax,
+        private readonly ShopgateExternalCoupon              $externalCoupon,
+        private readonly ShopgateExternalOrderExternalCoupon $orderExportCoupon,
+        private readonly ShopgateOrder                       $order,
+        private readonly Shopgate_Model_Catalog_Property     $property,
+        private readonly ShopgateShippingMethod              $shippingMethod,
+        private readonly ShopgateDeliveryNote                $deliveryNote,
+        private readonly ShopgateExternalOrderExtraCost      $orderExtraCost,
+        private readonly ShopgatePaymentMethod               $paymentMethod
+    )
+    {
     }
 
-    /**
-     * @return ExtendedCartItem|ShopgateCartItem
-     */
-    public function createCartItem(): ShopgateCartItem
+    public function createCartItem(): ExtendedCartItem|ShopgateCartItem
     {
         return clone $this->cartItem;
     }
 
-    /**
-     * @return ExtendedExternalOrderItem|ShopgateExternalOrderItem
-     */
-    public function createOrderLineItem(): ShopgateExternalOrderItem
+    public function createOrderLineItem(): ExtendedExternalOrderItem|ShopgateExternalOrderItem
     {
         return clone $this->orderItem;
     }
 
-    /**
-     * @return ExtendedExternalOrderTax|ShopgateExternalOrderTax
-     */
-    public function createExternalOrderTax(): ShopgateExternalOrderTax
+    public function createExternalOrderTax(): ExtendedExternalOrderTax|ShopgateExternalOrderTax
     {
         return clone $this->orderTax;
     }
 
-    /**
-     * @return ExtendedExternalCoupon|ShopgateExternalCoupon
-     */
-    public function createExternalCoupon(): ShopgateExternalCoupon
+    public function createExternalCoupon(): ExtendedExternalCoupon|ShopgateExternalCoupon
     {
         return clone $this->externalCoupon;
     }
 
-    /**
-     * @return ExtendedExternalOrderExtCoupon|ShopgateExternalOrderExternalCoupon
-     */
-    public function createOrderExportCoupon(): ShopgateExternalOrderExternalCoupon
+    public function createOrderExportCoupon(): ExtendedExternalOrderExtCoupon|ShopgateExternalOrderExternalCoupon
     {
         return clone $this->orderExportCoupon;
     }
 
-    /**
-     * @return ExtendedCart|ShopgateCart
-     */
-    public function createCart(): ShopgateCart
+    public function createCart(): ExtendedCart|ShopgateCart
     {
         return clone $this->cart;
     }
 
-    /**
-     * @return ExtendedOrder|ShopgateOrder
-     */
-    public function createOrder(): ShopgateOrder
+    public function createOrder(): ExtendedOrder|ShopgateOrder
     {
         return clone $this->order;
     }
@@ -142,10 +98,7 @@ class ExtendedClassFactory
         return clone $this->paymentMethod;
     }
 
-    /**
-     * @return ExtendedProperty|Shopgate_Model_Catalog_Property
-     */
-    public function createProperty(): Shopgate_Model_Catalog_Property
+    public function createProperty(): ExtendedProperty|Shopgate_Model_Catalog_Property
     {
         return clone $this->property;
     }

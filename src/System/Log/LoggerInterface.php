@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Log;
 
@@ -8,15 +6,11 @@ interface LoggerInterface
 {
     /**
      * Debug level log
-     *
-     * @param mixed $info
      */
-    public function debug($info): void;
+    public function debug(mixed $info): void;
 
     /**
      * Error level log
-     *
-     * @param mixed $error
      */
-    public function error($error): void;
+    public function error(mixed $error): void;
 }

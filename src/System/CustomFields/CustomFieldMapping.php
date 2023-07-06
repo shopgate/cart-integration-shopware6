@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\CustomFields;
 
@@ -12,17 +10,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 
 class CustomFieldMapping
 {
-    private array $whitelist;
-    private array $transformList;
 
     /**
      * @param array $whitelist - allowed exported custom fields
      * @param array $transformList - map of Shopgate key to Shopware key
      */
-    public function __construct(array $whitelist, array $transformList = [])
+    public function __construct(private readonly array $whitelist, private readonly array $transformList = [])
     {
-        $this->whitelist = $whitelist;
-        $this->transformList = $transformList;
     }
 
     /**
@@ -49,10 +43,9 @@ class CustomFieldMapping
      * Note that whitelist does not filter incoming data, just
      * used as reference to `type` of field
      *
-     * @param ShopgateCustomer|ShopgateAddress|ShopgateOrder $entity
      * @return array<string, string|array>
      */
-    public function mapToShopwareCustomFields($entity): array
+    public function mapToShopwareCustomFields(ShopgateCustomer|ShopgateAddress|ShopgateOrder $entity): array
     {
         $data = [];
         foreach ($entity->getCustomFields() as $customField) {

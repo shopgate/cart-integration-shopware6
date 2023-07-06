@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\PaymentMethod;
 
@@ -21,7 +19,6 @@ interface PaymentMethodInterface extends ClassCastInterface
     /**
      * Whether to allow payment processing after an order is created
      * e.g. cancellations, refund
-     * @return bool
      */
     public function getAfterOrder(): bool;
 }

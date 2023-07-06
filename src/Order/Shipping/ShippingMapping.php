@@ -22,27 +22,16 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 
 class ShippingMapping
 {
-    private ExtendedClassFactory $classFactory;
-    private TaxMapping $taxMapping;
-    private ShopgateOrderMapping $shopgateOrderMapping;
-    private StateComposer $stateMapping;
-    private Formatter $formatter;
-    private ContextManager $contextManager;
 
     public function __construct(
-        ExtendedClassFactory $classFactory,
-        TaxMapping $taxMapping,
-        ShopgateOrderMapping $shopgateOrderMapping,
-        StateComposer $stateMapping,
-        ContextManager $contextManager,
-        Formatter $formatter
-    ) {
-        $this->classFactory = $classFactory;
-        $this->taxMapping = $taxMapping;
-        $this->shopgateOrderMapping = $shopgateOrderMapping;
-        $this->stateMapping = $stateMapping;
-        $this->formatter = $formatter;
-        $this->contextManager = $contextManager;
+        private readonly ExtendedClassFactory $classFactory,
+        private readonly TaxMapping           $taxMapping,
+        private readonly ShopgateOrderMapping $shopgateOrderMapping,
+        private readonly StateComposer        $stateMapping,
+        private readonly ContextManager       $contextManager,
+        private readonly Formatter            $formatter
+    )
+    {
     }
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
@@ -69,8 +58,9 @@ class ShippingMapping
 
     public function mapOutOrderShippingMethod(
         CalculatedPrice $shippingCosts,
-        string $taxStatus
-    ): ShopgateExternalOrderExtraCost {
+        string          $taxStatus
+    ): ShopgateExternalOrderExtraCost
+    {
         $sgExport = $this->classFactory->createOrderExtraCost();
         [$withTax,] = $this->taxMapping->calculatePrices($shippingCosts, $taxStatus);
         $sgExport->setAmount($withTax); // always gross return
@@ -97,10 +87,7 @@ class ShippingMapping
         return $sgDelivery;
     }
 
-    /**
-     * @param ExtendedCart|ExtendedOrder $quote
-     */
-    public function getShopwareShippingId(ShopgateCartBase $quote, ?string $taxState): string
+    public function getShopwareShippingId(ExtendedCart|ExtendedOrder $quote, ?string $taxState): string
     {
         if ($quote->isShopwareShipping()) {
             return $quote->getShippingId();

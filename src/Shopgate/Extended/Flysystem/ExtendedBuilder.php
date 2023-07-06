@@ -3,7 +3,6 @@
 namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
 use Exception;
-use League\Flysystem\FilesystemInterface;
 use Shopgate\Shopware\Plugin;
 use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_Category;
@@ -17,25 +16,19 @@ use ShopgateFileBufferJson;
 use ShopgateMerchantApiInterface;
 use ShopgateObject;
 use ShopgatePlugin;
+use Shopware\Core\Framework\Adapter\Filesystem\PrefixFilesystem;
 
 class ExtendedBuilder extends ShopgateBuilder
 {
-    private FilesystemInterface $privateFileSystem;
-    private ShopgateMerchantApiInterface $merchantApi;
-    private ShopgateAuthenticationServiceInterface $authService;
 
     /**
-     * @noinspection MagicMethodsValidityInspection
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
-        FilesystemInterface $privateFileSystem,
-        ShopgateMerchantApiInterface $merchantApi,
-        ShopgateAuthenticationServiceInterface $authService
+        private readonly PrefixFilesystem             $privateFileSystem,
+        private readonly ShopgateMerchantApiInterface $merchantApi,
+        private readonly ShopgateAuthenticationServiceInterface $authService
     ) {
-        $this->privateFileSystem = $privateFileSystem;
-        $this->merchantApi = $merchantApi;
-        $this->authService = $authService;
     }
 
     /**

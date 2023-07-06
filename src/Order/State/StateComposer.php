@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\State;
 
@@ -45,7 +43,7 @@ class StateComposer
      */
     public function getStateTime(StateMachineStateEntity $state): ?string
     {
-        $time = $state->getCreatedAt() ? $state->getCreatedAt()->format(DATE_ATOM) : null;
+        $time = $state->getCreatedAt()?->format(DATE_ATOM);
         if ($history = $state->getToStateMachineHistoryEntries()) {
             $mostRecent = $this->getLastHistoryState($history);
             $time = $mostRecent && $mostRecent->getCreatedAt() ? $mostRecent->getCreatedAt()->format(DATE_ATOM) : $time;

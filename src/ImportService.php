@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware;
 
@@ -13,13 +11,8 @@ use ShopgateOrder;
 
 class ImportService
 {
-    private CustomerComposer $customerComposer;
-    private OrderComposer $orderComposer;
-
-    public function __construct(CustomerComposer $customerImport, OrderComposer $orderComposer)
+    public function __construct(private readonly CustomerComposer $customerComposer, private readonly OrderComposer $orderComposer)
     {
-        $this->customerComposer = $customerImport;
-        $this->orderComposer = $orderComposer;
     }
 
     /**
@@ -32,10 +25,9 @@ class ImportService
     }
 
     /**
-     * @param ExtendedOrder|ShopgateOrder $order
      * @throws ShopgateLibraryException
      */
-    public function addOrder(ShopgateOrder $order): array
+    public function addOrder(ExtendedOrder|ShopgateOrder $order): array
     {
         return $this->orderComposer->addOrder($order);
     }

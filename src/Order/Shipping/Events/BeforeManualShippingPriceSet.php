@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Shipping\Events;
 
@@ -11,15 +9,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeManualShippingPriceSet extends Event
 {
-    private CalculatedPrice $price;
-    private Cart $swCart;
-    private ShopgateCartBase $sgOrder;
-
-    public function __construct(CalculatedPrice $price, Cart $swCart, ShopgateCartBase $sgOrder)
+    public function __construct(private readonly CalculatedPrice $price, private readonly Cart $swCart, private readonly ShopgateCartBase $sgOrder)
     {
-        $this->price = $price;
-        $this->swCart = $swCart;
-        $this->sgOrder = $sgOrder;
     }
 
     public function getPrice(): CalculatedPrice

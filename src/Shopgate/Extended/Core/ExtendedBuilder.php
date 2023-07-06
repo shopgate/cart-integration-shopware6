@@ -20,19 +20,15 @@ use ShopgatePluginApi;
 
 class ExtendedBuilder extends ShopgateBuilder
 {
-    private ShopgateAuthenticationServiceInterface $authService;
-    private ShopgateMerchantApiInterface $merchantApi;
 
     /**
      * @noinspection MagicMethodsValidityInspection
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
-        ShopgateMerchantApiInterface $merchantApi,
-        ShopgateAuthenticationServiceInterface $authService
+        private readonly ShopgateMerchantApiInterface $merchantApi,
+        private readonly ShopgateAuthenticationServiceInterface $authService
     ) {
-        $this->merchantApi = $merchantApi;
-        $this->authService = $authService;
     }
 
     /**
@@ -50,7 +46,7 @@ class ExtendedBuilder extends ShopgateBuilder
      * own extended versions
      * @throws Exception
      */
-    public function buildLibraryFor(ShopgatePlugin $plugin)
+    public function buildLibraryFor(ShopgatePlugin $plugin): void
     {
         // set error handler if configured
         if ($this->config->getUseCustomErrorHandler()) {

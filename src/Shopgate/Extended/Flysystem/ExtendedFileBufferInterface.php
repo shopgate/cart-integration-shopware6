@@ -4,5 +4,6 @@ namespace Shopgate\Shopware\Shopgate\Extended\Flysystem;
 
 interface ExtendedFileBufferInterface
 {
-    public function getMeta(): array;
+    public function getFileSize(): int;
+    public function getFilePath(): string;
 }

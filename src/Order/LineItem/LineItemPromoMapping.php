@@ -18,22 +18,15 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 
 class LineItemPromoMapping
 {
-    private ContextManager $contextManager;
-    private ExtendedClassFactory $classFactory;
-    private TaxMapping $taxMapping;
-    private Formatter $formatter;
     private int $shippingDiscountIndex = 1;
 
     public function __construct(
-        ContextManager $contextManager,
-        ExtendedClassFactory $classFactory,
-        TaxMapping $taxMapping,
-        Formatter $formatter
-    ) {
-        $this->contextManager = $contextManager;
-        $this->classFactory = $classFactory;
-        $this->taxMapping = $taxMapping;
-        $this->formatter = $formatter;
+        private readonly ContextManager       $contextManager,
+        private readonly ExtendedClassFactory $classFactory,
+        private readonly TaxMapping           $taxMapping,
+        private readonly Formatter            $formatter
+    )
+    {
     }
 
     /**
@@ -86,8 +79,9 @@ class LineItemPromoMapping
 
     public function mapOutgoingOrderPromo(
         OrderLineItemEntity $lineItem,
-        ?string $taxStatus
-    ): ShopgateExternalOrderExternalCoupon {
+        ?string             $taxStatus
+    ): ShopgateExternalOrderExternalCoupon
+    {
         $id = $lineItem->getPayload()['promotionId'] ?? $lineItem->getId();
         $code = $lineItem->getReferencedId(); // empty string when automatic cart_rule
         $sgCoupon = $this->classFactory->createOrderExportCoupon();
@@ -110,8 +104,9 @@ class LineItemPromoMapping
 
     public function mapOutgoingOrderShippingPromo(
         OrderDeliveryEntity $deliveryEntity,
-        ?string $taxStatus
-    ): ShopgateExternalOrderExternalCoupon {
+        ?string             $taxStatus
+    ): ShopgateExternalOrderExternalCoupon
+    {
         $index = (string)$this->shippingDiscountIndex;
         $sgCoupon = $this->classFactory->createOrderExportCoupon();
         $sgCoupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());

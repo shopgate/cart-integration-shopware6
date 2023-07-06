@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Review\Subscriber;
 
@@ -10,11 +8,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AddChannelFilterSubscriber implements EventSubscriberInterface
 {
-    private bool $exportAllChannelReviews;
 
-    public function __construct(bool $exportAllChannelReviews)
+    public function __construct(private readonly bool $exportAllChannelReviews)
     {
-        $this->exportAllChannelReviews = $exportAllChannelReviews;
     }
 
     public static function getSubscribedEvents(): array

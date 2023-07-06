@@ -1,12 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Installers;
 
 use DateTime;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Shopgate\Shopware\System\Db\Rule\IsShopgateRuleCondition;
 use Shopgate\Shopware\System\Db\Rule\IsShopgateRuleGroup;
 use Shopware\Core\Defaults;
@@ -19,9 +17,6 @@ class RuleConditionInstaller
     /** @var ContainerInterface */
     private $connection;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->connection = $container->get(Connection::class);
@@ -37,7 +32,7 @@ class RuleConditionInstaller
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     private function installRuleCondition(): void
     {

@@ -1,34 +1,27 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Customer;
 
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractUpsertAddressRoute;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class AddressBridge
 {
-    private AbstractUpsertAddressRoute $upsertAddressRoute;
-    private EntityRepositoryInterface $addressRepository;
 
-    public function __construct(
-        AbstractUpsertAddressRoute $upsertAddressRoute,
-        EntityRepositoryInterface $addressRepository
-    ) {
-        $this->upsertAddressRoute = $upsertAddressRoute;
-        $this->addressRepository = $addressRepository;
+    public function __construct(private readonly AbstractUpsertAddressRoute $upsertAddressRoute, private readonly EntityRepository $addressRepository)
+    {
     }
 
     public function addAddress(
-        RequestDataBag $dataBag,
+        RequestDataBag      $dataBag,
         SalesChannelContext $context,
-        CustomerEntity $customer
-    ): CustomerAddressEntity {
+        CustomerEntity      $customer
+    ): CustomerAddressEntity
+    {
         return $this->upsertAddressRoute->upsert(null, $dataBag, $context, $customer)->getAddress();
     }
 

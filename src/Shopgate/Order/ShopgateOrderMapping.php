@@ -15,11 +15,7 @@ class ShopgateOrderMapping
         return $extension;
     }
 
-    /**
-     * @param OrderEntity|ShopgateOrderEntity|null $orderEntity
-     * @return string
-     */
-    public function getShippingMethodName($orderEntity): string
+    public function getShippingMethodName(OrderEntity|ShopgateOrderEntity|null $orderEntity): string
     {
         $default = 'Shipping (SG)';
         if ($orderEntity instanceof OrderEntity) {

@@ -10,7 +10,7 @@ cd [shopware6 root folder]
 composer require shopgate/cart-integration-shopware6
 ```
 
-Afterwards just increment the plugin version inside `root/composer.json`, and run `composer update` to get the latest
+Afterward just increment the plugin version inside `root/composer.json`, and run `composer update` to get the latest
 version.
 
 ### Folder install
@@ -82,23 +82,23 @@ cd [shopware6 root folder]
 
 - Flysystem - uses Flysystem to write SDK file export
 
-### Email template variable usage (supported as of Shopware 6.4.4.0)
+### Email template variable usage
 
 For create order emails:
 
 ```html
-{% set shopgateOrder = order.extensions.shopgateOrder %}
+{% set shopgateOrder = order.extensions.shopgateOrder|default(false) %}
 
 Selected shipping type:
 {% if shopgateOrder %}
-{{ shopgateOrder.receivedData.shipping_infos.display_name }}
+{{ shopgateOrder.getShippingMethodName() }}
 {% else %}
 {{ delivery.shippingMethod.translated.name }}
 {% endif %}
 
 Payment Type:
 {% if shopgateOrder %}
-{{ shopgateOrder.receivedData.payment_infos.shopgate_payment_name }}
+{{ shopgateOrder.getPaymentMethodName() }}
 {% endif %}
 ```
 

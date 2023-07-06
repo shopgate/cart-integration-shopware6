@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Shipping;
 
@@ -14,7 +12,7 @@ class GenericShippingMethod extends ShippingMethodEntity implements ClassCastInt
     protected $id = self::UUID;
     protected $deliveryTimeId = GenericDeliveryTime::UUID;
     protected $name = 'Generic Shipping (SG)';
-    protected $description = 'Used for Shopgate imports';
+    protected $description = '';
     protected $availabilityRuleId = IsShopgateRuleGroup::UUID;
     protected $active = false;
 

@@ -7,11 +7,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class ContextChangedEvent extends Event
 {
-    private SalesChannelContext $context;
-
-    public function __construct(SalesChannelContext $context)
+    public function __construct(private readonly SalesChannelContext $context)
     {
-        $this->context = $context;
     }
 
     public function getContext(): SalesChannelContext

@@ -16,27 +16,20 @@ use Throwable;
 
 class ContextComposer
 {
-    private ContextManager $contextManager;
-    private AddressComposer $addressComposer;
-    private QuoteErrorMapping $errorMapping;
-    private PaymentComposer $paymentComposer;
 
     public function __construct(
-        ContextManager $contextManager,
-        AddressComposer $addressComposer,
-        QuoteErrorMapping $errorMapping,
-        PaymentComposer $paymentComposer
-    ) {
-        $this->contextManager = $contextManager;
-        $this->addressComposer = $addressComposer;
-        $this->errorMapping = $errorMapping;
-        $this->paymentComposer = $paymentComposer;
+        private readonly ContextManager    $contextManager,
+        private readonly AddressComposer   $addressComposer,
+        private readonly QuoteErrorMapping $errorMapping,
+        private readonly PaymentComposer   $paymentComposer
+    )
+    {
     }
 
     public function getContextByCustomerId(string $customerId): SalesChannelContext
     {
         try {
-            return $this->contextManager->loadByCustomerId($customerId);
+            return $this->contextManager->loadByCustomerId($customerId)->getSalesContext();
         } catch (Throwable $e) {
             return $this->contextManager->getSalesContext();
         }
@@ -65,9 +58,9 @@ class ContextComposer
                         [SalesChannelContextService::SHIPPING_ADDRESS_ID => $addressBag[SalesChannelContextService::SHIPPING_ADDRESS_ID]]
                     ),
                     $channel
-                );
+                )->getSalesContext();
             } else {
-                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag), $channel);
+                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag), $channel)->getSalesContext();
             }
         } catch (ConstraintViolationException $exception) {
             throw $this->errorMapping->mapConstraintError($exception);
@@ -80,20 +73,21 @@ class ContextComposer
     {
         $dataBag = [SalesChannelContextService::PAYMENT_METHOD_ID => $uid];
 
-        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context)->getSalesContext();
     }
 
     public function addActiveShipping(string $shippingId, SalesChannelContext $context): SalesChannelContext
     {
         $dataBag = [SalesChannelContextService::SHIPPING_METHOD_ID => $shippingId];
 
-        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context);
+        return $this->contextManager->switchContext(new RequestDataBag($dataBag), $context)->getSalesContext();
     }
 
     public function resetContext(
         SalesChannelContext $originalContext,
         SalesChannelContext $currentContext
-    ): SalesChannelContext {
+    ): SalesChannelContext
+    {
         $payment = $this->paymentComposer->getCustomerActivePaymentMethodId($currentContext);
         $shipping = $currentContext->getSalesChannel()->getShippingMethodId();
 
@@ -101,6 +95,6 @@ class ContextComposer
             new RequestDataBag([
                 SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
                 SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
-            ]), $originalContext);
+            ]), $originalContext)->getSalesContext();
     }
 }

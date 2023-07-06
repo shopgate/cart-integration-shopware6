@@ -8,13 +8,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeCheckCartEvent extends Event
 {
-    private ExtendedCart $extendedCart;
-    private SalesChannelContext $context;
-
-    public function __construct(ExtendedCart $extendedCart, SalesChannelContext $context)
+    public function __construct(private readonly ExtendedCart $extendedCart, private readonly SalesChannelContext $context)
     {
-        $this->extendedCart = $extendedCart;
-        $this->context = $context;
     }
 
     public function getContext(): SalesChannelContext

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote\Events;
 
@@ -11,19 +9,12 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterGetOrdersLoadEvent extends Event
 {
-    private EntityCollection $result;
-    private SalesChannelContext $context;
 
-    public function __construct(EntityCollection $result, SalesChannelContext $context)
+    public function __construct(private readonly EntityCollection $result, private readonly SalesChannelContext $context)
     {
-        $this->result = $result;
-        $this->context = $context;
     }
 
-    /**
-     * @return EntityCollection|OrderCollection
-     */
-    public function getResult(): EntityCollection
+    public function getResult(): EntityCollection|OrderCollection
     {
         return $this->result;
     }

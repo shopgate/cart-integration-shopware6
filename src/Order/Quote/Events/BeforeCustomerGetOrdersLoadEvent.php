@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Quote\Events;
 
@@ -11,15 +9,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeCustomerGetOrdersLoadEvent extends Event
 {
-    private Criteria $criteria;
-    private Request $request;
-    private SalesChannelContext $context;
-
-    public function __construct(Criteria $criteria, Request $request, SalesChannelContext $context)
+    public function __construct(private readonly Criteria $criteria, private readonly Request $request, private readonly SalesChannelContext $context)
     {
-        $this->criteria = $criteria;
-        $this->request = $request;
-        $this->context = $context;
     }
 
     public function getCriteria(): Criteria

@@ -10,7 +10,7 @@
 
     {% if shopgateOrder %}
         <dd class="col-6 col-md-7 order-item-detail-labels-value">
-            {{ shopgateOrder.receivedData.payment_infos.shopgate_payment_name }}
+            {{ shopgateOrder.getPaymentMethodName() }}
         </dd>
     {% else %}
         {{ parent() }}
@@ -22,7 +22,7 @@
 
     {% if shopgateOrder %}
         <dd class="col-6 col-md-7 order-item-detail-labels-value">
-            {{ shopgateOrder.receivedData.shipping_infos.display_name }}
+            {{ shopgateOrder.getShippingMethodName() }}
         </dd>
     {% else %}
         {{ parent() }}

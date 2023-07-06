@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\State;
 
@@ -11,11 +9,9 @@ use Shopware\Core\System\StateMachine\Transition;
 
 class StateBridge
 {
-    private StateMachineRegistry $stateMachineRegistry;
 
-    public function __construct(StateMachineRegistry $stateMachineRegistry)
+    public function __construct(private readonly StateMachineRegistry $stateMachineRegistry)
     {
-        $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
     /**

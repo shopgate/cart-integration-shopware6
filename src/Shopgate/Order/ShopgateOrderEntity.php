@@ -22,7 +22,7 @@ class ShopgateOrderEntity extends Entity
     public bool $isCancelled;
     public bool $isPaid;
     public bool $isTest;
-    public $receivedData;
+    public array $receivedData;
     public ?OrderEntity $order = null;
 
     /**
@@ -174,6 +174,16 @@ class ShopgateOrderEntity extends Entity
         return $this->order;
     }
 
+    public function getShippingMethodName(): string
+    {
+        return $this->getReceivedData()->getShippingInfos()->getDisplayName();
+    }
+
+    public function getPaymentMethodName(): string
+    {
+        return $this->getReceivedData()->getPaymentInfos()['shopgate_payment_name'] ?? '';
+    }
+
     /**
      * @param string $id
      * @param string $channelId
@@ -193,9 +203,6 @@ class ShopgateOrderEntity extends Entity
             ->setReceivedData($order);
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [

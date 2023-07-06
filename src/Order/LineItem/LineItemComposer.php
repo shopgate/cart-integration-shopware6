@@ -9,7 +9,6 @@ use Shopgate\Shopware\Order\Quote\QuoteBridge;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedCart;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedOrder;
 use Shopgate\Shopware\System\Log\LoggerInterface;
-use ShopgateCartBase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Promotion\Cart\Error\PromotionNotEligibleError;
@@ -24,30 +23,18 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LineItemComposer
 {
-    private LineItemProductMapping $productMapping;
-    private LineItemPromoMapping $promoMapping;
-    private LoggerInterface $logger;
-    private EventDispatcherInterface $eventDispatcher;
-    private QuoteBridge $quoteBridge;
 
     public function __construct(
-        LineItemProductMapping $productMapping,
-        LineItemPromoMapping $promoMapping,
-        LoggerInterface $logger,
-        EventDispatcherInterface $eventDispatcher,
-        QuoteBridge $quoteBridge
-    ) {
-        $this->productMapping = $productMapping;
-        $this->promoMapping = $promoMapping;
-        $this->logger = $logger;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->quoteBridge = $quoteBridge;
+        private readonly LineItemProductMapping   $productMapping,
+        private readonly LineItemPromoMapping     $promoMapping,
+        private readonly LoggerInterface          $logger,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly QuoteBridge              $quoteBridge
+    )
+    {
     }
 
-    /**
-     * @param ExtendedCart|ExtendedOrder $cart
-     */
-    public function mapIncomingLineItems(ShopgateCartBase $cart): array
+    public function mapIncomingLineItems(ExtendedCart|ExtendedOrder $cart): array
     {
         $this->eventDispatcher->dispatch(new BeforeIncLineItemMappingEvent($cart));
         return array_merge(

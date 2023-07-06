@@ -1,11 +1,9 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Tax;
 
 use Shopgate\Shopware\Storefront\ContextManager;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Tax\Aggregate\TaxRule\TaxRuleEntity;
@@ -13,15 +11,15 @@ use Shopware\Core\System\Tax\TaxEntity;
 
 class TaxBridge
 {
-    private EntityRepositoryInterface $taxRepository;
-    private EntityRepositoryInterface $taxRuleRepository;
-    private EntityRepositoryInterface $taxRuleTypeRepository;
+    private EntityRepository $taxRepository;
+    private EntityRepository $taxRuleRepository;
+    private EntityRepository $taxRuleTypeRepository;
     private ContextManager $contextManager;
 
     public function __construct(
-        EntityRepositoryInterface $taxRepository,
-        EntityRepositoryInterface $taxRuleRepository,
-        EntityRepositoryInterface $taxRuleTypeRepository,
+        EntityRepository $taxRepository,
+        EntityRepository $taxRuleRepository,
+        EntityRepository $taxRuleTypeRepository,
         ContextManager $contextManager
     ) {
         $this->taxRepository = $taxRepository;

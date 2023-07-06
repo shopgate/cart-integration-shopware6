@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\System\Db\Migration;
 
@@ -37,7 +35,7 @@ class Migration1646325249ApiCredentials extends MigrationStep
             constraint sg_api_credentials_unique_shopNumber unique (shop_number),
             constraint sg_api_credentials_unique_customerNumber unique (customer_number),
             constraint sg_api_credentials_unique_apiKey unique (api_key),
-            constraint sg_api_credentials_language_id_fk 
+            constraint sg_api_credentials_language_id_fk
                 foreign key (language_id) references language (id) on delete cascade,
             constraint sg_api_credentials_sales_channel_id_fk
                 foreign key (sales_channel_id) references sales_channel (id) on delete cascade

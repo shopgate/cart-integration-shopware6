@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Payment;
 
@@ -20,18 +18,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class PaymentMapping
 {
-    private LoggerInterface $logger;
-    private ExtendedClassFactory $classFactory;
-    private EventDispatcherInterface $dispatcher;
 
-    public function __construct(
-        LoggerInterface $logger,
-        ExtendedClassFactory $classFactory,
-        EventDispatcherInterface $dispatcher
-    ) {
-        $this->logger = $logger;
-        $this->classFactory = $classFactory;
-        $this->dispatcher = $dispatcher;
+    public function __construct(private readonly LoggerInterface $logger, private readonly ExtendedClassFactory $classFactory, private readonly EventDispatcherInterface $dispatcher)
+    {
     }
 
     /**
@@ -41,10 +30,8 @@ class PaymentMapping
     {
         $this->dispatcher->dispatch(new BeforePaymentTypeMapping($sgCart, $collection));
         $class = GenericHandler::class;
-        switch ($sgCart->getPaymentMethod()) {
-            case 'COD':
-                $class = CashPayment::class;
-                break;
+        if ($sgCart->getPaymentMethod() == 'COD') {
+            $class = CashPayment::class;
         }
 
         /** @var ?PaymentMethodEntity $entry */
@@ -73,6 +60,7 @@ class PaymentMapping
         if ($paymentMethod->getFormattedHandlerIdentifier() === 'handler_shopware_defaultpayment') {
             $id = "_{$paymentMethod->getId()}";
         }
+
         return $paymentMethod->getFormattedHandlerIdentifier() . $id;
     }
 }

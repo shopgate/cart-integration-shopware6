@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Shopgate\Shopware\Catalog\Product\ProductBridge;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Property\PropertyBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
@@ -13,28 +14,25 @@ use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ConfigProductMapping extends SimpleProductMapping
 {
-    protected ContextManager $contextManager;
-    protected SortTree $sortTree;
-    private PropertyBridge $productProperties;
-    private Shopgate_Model_AbstractExport $childProductMapping;
-
     public function __construct(
-        ContextManager $contextManager,
-        CustomFieldBridge $customFieldSetBridge,
-        SortTree $sortTree,
-        PriceMapping $priceMapping,
-        TierPriceMapping $tierPriceMapping,
-        Formatter $translation,
-        CurrencyComposer $currencyComposer,
-        PropertyBridge $productProperties,
-        Shopgate_Model_AbstractExport $childProductMapping,
-        ExtendedClassFactory $classFactory,
-        AbstractProductCrossSellingRoute $crossSellingRoute,
-        EventDispatcherInterface $eventDispatcher
+        protected ContextManager $contextManager,
+        protected CustomFieldBridge $customFieldSetBridge,
+        protected SortTree $sortTree,
+        protected PriceMapping $priceMapping,
+        protected TierPriceMapping $tierPriceMapping,
+        protected Formatter $translation,
+        protected CurrencyComposer $currencyComposer,
+        protected PropertyBridge $productProperties,
+        protected ProductBridge $productBridge,
+        protected Shopgate_Model_AbstractExport $childProductMapping,
+        protected ExtendedClassFactory $classFactory,
+        protected AbstractProductCrossSellingRoute $crossSellingRoute,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct(
             $contextManager,
@@ -48,8 +46,6 @@ class ConfigProductMapping extends SimpleProductMapping
             $crossSellingRoute,
             $eventDispatcher
         );
-        $this->productProperties = $productProperties;
-        $this->childProductMapping = $childProductMapping;
     }
 
     public function setAttributeGroups(): void
@@ -78,11 +74,27 @@ class ConfigProductMapping extends SimpleProductMapping
     {
         $result = [];
         $children = $this->item->getChildren() ?: [];
+        $variantId = $this->checkVariantListingConfig() ?? $this->productBridge->findBestVariant($this->item->getId());
+
         foreach ($children as $child) {
             $exportChild = clone $this->childProductMapping;
-            $exportChild->setItem($child);
-            $result[] = $exportChild->generateData();
+            $result[] = $exportChild
+                ->setItem($child)
+                ->setDefaultChildId($variantId ?? $children->getIds()[0])
+                ->generateData();
         }
         parent::setChildren($result);
+    }
+
+    /**
+     * @throws InconsistentCriteriaIdsException
+     */
+    private function checkVariantListingConfig(): ?string
+    {
+        if (($listingConfig = $this->item->getVariantListingConfig()) === null) {
+            return null;
+        }
+
+        return $listingConfig->getMainVariantId();
     }
 }
