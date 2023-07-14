@@ -23,7 +23,7 @@ class ExtendedApiResponseXmlExport extends ExtendedPluginApiResponseXmlExport
         if (is_resource($this->data)) {
             $fp = $this->data;
         } elseif (is_string($this->data)) {
-            $fp = @fopen($this->data, 'rb');
+            $fp = fopen($this->data, 'rb');
         } else {
             return;
         }
