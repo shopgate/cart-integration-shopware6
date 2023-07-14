@@ -121,10 +121,15 @@ build zip:
   only:
     - tags
   script:
+    - cd $CI_PROJECT_DIR
+    - cp composer.json composer.json_
+    - composer remove --update-no-dev -- shopware/core symfony/expression-language
+    - mv composer.json_ composer.json
+    - rm -f composer.lock
     - shopware-cli extension validate $CI_PROJECT_DIR
     - shopware-cli extension zip $CI_PROJECT_DIR --disable-git --release --verbose --output-directory $PROJECT_ROOT
     - mv $PROJECT_ROOT/$PLUGIN_NAME.zip $CI_PROJECT_DIR/
-    - '[[ -r $CI_PROJECT_DIR/$PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip." && exit 1)'
+    - '[[ -r $PLUGIN_NAME.zip ]] || (echo "failed to create $PLUGIN_NAME.zip." && exit 1)'
   artifacts:
     name: '${PLUGIN_NAME}'
     expire_in: 1 year
