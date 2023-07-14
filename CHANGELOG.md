@@ -1,3 +1,7 @@
+# 3.0.1
+
+- fixed marketplace installation does not have the needed dependencies
+
 # 3.0.0
 
 - added support for SW 6.5.2.0
