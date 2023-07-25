@@ -50,7 +50,7 @@ Module.register('sg-api-credentials', {
             to: 'sg.api.credentials.index',
             label: 'sg-api-credentials.general.mainMenuItemGeneral',
             group: 'plugins',
-            icon: 'regular-shopping-bag'
+            iconComponent: 'shopgate-icon'
         }
     ]
 });
