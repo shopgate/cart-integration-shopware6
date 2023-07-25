@@ -1,3 +1,7 @@
+# 3.1.0
+
+- added Shopgate icon to settings > extensions tab 
+
 # 3.0.1
 
 - fixed marketplace installation does not have the needed dependencies
