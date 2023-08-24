@@ -1,6 +1,6 @@
 {
   "name": "shopgate/cart-integration-shopware6",
-  "description": "Shopgate Legacy plugin for Shopware 6",
+  "description": "Shopgate Shopping App Plugin for Shopware 6",
   "license": "proprietary",
   "type": "shopware-platform-plugin",
   "version": "3.1.0",
