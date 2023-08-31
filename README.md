@@ -13,24 +13,29 @@ composer require shopgate/cart-integration-shopware6
 Afterward just increment the plugin version inside `root/composer.json`, and run `composer update` to get the latest
 version.
 
-### Folder install
+#### Folder install
 
-It can be installed manually by copying the plugin folder to `custom/plugins` directory. However, please make sure you
-have a composer compiled version of the plugin. Meaning, you have a `vendor` directory in the plugin folder.
-
-#### Composer symlink
-
-After placing it in the `plugins` folder you can now link it to composer by running this command in the root
-directory:
+It can be installed manually by copying the plugin folder to `custom/plugins` directory. Like
+so `custom/plugins/SgateShopgatePluginSW6`. Then you can install & enable like any other plugin. For this install method,
+please make sure that there is a `vendor` directory inside the plugin folder as we have composer dependencies. You could
+do it yourself by running:
 
 ```shell
-cd [shopware6 root folder]
+cd [plugin folder]
+# this is because we do not want to install shopware core files
+composer remove shopware/core
+```
 
-# this step is required only in case you do not already have this in the root composer.json specified
-composer config repositories.sym '{"type": "path", "url": "custom/plugins/*", "options": {"symlink": true}}'
+#### Composer symlink (development)
 
-# make sure to use the exact version (e.g. `1.6.4`) that is provided in the composer.json of this plugin.
-composer require shopgate/cart-integration-shopware6:1.6.4
+Place the plugin in the `custom/plugins` folder. You can now link it to
+composer by running this command in the root directory:
+
+```shell
+cd custom/plugins
+git clone git@github.com:shopgate/cart-integration-shopware6.git
+cd ../..
+composer require shopgate/cart-integration-shopware6
 ```
 
 ## Enable & Activate
@@ -40,20 +45,24 @@ Install and activate the module:
 ```shell
 cd [shopware6 root folder]
 php bin/console plugin:refresh
-php bin/console plugin:install SgateShopgatePluginSW6
-php bin/console plugin:activate SgateShopgatePluginSW6
-php bin/console cache:clear
+php bin/console plugin:install -a SgateShopgatePluginSW6
 ```
 
 You may install and activate via the Shopware administration panel instead, if you prefer.
 
-## Compile frontend
+### JS Compilation
 
-This Shopware 6 command will compile the JavaScript of frontend and backend (optional):
+For Shopware 6.5+ after installing & enabling the plugin you will need to re-compile JS.
+If you have a GitHub installation, this should suffice:
 
 ```shell
-cd [shopware6 root folder]
-./bin/build-js.sh
+composer run build:js
+bin/console theme:compile
+```
+
+For regular installations via Symfony2 Flex, zip or shopware-installer.phar.php:
+```shell
+bin/build-js.sh
 ```
 
 # Known errors
@@ -91,14 +100,14 @@ For create order emails:
 
 Selected shipping type:
 {% if shopgateOrder %}
-{{ shopgateOrder.getShippingMethodName() }}
+  {{ shopgateOrder.getShippingMethodName() }}
 {% else %}
-{{ delivery.shippingMethod.translated.name }}
+  {{ delivery.shippingMethod.translated.name }}
 {% endif %}
 
 Payment Type:
 {% if shopgateOrder %}
-{{ shopgateOrder.getPaymentMethodName() }}
+  {{ shopgateOrder.getPaymentMethodName() }}
 {% endif %}
 ```
 
