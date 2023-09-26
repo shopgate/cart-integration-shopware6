@@ -44,7 +44,8 @@ class ShippingComposer
         private readonly CheckoutCartPageLoader   $cartPageLoader,
         private readonly StateComposer            $stateComposer,
         private readonly ContextManager           $contextManager,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly string                   $shopwareVersion
     )
     {
     }
@@ -62,7 +63,7 @@ class ShippingComposer
         $shippingCost = $quote->getShippingCost($this->contextManager->getSalesContext()->getTaxState());
         $shopCurrency = $this->contextManager->getSalesContext()->getCurrencyId();
         // for some reason manual shipping cost calculator uses default shop currency
-        if ($shopCurrency !== Defaults::CURRENCY) {
+        if ($shopCurrency !== Defaults::CURRENCY && version_compare($this->shopwareVersion, '6.5.5.0', '<')) {
             $shippingCost /= $this->contextManager->getSalesContext()->getCurrency()->getFactor();
         }
         $price = new CalculatedPrice(

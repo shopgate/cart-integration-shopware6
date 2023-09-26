@@ -168,7 +168,9 @@
         <service id="Shopgate\Shopware\Order\Payment\PaymentComposer"/>
         <service id="Shopgate\Shopware\Order\Payment\PaymentMapping"/>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingMapping"/>
-        <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer">
+            <argument key="$shopwareVersion" type="string">%kernel.shopware_version%</argument>
+        </service>
         <service id="Shopgate\Shopware\Order\Shipping\ShippingBridge"/>
         <service id="Shopgate\Shopware\Order\State\StateBridge"/>
         <service id="Shopgate\Shopware\Order\State\StateComposer"/>
