@@ -1,3 +1,7 @@
+# 3.1.1
+
+- removed order manual shipping re-calculation for 6.5.5.0+
+
 # 3.1.0
 
 - added Shopgate icon to settings > extensions tab 
