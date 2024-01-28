@@ -1,3 +1,7 @@
+# 3.1.1
+
+- added filter for product ID to avoid duplicates in product export
+
 # 3.1.0
 
 - added Shopgate icon to settings > extensions tab 
