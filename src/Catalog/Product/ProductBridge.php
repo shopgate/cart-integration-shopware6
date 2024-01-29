@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Catalog\Product;
 
@@ -17,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Grouping\FieldGrouping;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ProductBridge
@@ -78,9 +77,11 @@ class ProductBridge
                 'children.properties',
                 'children.properties.group',
                 'children.seoUrls',
-                'children.unit'
+                'children.unit',
             ])
-            ->addSorting(...$this->productSorting->getDefaultSorting());
+            ->addSorting(...$this->productSorting->getDefaultSorting())
+            ->addGroupField(new FieldGrouping('id'));
+
         $criteria->setTitle('shopgate::products::complex');
         // Simple products have child_count = 0, Children have 'null', Variants have 0+
         $types = $this->configReader->get('productTypesToExport');

@@ -1,3 +1,7 @@
+# 2.10.2
+
+- added filter for product ID to avoid duplicates in product export
+
 # 2.10.1
 
 - changed order payment/shipping labels to inherit parent if not a shopgate order

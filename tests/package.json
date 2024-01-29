@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "newman": "latest",
+    "newman": "^5.3",
     "@mockoon/cli": "1.5.*",
-    "newman-reporter-htmlextra": "latest"
+    "newman-reporter-htmlextra": "~1.22.11"
   }
 }
