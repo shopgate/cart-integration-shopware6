@@ -32,7 +32,8 @@ class ProductComposer
             $shopgateProduct = $this->productMapFactory->createMapClass($product);
             $shopgateProduct->setItem($product);
             try {
-                $list[] = $shopgateProduct->generateData();
+                $item = $shopgateProduct->generateData();
+                $list[$item->getUid()] = $item;
             } catch (Throwable $exception) {
                 $error = "Skipping export of product with id: {$product->getId()}
                     Message: {$exception->getMessage()},
