@@ -6,10 +6,10 @@ use Shopgate\Shopware\Customer\Mapping\LocationMapping;
 use Shopware\Core\System\Tax\TaxRuleType\EntireCountryRuleTypeFilter as EntireCountry;
 use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as IndividualStates;
 
-class TaxComposer
+readonly class TaxComposer
 {
 
-    public function __construct(private readonly LocationMapping $locationMapping, private readonly TaxBridge $taxBridge)
+    public function __construct(private LocationMapping $locationMapping, private TaxBridge $taxBridge)
     {
     }
 

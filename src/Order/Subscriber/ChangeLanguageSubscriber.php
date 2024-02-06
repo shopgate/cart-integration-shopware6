@@ -9,10 +9,10 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class ChangeLanguageSubscriber implements EventSubscriberInterface
+readonly class ChangeLanguageSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private readonly string $languageId, private readonly ContextManager $contextManager)
+    public function __construct(private string $languageId, private ContextManager $contextManager)
     {
     }
 

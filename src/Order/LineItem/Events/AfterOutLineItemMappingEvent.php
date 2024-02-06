@@ -9,8 +9,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterOutLineItemMappingEvent extends Event
 {
-    public function __construct(private readonly DataBag $dataBag, private readonly Cart $swCart, private readonly ExtendedCart $sgCart)
-    {
+    public function __construct(
+        private readonly DataBag $dataBag,
+        private readonly Cart $swCart,
+        private readonly ExtendedCart $sgCart
+    ) {
     }
 
     public function getDataBag(): DataBag

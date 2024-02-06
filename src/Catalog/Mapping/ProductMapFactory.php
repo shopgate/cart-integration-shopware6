@@ -5,9 +5,9 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
-class ProductMapFactory
+readonly class ProductMapFactory
 {
-    public function __construct(private readonly Shopgate_Model_Catalog_Product $simpleProductMapping, private readonly Shopgate_Model_Catalog_Product $variantProductMapping)
+    public function __construct(private Shopgate_Model_Catalog_Product $simpleProductMapping, private Shopgate_Model_Catalog_Product $variantProductMapping)
     {
     }
 

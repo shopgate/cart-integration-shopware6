@@ -8,8 +8,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeAddOrderEvent extends Event
 {
-    public function __construct(private readonly ShopgateOrder $shopgateOrder, private readonly SalesChannelContext $context)
-    {
+    public function __construct(
+        private readonly ShopgateOrder $shopgateOrder,
+        private readonly SalesChannelContext $context
+    ) {
     }
 
     public function getContext(): SalesChannelContext

@@ -21,15 +21,15 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class LineItemComposer
+readonly class LineItemComposer
 {
 
     public function __construct(
-        private readonly LineItemProductMapping   $productMapping,
-        private readonly LineItemPromoMapping     $promoMapping,
-        private readonly LoggerInterface          $logger,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly QuoteBridge              $quoteBridge
+        private LineItemProductMapping   $productMapping,
+        private LineItemPromoMapping     $promoMapping,
+        private LoggerInterface          $logger,
+        private EventDispatcherInterface $eventDispatcher,
+        private QuoteBridge              $quoteBridge
     )
     {
     }

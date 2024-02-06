@@ -23,24 +23,23 @@ use ShopgateOrder;
 use ShopgatePaymentMethod;
 use ShopgateShippingMethod;
 
-class ExtendedClassFactory
+readonly class ExtendedClassFactory
 {
 
     public function __construct(
-        private readonly ShopgateCart                        $cart,
-        private readonly ShopgateCartItem                    $cartItem,
-        private readonly ShopgateExternalOrderItem           $orderItem,
-        private readonly ShopgateExternalOrderTax            $orderTax,
-        private readonly ShopgateExternalCoupon              $externalCoupon,
-        private readonly ShopgateExternalOrderExternalCoupon $orderExportCoupon,
-        private readonly ShopgateOrder                       $order,
-        private readonly Shopgate_Model_Catalog_Property     $property,
-        private readonly ShopgateShippingMethod              $shippingMethod,
-        private readonly ShopgateDeliveryNote                $deliveryNote,
-        private readonly ShopgateExternalOrderExtraCost      $orderExtraCost,
-        private readonly ShopgatePaymentMethod               $paymentMethod
-    )
-    {
+        private ShopgateCart $cart,
+        private ShopgateCartItem $cartItem,
+        private ShopgateExternalOrderItem $orderItem,
+        private ShopgateExternalOrderTax $orderTax,
+        private ShopgateExternalCoupon $externalCoupon,
+        private ShopgateExternalOrderExternalCoupon $orderExportCoupon,
+        private ShopgateOrder $order,
+        private Shopgate_Model_Catalog_Property $property,
+        private ShopgateShippingMethod $shippingMethod,
+        private ShopgateDeliveryNote $deliveryNote,
+        private ShopgateExternalOrderExtraCost $orderExtraCost,
+        private ShopgatePaymentMethod $paymentMethod
+    ) {
     }
 
     public function createCartItem(): ExtendedCartItem|ShopgateCartItem

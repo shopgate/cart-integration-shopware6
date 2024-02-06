@@ -25,19 +25,18 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class QuoteBridge
+readonly class QuoteBridge
 {
 
     public function __construct(
-        private readonly AbstractCartOrderRoute   $cartOrderRoute,
-        private readonly AbstractCartLoadRoute    $cartLoadRoute,
-        private readonly AbstractCartItemAddRoute $cartItemAddRoute,
-        private readonly AbstractCartDeleteRoute  $cartDeleteRoute,
-        private readonly AbstractOrderRoute       $orderRoute,
-        private readonly EntityRepository         $orderRepository,
-        private readonly EventDispatcherInterface $dispatcher
-    )
-    {
+        private AbstractCartOrderRoute $cartOrderRoute,
+        private AbstractCartLoadRoute $cartLoadRoute,
+        private AbstractCartItemAddRoute $cartItemAddRoute,
+        private AbstractCartDeleteRoute $cartDeleteRoute,
+        private AbstractOrderRoute $orderRoute,
+        private EntityRepository $orderRepository,
+        private EventDispatcherInterface $dispatcher
+    ) {
     }
 
     public function loadCartFromContext(SalesChannelContext $context): Cart
@@ -66,11 +65,10 @@ class QuoteBridge
     }
 
     public function getOrdersAsCustomer(
-        Request             $request,
-        Criteria            $criteria,
+        Request $request,
+        Criteria $criteria,
         SalesChannelContext $context
-    ): OrderRouteResponse
-    {
+    ): OrderRouteResponse {
         $criteria->setTitle('shopgate::orders::as-customer');
         $this->dispatcher->dispatch(new BeforeCustomerGetOrdersLoadEvent($criteria, $request, $context));
         $result = $this->orderRoute->load($request, $context, $criteria);

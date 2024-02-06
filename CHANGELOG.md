@@ -1,3 +1,7 @@
+# 3.2.0
+
+- changed composer package versioning to support 6.6.0-rc2
+
 # 3.1.1
 
 - added filter for product ID to avoid duplicates in product export

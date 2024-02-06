@@ -9,9 +9,9 @@ use ShopgateCustomer;
 use ShopgateLibraryException;
 use ShopgateOrder;
 
-class ImportService
+readonly class ImportService
 {
-    public function __construct(private readonly CustomerComposer $customerComposer, private readonly OrderComposer $orderComposer)
+    public function __construct(private CustomerComposer $customerComposer, private OrderComposer $orderComposer)
     {
     }
 

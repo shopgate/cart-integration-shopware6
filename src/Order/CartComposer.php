@@ -16,20 +16,19 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class CartComposer
+readonly class CartComposer
 {
 
     public function __construct(
-        private readonly ShippingComposer         $shippingComposer,
-        private readonly ContextManager           $contextManager,
-        private readonly ContextComposer          $contextComposer,
-        private readonly LineItemComposer         $lineItemComposer,
-        private readonly QuoteBridge              $quoteBridge,
-        private readonly PaymentComposer          $paymentComposer,
-        private readonly OrderCustomerComposer    $orderCustomerComposer,
-        private readonly EventDispatcherInterface $eventDispatcher
-    )
-    {
+        private ShippingComposer $shippingComposer,
+        private ContextManager $contextManager,
+        private ContextComposer $contextComposer,
+        private LineItemComposer $lineItemComposer,
+        private QuoteBridge $quoteBridge,
+        private PaymentComposer $paymentComposer,
+        private OrderCustomerComposer $orderCustomerComposer,
+        private EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**

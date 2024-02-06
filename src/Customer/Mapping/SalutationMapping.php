@@ -11,12 +11,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Salutation\SalutationEntity;
 
-class SalutationMapping
+readonly class SalutationMapping
 {
     public function __construct(
-        private readonly EntityRepository $swSalutationRepository,
-        private readonly EntityRepository $sgSalutationRepository,
-        private readonly ContextManager   $contextManager)
+        private EntityRepository $swSalutationRepository,
+        private EntityRepository $sgSalutationRepository,
+        private ContextManager   $contextManager)
     {
     }
 

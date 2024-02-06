@@ -13,11 +13,10 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
 
     public function __construct(
         ShopgateAuthenticationServiceInterface $authService,
-        ?string                                $shopNumber,
-        ?string                                $apiUrl,
-        private readonly LoggerInterface       $logger
-    )
-    {
+        ?string $shopNumber,
+        ?string $apiUrl,
+        private readonly LoggerInterface $logger
+    ) {
         parent::__construct($authService, $shopNumber, $apiUrl);
     }
 
@@ -27,12 +26,15 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
         $trackingNumber = '',
         $markAsCompleted = false,
         $sendCustomerEmail = false
-    ): bool
-    {
+    ): bool {
         $isSent = true;
         try {
             parent::addOrderDeliveryNote(
-                $orderNumber, $shippingServiceId, $trackingNumber, $markAsCompleted, $sendCustomerEmail
+                $orderNumber,
+                $shippingServiceId,
+                $trackingNumber,
+                $markAsCompleted,
+                $sendCustomerEmail
             );
         } catch (Throwable $e) {
             // set status to "sent" if it's a soft error
@@ -53,12 +55,15 @@ class ExtendedMerchantApi extends ShopgateMerchantApi
         $cancellationItems = array(),
         $cancelShipping = false,
         $cancellationNote = ''
-    ): bool
-    {
+    ): bool {
         $isCancelled = true;
         try {
             parent::cancelOrder(
-                $orderNumber, $cancelCompleteOrder, $cancellationItems, $cancelShipping, $cancellationNote
+                $orderNumber,
+                $cancelCompleteOrder,
+                $cancellationItems,
+                $cancelShipping,
+                $cancellationNote
             );
         } catch (Throwable $e) {
             if (!$this->isSoftOrderStatusError($e)) {

@@ -12,7 +12,6 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Db\Shipping\FreeShippingMethod;
 use Shopgate\Shopware\System\Db\Shipping\GenericShippingMethod;
 use Shopgate\Shopware\System\Formatter;
-use ShopgateCartBase;
 use ShopgateDeliveryNote;
 use ShopgateExternalOrderExtraCost;
 use ShopgateShippingMethod;
@@ -20,18 +19,17 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 
-class ShippingMapping
+readonly class ShippingMapping
 {
 
     public function __construct(
-        private readonly ExtendedClassFactory $classFactory,
-        private readonly TaxMapping           $taxMapping,
-        private readonly ShopgateOrderMapping $shopgateOrderMapping,
-        private readonly StateComposer        $stateMapping,
-        private readonly ContextManager       $contextManager,
-        private readonly Formatter            $formatter
-    )
-    {
+        private ExtendedClassFactory $classFactory,
+        private TaxMapping $taxMapping,
+        private ShopgateOrderMapping $shopgateOrderMapping,
+        private StateComposer $stateMapping,
+        private ContextManager $contextManager,
+        private Formatter $formatter
+    ) {
     }
 
     public function mapOutCartShippingMethod(Delivery $delivery): ShopgateShippingMethod
@@ -58,9 +56,8 @@ class ShippingMapping
 
     public function mapOutOrderShippingMethod(
         CalculatedPrice $shippingCosts,
-        string          $taxStatus
-    ): ShopgateExternalOrderExtraCost
-    {
+        string $taxStatus
+    ): ShopgateExternalOrderExtraCost {
         $sgExport = $this->classFactory->createOrderExtraCost();
         [$withTax,] = $this->taxMapping->calculatePrices($shippingCosts, $taxStatus);
         $sgExport->setAmount($withTax); // always gross return
@@ -76,10 +73,14 @@ class ShippingMapping
     {
         $sgDelivery = $this->classFactory->createDeliveryNote();
         $sgDelivery->setShippingServiceId(ShopgateDeliveryNote::OTHER);
-        $sgDelivery->setShippingServiceName($this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder()));
+        $sgDelivery->setShippingServiceName(
+            $this->shopgateOrderMapping->getShippingMethodName($deliveryEntity->getOrder())
+        );
         $sgDelivery->setTrackingNumber(implode(', ', $deliveryEntity->getTrackingCodes()));
 
-        if (($state = $deliveryEntity->getStateMachineState()) && $this->stateMapping->isAtLeastPartialShipped($state)) {
+        if (($state = $deliveryEntity->getStateMachineState()) && $this->stateMapping->isAtLeastPartialShipped(
+                $state
+            )) {
             $shippedDate = $this->stateMapping->getStateTime($state);
             $sgDelivery->setShippingTime($shippedDate ?: null);
         }

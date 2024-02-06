@@ -17,8 +17,11 @@ class AfterIncItemMappingEvent extends Event
     /** Can be set in data bag to skip the item import */
     public const SKIP = 'skip';
 
-    public function __construct(private readonly DataBag $mapping, private readonly ShopgateOrderItem $item, private readonly SalesChannelContext $context)
-    {
+    public function __construct(
+        private readonly DataBag $mapping,
+        private readonly ShopgateOrderItem $item,
+        private readonly SalesChannelContext $context
+    ) {
     }
 
     /**

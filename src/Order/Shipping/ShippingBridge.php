@@ -15,11 +15,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Symfony\Component\HttpFoundation\Request;
 
-class ShippingBridge
+readonly class ShippingBridge
 {
 
-    public function __construct(private readonly AbstractShippingMethodRoute $shippingMethodRoute, private readonly StateBridge $stateBridge)
-    {
+    public function __construct(
+        private AbstractShippingMethodRoute $shippingMethodRoute,
+        private StateBridge $stateBridge
+    ) {
     }
 
     public function getShippingMethods(SalesChannelContext $context): ShippingMethodCollection
@@ -44,6 +46,7 @@ class ShippingBridge
             'order_delivery',
             $deliveryId,
             'ship',
-            $context->getContext());
+            $context->getContext()
+        );
     }
 }

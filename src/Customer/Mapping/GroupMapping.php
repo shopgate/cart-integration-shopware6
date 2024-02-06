@@ -5,7 +5,7 @@ namespace Shopgate\Shopware\Customer\Mapping;
 use ShopgateCustomerGroup;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 
-class GroupMapping
+readonly class GroupMapping
 {
 
     public function toShopgateGroup(CustomerGroupEntity $entity): ShopgateCustomerGroup

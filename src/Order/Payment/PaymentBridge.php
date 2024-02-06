@@ -11,13 +11,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Symfony\Component\HttpFoundation\Request;
 
-class PaymentBridge
+readonly class PaymentBridge
 {
 
     public function __construct(
-        private readonly AbstractPaymentMethodRoute $paymentMethodRoute,
-        private readonly StateBridge                $stateBridge,
-        private readonly ContextManager             $contextManager
+        private AbstractPaymentMethodRoute $paymentMethodRoute,
+        private StateBridge                $stateBridge,
+        private ContextManager             $contextManager
     )
     {
     }

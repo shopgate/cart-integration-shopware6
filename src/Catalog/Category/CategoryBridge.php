@@ -9,10 +9,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
-class CategoryBridge
+readonly class CategoryBridge
 {
 
-    public function __construct(private readonly AbstractCategoryListRoute $categoryListRoute, private readonly ContextManager $contextManager)
+    public function __construct(private AbstractCategoryListRoute $categoryListRoute, private ContextManager $contextManager)
     {
     }
 

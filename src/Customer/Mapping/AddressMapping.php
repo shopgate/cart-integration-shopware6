@@ -12,13 +12,13 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
-class AddressMapping
+readonly class AddressMapping
 {
 
     public function __construct(
-        private readonly LocationMapping    $locationMapping,
-        private readonly SalutationMapping  $salutationMapping,
-        private readonly CustomFieldMapping $customFieldMapping
+        private LocationMapping    $locationMapping,
+        private SalutationMapping  $salutationMapping,
+        private CustomFieldMapping $customFieldMapping
     )
     {
     }

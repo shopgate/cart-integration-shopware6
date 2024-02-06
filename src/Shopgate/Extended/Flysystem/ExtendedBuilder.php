@@ -25,7 +25,7 @@ class ExtendedBuilder extends ShopgateBuilder
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
-        private readonly PrefixFilesystem             $privateFileSystem,
+        private readonly PrefixFilesystem $privateFileSystem,
         private readonly ShopgateMerchantApiInterface $merchantApi,
         private readonly ShopgateAuthenticationServiceInterface $authService
     ) {

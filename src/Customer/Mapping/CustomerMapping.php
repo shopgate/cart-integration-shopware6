@@ -8,14 +8,14 @@ use ShopgateLibraryException;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 
-class CustomerMapping
+readonly class CustomerMapping
 {
 
     public function __construct(
-        private readonly GroupMapping      $groupMapping,
-        private readonly AddressMapping    $addressMapping,
-        private readonly SalutationMapping $salutationMapping,
-        private readonly CustomFieldMapping $customFieldMapping
+        private GroupMapping      $groupMapping,
+        private AddressMapping    $addressMapping,
+        private SalutationMapping $salutationMapping,
+        private CustomFieldMapping $customFieldMapping
     ) {
     }
 

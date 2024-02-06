@@ -6,10 +6,10 @@ use Shopgate\Shopware\Catalog\Review\Events\BeforeReviewLoadEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class AddChannelFilterSubscriber implements EventSubscriberInterface
+readonly class AddChannelFilterSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private readonly bool $exportAllChannelReviews)
+    public function __construct(private bool $exportAllChannelReviews)
     {
     }
 

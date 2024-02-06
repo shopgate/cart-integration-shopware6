@@ -8,14 +8,14 @@ use ShopgateOrder;
 use ShopgateOrderCustomField;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 
-class CustomFieldMapping
+readonly class CustomFieldMapping
 {
 
     /**
      * @param array $whitelist - allowed exported custom fields
      * @param array $transformList - map of Shopgate key to Shopware key
      */
-    public function __construct(private readonly array $whitelist, private readonly array $transformList = [])
+    public function __construct(private array $whitelist, private array $transformList = [])
     {
     }
 

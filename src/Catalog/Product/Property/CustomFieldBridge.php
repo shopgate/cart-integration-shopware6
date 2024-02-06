@@ -9,10 +9,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\CustomField\CustomFieldCollection;
 
-class CustomFieldBridge
+readonly class CustomFieldBridge
 {
 
-    public function __construct(private readonly EntityRepository $customFieldRepository, private readonly ContextManager $contextManager)
+    public function __construct(private EntityRepository $customFieldRepository, private ContextManager $contextManager)
     {
     }
 

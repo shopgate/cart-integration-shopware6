@@ -10,13 +10,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 
-class LocationMapping
+readonly class LocationMapping
 {
 
     public function __construct(
-        private readonly EntityRepository $countryRepository,
-        private readonly EntityRepository $stateRepository,
-        private readonly ContextManager $contextManager
+        private EntityRepository $countryRepository,
+        private EntityRepository $stateRepository,
+        private ContextManager $contextManager
     )
     {
     }

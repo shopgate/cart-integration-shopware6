@@ -7,10 +7,10 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
 
-class StateBridge
+readonly class StateBridge
 {
 
-    public function __construct(private readonly StateMachineRegistry $stateMachineRegistry)
+    public function __construct(private StateMachineRegistry $stateMachineRegistry)
     {
     }
 

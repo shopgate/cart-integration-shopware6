@@ -9,10 +9,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class AddressBridge
+readonly class AddressBridge
 {
 
-    public function __construct(private readonly AbstractUpsertAddressRoute $upsertAddressRoute, private readonly EntityRepository $addressRepository)
+    public function __construct(private AbstractUpsertAddressRoute $upsertAddressRoute, private EntityRepository $addressRepository)
     {
     }
 

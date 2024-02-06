@@ -8,11 +8,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\System\Currency\CurrencyFormatter;
 
-class CurrencyComposer
+readonly class CurrencyComposer
 {
 
-    public function __construct(private readonly CurrencyFormatter $currencyFormatter, private readonly CashRounding $rounding, private readonly ContextManager $contextManager)
-    {
+    public function __construct(
+        private CurrencyFormatter $currencyFormatter,
+        private CashRounding $rounding,
+        private ContextManager $contextManager
+    ) {
     }
 
     /**

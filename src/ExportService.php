@@ -20,21 +20,20 @@ use ShopgateExternalOrder;
 use ShopgateLibraryException;
 use ShopgatePluginApi;
 
-class ExportService
+readonly class ExportService
 {
 
     public function __construct(
-        private readonly LoggerInterface  $log,
-        private readonly CategoryComposer $categoryComposer,
-        private readonly ConfigBridge     $configBridge,
-        private readonly TaxComposer      $taxComposer,
-        private readonly CustomerComposer $customerComposer,
-        private readonly ProductComposer  $productComposer,
-        private readonly OrderComposer    $orderComposer,
-        private readonly CartComposer     $cartComposer,
-        private readonly ReviewComposer   $reviewComposer
-    )
-    {
+        private LoggerInterface $log,
+        private CategoryComposer $categoryComposer,
+        private ConfigBridge $configBridge,
+        private TaxComposer $taxComposer,
+        private CustomerComposer $customerComposer,
+        private ProductComposer $productComposer,
+        private OrderComposer $orderComposer,
+        private CartComposer $cartComposer,
+        private ReviewComposer $reviewComposer
+    ) {
     }
 
     /**

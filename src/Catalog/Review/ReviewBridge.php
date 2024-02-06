@@ -11,13 +11,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class ReviewBridge
+readonly class ReviewBridge
 {
 
     public function __construct(
-        private readonly ContextManager   $contextManager,
-        private readonly EntityRepository $reviewRepository,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private ContextManager   $contextManager,
+        private EntityRepository $reviewRepository,
+        private EventDispatcherInterface $eventDispatcher
     ) {
     }
 

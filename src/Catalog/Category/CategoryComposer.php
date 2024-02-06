@@ -8,13 +8,13 @@ use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_Category;
 use Shopware\Core\Content\Category\CategoryEntity;
 
-class CategoryComposer
+readonly class CategoryComposer
 {
 
     public function __construct(
-        private readonly LoggerInterface $log,
-        private readonly CategoryBridge $categoryBridge,
-        private readonly Shopgate_Model_AbstractExport $categoryMapping
+        private LoggerInterface $log,
+        private CategoryBridge $categoryBridge,
+        private Shopgate_Model_AbstractExport $categoryMapping
     ) {
     }
 

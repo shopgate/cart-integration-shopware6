@@ -16,16 +16,16 @@ use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
-class CustomerComposer
+readonly class CustomerComposer
 {
 
     public function __construct(
-        private readonly ContextManager           $contextManager,
-        private readonly AbstractRegisterRoute    $registerRoute,
-        private readonly CustomerBridge           $customerBridge,
-        private readonly CustomerMapping          $customerMapping,
-        private readonly ConfigBridge             $configBridge,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private ContextManager           $contextManager,
+        private AbstractRegisterRoute    $registerRoute,
+        private CustomerBridge           $customerBridge,
+        private CustomerMapping          $customerMapping,
+        private ConfigBridge             $configBridge,
+        private EventDispatcherInterface $eventDispatcher
     )
     {
     }

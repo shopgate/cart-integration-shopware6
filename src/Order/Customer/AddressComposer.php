@@ -12,13 +12,13 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class AddressComposer
+readonly class AddressComposer
 {
 
     public function __construct(
-        private readonly CustomerBridge $customerBridge,
-        private readonly AddressMapping $addressMapping,
-        private readonly AddressBridge $addressBridge
+        private CustomerBridge $customerBridge,
+        private AddressMapping $addressMapping,
+        private AddressBridge $addressBridge
     ) {
     }
 

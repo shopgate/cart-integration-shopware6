@@ -18,13 +18,13 @@ use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\Framework\Rule\Container\OrRule;
 use Shopware\Core\Framework\Rule\Rule;
 
-class TierPriceMapping
+readonly class TierPriceMapping
 {
 
     public function __construct(
-        private readonly CustomerBridge   $customerBridge,
-        private readonly CurrencyComposer $currencyComposer,
-        private readonly PriceMapping $priceMapping
+        private CustomerBridge   $customerBridge,
+        private CurrencyComposer $currencyComposer,
+        private PriceMapping $priceMapping
     ) {
     }
 

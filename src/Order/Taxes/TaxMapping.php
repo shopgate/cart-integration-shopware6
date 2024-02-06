@@ -15,16 +15,15 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class TaxMapping
+readonly class TaxMapping
 {
 
     public function __construct(
-        private readonly CurrencyComposer     $currencyComposer,
-        private readonly ExtendedClassFactory $classFactory,
-        private readonly Formatter            $formatter,
-        private readonly ProductBridge        $productBridge
-    )
-    {
+        private CurrencyComposer $currencyComposer,
+        private ExtendedClassFactory $classFactory,
+        private Formatter $formatter,
+        private ProductBridge $productBridge
+    ) {
     }
 
     /**

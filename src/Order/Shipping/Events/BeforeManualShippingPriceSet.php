@@ -9,8 +9,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeManualShippingPriceSet extends Event
 {
-    public function __construct(private readonly CalculatedPrice $price, private readonly Cart $swCart, private readonly ShopgateCartBase $sgOrder)
-    {
+    public function __construct(
+        private readonly CalculatedPrice $price,
+        private readonly Cart $swCart,
+        private readonly ShopgateCartBase $sgOrder
+    ) {
     }
 
     public function getPrice(): CalculatedPrice

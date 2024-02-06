@@ -14,16 +14,15 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 
-class ContextComposer
+readonly class ContextComposer
 {
 
     public function __construct(
-        private readonly ContextManager    $contextManager,
-        private readonly AddressComposer   $addressComposer,
-        private readonly QuoteErrorMapping $errorMapping,
-        private readonly PaymentComposer   $paymentComposer
-    )
-    {
+        private ContextManager $contextManager,
+        private AddressComposer $addressComposer,
+        private QuoteErrorMapping $errorMapping,
+        private PaymentComposer $paymentComposer
+    ) {
     }
 
     public function getContextByCustomerId(string $customerId): SalesChannelContext
@@ -60,7 +59,10 @@ class ContextComposer
                     $channel
                 )->getSalesContext();
             } else {
-                $newContext = $this->contextManager->switchContext(new RequestDataBag($addressBag), $channel)->getSalesContext();
+                $newContext = $this->contextManager->switchContext(
+                    new RequestDataBag($addressBag),
+                    $channel
+                )->getSalesContext();
             }
         } catch (ConstraintViolationException $exception) {
             throw $this->errorMapping->mapConstraintError($exception);
@@ -86,8 +88,7 @@ class ContextComposer
     public function resetContext(
         SalesChannelContext $originalContext,
         SalesChannelContext $currentContext
-    ): SalesChannelContext
-    {
+    ): SalesChannelContext {
         $payment = $this->paymentComposer->getCustomerActivePaymentMethodId($currentContext);
         $shipping = $currentContext->getSalesChannel()->getShippingMethodId();
 
@@ -95,6 +96,8 @@ class ContextComposer
             new RequestDataBag([
                 SalesChannelContextService::PAYMENT_METHOD_ID => $payment,
                 SalesChannelContextService::SHIPPING_METHOD_ID => $shipping
-            ]), $originalContext)->getSalesContext();
+            ]),
+            $originalContext
+        )->getSalesContext();
     }
 }
