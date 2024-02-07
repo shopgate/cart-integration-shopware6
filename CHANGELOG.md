@@ -1,3 +1,8 @@
+# 3.1.2
+
+- updated symfony expression dependency to support ver 6.4
+- fixed error with command `bin/console debug:event-dispatcher`
+
 # 3.1.1
 
 - added filter for product ID to avoid duplicates in product export
