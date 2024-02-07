@@ -276,7 +276,7 @@
             <argument key="$shopgateApiRepo" type="service" id="shopgate_api_credentials.repository"/>
             <argument key="$shopwareVersion" type="string">%kernel.shopware_version%</argument>
             <call method="loadByShopNumber">
-                <argument type="expression">service('request_stack').getCurrentRequest().request.get('shop_number')</argument>
+                <argument type="expression">service('request_stack').getCurrentRequest()?.request.get('shop_number')</argument>
             </call>
         </service>
         <service id="sg.order.custom_field.whitelist" class="Shopgate\Shopware\System\CustomFields\CustomFieldMapping">
