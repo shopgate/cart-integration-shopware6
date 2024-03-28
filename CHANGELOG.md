@@ -1,6 +1,11 @@
 # 3.2.0
 
-- changed composer package versioning to support 6.6.0-rc2
+- changed composer package versioning to support 6.6.0
+
+# 3.1.2
+
+- updated symfony expression dependency to support ver 6.4
+- fixed error with command `bin/console debug:event-dispatcher`
 
 # 3.1.1
 

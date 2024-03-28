@@ -69,12 +69,13 @@ newman:
     matrix:
       - PLATFORM_BRANCH:
           - 6.5.2.0
-          - 6.6.0.0-rc1
+          - 6.6.0.0
       - PHP_VERSION:
           - '8.1'
   except:
     - tags
   script:
+    - bin/console debug:event-dispatcher >/dev/null
     - export APP_URL="http://$HOSTNAME"
     - cd $CI_PROJECT_DIR/tests
     - npm install > /dev/null
