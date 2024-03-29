@@ -13,7 +13,6 @@ class GenericShippingMethod extends ShippingMethodEntity implements ClassCastInt
     protected $deliveryTimeId = GenericDeliveryTime::UUID;
     protected $name = 'Generic Shipping (SG)';
     protected $description = '';
-    protected ?string $availabilityRuleId = null;
     protected $active = false;
 
     public function __construct()

@@ -13,7 +13,6 @@ class FreeShippingMethod extends ShippingMethodEntity implements ClassCastInterf
     protected $deliveryTimeId = GenericDeliveryTime::UUID;
     protected $name = 'Free Shipping (SG)';
     protected $description = '';
-    protected ?string $availabilityRuleId = null;
     protected $active = false;
 
     public function __construct()
