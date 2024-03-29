@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "init": "node_modules/.bin/newman run ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --global-var 'mock_server_merchant_uri=http://host.docker.internal:3000' --folder Init --color=on --bail",
+    "init": "node_modules/.bin/newman run ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --folder Init --color=on --bail",
     "full": "node_modules/.bin/newman run ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --color=on --bail",
     "ci": "node_modules/.bin/newman run -r cli,htmlextra,junit ./Postman/collection.json -e ./Postman/environment.json -g ./Postman/globals.json --color=on --insecure --no-insecure-file-read",
     "mockoon-start": "cd Mockoon && ../node_modules/.bin/mockoon-cli start --data ./environment.json && cd ..",
