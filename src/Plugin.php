@@ -24,9 +24,7 @@ class Plugin extends ShopgatePlugin
     protected ExtendedClassFactory $classFactory;
     protected PaymentBridge $paymentBridge;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function dependencyInjector(
         ExportService $exportService,
         ImportService $importService,

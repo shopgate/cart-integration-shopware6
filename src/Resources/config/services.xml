@@ -183,6 +183,7 @@
                 ? service('shopgate.flysystem.extended_builder')
                 : service('shopgate.core.extended_builder')
             </argument>
+            <call method="dependencyInjector"/>
         </service>
         <service id="shopgate.flysystem.extended_builder" class="Shopgate\Shopware\Shopgate\Extended\Flysystem\ExtendedBuilder">
             <argument key="$privateFileSystem" type="service" id="sgate_shopgate_plugin_s_w6.filesystem.private"/>

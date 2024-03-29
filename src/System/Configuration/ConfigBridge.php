@@ -72,10 +72,8 @@ class ConfigBridge
 
     /**
      * This is the main entry of all endpoints
-     *
-     * @required
-     * @noinspection PhpUnused
      */
+    #[Required]
     public function loadByShopNumber($shopNumber): void
     {
         if (!$shopNumber) {
