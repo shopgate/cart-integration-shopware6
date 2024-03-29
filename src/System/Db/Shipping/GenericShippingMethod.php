@@ -13,8 +13,14 @@ class GenericShippingMethod extends ShippingMethodEntity implements ClassCastInt
     protected $deliveryTimeId = GenericDeliveryTime::UUID;
     protected $name = 'Generic Shipping (SG)';
     protected $description = '';
-    protected ?string $availabilityRuleId = IsShopgateRuleGroup::UUID;
+    protected ?string $availabilityRuleId = null;
     protected $active = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setAvailabilityRuleId(IsShopgateRuleGroup::UUID);
+    }
 
     public function toArray(): array
     {
