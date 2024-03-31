@@ -1,6 +1,7 @@
-# 3.2.0
+# 4.0.0
 
-- changed composer package versioning to support 6.6.0
+- added support to SW 6.6
+- changed minimum PHP version to be 8.2
 
 # 3.1.2
 
