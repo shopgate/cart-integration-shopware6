@@ -1669,105 +1669,110 @@
               "name": "Product",
               "item": [
                 {
-                  "name": "SW: get prod taxId",
-                  "event": [
+                  "name": "setup",
+                  "item": [
                     {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {\r",
-                          "    pm.response.to.have.status(200);\r",
-                          "});\r",
-                          "pm.test(\"Tax ID saving\", function () {\r",
-                          "    var jsonData = pm.response.json();\r",
-                          "    pm.expect(jsonData.data.taxId).to.be.a('string').to.not.be.empty;\r",
-                          "    pm.environment.set('gen_product_variant_taxId', jsonData.data.taxId);\r",
-                          "});"
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
+                      "name": "SW: get prod taxId",
+                      "event": [
                         {
-                          "key": "token",
-                          "value": "{{gen_access_token}}",
-                          "type": "string"
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "pm.test(\"Tax ID saving\", function () {\r",
+                              "    var jsonData = pm.response.json();\r",
+                              "    pm.expect(jsonData.data.taxId).to.be.a('string').to.not.be.empty;\r",
+                              "    pm.environment.set('gen_product_variant_taxId', jsonData.data.taxId);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
                         }
-                      ]
-                    },
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Accept",
-                        "value": "application/json",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}",
-                      "host": [
-                        "{{sw_endpoint_api}}"
                       ],
-                      "path": [
-                        "product",
-                        "{{catalog_product_variant}}"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "SW: get variant child",
-                  "event": [
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "{{gen_access_token}}",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}",
+                          "host": [
+                            "{{sw_endpoint_api}}"
+                          ],
+                          "path": [
+                            "product",
+                            "{{catalog_product_variant}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
                     {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {\r",
-                          "    pm.response.to.have.status(200);\r",
-                          "});\r",
-                          "\r",
-                          "pm.test(\"Get child ID\", function () {\r",
-                          "    const jsonData = pm.response.json();\r",
-                          "    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
-                          "    pm.expect(child).length(1, 'Should have found a child product');\r",
-                          "    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
-                          "});"
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "auth": {
-                      "type": "bearer",
-                      "bearer": [
+                      "name": "SW: get variant child",
+                      "event": [
                         {
-                          "key": "token",
-                          "value": "{{gen_access_token}}",
-                          "type": "string"
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test(\"Get child ID\", function () {\r",
+                              "    const jsonData = pm.response.json();\r",
+                              "    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
+                              "    pm.expect(child).length(1, 'Should have found a child product');\r",
+                              "    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
                         }
-                      ]
-                    },
-                    "method": "GET",
-                    "header": [],
-                    "url": {
-                      "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
-                      "host": [
-                        "{{sw_endpoint_api}}"
                       ],
-                      "path": [
-                        "product",
-                        "{{catalog_product_variant}}",
-                        "children"
-                      ]
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "{{gen_access_token}}",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
+                          "host": [
+                            "{{sw_endpoint_api}}"
+                          ],
+                          "path": [
+                            "product",
+                            "{{catalog_product_variant}}",
+                            "children"
+                          ]
+                        }
+                      },
+                      "response": []
                     }
-                  },
-                  "response": []
+                  ]
                 },
                 {
                   "name": "SW: clone variant child",
@@ -3989,6 +3994,72 @@
                   "name": "Channel",
                   "item": [
                     {
+                      "name": "SW: get channel data",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test(\"Get Main Sales Channel data\", function () {\r",
+                              "    var jsonData = pm.response.json();\r",
+                              "    pm.expect(jsonData.data[0].name).to.be.eq('Storefront');\r",
+                              "    pm.environment.set(\"gen_salesChannel_typeId\", jsonData.data[0].typeId);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {}
+                          }
+                        }
+                      ],
+                      "protocolProfileBehavior": {
+                        "disabledSystemHeaders": {}
+                      },
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "{{gen_access_token}}",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"filter\": [\r\n    {\r\n          \"type\": \"equals\",\r\n          \"field\": \"name\",\r\n          \"value\": \"Storefront\"\r\n        }\r\n    ]\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{sw_endpoint_api}}/search/sales-channel",
+                          "host": [
+                            "{{sw_endpoint_api}}"
+                          ],
+                          "path": [
+                            "search",
+                            "sales-channel"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
                       "name": "SW: get Headless channel",
                       "event": [
                         {
@@ -4064,7 +4135,8 @@
                               "    pm.response.to.have.status(204);\r",
                               "});"
                             ],
-                            "type": "text/javascript"
+                            "type": "text/javascript",
+                            "packages": {}
                           }
                         }
                       ],
@@ -4094,7 +4166,7 @@
                         ],
                         "body": {
                           "mode": "raw",
-                          "raw": "{\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{default_category_fTimeAndElectronics_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
+                          "raw": "{\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"typeId\": \"{{gen_salesChannel_typeId}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{default_category_fTimeAndElectronics_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
                           "options": {
                             "raw": {
                               "language": "json"
@@ -4642,7 +4714,8 @@
                       "    pm.response.to.have.status(200);\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
