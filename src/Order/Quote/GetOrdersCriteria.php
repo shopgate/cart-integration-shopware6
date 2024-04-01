@@ -27,6 +27,7 @@ class GetOrdersCriteria extends Criteria
             'deliveries',
             'lineItems.product',
             'billingAddress',
+            'stateMachineState',
             'deliveries.shippingOrderAddress',
             'deliveries.stateMachineState.toStateMachineHistoryEntries',
         ]);

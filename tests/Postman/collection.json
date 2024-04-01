@@ -2217,7 +2217,8 @@
                       "    pm.environment.set(`gen_customer_group_main_id`, jsonData.data[0]);\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -2236,7 +2237,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"2fbb5fe2e29a4d70aa5854ce7ce3e20b\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"not\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"2fbb5fe2e29a4d70aa5854ce7ce3e20b\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{created_customerGroup_net_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -5419,12 +5420,13 @@
                   "script": {
                     "exec": [
                       "const jsonData = pm.response.json();",
-                      "pm.test(\"Customer only belongs to headless channel\", function () {",
+                      "    pm.test(\"Customer only belongs to headless channel\", function () {",
                       "    pm.expect(jsonData.error).to.eq(71);",
                       "});",
                       ""
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 },
                 {
@@ -5449,7 +5451,8 @@
                       "pm.environment.set(\"gen_sg_header_auth_user\", authUser);\r",
                       "pm.environment.set(\"gen_sg_header_auth_token\", authToken);"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -6687,7 +6690,8 @@
                       "    pm.expect(order.orderCustomer.customFields).to.eql(null);\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -6715,7 +6719,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_1000_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_1000_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        },\r\n        \"transactions\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        }\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -16997,11 +17001,17 @@
                       "\r",
                       "pm.test(\"get customer context token\", function () {\r",
                       "    var jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.contextToken).to.be.a('string');\r",
-                      "    pm.environment.set(\"gen_customer_t1_contextToken\", jsonData.contextToken);\r",
+                      "    if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.6.0.0')) {\r",
+                      "        pm.expect(jsonData.contextToken).to.be.a('string');\r",
+                      "        pm.environment.set(\"gen_customer_t1_contextToken\", jsonData.contextToken);\r",
+                      "    } else {\r",
+                      "        pm.response.to.have.header(\"Sw-Context-Token\");\r",
+                      "        pm.environment.set(\"gen_customer_t1_contextToken\", pm.response.headers.get('Sw-Context-Token'));\r",
+                      "    }\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -18997,7 +19007,8 @@
                       "    pm.expect(order.billingAddress.customFields, 'Should be also mapped:').to.haveOwnProperty('unmapped_field');\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -19025,7 +19036,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0001_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"billingAddress\": {},\r\n        \"deliveries\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        },\r\n        \"transactions\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        }\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -19146,7 +19157,8 @@
                       "    pm.expect(Utility.getMachineStateName(order.transactions[0])).to.eq('paid');\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -19174,7 +19186,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n          \"type\": \"equals\",\r\n          \"field\": \"id\",\r\n          \"value\": \"{{gen_order_0002_id}}\"\r\n        }\r\n    ],\r\n    \"associations\":{\r\n        \"billingAddress\":{},\r\n        \"deliveries\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        },\r\n        \"transactions\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        }\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -20117,7 +20129,8 @@
                       "    pm.expect(order.shopgateOrderNumber).to.eq('0005', 'Should be an updated SG order to grab 0005 instead of 0004');\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -20142,7 +20155,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0004_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0004_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {},\r\n        \"deliveries\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        },\r\n        \"transactions\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        }\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -20272,7 +20285,8 @@
                       "    pm.expect(order.shopgateOrderNumber).to.eq('0005', 'Should be an updated SG order to grab 0005 instead of 0004');\r",
                       "});"
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -20297,7 +20311,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0004_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {},\r\n        \"deliveries\": {\r\n            \"stateMachineState\": {}\r\n        },\r\n        \"transactions\": {\r\n            \"stateMachineState\": {}\r\n        }\r\n    }\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"equals\",\r\n            \"field\": \"id\",\r\n            \"value\": \"{{gen_order_0004_id}}\"\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"shopgateOrder\": {},\r\n        \"deliveries\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        },\r\n        \"transactions\": {\r\n            \"associations\": {\r\n                \"stateMachineState\": {}\r\n            }\r\n        }\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
