@@ -5420,8 +5420,12 @@
                   "script": {
                     "exec": [
                       "const jsonData = pm.response.json();",
-                      "    pm.test(\"Customer only belongs to headless channel\", function () {",
-                      "    pm.expect(jsonData.error).to.eq(71);",
+                      "pm.test(\"Customer only belongs to headless channel\", function () {",
+                      "    if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.6.0.0')) {",
+                      "        pm.expect(jsonData.error).to.eq(71);",
+                      "    } else {",
+                      "        pm.expect(jsonData.error).to.eq(76);",
+                      "    }",
                       "});",
                       ""
                     ],
@@ -23688,11 +23692,17 @@
                           "\r",
                           "pm.test(\"get customer context token\", function () {\r",
                           "    var jsonData = pm.response.json();\r",
-                          "    pm.expect(jsonData.contextToken).to.be.a('string');\r",
-                          "    pm.environment.set(\"gen_customer_t1_contextToken\", jsonData.contextToken);\r",
+                          "    if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.6.0.0')) {\r",
+                          "        pm.expect(jsonData.contextToken).to.be.a('string');\r",
+                          "        pm.environment.set(\"gen_customer_t1_contextToken\", jsonData.contextToken);\r",
+                          "    } else {\r",
+                          "        pm.response.to.have.header(\"Sw-Context-Token\");\r",
+                          "        pm.environment.set(\"gen_customer_t1_contextToken\", pm.response.headers.get('Sw-Context-Token'));\r",
+                          "    }\r",
                           "});"
                         ],
-                        "type": "text/javascript"
+                        "type": "text/javascript",
+                        "packages": {}
                       }
                     }
                   ],
