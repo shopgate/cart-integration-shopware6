@@ -1,7 +1,6 @@
-# 4.0.0
+# 3.2.0
 
 - added support to SW 6.6
-- changed minimum PHP version to be 8.2
 
 # 3.1.2
 

@@ -9,14 +9,19 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\CustomField\CustomFieldCollection;
 
-readonly class CustomFieldBridge
+class CustomFieldBridge
 {
 
-    public function __construct(private EntityRepository $customFieldRepository, private ContextManager $contextManager)
-    {
+    public function __construct(
+        private readonly EntityRepository $customFieldRepository,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
-    public function getAllProductFieldSets(): CustomFieldCollection|EntityCollection
+    /**
+     * @return CustomFieldCollection|EntityCollection
+     */
+    public function getAllProductFieldSets(): CustomFieldCollection
     {
         $criteria = (new Criteria())
             ->addAssociation('customFieldSet')
@@ -26,7 +31,8 @@ readonly class CustomFieldBridge
             ->addFilter(new EqualsFilter('customFieldSet.relations.entityName', 'product'));
         $criteria->setTitle('shopgate::custom-field::all');
         return $this->customFieldRepository->search(
-            $criteria, $this->contextManager->getSalesContext()->getContext()
+            $criteria,
+            $this->contextManager->getSalesContext()->getContext()
         )->getEntities();
     }
 }

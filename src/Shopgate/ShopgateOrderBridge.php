@@ -13,10 +13,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
-readonly class ShopgateOrderBridge
+class ShopgateOrderBridge
 {
 
-    public function __construct(private EntityRepository $shopgateOrderRepository)
+    public function __construct(private readonly EntityRepository $shopgateOrderRepository)
     {
     }
 

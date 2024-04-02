@@ -10,15 +10,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\Country\CountryEntity;
 
-readonly class LocationMapping
+class LocationMapping
 {
 
     public function __construct(
-        private EntityRepository $countryRepository,
-        private EntityRepository $stateRepository,
-        private ContextManager $contextManager
-    )
-    {
+        private readonly EntityRepository $countryRepository,
+        private readonly EntityRepository $stateRepository,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     public function getCountryIsoById(string $id): ?string

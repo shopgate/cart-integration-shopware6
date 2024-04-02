@@ -18,9 +18,11 @@ class StateComposer
 
     public function isAtLeastPartialShipped(?StateMachineStateEntity $state): bool
     {
-        return $state && in_array($state->getTechnicalName(),
+        return $state && in_array(
+                $state->getTechnicalName(),
                 [OrderDeliveryStates::STATE_SHIPPED, OrderDeliveryStates::STATE_PARTIALLY_SHIPPED],
-                true);
+                true
+            );
     }
 
     public function isFullyShipped(?StateMachineStateEntity $state): bool

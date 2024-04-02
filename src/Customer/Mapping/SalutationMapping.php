@@ -11,13 +11,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\Salutation\SalutationEntity;
 
-readonly class SalutationMapping
+class SalutationMapping
 {
     public function __construct(
-        private EntityRepository $swSalutationRepository,
-        private EntityRepository $sgSalutationRepository,
-        private ContextManager   $contextManager)
-    {
+        private readonly EntityRepository $swSalutationRepository,
+        private readonly EntityRepository $sgSalutationRepository,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     public function getSalutationIdByGender(string $gender): string

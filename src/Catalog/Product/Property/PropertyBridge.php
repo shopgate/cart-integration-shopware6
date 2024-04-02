@@ -8,11 +8,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
-readonly class PropertyBridge
+class PropertyBridge
 {
 
-    public function __construct(private EntityRepository $propertyGroupOptionRepo, private ContextManager $contextManager)
-    {
+    public function __construct(
+        private readonly EntityRepository $propertyGroupOptionRepo,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     /**

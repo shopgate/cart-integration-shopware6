@@ -17,6 +17,7 @@ use ShopgateMerchantApiInterface;
 use ShopgateObject;
 use ShopgatePlugin;
 use Shopware\Core\Framework\Adapter\Filesystem\PrefixFilesystem;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class ExtendedBuilder extends ShopgateBuilder
 {

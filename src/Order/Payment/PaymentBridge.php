@@ -11,22 +11,20 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Symfony\Component\HttpFoundation\Request;
 
-readonly class PaymentBridge
+class PaymentBridge
 {
 
     public function __construct(
-        private AbstractPaymentMethodRoute $paymentMethodRoute,
-        private StateBridge                $stateBridge,
-        private ContextManager             $contextManager
-    )
-    {
+        private readonly AbstractPaymentMethodRoute $paymentMethodRoute,
+        private readonly StateBridge $stateBridge,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     public function getAvailableMethods(
         SalesChannelContext $context,
-        Criteria            $criteria = null
-    ): PaymentMethodCollection
-    {
+        Criteria $criteria = null
+    ): PaymentMethodCollection {
         $request = new Request();
         $request->query->set('onlyAvailable', true);
 
@@ -54,6 +52,7 @@ readonly class PaymentBridge
             'order_transaction',
             $transactionId,
             'pay',
-            $context->getContext());
+            $context->getContext()
+        );
     }
 }

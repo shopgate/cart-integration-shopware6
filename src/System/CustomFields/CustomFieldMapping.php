@@ -8,14 +8,14 @@ use ShopgateOrder;
 use ShopgateOrderCustomField;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 
-readonly class CustomFieldMapping
+class CustomFieldMapping
 {
 
     /**
      * @param array $whitelist - allowed exported custom fields
      * @param array $transformList - map of Shopgate key to Shopware key
      */
-    public function __construct(private array $whitelist, private array $transformList = [])
+    public function __construct(private readonly array $whitelist, private readonly array $transformList = [])
     {
     }
 
@@ -43,6 +43,7 @@ readonly class CustomFieldMapping
      * Note that whitelist does not filter incoming data, just
      * used as reference to `type` of field
      *
+     * @param ShopgateCustomer|ShopgateAddress|ShopgateOrder $entity
      * @return array<string, string|array>
      */
     public function mapToShopwareCustomFields(ShopgateCustomer|ShopgateAddress|ShopgateOrder $entity): array

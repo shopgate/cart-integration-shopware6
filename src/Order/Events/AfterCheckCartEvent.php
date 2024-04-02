@@ -7,8 +7,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterCheckCartEvent extends Event
 {
-    public function __construct(private array $result, private readonly SalesChannelContext $context)
+    private array $result;
+
+    public function __construct(array $result, private readonly SalesChannelContext $context)
     {
+        $this->result = $result;
     }
 
     public function getContext(): SalesChannelContext

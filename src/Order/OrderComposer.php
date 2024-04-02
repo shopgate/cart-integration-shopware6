@@ -37,24 +37,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
-readonly class OrderComposer
+class OrderComposer
 {
 
     public function __construct(
-        private ContextManager $contextManager,
-        private ContextComposer $contextComposer,
-        private LineItemComposer $lineItemComposer,
-        private QuoteBridge $quoteBridge,
-        private QuoteErrorMapping $errorMapping,
-        private ShopgateOrderBridge $shopgateOrderBridge,
-        private ShippingComposer $shippingComposer,
-        private StateComposer $stateComposer,
-        private PaymentComposer $paymentComposer,
-        private OrderCustomerComposer $orderCustomerComposer,
-        private OrderMapping $orderMapping,
-        private LoggerInterface $logger,
-        private ShopgateMerchantApiInterface $merchantApi,
-        private EventDispatcherInterface $eventDispatcher
+        private readonly ContextManager $contextManager,
+        private readonly ContextComposer $contextComposer,
+        private readonly LineItemComposer $lineItemComposer,
+        private readonly QuoteBridge $quoteBridge,
+        private readonly QuoteErrorMapping $errorMapping,
+        private readonly ShopgateOrderBridge $shopgateOrderBridge,
+        private readonly ShippingComposer $shippingComposer,
+        private readonly StateComposer $stateComposer,
+        private readonly PaymentComposer $paymentComposer,
+        private readonly OrderCustomerComposer $orderCustomerComposer,
+        private readonly OrderMapping $orderMapping,
+        private readonly LoggerInterface $logger,
+        private readonly ShopgateMerchantApiInterface $merchantApi,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
     }
 

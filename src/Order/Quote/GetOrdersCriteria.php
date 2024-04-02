@@ -12,10 +12,12 @@ class GetOrdersCriteria extends Criteria
 
     public function setShopgateSort(string $sortOrder): self
     {
-        $this->addSorting(new FieldSorting(
-            $this->mapSortField($sortOrder),
-            $this->mapSortDirection($sortOrder)
-        ));
+        $this->addSorting(
+            new FieldSorting(
+                $this->mapSortField($sortOrder),
+                $this->mapSortDirection($sortOrder)
+            )
+        );
 
         return $this;
     }

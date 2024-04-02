@@ -2,15 +2,21 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
+use Shopgate_Model_AbstractExport;
 use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
-readonly class ProductMapFactory
+class ProductMapFactory
 {
-    public function __construct(private Shopgate_Model_Catalog_Product $simpleProductMapping, private Shopgate_Model_Catalog_Product $variantProductMapping)
-    {
+    public function __construct(
+        private readonly Shopgate_Model_AbstractExport $simpleProductMapping,
+        private readonly Shopgate_Model_AbstractExport $variantProductMapping
+    ) {
     }
 
+    /**
+     * @return SimpleProductMapping|ConfigProductMapping|Shopgate_Model_AbstractExport
+     */
     public function createMapClass(SalesChannelProductEntity $entity): Shopgate_Model_Catalog_Product
     {
         // empty is a quick check for 0 or null

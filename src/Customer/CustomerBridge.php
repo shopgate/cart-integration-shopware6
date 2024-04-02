@@ -20,18 +20,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
 
-readonly class CustomerBridge
+class CustomerBridge
 {
 
     public function __construct(
-        private EntityRepository      $customerGroupRepository,
-        private EntityRepository      $customerRepository,
-        private ContextManager        $contextManager,
-        private AbstractLoginRoute    $loginRoute,
-        private RequestDataBag        $dataBag,
-        private AbstractCustomerRoute $customerRoute
-    )
-    {
+        private readonly EntityRepository $customerGroupRepository,
+        private readonly EntityRepository $customerRepository,
+        private readonly ContextManager $contextManager,
+        private readonly AbstractLoginRoute $loginRoute,
+        private readonly RequestDataBag $dataBag,
+        private readonly AbstractCustomerRoute $customerRoute
+    ) {
     }
 
     public function getGroups(): CustomerGroupCollection|EntityCollection

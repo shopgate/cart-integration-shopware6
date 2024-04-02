@@ -14,14 +14,10 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 /**
  * Order/Cart endpoint specific customer composer
  */
-readonly class OrderCustomerComposer
+class OrderCustomerComposer
 {
-    public function __construct(
-        private CustomerBridge $customerBridge,
-        private CustomerMapping $customerMapping,
-        private CustomerComposer $customerComposer,
-        private LoggerInterface $logger
-    ) {
+    public function __construct(private readonly CustomerBridge $customerBridge, private readonly CustomerMapping $customerMapping, private readonly CustomerComposer $customerComposer, private readonly LoggerInterface $logger)
+    {
     }
 
     /**

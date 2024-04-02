@@ -16,18 +16,17 @@ use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
-readonly class CustomerComposer
+class CustomerComposer
 {
 
     public function __construct(
-        private ContextManager           $contextManager,
-        private AbstractRegisterRoute    $registerRoute,
-        private CustomerBridge           $customerBridge,
-        private CustomerMapping          $customerMapping,
-        private ConfigBridge             $configBridge,
-        private EventDispatcherInterface $eventDispatcher
-    )
-    {
+        private readonly ContextManager $contextManager,
+        private readonly AbstractRegisterRoute $registerRoute,
+        private readonly CustomerBridge $customerBridge,
+        private readonly CustomerMapping $customerMapping,
+        private readonly ConfigBridge $configBridge,
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**
@@ -42,8 +41,10 @@ readonly class CustomerComposer
         $context = $this->contextManager->loadByCustomerToken($token->getToken())->getSalesContext();
         $customer = $context->getCustomer();
         if (null === $customer) {
-            throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                'User logged in context missing');
+            throw new ShopgateLibraryException(
+                ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                'User logged in context missing'
+            );
         }
         $swCustomer = $this->customerBridge->getDetailedContextCustomer($context);
         $sgCustomer = $this->customerMapping->mapToShopgateEntity($swCustomer);

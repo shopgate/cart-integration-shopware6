@@ -25,17 +25,17 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-readonly class QuoteBridge
+class QuoteBridge
 {
 
     public function __construct(
-        private AbstractCartOrderRoute $cartOrderRoute,
-        private AbstractCartLoadRoute $cartLoadRoute,
-        private AbstractCartItemAddRoute $cartItemAddRoute,
-        private AbstractCartDeleteRoute $cartDeleteRoute,
-        private AbstractOrderRoute $orderRoute,
-        private EntityRepository $orderRepository,
-        private EventDispatcherInterface $dispatcher
+        private readonly AbstractCartOrderRoute $cartOrderRoute,
+        private readonly AbstractCartLoadRoute $cartLoadRoute,
+        private readonly AbstractCartItemAddRoute $cartItemAddRoute,
+        private readonly AbstractCartDeleteRoute $cartDeleteRoute,
+        private readonly AbstractOrderRoute $orderRoute,
+        private readonly EntityRepository $orderRepository,
+        private readonly EventDispatcherInterface $dispatcher
     ) {
     }
 

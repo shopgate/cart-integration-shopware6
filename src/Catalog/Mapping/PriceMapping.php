@@ -5,9 +5,9 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 use Shopgate_Model_Catalog_Price;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 
-readonly class PriceMapping
+class PriceMapping
 {
-    public function __construct(private bool $exportNet)
+    public function __construct(private readonly bool $exportNet)
     {
     }
 

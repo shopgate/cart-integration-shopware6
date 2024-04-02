@@ -1,6 +1,4 @@
-<?php /** @noinspection PhpCastIsUnnecessaryInspection */
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Subscriber;
 
@@ -13,13 +11,13 @@ use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
 use Shopware\Core\Content\Product\Cart\ProductCartProcessor;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-readonly class LiveShoppingSubscriber implements EventSubscriberInterface
+class LiveShoppingSubscriber implements EventSubscriberInterface
 {
 
     public function __construct(
-        private ConfigBridge $configBridge,
-        private RequestPersist $requestPersist,
-        private TaxMapping $taxMapping
+        private readonly ConfigBridge $configBridge,
+        private readonly RequestPersist $requestPersist,
+        private readonly TaxMapping $taxMapping
     ) {
     }
 

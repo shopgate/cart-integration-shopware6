@@ -24,8 +24,8 @@ class Migration1647373783UniqueKeyRemove extends MigrationStep
     {
         /** @noinspection SqlResolve */
         $sql = <<<SQL
-            drop index sg_api_credentials_unique_apiKey on `#table_name#`;
-            drop index sg_api_credentials_unique_customerNumber on `#table_name#`;
+            drop index sg_api_credentials_unique_apiKey on #table_name#;
+            drop index sg_api_credentials_unique_customerNumber on #table_name#;
         SQL;
         $query = str_replace('#table_name#', ShopgateApiCredentialsDefinition::ENTITY_NAME, $sql);
         $connection->executeStatement($query);

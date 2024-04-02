@@ -12,13 +12,13 @@ use ShopgateOrder;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\OrderEntity;
 
-readonly class OrderMapping
+class OrderMapping
 {
 
     public function __construct(
-        private CustomFieldMapping $customFieldMapping,
-        private ShopgateContainer $sgExternalOrder,
-        private ShippingComposer $shippingComposer
+        private readonly CustomFieldMapping $customFieldMapping,
+        private readonly ShopgateContainer $sgExternalOrder,
+        private readonly ShippingComposer $shippingComposer
     ) {
     }
 

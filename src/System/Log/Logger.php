@@ -7,10 +7,10 @@ use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-readonly class Logger implements LoggerInterface
+class Logger implements LoggerInterface
 {
 
-    public function __construct(private SerializerInterface $serializer)
+    public function __construct(private readonly SerializerInterface $serializer)
     {
     }
 

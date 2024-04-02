@@ -16,13 +16,13 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-readonly class PaymentMapping
+class PaymentMapping
 {
 
     public function __construct(
-        private LoggerInterface $logger,
-        private ExtendedClassFactory $classFactory,
-        private EventDispatcherInterface $dispatcher
+        private readonly LoggerInterface $logger,
+        private readonly ExtendedClassFactory $classFactory,
+        private readonly EventDispatcherInterface $dispatcher
     ) {
     }
 

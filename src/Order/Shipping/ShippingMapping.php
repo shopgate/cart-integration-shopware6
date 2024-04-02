@@ -19,16 +19,16 @@ use Shopware\Core\Checkout\Cart\Delivery\Struct\Delivery;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderDelivery\OrderDeliveryEntity;
 
-readonly class ShippingMapping
+class ShippingMapping
 {
 
     public function __construct(
-        private ExtendedClassFactory $classFactory,
-        private TaxMapping $taxMapping,
-        private ShopgateOrderMapping $shopgateOrderMapping,
-        private StateComposer $stateMapping,
-        private ContextManager $contextManager,
-        private Formatter $formatter
+        private readonly ExtendedClassFactory $classFactory,
+        private readonly TaxMapping $taxMapping,
+        private readonly ShopgateOrderMapping $shopgateOrderMapping,
+        private readonly StateComposer $stateMapping,
+        private readonly ContextManager $contextManager,
+        private readonly Formatter $formatter
     ) {
     }
 

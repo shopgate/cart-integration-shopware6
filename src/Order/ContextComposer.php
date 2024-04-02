@@ -14,14 +14,14 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Throwable;
 
-readonly class ContextComposer
+class ContextComposer
 {
 
     public function __construct(
-        private ContextManager $contextManager,
-        private AddressComposer $addressComposer,
-        private QuoteErrorMapping $errorMapping,
-        private PaymentComposer $paymentComposer
+        private readonly ContextManager $contextManager,
+        private readonly AddressComposer $addressComposer,
+        private readonly QuoteErrorMapping $errorMapping,
+        private readonly PaymentComposer $paymentComposer
     ) {
     }
 

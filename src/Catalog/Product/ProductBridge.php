@@ -21,18 +21,17 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-readonly class ProductBridge
+class ProductBridge
 {
 
     public function __construct(
-        private AbstractProductListRoute $productListRoute,
-        private ContextManager           $contextManager,
-        private SalesChannelRepository   $productRepository,
-        private SortBridge               $productSorting,
-        private ConfigBridge             $configReader,
-        private EventDispatcherInterface $eventDispatcher
-    )
-    {
+        private readonly AbstractProductListRoute $productListRoute,
+        private readonly ContextManager $contextManager,
+        private readonly SalesChannelRepository $productRepository,
+        private readonly SortBridge $productSorting,
+        private readonly ConfigBridge $configReader,
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**

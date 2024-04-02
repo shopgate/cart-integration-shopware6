@@ -16,12 +16,12 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Flow\Events\BeforeLoadStorableFlowDataEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-readonly class AddSgOrderToCriteriaSubscriber implements EventSubscriberInterface
+class AddSgOrderToCriteriaSubscriber implements EventSubscriberInterface
 {
 
     public function __construct(
-        private RequestPersist $requestPersist,
-        private ShopgateOrderBridge $shopgateOrderBridge
+        private readonly RequestPersist $requestPersist,
+        private readonly ShopgateOrderBridge $shopgateOrderBridge
     ) {
     }
 

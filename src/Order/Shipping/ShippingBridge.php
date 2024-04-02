@@ -15,12 +15,12 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Symfony\Component\HttpFoundation\Request;
 
-readonly class ShippingBridge
+class ShippingBridge
 {
 
     public function __construct(
-        private AbstractShippingMethodRoute $shippingMethodRoute,
-        private StateBridge $stateBridge
+        private readonly AbstractShippingMethodRoute $shippingMethodRoute,
+        private readonly StateBridge $stateBridge
     ) {
     }
 

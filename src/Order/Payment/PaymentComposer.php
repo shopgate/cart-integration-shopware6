@@ -14,13 +14,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 
-readonly class PaymentComposer
+class PaymentComposer
 {
 
     public function __construct(
-        private PaymentBridge $paymentBridge,
-        private PaymentMapping $paymentMapping,
-        private LoggerInterface $logger
+        private readonly PaymentBridge $paymentBridge,
+        private readonly PaymentMapping $paymentMapping,
+        private readonly LoggerInterface $logger
     ) {
     }
 

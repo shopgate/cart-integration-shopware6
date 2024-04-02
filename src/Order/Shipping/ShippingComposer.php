@@ -35,17 +35,17 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
-readonly class ShippingComposer
+class ShippingComposer
 {
 
     public function __construct(
-        private ShippingBridge $shippingBridge,
-        private ShippingMapping $shippingMapping,
-        private CheckoutCartPageLoader $cartPageLoader,
-        private StateComposer $stateComposer,
-        private ContextManager $contextManager,
-        private EventDispatcherInterface $eventDispatcher,
-        private string $shopwareVersion
+        private readonly ShippingBridge $shippingBridge,
+        private readonly ShippingMapping $shippingMapping,
+        private readonly CheckoutCartPageLoader $cartPageLoader,
+        private readonly StateComposer $stateComposer,
+        private readonly ContextManager $contextManager,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly string $shopwareVersion
     ) {
     }
 

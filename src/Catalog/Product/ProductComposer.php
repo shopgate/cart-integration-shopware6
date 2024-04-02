@@ -7,15 +7,14 @@ use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
 use Throwable;
 
-readonly class ProductComposer
+class ProductComposer
 {
 
     public function __construct(
-        private LoggerInterface   $logger,
-        private ProductMapFactory $productMapFactory,
-        private ProductBridge     $productBridge
-    )
-    {
+        private readonly LoggerInterface $logger,
+        private readonly ProductMapFactory $productMapFactory,
+        private readonly ProductBridge $productBridge
+    ) {
     }
 
     /**

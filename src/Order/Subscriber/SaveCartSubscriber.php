@@ -7,10 +7,10 @@ use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-readonly class SaveCartSubscriber implements EventSubscriberInterface
+class SaveCartSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private CartService $cartService)
+    public function __construct(private readonly CartService $cartService)
     {
     }
 

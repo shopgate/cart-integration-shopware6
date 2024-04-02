@@ -18,13 +18,13 @@ use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\Framework\Rule\Container\OrRule;
 use Shopware\Core\Framework\Rule\Rule;
 
-readonly class TierPriceMapping
+class TierPriceMapping
 {
 
     public function __construct(
-        private CustomerBridge   $customerBridge,
-        private CurrencyComposer $currencyComposer,
-        private PriceMapping $priceMapping
+        private readonly CustomerBridge   $customerBridge,
+        private readonly CurrencyComposer $currencyComposer,
+        private readonly PriceMapping $priceMapping
     ) {
     }
 
@@ -89,8 +89,12 @@ readonly class TierPriceMapping
      * We consider valid if:
      * In AND condition only AlwaysValid or Group rule is present
      * In OR condition if one of AlwaysValid or Group rules are present
+     *
+     * @param bool $carry - recursive memory
+     * @param AndRule|OrRule|Rule $rule
+     * @return bool
      */
-    private function isValidRule(bool $carry, AndRule|OrRule|Rule $rule): bool
+    private function isValidRule(bool $carry, Rule $rule): bool
     {
         if ($rule instanceof OrRule || $rule instanceof AndRule) {
             return array_reduce($rule->getRules(), function ($carry, Rule $rule) {

@@ -14,6 +14,7 @@ use ShopgateOrder;
 use ShopgatePlugin;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class Plugin extends ShopgatePlugin
 {

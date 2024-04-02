@@ -5,9 +5,13 @@ namespace Shopgate\Shopware\Customer\Mapping;
 use ShopgateCustomerGroup;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 
-readonly class GroupMapping
+class GroupMapping
 {
 
+    /**
+     * @param CustomerGroupEntity $entity
+     * @return ShopgateCustomerGroup
+     */
     public function toShopgateGroup(CustomerGroupEntity $entity): ShopgateCustomerGroup
     {
         $grp = new ShopgateCustomerGroup();

@@ -10,8 +10,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 class AfterGetOrdersLoadEvent extends Event
 {
 
-    public function __construct(private readonly EntityCollection $result, private readonly SalesChannelContext $context)
-    {
+    public function __construct(
+        private readonly EntityCollection $result,
+        private readonly SalesChannelContext $context
+    ) {
     }
 
     public function getResult(): EntityCollection|OrderCollection

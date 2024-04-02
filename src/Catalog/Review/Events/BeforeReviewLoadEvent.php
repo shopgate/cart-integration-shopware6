@@ -8,7 +8,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeReviewLoadEvent extends Event
 {
-    public function __construct(private readonly Criteria $criteria, private readonly SalesChannelContext $context)
+
+    public function __construct(private readonly Criteria $criteria, readonly private SalesChannelContext $context)
     {
     }
 

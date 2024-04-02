@@ -71,7 +71,7 @@ newman:
           - 6.5.2.0
           - 6.6.0.1
       - PHP_VERSION:
-          - '8.3'
+          - '8.1'
   except:
     - tags
   script:

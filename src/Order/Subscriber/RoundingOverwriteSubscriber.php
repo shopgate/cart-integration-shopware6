@@ -7,10 +7,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-readonly class RoundingOverwriteSubscriber implements EventSubscriberInterface
+class RoundingOverwriteSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private RequestStack $request)
+    public function __construct(private readonly RequestStack $request)
     {
     }
 

@@ -19,6 +19,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Contracts\Service\Attribute\Required;
 use Throwable;
 
 class ConfigBridge
