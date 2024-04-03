@@ -23,30 +23,16 @@ use Throwable;
 class SortTree
 {
     public const CACHE_KEY = 'shopgate.category.sort';
-    private ContextManager $contextManager;
-    private CategoryBridge $categoryBridge;
-    private ConfigBridge $configReader;
-    private AbstractProductListRoute $listRoute;
-    private AbstractProductListingRoute $listingRoute;
-    private TagAwareAdapterInterface $cache;
-    private LoggerInterface $logger;
 
     public function __construct(
-        TagAwareAdapterInterface $cache,
-        ContextManager $contextManager,
-        CategoryBridge $categoryBridge,
-        ConfigBridge $configReader,
-        AbstractProductListRoute $listRoute,
-        AbstractProductListingRoute $listingRoute,
-        LoggerInterface $logger
+        private readonly TagAwareAdapterInterface $cache,
+        private readonly ContextManager $contextManager,
+        private readonly CategoryBridge $categoryBridge,
+        private readonly ConfigBridge $configReader,
+        private readonly AbstractProductListRoute $listRoute,
+        private readonly AbstractProductListingRoute $listingRoute,
+        private readonly LoggerInterface $logger
     ) {
-        $this->cache = $cache;
-        $this->contextManager = $contextManager;
-        $this->categoryBridge = $categoryBridge;
-        $this->configReader = $configReader;
-        $this->listRoute = $listRoute;
-        $this->listingRoute = $listingRoute;
-        $this->logger = $logger;
     }
 
     /**

@@ -11,21 +11,13 @@ use Shopware\Core\System\Tax\TaxEntity;
 
 class TaxBridge
 {
-    private EntityRepository $taxRepository;
-    private EntityRepository $taxRuleRepository;
-    private EntityRepository $taxRuleTypeRepository;
-    private ContextManager $contextManager;
 
     public function __construct(
-        EntityRepository $taxRepository,
-        EntityRepository $taxRuleRepository,
-        EntityRepository $taxRuleTypeRepository,
-        ContextManager $contextManager
+        private readonly EntityRepository $taxRepository,
+        private readonly EntityRepository $taxRuleRepository,
+        private readonly EntityRepository $taxRuleTypeRepository,
+        private readonly ContextManager $contextManager
     ) {
-        $this->taxRepository = $taxRepository;
-        $this->taxRuleRepository = $taxRuleRepository;
-        $this->taxRuleTypeRepository = $taxRuleTypeRepository;
-        $this->contextManager = $contextManager;
     }
 
     /**

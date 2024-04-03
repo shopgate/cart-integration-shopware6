@@ -9,18 +9,15 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 class AfterSimpleProductPropertyMapEvent
 {
     private array $properties;
-    private SalesChannelProductEntity $item;
 
     /**
      * @param ExtendedProperty[]|Shopgate_Model_Catalog_Property[] $properties
-     * @param SalesChannelProductEntity $item
      */
     public function __construct(
         array $properties,
-        SalesChannelProductEntity $item
+        private readonly SalesChannelProductEntity $item
     ) {
         $this->properties = $properties;
-        $this->item = $item;
     }
 
     /**

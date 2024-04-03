@@ -11,20 +11,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Formatter
 {
-    private ContextManager $contextManager;
-    private TranslatorInterface $translator;
-    private AbstractLanguageRoute $languageRoute;
     private ?LanguageCollection $languageCollection = null;
     private string|false|null $locale = false;
 
     public function __construct(
-        ContextManager $contextManager,
-        TranslatorInterface $translator,
-        AbstractLanguageRoute $languageRoute
+        private readonly ContextManager $contextManager,
+        private readonly TranslatorInterface $translator,
+        private readonly AbstractLanguageRoute $languageRoute
     ) {
-        $this->contextManager = $contextManager;
-        $this->translator = $translator;
-        $this->languageRoute = $languageRoute;
     }
 
     public function translate(string $key, array $parameters, ?string $domain = 'storefront'): string

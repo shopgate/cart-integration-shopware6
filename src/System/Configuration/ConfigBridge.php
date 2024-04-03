@@ -38,15 +38,14 @@ class ConfigBridge
     private array $error = [];
 
     public function __construct(
-        private readonly EntityRepository    $pluginRepository,
-        private readonly EntityRepository    $systemConfigRepo,
-        private readonly EntityRepository    $shopgateApiRepo,
-        private readonly string              $shopwareVersion,
-        private readonly ContextManager      $contextManager,
+        private readonly EntityRepository $pluginRepository,
+        private readonly EntityRepository $systemConfigRepo,
+        private readonly EntityRepository $shopgateApiRepo,
+        private readonly string $shopwareVersion,
+        private readonly ContextManager $contextManager,
         private readonly SystemConfigService $systemConfigService,
-        private readonly DomainBridge        $domainBridge
-    )
-    {
+        private readonly DomainBridge $domainBridge
+    ) {
     }
 
     public function getShopwareVersion(): string
@@ -109,7 +108,8 @@ class ConfigBridge
     public function getSalesChannelConfig(string $shopNumber): ?ShopgateApiCredentialsEntity
     {
         $criteria = (new Criteria())
-            ->addFilter(new EqualsFilter('shopNumber', $shopNumber)
+            ->addFilter(
+                new EqualsFilter('shopNumber', $shopNumber)
             );
         $criteria->setTitle('shopgate::api-configurations::sales-channel-id');
         $values = $this->shopgateApiRepo->search($criteria, new Context(new SalesChannelApiSource('')));
@@ -123,13 +123,15 @@ class ConfigBridge
     public function load(string $salesChannelId): void
     {
         $criteria = (new Criteria())
-            ->addFilter(new AndFilter([
-                new OrFilter([
-                    new EqualsFilter('salesChannelId', $salesChannelId),
-                    new EqualsFilter('salesChannelId', null)
-                ]),
-                new ContainsFilter('configurationKey', self::SYSTEM_CONFIG_DOMAIN)
-            ]));
+            ->addFilter(
+                new AndFilter([
+                    new OrFilter([
+                        new EqualsFilter('salesChannelId', $salesChannelId),
+                        new EqualsFilter('salesChannelId', null)
+                    ]),
+                    new ContainsFilter('configurationKey', self::SYSTEM_CONFIG_DOMAIN)
+                ])
+            );
         $criteria->addSorting(new FieldSorting('salesChannelId', FieldSorting::DESCENDING));
         /** @var SystemConfigCollection $collection */
         $collection = $this->systemConfigRepo->search(
@@ -163,7 +165,8 @@ class ConfigBridge
         $context = $this->contextManager->getSalesContext();
         if ($this->apiCredentialsEntity && $this->apiCredentialsEntity->has($key)) {
             $this->shopgateApiRepo->update(
-                [$this->apiCredentialsEntity->assign([$key => $value])->toArray()], $context->getContext()
+                [$this->apiCredentialsEntity->assign([$key => $value])->toArray()],
+                $context->getContext()
             );
             return;
         }

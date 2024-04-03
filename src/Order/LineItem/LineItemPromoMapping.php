@@ -21,12 +21,11 @@ class LineItemPromoMapping
     private int $shippingDiscountIndex = 1;
 
     public function __construct(
-        private readonly ContextManager       $contextManager,
+        private readonly ContextManager $contextManager,
         private readonly ExtendedClassFactory $classFactory,
-        private readonly TaxMapping           $taxMapping,
-        private readonly Formatter            $formatter
-    )
-    {
+        private readonly TaxMapping $taxMapping,
+        private readonly Formatter $formatter
+    ) {
     }
 
     /**
@@ -60,10 +59,16 @@ class LineItemPromoMapping
         $code = empty($couponCode) ? $discountId : $couponCode;
         $coupon = $sgCart->findExternalCoupon($code) ?? $this->classFactory->createExternalCoupon()->setIsNew(true);
         $coupon->setCode($code);
-        $coupon->setType(empty($couponCode) ? ExtendedExternalCoupon::TYPE_CART_RULE
-            : ExtendedExternalCoupon::TYPE_COUPON);
-        $coupon->addDecodedInfo(array_intersect_key($lineItem->getPayload(),
-            array_flip(['discountId', 'promotionId'])));
+        $coupon->setType(
+            empty($couponCode) ? ExtendedExternalCoupon::TYPE_CART_RULE
+                : ExtendedExternalCoupon::TYPE_COUPON
+        );
+        $coupon->addDecodedInfo(
+            array_intersect_key(
+                $lineItem->getPayload(),
+                array_flip(['discountId', 'promotionId'])
+            )
+        );
         $coupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
         $coupon->setIsValid(true);
         $coupon->setName($lineItem->getLabel());
@@ -79,18 +84,19 @@ class LineItemPromoMapping
 
     public function mapOutgoingOrderPromo(
         OrderLineItemEntity $lineItem,
-        ?string             $taxStatus
-    ): ShopgateExternalOrderExternalCoupon
-    {
+        ?string $taxStatus
+    ): ShopgateExternalOrderExternalCoupon {
         $id = $lineItem->getPayload()['promotionId'] ?? $lineItem->getId();
         $code = $lineItem->getReferencedId(); // empty string when automatic cart_rule
         $sgCoupon = $this->classFactory->createOrderExportCoupon();
         $sgCoupon->setCode(empty($code) ? $id : $code);
         $sgCoupon->setName($lineItem->getLabel());
-        $sgCoupon->addDecodedInfo(array_merge(
-            ['itemType' => empty($code) ? ExtendedExternalCoupon::TYPE_CART_RULE : ExtendedExternalCoupon::TYPE_COUPON],
-            array_intersect_key($lineItem->getPayload(), array_flip(['discountId', 'promotionId']))
-        ));
+        $sgCoupon->addDecodedInfo(
+            array_merge(
+                ['itemType' => empty($code) ? ExtendedExternalCoupon::TYPE_CART_RULE : ExtendedExternalCoupon::TYPE_COUPON],
+                array_intersect_key($lineItem->getPayload(), array_flip(['discountId', 'promotionId']))
+            )
+        );
         $sgCoupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());
 
         if ($price = $lineItem->getPrice()) {
@@ -104,9 +110,8 @@ class LineItemPromoMapping
 
     public function mapOutgoingOrderShippingPromo(
         OrderDeliveryEntity $deliveryEntity,
-        ?string             $taxStatus
-    ): ShopgateExternalOrderExternalCoupon
-    {
+        ?string $taxStatus
+    ): ShopgateExternalOrderExternalCoupon {
         $index = (string)$this->shippingDiscountIndex;
         $sgCoupon = $this->classFactory->createOrderExportCoupon();
         $sgCoupon->setCurrency($this->contextManager->getSalesContext()->getCurrency()->getIsoCode());

@@ -1,8 +1,8 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Tests\Unit\Customer\Mapping;
 
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Shopgate\Shopware\Customer\Mapping\AddressMapping;
 use Shopgate\Shopware\Customer\Mapping\LocationMapping;
@@ -15,12 +15,13 @@ class AddressMappingTest extends TestCase
 {
 
     /**
-     * @param $expected
+     * @param int $expected
      * @param string $defaultBilling
      * @param string $defaultShipping
      * @param string $addressId
      *
      * @dataProvider addressTypeProvider
+     * @throws Exception
      */
     public function testMapAddressType(
         $expected,

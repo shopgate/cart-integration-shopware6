@@ -12,23 +12,12 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class SortBridge
 {
-    private SystemConfigService $systemConfigService;
-    private EntityRepository $productSortingRepository;
-    private ContextManager $contextManager;
 
-    /**
-     * @param EntityRepository $productSortingRepository
-     * @param SystemConfigService $systemConfigService
-     * @param ContextManager $contextManager
-     */
     public function __construct(
-        EntityRepository $productSortingRepository,
-        SystemConfigService $systemConfigService,
-        ContextManager $contextManager
+        private readonly EntityRepository $productSortingRepository,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly ContextManager $contextManager
     ) {
-        $this->productSortingRepository = $productSortingRepository;
-        $this->systemConfigService = $systemConfigService;
-        $this->contextManager = $contextManager;
     }
 
     /**
