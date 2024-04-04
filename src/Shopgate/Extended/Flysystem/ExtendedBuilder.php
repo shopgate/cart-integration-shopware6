@@ -17,6 +17,7 @@ use ShopgateMerchantApiInterface;
 use ShopgateObject;
 use ShopgatePlugin;
 use Shopware\Core\Framework\Adapter\Filesystem\PrefixFilesystem;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class ExtendedBuilder extends ShopgateBuilder
 {
@@ -25,15 +26,13 @@ class ExtendedBuilder extends ShopgateBuilder
      * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(
-        private readonly PrefixFilesystem             $privateFileSystem,
+        private readonly PrefixFilesystem $privateFileSystem,
         private readonly ShopgateMerchantApiInterface $merchantApi,
         private readonly ShopgateAuthenticationServiceInterface $authService
     ) {
     }
 
-    /**
-     * @required
-     */
+    #[Required]
     public function initConstruct(ShopgateConfigInterface $config): ExtendedBuilder
     {
         $config->setExportFolderPath('export');

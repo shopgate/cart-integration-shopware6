@@ -9,8 +9,10 @@ use Shopware\Core\System\Tax\TaxRuleType\IndividualStatesRuleTypeFilter as Indiv
 class TaxComposer
 {
 
-    public function __construct(private readonly LocationMapping $locationMapping, private readonly TaxBridge $taxBridge)
-    {
+    public function __construct(
+        private readonly LocationMapping $locationMapping,
+        private readonly TaxBridge $taxBridge
+    ) {
     }
 
     public function getTaxSettings(): array

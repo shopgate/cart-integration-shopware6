@@ -2,17 +2,19 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Shopgate_Model_Catalog_Product;
+use Shopgate_Model_AbstractExport;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 
 class ProductMapFactory
 {
-    public function __construct(private readonly Shopgate_Model_Catalog_Product $simpleProductMapping, private readonly Shopgate_Model_Catalog_Product $variantProductMapping)
-    {
+    public function __construct(
+        private readonly Shopgate_Model_AbstractExport $simpleProductMapping,
+        private readonly Shopgate_Model_AbstractExport $variantProductMapping
+    ) {
     }
 
-    public function createMapClass(SalesChannelProductEntity $entity): Shopgate_Model_Catalog_Product
-    {
+    public function createMapClass(SalesChannelProductEntity $entity
+    ): SimpleProductMapping|ConfigProductMapping|Shopgate_Model_AbstractExport {
         // empty is a quick check for 0 or null
         return clone(empty($entity->getChildCount()) ? $this->simpleProductMapping : $this->variantProductMapping);
     }

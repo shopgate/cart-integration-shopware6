@@ -43,6 +43,7 @@ class CustomFieldMapping
      * Note that whitelist does not filter incoming data, just
      * used as reference to `type` of field
      *
+     * @param ShopgateCustomer|ShopgateAddress|ShopgateOrder $entity
      * @return array<string, string|array>
      */
     public function mapToShopwareCustomFields(ShopgateCustomer|ShopgateAddress|ShopgateOrder $entity): array

@@ -26,13 +26,12 @@ class ProductBridge
 
     public function __construct(
         private readonly AbstractProductListRoute $productListRoute,
-        private readonly ContextManager           $contextManager,
-        private readonly SalesChannelRepository   $productRepository,
-        private readonly SortBridge               $productSorting,
-        private readonly ConfigBridge             $configReader,
+        private readonly ContextManager $contextManager,
+        private readonly SalesChannelRepository $productRepository,
+        private readonly SortBridge $productSorting,
+        private readonly ConfigBridge $configReader,
         private readonly EventDispatcherInterface $eventDispatcher
-    )
-    {
+    ) {
     }
 
     /**

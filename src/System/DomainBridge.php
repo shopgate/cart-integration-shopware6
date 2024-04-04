@@ -11,11 +11,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class DomainBridge
 {
-    private EntityRepository $domainRepository;
 
-    public function __construct(EntityRepository $domainRepository)
+    public function __construct(private readonly EntityRepository $domainRepository)
     {
-        $this->domainRepository = $domainRepository;
     }
 
     /**

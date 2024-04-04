@@ -8,8 +8,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforePaymentTypeMapping extends Event
 {
-    public function __construct(private readonly ShopgateCartBase $sgCart, private readonly PaymentMethodCollection $collection)
-    {
+
+    public function __construct(
+        private readonly ShopgateCartBase $sgCart,
+        private readonly PaymentMethodCollection $collection
+    ) {
     }
 
     public function getSgCart(): ShopgateCartBase

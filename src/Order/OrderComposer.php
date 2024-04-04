@@ -41,22 +41,21 @@ class OrderComposer
 {
 
     public function __construct(
-        private readonly ContextManager               $contextManager,
-        private readonly ContextComposer              $contextComposer,
-        private readonly LineItemComposer             $lineItemComposer,
-        private readonly QuoteBridge                  $quoteBridge,
-        private readonly QuoteErrorMapping            $errorMapping,
-        private readonly ShopgateOrderBridge          $shopgateOrderBridge,
-        private readonly ShippingComposer             $shippingComposer,
-        private readonly StateComposer                $stateComposer,
-        private readonly PaymentComposer              $paymentComposer,
-        private readonly OrderCustomerComposer        $orderCustomerComposer,
-        private readonly OrderMapping                 $orderMapping,
-        private readonly LoggerInterface              $logger,
+        private readonly ContextManager $contextManager,
+        private readonly ContextComposer $contextComposer,
+        private readonly LineItemComposer $lineItemComposer,
+        private readonly QuoteBridge $quoteBridge,
+        private readonly QuoteErrorMapping $errorMapping,
+        private readonly ShopgateOrderBridge $shopgateOrderBridge,
+        private readonly ShippingComposer $shippingComposer,
+        private readonly StateComposer $stateComposer,
+        private readonly PaymentComposer $paymentComposer,
+        private readonly OrderCustomerComposer $orderCustomerComposer,
+        private readonly OrderMapping $orderMapping,
+        private readonly LoggerInterface $logger,
         private readonly ShopgateMerchantApiInterface $merchantApi,
-        private readonly EventDispatcherInterface     $eventDispatcher
-    )
-    {
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**
@@ -77,8 +76,10 @@ class OrderComposer
             // load desktop cart, duplicate its context, add info to context & create new cart based on it
             $initContext = $this->contextComposer->getContextByCustomerId($customerId ?? '');
             $duplicatedContext = $this->contextManager->duplicateContextWithNewToken($initContext, $customerId ?? null);
-            if ($this->shopgateOrderBridge->orderExists((string)$order->getOrderNumber(),
-                $duplicatedContext->getContext())) {
+            if ($this->shopgateOrderBridge->orderExists(
+                (string)$order->getOrderNumber(),
+                $duplicatedContext->getContext()
+            )) {
                 throw new ShopgateLibraryException(
                     ShopgateLibraryException::PLUGIN_DUPLICATE_ORDER,
                     $order->getOrderNumber(),
@@ -104,8 +105,10 @@ class OrderComposer
             $lineItems = $this->lineItemComposer->mapIncomingLineItems($order);
             $swCart = $this->lineItemComposer->addLineItemsToCart($shopwareCart, $newContext, $lineItems);
             // some errors are just success notifications, so we have to remove them
-            $swCart->setErrors($swCart->getErrors()->filter(
-                fn(Error $error) => $error->isPersistent() === false)
+            $swCart->setErrors(
+                $swCart->getErrors()->filter(
+                    fn(Error $error) => $error->isPersistent() === false
+                )
             );
             // creates order & sends email
             $swOrder = $this->quoteBridge->createOrder($swCart, $newContext);
@@ -150,13 +153,12 @@ class OrderComposer
      * @see http://developers.shopgate.com/plugin_api/orders/get_orders.html
      */
     public function getOrders(
-        string  $id,
-        int     $limit,
-        int     $offset,
-        string  $sortOrder,
+        string $id,
+        int $limit,
+        int $offset,
+        string $sortOrder,
         ?string $orderDateFrom = null
-    ): array
-    {
+    ): array {
         $criteria = (new GetOrdersCriteria())
             ->setLimit($limit)
             ->setOffset($offset)
@@ -243,8 +245,12 @@ class OrderComposer
         $criteria = (new GetOrdersCriteria())
             ->addStateAssociations()
             ->addAssociations([NativeOrderExtension::PROPERTY])
-            ->addFilter(new EqualsFilter(NativeOrderExtension::PROPERTY . '.shopgateOrderNumber',
-                $incSgOrder->getOrderNumber()));
+            ->addFilter(
+                new EqualsFilter(
+                    NativeOrderExtension::PROPERTY . '.shopgateOrderNumber',
+                    $incSgOrder->getOrderNumber()
+                )
+            );
         $swOrder = $this->quoteBridge->getOrders($criteria, $channel)->first();
         if (null === $swOrder) {
             throw new ShopgateLibraryException(

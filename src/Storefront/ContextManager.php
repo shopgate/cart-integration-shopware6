@@ -28,13 +28,12 @@ class ContextManager
 
     public function __construct(
         private readonly AbstractSalesChannelContextFactory $channelContextFactory,
-        private readonly EventDispatcherInterface           $eventDispatcher,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly SalesChannelRequestContextResolver $contextResolver,
-        private readonly CartRestorer                       $cartRestorer,
-        private readonly AbstractContextSwitchRoute         $contextSwitchRoute,
-        private readonly SalesChannelContextPersister       $contextPersist
-    )
-    {
+        private readonly CartRestorer $cartRestorer,
+        private readonly AbstractContextSwitchRoute $contextSwitchRoute,
+        private readonly SalesChannelContextPersister $contextPersist
+    ) {
     }
 
     /**
@@ -42,7 +41,8 @@ class ContextManager
      */
     public function createAndLoad(ShopgateApiCredentialsEntity $apiCredentialsEntity): ContextManager
     {
-        $context = $this->createNewContext($apiCredentialsEntity->getSalesChannelId(),
+        $context = $this->createNewContext(
+            $apiCredentialsEntity->getSalesChannelId(),
             [SalesChannelContextService::LANGUAGE_ID => $apiCredentialsEntity->getLanguageId()]
         );
         $this->overwriteSalesContext($context);
@@ -135,10 +135,9 @@ class ContextManager
      */
     public function createNewContext(
         string $salesChannelId,
-        array  $options = [],
+        array $options = [],
         string $token = null
-    ): SalesChannelContext
-    {
+    ): SalesChannelContext {
         if (null === $token) {
             $token = Random::getAlphanumericString(32);
         }

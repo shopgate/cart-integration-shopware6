@@ -9,8 +9,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeAddLineItemsToQuote extends Event
 {
-    public function __construct(private readonly Request $request, private readonly Cart $cart, private readonly SalesChannelContext $context)
-    {
+    public function __construct(
+        private readonly Request $request,
+        private readonly Cart $cart,
+        private readonly SalesChannelContext $context
+    ) {
     }
 
     public function getRequest(): Request

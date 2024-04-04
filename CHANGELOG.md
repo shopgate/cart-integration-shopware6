@@ -1,3 +1,7 @@
+# 3.2.0
+
+- added support to SW 6.6
+
 # 3.1.2
 
 - updated symfony expression dependency to support ver 6.4

@@ -7,6 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeIncLineItemMappingEvent extends Event
 {
+
     public function __construct(private readonly ShopgateCartBase $cart)
     {
     }

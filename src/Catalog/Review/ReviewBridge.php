@@ -15,7 +15,7 @@ class ReviewBridge
 {
 
     public function __construct(
-        private readonly ContextManager   $contextManager,
+        private readonly ContextManager $contextManager,
         private readonly EntityRepository $reviewRepository,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {

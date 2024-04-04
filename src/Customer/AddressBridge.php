@@ -12,16 +12,17 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 class AddressBridge
 {
 
-    public function __construct(private readonly AbstractUpsertAddressRoute $upsertAddressRoute, private readonly EntityRepository $addressRepository)
-    {
+    public function __construct(
+        private readonly AbstractUpsertAddressRoute $upsertAddressRoute,
+        private readonly EntityRepository $addressRepository
+    ) {
     }
 
     public function addAddress(
-        RequestDataBag      $dataBag,
+        RequestDataBag $dataBag,
         SalesChannelContext $context,
-        CustomerEntity      $customer
-    ): CustomerAddressEntity
-    {
+        CustomerEntity $customer
+    ): CustomerAddressEntity {
         return $this->upsertAddressRoute->upsert(null, $dataBag, $context, $customer)->getAddress();
     }
 

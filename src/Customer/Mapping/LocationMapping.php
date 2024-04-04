@@ -17,8 +17,7 @@ class LocationMapping
         private readonly EntityRepository $countryRepository,
         private readonly EntityRepository $stateRepository,
         private readonly ContextManager $contextManager
-    )
-    {
+    ) {
     }
 
     public function getCountryIsoById(string $id): ?string

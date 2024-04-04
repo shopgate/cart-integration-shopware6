@@ -20,16 +20,15 @@ class CartComposer
 {
 
     public function __construct(
-        private readonly ShippingComposer         $shippingComposer,
-        private readonly ContextManager           $contextManager,
-        private readonly ContextComposer          $contextComposer,
-        private readonly LineItemComposer         $lineItemComposer,
-        private readonly QuoteBridge              $quoteBridge,
-        private readonly PaymentComposer          $paymentComposer,
-        private readonly OrderCustomerComposer    $orderCustomerComposer,
+        private readonly ShippingComposer $shippingComposer,
+        private readonly ContextManager $contextManager,
+        private readonly ContextComposer $contextComposer,
+        private readonly LineItemComposer $lineItemComposer,
+        private readonly QuoteBridge $quoteBridge,
+        private readonly PaymentComposer $paymentComposer,
+        private readonly OrderCustomerComposer $orderCustomerComposer,
         private readonly EventDispatcherInterface $eventDispatcher
-    )
-    {
+    ) {
     }
 
     /**

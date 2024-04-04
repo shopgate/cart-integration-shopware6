@@ -1,6 +1,4 @@
-<?php /** @noinspection PhpCastIsUnnecessaryInspection */
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Shopgate\Shopware\Order\Subscriber;
 
@@ -17,7 +15,7 @@ class LiveShoppingSubscriber implements EventSubscriberInterface
 {
 
     public function __construct(
-        private readonly ConfigBridge   $configBridge,
+        private readonly ConfigBridge $configBridge,
         private readonly RequestPersist $requestPersist,
         private readonly TaxMapping $taxMapping
     ) {
@@ -65,9 +63,11 @@ class LiveShoppingSubscriber implements EventSubscriberInterface
             return;
         }
         $context = $event->getContext();
-        $context->setPermissions(array_merge(
-            $context->getPermissions(),
-            [ProductCartProcessor::ALLOW_PRODUCT_PRICE_OVERWRITES => true]
-        ));
+        $context->setPermissions(
+            array_merge(
+                $context->getPermissions(),
+                [ProductCartProcessor::ALLOW_PRODUCT_PRICE_OVERWRITES => true]
+            )
+        );
     }
 }

@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class AddChannelFilterSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private readonly bool $exportAllChannelReviews)
+    public function __construct(readonly private bool $exportAllChannelReviews)
     {
     }
 

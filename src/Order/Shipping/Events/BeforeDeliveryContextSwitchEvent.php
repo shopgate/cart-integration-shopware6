@@ -7,6 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeDeliveryContextSwitchEvent extends Event
 {
+
     public function __construct(private readonly DataBag $dataBag)
     {
     }

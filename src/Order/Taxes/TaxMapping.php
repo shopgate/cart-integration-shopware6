@@ -19,12 +19,11 @@ class TaxMapping
 {
 
     public function __construct(
-        private readonly CurrencyComposer     $currencyComposer,
+        private readonly CurrencyComposer $currencyComposer,
         private readonly ExtendedClassFactory $classFactory,
-        private readonly Formatter            $formatter,
-        private readonly ProductBridge        $productBridge
-    )
-    {
+        private readonly Formatter $formatter,
+        private readonly ProductBridge $productBridge
+    ) {
     }
 
     /**

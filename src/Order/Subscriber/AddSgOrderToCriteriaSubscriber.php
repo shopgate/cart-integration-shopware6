@@ -19,8 +19,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class AddSgOrderToCriteriaSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private readonly RequestPersist $requestPersist, private readonly ShopgateOrderBridge $shopgateOrderBridge)
-    {
+    public function __construct(
+        private readonly RequestPersist $requestPersist,
+        private readonly ShopgateOrderBridge $shopgateOrderBridge
+    ) {
     }
 
     public static function getSubscribedEvents(): array

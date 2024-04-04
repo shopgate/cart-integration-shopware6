@@ -25,13 +25,12 @@ class LineItemComposer
 {
 
     public function __construct(
-        private readonly LineItemProductMapping   $productMapping,
-        private readonly LineItemPromoMapping     $promoMapping,
-        private readonly LoggerInterface          $logger,
+        private readonly LineItemProductMapping $productMapping,
+        private readonly LineItemPromoMapping $promoMapping,
+        private readonly LoggerInterface $logger,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly QuoteBridge              $quoteBridge
-    )
-    {
+        private readonly QuoteBridge $quoteBridge
+    ) {
     }
 
     public function mapIncomingLineItems(ExtendedCart|ExtendedOrder $cart): array

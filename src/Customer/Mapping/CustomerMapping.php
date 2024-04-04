@@ -12,8 +12,8 @@ class CustomerMapping
 {
 
     public function __construct(
-        private readonly GroupMapping      $groupMapping,
-        private readonly AddressMapping    $addressMapping,
+        private readonly GroupMapping $groupMapping,
+        private readonly AddressMapping $addressMapping,
         private readonly SalutationMapping $salutationMapping,
         private readonly CustomFieldMapping $customFieldMapping
     ) {
@@ -22,7 +22,9 @@ class CustomerMapping
     public function mapToShopgateEntity(CustomerEntity $detailedCustomer): ShopgateCustomer
     {
         $shopgateCustomer = new ShopgateCustomer();
-        $shopgateCustomer->setRegistrationDate($detailedCustomer->getCreatedAt()?->format('Y-m-d'));
+        $shopgateCustomer->setRegistrationDate(
+            $detailedCustomer->getCreatedAt() ? $detailedCustomer->getCreatedAt()->format('Y-m-d') : null
+        );
         if (method_exists($detailedCustomer, 'getNewsletter')) {
             $shopgateCustomer->setNewsletterSubscription((int)$detailedCustomer->getNewsletter());
         }
@@ -35,9 +37,11 @@ class CustomerMapping
         $shopgateCustomer->setBirthday($detailedCustomer->getBirthday()?->format('Y-m-d'));
 
         // Phone
-        $shopgateCustomer->setPhone($detailedCustomer->getDefaultShippingAddress()
-            ? $detailedCustomer->getDefaultShippingAddress()->getPhoneNumber()
-            : $this->addressMapping->getWorkingPhone($detailedCustomer->getAddresses()));
+        $shopgateCustomer->setPhone(
+            $detailedCustomer->getDefaultShippingAddress()
+                ? $detailedCustomer->getDefaultShippingAddress()->getPhoneNumber()
+                : $this->addressMapping->getWorkingPhone($detailedCustomer->getAddresses())
+        );
         // Gender
         if ($salutation = $detailedCustomer->getSalutation()) {
             $shopgateCustomer->setGender($this->salutationMapping->toShopgateGender($salutation));
@@ -58,7 +62,9 @@ class CustomerMapping
     }
 
     /**
-     * @param ?string $password - set to null for guest
+     * @param ShopgateCustomer $customer
+     * @param string|null $password - set to null for guest
+     * @return RequestDataBag
      * @throws ShopgateLibraryException
      */
     public function mapToShopwareEntity(ShopgateCustomer $customer, ?string $password): RequestDataBag

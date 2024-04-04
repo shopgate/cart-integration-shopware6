@@ -14,7 +14,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class AddressComposer
 {
-
     public function __construct(
         private readonly CustomerBridge $customerBridge,
         private readonly AddressMapping $addressMapping,

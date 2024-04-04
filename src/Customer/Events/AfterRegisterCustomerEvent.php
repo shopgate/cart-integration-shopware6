@@ -9,8 +9,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterRegisterCustomerEvent extends Event
 {
-    public function __construct(private readonly CustomerEntity $shopwareCustomer, private readonly ShopgateCustomer $shopgateCustomer, private readonly SalesChannelContext $context)
-    {
+    public function __construct(
+        private readonly CustomerEntity $shopwareCustomer,
+        private readonly ShopgateCustomer $shopgateCustomer,
+        private readonly SalesChannelContext $context
+    ) {
     }
 
     public function getContext(): SalesChannelContext

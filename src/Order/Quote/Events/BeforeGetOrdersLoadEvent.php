@@ -8,6 +8,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class BeforeGetOrdersLoadEvent extends Event
 {
+
     public function __construct(private readonly Criteria $criteria, private readonly SalesChannelContext $context)
     {
     }

@@ -17,8 +17,11 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 class PaymentComposer
 {
 
-    public function __construct(private readonly PaymentBridge $paymentBridge, private readonly PaymentMapping $paymentMapping, private readonly LoggerInterface $logger)
-    {
+    public function __construct(
+        private readonly PaymentBridge $paymentBridge,
+        private readonly PaymentMapping $paymentMapping,
+        private readonly LoggerInterface $logger
+    ) {
     }
 
     public function mapIncomingPayment(ShopgateCartBase $sgCart, SalesChannelContext $context): string
@@ -54,9 +57,8 @@ class PaymentComposer
 
     public function setToPaid(
         ?OrderTransactionCollection $transactions,
-        SalesChannelContext         $context
-    ): ?StateMachineStateEntity
-    {
+        SalesChannelContext $context
+    ): ?StateMachineStateEntity {
         $transaction = $this->getActualTransaction($transactions);
 
         return $transaction ? $this->paymentBridge->setOrderToPaid($transaction->getId(), $context) : null;

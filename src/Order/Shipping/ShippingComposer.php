@@ -39,15 +39,14 @@ class ShippingComposer
 {
 
     public function __construct(
-        private readonly ShippingBridge           $shippingBridge,
-        private readonly ShippingMapping          $shippingMapping,
-        private readonly CheckoutCartPageLoader   $cartPageLoader,
-        private readonly StateComposer            $stateComposer,
-        private readonly ContextManager           $contextManager,
+        private readonly ShippingBridge $shippingBridge,
+        private readonly ShippingMapping $shippingMapping,
+        private readonly CheckoutCartPageLoader $cartPageLoader,
+        private readonly StateComposer $stateComposer,
+        private readonly ContextManager $contextManager,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly string                   $shopwareVersion
-    )
-    {
+        private readonly string $shopwareVersion
+    ) {
     }
 
     /**
@@ -85,8 +84,10 @@ class ShippingComposer
     {
         $deliveries = $this->getCalculatedDeliveries($context);
         $this->eventDispatcher->dispatch(new BeforeShippingMethodMappingEvent($deliveries));
-        $result = new DataBag($deliveries->map(
-            fn(Delivery $delivery) => $this->shippingMapping->mapOutCartShippingMethod($delivery))
+        $result = new DataBag(
+            $deliveries->map(
+                fn(Delivery $delivery) => $this->shippingMapping->mapOutCartShippingMethod($delivery)
+            )
         );
         $this->eventDispatcher->dispatch(new AfterShippingMethodMappingEvent($result));
 
@@ -124,8 +125,10 @@ class ShippingComposer
             }
         } catch (Throwable $throwable) {
             if (strpos($throwable->getMessage(), 'LanguageEntity')) {
-                throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE,
-                    'No SaleChannel domain exists corresponding to the SaleChannel default language', true);
+                throw new ShopgateLibraryException(
+                    ShopgateLibraryException::UNKNOWN_ERROR_CODE,
+                    'No SaleChannel domain exists corresponding to the SaleChannel default language', true
+                );
             }
             throw new ShopgateLibraryException(ShopgateLibraryException::UNKNOWN_ERROR_CODE, $throwable->getMessage());
         }
@@ -133,8 +136,10 @@ class ShippingComposer
         return new DeliveryCollection($list);
     }
 
-    public function mapIncomingShipping(ExtendedCart|ExtendedOrder|ShopgateCartBase $quote, SalesChannelContext $context): string
-    {
+    public function mapIncomingShipping(
+        ExtendedCart|ExtendedOrder|ShopgateCartBase $quote,
+        SalesChannelContext $context
+    ): string {
         return $this->shippingMapping->getShopwareShippingId($quote, $context->getTaxState());
     }
 
@@ -194,9 +199,8 @@ class ShippingComposer
 
     public function setToShipped(
         ?OrderDeliveryCollection $deliveries,
-        SalesChannelContext      $context
-    ): ?StateMachineStateEntity
-    {
+        SalesChannelContext $context
+    ): ?StateMachineStateEntity {
         $delivery = $this->getFirstShippingDelivery($deliveries);
 
         return $delivery ? $this->shippingBridge->setOrderToShipped($delivery->getId(), $context) : null;
@@ -229,13 +233,16 @@ class ShippingComposer
         if (method_exists(ShippingMethod::class, 'getPosition')) {
             $collection->sort(fn(ShippingMethod $x, ShippingMethod $y) => $x->getPosition() <=> $y->getPosition());
         }
-        $ids = array_reverse(array_merge(
-            [
-                $context->getShippingMethod()->getId() => $context->getShippingMethod()->getId(),
-                $context->getSalesChannel()->getShippingMethodId() => $context->getSalesChannel()->getShippingMethodId()
-            ],
-            $collection->getIds()
-        ));
+        $ids = array_reverse(
+            array_merge(
+                [
+                    $context->getShippingMethod()->getId() => $context->getShippingMethod()->getId(),
+                    $context->getSalesChannel()->getShippingMethodId() => $context->getSalesChannel(
+                    )->getShippingMethodId()
+                ],
+                $collection->getIds()
+            )
+        );
 
         $collection->sortByIdArray($ids);
     }

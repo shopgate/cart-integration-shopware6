@@ -11,8 +11,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 class PropertyBridge
 {
 
-    public function __construct(private readonly EntityRepository $propertyGroupOptionRepo, private readonly ContextManager $contextManager)
-    {
+    public function __construct(
+        private readonly EntityRepository $propertyGroupOptionRepo,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     /**

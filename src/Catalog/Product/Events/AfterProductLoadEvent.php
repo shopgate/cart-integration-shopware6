@@ -9,8 +9,12 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class AfterProductLoadEvent extends Event
 {
-    public function __construct(private readonly ProductCollection $productCollection, private readonly Criteria $criteria, private readonly SalesChannelContext $context)
-    {
+
+    public function __construct(
+        private readonly ProductCollection $productCollection,
+        private readonly Criteria $criteria,
+        private readonly SalesChannelContext $context
+    ) {
     }
 
     public function getProductCollection(): ProductCollection

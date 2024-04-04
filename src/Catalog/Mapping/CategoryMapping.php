@@ -78,7 +78,7 @@ class CategoryMapping extends Shopgate_Model_Catalog_Category
         $channel = $this->contextManager->getSalesContext();
         $entityList = $category->getSeoUrls()?->filterBySalesChannelId($channel->getSalesChannelId());
 
-        return $entityList ? $this->getSeoUrl($channel, $entityList->first()) : '';
+        return $entityList->count() ? $this->getSeoUrl($channel, $entityList->first()) : '';
     }
 
     public function setIsAnchor(): void

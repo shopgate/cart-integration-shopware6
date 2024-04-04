@@ -12,8 +12,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 class CategoryBridge
 {
 
-    public function __construct(private readonly AbstractCategoryListRoute $categoryListRoute, private readonly ContextManager $contextManager)
-    {
+    public function __construct(
+        private readonly AbstractCategoryListRoute $categoryListRoute,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     public function getRootCategoryId(): string

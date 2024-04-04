@@ -11,8 +11,11 @@ use Shopware\Core\System\Currency\CurrencyFormatter;
 class CurrencyComposer
 {
 
-    public function __construct(private readonly CurrencyFormatter $currencyFormatter, private readonly CashRounding $rounding, private readonly ContextManager $contextManager)
-    {
+    public function __construct(
+        private readonly CurrencyFormatter $currencyFormatter,
+        private readonly CashRounding $rounding,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     /**

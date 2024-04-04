@@ -19,8 +19,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class PaymentMapping
 {
 
-    public function __construct(private readonly LoggerInterface $logger, private readonly ExtendedClassFactory $classFactory, private readonly EventDispatcherInterface $dispatcher)
-    {
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly ExtendedClassFactory $classFactory,
+        private readonly EventDispatcherInterface $dispatcher
+    ) {
     }
 
     /**
@@ -36,9 +39,10 @@ class PaymentMapping
 
         /** @var ?PaymentMethodEntity $entry */
         $entry = $collection->filterByProperty('handlerIdentifier', $class)->first();
-        $this->logger->debug($entry && $entry->getId() !== GenericPayment::UUID
-            ? 'Payment method mapping found: ' . $entry->getHandlerIdentifier()
-            : 'No mapping found. Defaulting to generic payment method'
+        $this->logger->debug(
+            $entry && $entry->getId() !== GenericPayment::UUID
+                ? 'Payment method mapping found: ' . $entry->getHandlerIdentifier()
+                : 'No mapping found. Defaulting to generic payment method'
         );
 
         return $entry ? $entry->getId() : GenericPayment::UUID;

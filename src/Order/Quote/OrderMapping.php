@@ -15,8 +15,11 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 class OrderMapping
 {
 
-    public function __construct(private readonly CustomFieldMapping $customFieldMapping, private readonly ShopgateContainer $sgExternalOrder, private readonly ShippingComposer $shippingComposer)
-    {
+    public function __construct(
+        private readonly CustomFieldMapping $customFieldMapping,
+        private readonly ShopgateContainer $sgExternalOrder,
+        private readonly ShippingComposer $shippingComposer
+    ) {
     }
 
     public function mapIncomingOrder(ShopgateOrder $shopgateOrder): array
@@ -34,7 +37,9 @@ class OrderMapping
             $sgOrder->setIsPaid($extension->getIsPaid());
             // setting the original payment method as we have no mapping yet
             $originalOrder = $extension->getReceivedData();
-            $sgOrder->setPaymentMethod($originalOrder->getPaymentInfos()['shopgate_payment_name'] ?? $originalOrder->getPaymentMethod());
+            $sgOrder->setPaymentMethod(
+                $originalOrder->getPaymentInfos()['shopgate_payment_name'] ?? $originalOrder->getPaymentMethod()
+            );
             $sgOrder->setPaymentTransactionNumber($originalOrder->getPaymentTransactionNumber());
             $sgOrder->setPaymentTime($originalOrder->getPaymentTime());
         }

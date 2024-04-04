@@ -24,14 +24,13 @@ class CustomerBridge
 {
 
     public function __construct(
-        private readonly EntityRepository      $customerGroupRepository,
-        private readonly EntityRepository      $customerRepository,
-        private readonly ContextManager        $contextManager,
-        private readonly AbstractLoginRoute    $loginRoute,
-        private readonly RequestDataBag        $dataBag,
+        private readonly EntityRepository $customerGroupRepository,
+        private readonly EntityRepository $customerRepository,
+        private readonly ContextManager $contextManager,
+        private readonly AbstractLoginRoute $loginRoute,
+        private readonly RequestDataBag $dataBag,
         private readonly AbstractCustomerRoute $customerRoute
-    )
-    {
+    ) {
     }
 
     public function getGroups(): CustomerGroupCollection|EntityCollection

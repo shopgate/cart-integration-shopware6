@@ -1,56 +1,56 @@
 {
-  "name": "shopgate/cart-integration-shopware6",
-  "description": "Shopgate Shopping App Plugin for Shopware 6",
-  "license": "proprietary",
-  "type": "shopware-platform-plugin",
-  "version": "3.1.2",
-  "keywords": [
-    "mobile",
-    "app"
-  ],
-  "authors": [
-    {
-      "name": "Apite GmbH",
-      "email": "mail@apite.io"
-    }
-  ],
-  "require": {
-    "shopware/core": "^6.5.2",
-    "shopgate/cart-integration-sdk": "2.10.1",
-    "symfony/expression-language": "^6.3.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^9.5.2"
-  },
-  "extra": {
-    "shopware-plugin-class": "Shopgate\\Shopware\\SgateShopgatePluginSW6",
-    "plugin-icon": "src/Resources/public/shopgate_logo.png",
-    "copyright": "by Apite",
-    "label": {
-      "de-DE": "Shopgate Modul",
-      "en-GB": "Shopgate Module"
+    "name": "shopgate/cart-integration-shopware6",
+    "description": "Shopgate Shopping App Plugin for Shopware 6",
+    "license": "proprietary",
+    "type": "shopware-platform-plugin",
+    "version": "3.2.0",
+    "keywords": [
+        "mobile",
+        "app"
+    ],
+    "authors": [
+        {
+            "name": "Apite GmbH",
+            "email": "mail@apite.io"
+        }
+    ],
+    "require": {
+        "shopware/core": "^6.5.2",
+        "shopgate/cart-integration-sdk": "2.10.2",
+        "symfony/expression-language": "^6.3.0 | ~7.0.0"
     },
-    "description": {
-      "de-DE": "Eine eigene Shopping App hilft Händler*innen, bei Kunden*innen dauerhaft präsent zu bleiben. Sie bieten Ihren Kunden den schnellsten und bequemsten Weg, online zu bestellen.",
-      "en-GB": "Having your own shopping app helps merchants to maintain a lasting presence among customers.With an app you offer customers the fastest, easiest and most convenient way to order online."
+    "require-dev": {
+        "phpunit/phpunit": "^9.5.2"
     },
-    "manufacturerLink": {
-      "en-GB": "https://apite.io",
-      "de-DE": "https://apite.io"
+    "extra": {
+        "shopware-plugin-class": "Shopgate\\Shopware\\SgateShopgatePluginSW6",
+        "plugin-icon": "src/Resources/public/shopgate_logo.png",
+        "copyright": "by Apite",
+        "label": {
+            "de-DE": "Shopgate Modul",
+            "en-GB": "Shopgate Module"
+        },
+        "description": {
+            "de-DE": "Eine eigene Shopping App hilft Händler*innen, bei Kunden*innen dauerhaft präsent zu bleiben. Sie bieten Ihren Kunden den schnellsten und bequemsten Weg, online zu bestellen.",
+            "en-GB": "Having your own shopping app helps merchants to maintain a lasting presence among customers.With an app you offer customers the fastest, easiest and most convenient way to order online."
+        },
+        "manufacturerLink": {
+            "en-GB": "https://apite.io",
+            "de-DE": "https://apite.io"
+        },
+        "supportLink": {
+            "de-DE": "https://apite.io",
+            "en-GB": "https://apite.io"
+        }
     },
-    "supportLink": {
-      "de-DE": "https://apite.io",
-      "en-GB": "https://apite.io"
+    "autoload": {
+        "psr-4": {
+            "Shopgate\\Shopware\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shopgate\\Shopware\\Tests\\": "tests/"
+        }
     }
-  },
-  "autoload": {
-    "psr-4": {
-      "Shopgate\\Shopware\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Shopgate\\Shopware\\Tests\\": "tests/"
-    }
-  }
 }

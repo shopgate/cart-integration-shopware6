@@ -11,11 +11,10 @@ class ProductComposer
 {
 
     public function __construct(
-        private readonly LoggerInterface   $logger,
+        private readonly LoggerInterface $logger,
         private readonly ProductMapFactory $productMapFactory,
-        private readonly ProductBridge     $productBridge
-    )
-    {
+        private readonly ProductBridge $productBridge
+    ) {
     }
 
     /**

@@ -14,6 +14,7 @@ use ShopgateOrder;
 use ShopgatePlugin;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class Plugin extends ShopgatePlugin
 {
@@ -24,9 +25,7 @@ class Plugin extends ShopgatePlugin
     protected ExtendedClassFactory $classFactory;
     protected PaymentBridge $paymentBridge;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function dependencyInjector(
         ExportService $exportService,
         ImportService $importService,

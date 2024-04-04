@@ -7,8 +7,10 @@ use Shopware\Core\Content\Product\Aggregate\ProductReview\ProductReviewEntity;
 class ReviewComposer
 {
 
-    public function __construct(private readonly ReviewBridge $reviewBridge, private readonly ReviewMapping $reviewMapping)
-    {
+    public function __construct(
+        private readonly ReviewBridge $reviewBridge,
+        private readonly ReviewMapping $reviewMapping
+    ) {
     }
 
     /**

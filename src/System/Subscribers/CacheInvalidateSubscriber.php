@@ -16,14 +16,12 @@ use Throwable;
 class CacheInvalidateSubscriber implements EventSubscriberInterface
 {
     private const SORT_ORDER_KEY = ConfigBridge::SYSTEM_CONFIG_DOMAIN . ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER;
-    private CacheInvalidator $cacheInvalidator;
     private bool $oldSortOrderConfigValue;
-    private SystemConfigService $configService;
 
-    public function __construct(CacheInvalidator $cacheInvalidator, SystemConfigService $configService)
-    {
-        $this->cacheInvalidator = $cacheInvalidator;
-        $this->configService = $configService;
+    public function __construct(
+        private readonly CacheInvalidator $cacheInvalidator,
+        private readonly SystemConfigService $configService
+    ) {
     }
 
     public static function getSubscribedEvents(): array

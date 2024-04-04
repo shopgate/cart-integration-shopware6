@@ -16,8 +16,12 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class OrderCustomerComposer
 {
-    public function __construct(private readonly CustomerBridge $customerBridge, private readonly CustomerMapping $customerMapping, private readonly CustomerComposer $customerComposer, private readonly LoggerInterface $logger)
-    {
+    public function __construct(
+        private readonly CustomerBridge $customerBridge,
+        private readonly CustomerMapping $customerMapping,
+        private readonly CustomerComposer $customerComposer,
+        private readonly LoggerInterface $logger
+    ) {
     }
 
     /**

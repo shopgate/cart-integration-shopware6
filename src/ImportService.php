@@ -11,8 +11,10 @@ use ShopgateOrder;
 
 class ImportService
 {
-    public function __construct(private readonly CustomerComposer $customerComposer, private readonly OrderComposer $orderComposer)
-    {
+    public function __construct(
+        private readonly CustomerComposer $customerComposer,
+        private readonly OrderComposer $orderComposer
+    ) {
     }
 
     /**

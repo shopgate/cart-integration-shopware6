@@ -16,8 +16,8 @@ class SalutationMapping
     public function __construct(
         private readonly EntityRepository $swSalutationRepository,
         private readonly EntityRepository $sgSalutationRepository,
-        private readonly ContextManager   $contextManager)
-    {
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     public function getSalutationIdByGender(string $gender): string

@@ -24,12 +24,11 @@ class LineItemProductMapping
 {
 
     public function __construct(
-        private readonly ContextManager           $contextManager,
-        private readonly ExtendedClassFactory     $extendedClassFactory,
+        private readonly ContextManager $contextManager,
+        private readonly ExtendedClassFactory $extendedClassFactory,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly TaxMapping               $taxMapping
-    )
-    {
+        private readonly TaxMapping $taxMapping
+    ) {
     }
 
     /**
@@ -60,12 +59,11 @@ class LineItemProductMapping
      * after all validation checks are made
      */
     public function mapValidProduct(
-        LineItem          $lineItem,
+        LineItem $lineItem,
         ShopgateOrderItem $incomingItem,
-        ErrorCollection   $collection,
-        string            $taxStatus
-    ): ExtendedCartItem
-    {
+        ErrorCollection $collection,
+        string $taxStatus
+    ): ExtendedCartItem {
         $outgoingItem = $this->extendedClassFactory->createCartItem()->transformFromOrderItem($incomingItem);
         $outgoingItem->setItemNumber($lineItem->getId());
         $outgoingItem->setIsBuyable(1);
@@ -139,9 +137,8 @@ class LineItemProductMapping
 
     public function mapOutgoingOrderProduct(
         OrderLineItemEntity $swLineItem,
-        ?string             $taxStatus
-    ): ShopgateExternalOrderItem
-    {
+        ?string $taxStatus
+    ): ShopgateExternalOrderItem {
         $sgLineItem = $this->extendedClassFactory->createOrderLineItem();
         $sgLineItem->setName($swLineItem->getLabel());
         $sgLineItem->setUnitAmount($swLineItem->getUnitPrice());

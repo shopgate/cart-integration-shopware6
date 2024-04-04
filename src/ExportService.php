@@ -24,17 +24,16 @@ class ExportService
 {
 
     public function __construct(
-        private readonly LoggerInterface  $log,
+        private readonly LoggerInterface $log,
         private readonly CategoryComposer $categoryComposer,
-        private readonly ConfigBridge     $configBridge,
-        private readonly TaxComposer      $taxComposer,
+        private readonly ConfigBridge $configBridge,
+        private readonly TaxComposer $taxComposer,
         private readonly CustomerComposer $customerComposer,
-        private readonly ProductComposer  $productComposer,
-        private readonly OrderComposer    $orderComposer,
-        private readonly CartComposer     $cartComposer,
-        private readonly ReviewComposer   $reviewComposer
-    )
-    {
+        private readonly ProductComposer $productComposer,
+        private readonly OrderComposer $orderComposer,
+        private readonly CartComposer $cartComposer,
+        private readonly ReviewComposer $reviewComposer
+    ) {
     }
 
     /**

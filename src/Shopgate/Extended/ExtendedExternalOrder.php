@@ -26,13 +26,12 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
 {
 
     public function __construct(
-        private readonly AddressMapping         $addressMapping,
+        private readonly AddressMapping $addressMapping,
         private readonly LineItemProductMapping $productMapping,
-        private readonly LineItemPromoMapping   $promoMapping,
-        private readonly TaxMapping             $taxMapping,
-        private readonly ShippingMapping        $shippingMapping
-    )
-    {
+        private readonly LineItemPromoMapping $promoMapping,
+        private readonly TaxMapping $taxMapping,
+        private readonly ShippingMapping $shippingMapping
+    ) {
         parent::__construct();
     }
 
@@ -72,7 +71,8 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
         parent::setItems(
             $lineItems
                 ->filterByType(LineItem::PRODUCT_LINE_ITEM_TYPE)
-                ->map(fn(OrderLineItemEntity $item) => $this->productMapping->mapOutgoingOrderProduct($item, $status)));
+                ->map(fn(OrderLineItemEntity $item) => $this->productMapping->mapOutgoingOrderProduct($item, $status))
+        );
     }
 
     /**
@@ -133,12 +133,17 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
                 ->filter(fn(OrderLineItemEntity $entity) => abs($entity->getTotalPrice()) !== 0.0)
                 ->map(fn(OrderLineItemEntity $entity) => $this->promoMapping->mapOutgoingOrderPromo($entity, $status));
         }
-        parent::setExternalCoupons(array_merge(
-            $promos,
-            $value->getDeliveries() ? $value->getDeliveries()->slice(1)->map(
-                fn(OrderDeliveryEntity $entity) => $this->promoMapping->mapOutgoingOrderShippingPromo($entity, $status)
-            ) : []
-        ));
+        parent::setExternalCoupons(
+            array_merge(
+                $promos,
+                $value->getDeliveries() ? $value->getDeliveries()->slice(1)->map(
+                    fn(OrderDeliveryEntity $entity) => $this->promoMapping->mapOutgoingOrderShippingPromo(
+                        $entity,
+                        $status
+                    )
+                ) : []
+            )
+        );
     }
 
     /**
@@ -149,8 +154,10 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
     public function setDeliveryNotes($value): void
     {
         // everything past the first note is a discounted shipping (coupon or promo)
-        parent::setDeliveryNotes($value->slice(0, 1)->map(
-            fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutgoingOrderDeliveryNote($entity))
+        parent::setDeliveryNotes(
+            $value->slice(0, 1)->map(
+                fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutgoingOrderDeliveryNote($entity)
+            )
         );
     }
 
@@ -163,18 +170,19 @@ class ExtendedExternalOrder extends ShopgateExternalOrder
             array_merge(
                 $value->getDeliveries() ? $value->getDeliveries()->slice(0, 1)->map(
                     fn(OrderDeliveryEntity $entity) => $this->shippingMapping->mapOutOrderShippingMethod(
-                        $entity->getShippingCosts(), $value->getTaxStatus()
+                        $entity->getShippingCosts(),
+                        $value->getTaxStatus()
                     )
-                ) : [])
+                ) : []
+            )
         );
     }
 
     private function mapAddress(
         OrderAddressEntity $addressEntity,
-        string             $billingId,
-        string             $shippingId
-    ): ShopgateAddress
-    {
+        string $billingId,
+        string $shippingId
+    ): ShopgateAddress {
         $type = $this->addressMapping->mapAddressType($addressEntity, $billingId, $shippingId);
 
         return $this->addressMapping->mapAddress($addressEntity, $type);

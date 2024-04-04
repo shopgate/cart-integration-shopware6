@@ -16,17 +16,15 @@ class PaymentBridge
 
     public function __construct(
         private readonly AbstractPaymentMethodRoute $paymentMethodRoute,
-        private readonly StateBridge                $stateBridge,
-        private readonly ContextManager             $contextManager
-    )
-    {
+        private readonly StateBridge $stateBridge,
+        private readonly ContextManager $contextManager
+    ) {
     }
 
     public function getAvailableMethods(
         SalesChannelContext $context,
-        Criteria            $criteria = null
-    ): PaymentMethodCollection
-    {
+        Criteria $criteria = null
+    ): PaymentMethodCollection {
         $request = new Request();
         $request->query->set('onlyAvailable', true);
 
@@ -54,6 +52,7 @@ class PaymentBridge
             'order_transaction',
             $transactionId,
             'pay',
-            $context->getContext());
+            $context->getContext()
+        );
     }
 }
