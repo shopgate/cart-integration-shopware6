@@ -1,3 +1,7 @@
+# 3.2.1
+
+- fixed admin panel JS for 6.6 compatibility
+
 # 3.2.0
 
 - added support to SW 6.6
