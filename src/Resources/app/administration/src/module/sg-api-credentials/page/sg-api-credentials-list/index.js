@@ -30,11 +30,11 @@ Component.register('sg-api-credentials-list', {
     },
 
     computed: {
-        entityRepository() {
+        credentialRepository() {
             return this.repositoryFactory.create('shopgate_api_credentials');
         },
 
-        columns() {
+        credentialColumns() {
             return this.getColumns();
         }
     },
@@ -47,7 +47,7 @@ Component.register('sg-api-credentials-list', {
             criteria.addAssociation('language');
             criteria.addAssociation('salesChannel');
 
-            this.entityRepository.search(criteria, Shopware.Context.api).then((items) => {
+            this.credentialRepository.search(criteria, Shopware.Context.api).then((items) => {
                 this.total = items.total;
                 this.items = items;
                 this.isLoading = false;
