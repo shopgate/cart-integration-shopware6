@@ -5,7 +5,8 @@ Shopware.Application.addServiceProviderDecorator('ruleConditionDataProviderServi
     ruleConditionService.addCondition('is_shopgate', {
         component: 'is-shopgate',
         label: 'Is Shopgate Mobile',
-        scopes: ['global']
+        scopes: ['global'],
+        group: 'misc'
     });
 
     return ruleConditionService;

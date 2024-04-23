@@ -4,7 +4,8 @@
                       id="is-shopgate"
                       size="medium"
                       :options="selectValues"
-                      v-model="isShopgate"
-                      class="field--main">
+                      v-model:value="isShopgate"
+                      class="field--main"
+                      :disabled="disabled">
     </sw-single-select>
 {% endblock %}
