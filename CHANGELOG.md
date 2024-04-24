@@ -1,6 +1,7 @@
 # 3.2.1
 
 - fixed admin panel JS for 6.6 compatibility
+- removed SG logo from Settings > Extensions
 
 # 3.2.0
 
