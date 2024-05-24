@@ -25,32 +25,33 @@ Module.register('sg-api-credentials', {
             component: 'sg-api-credentials-list',
             path: 'index',
             meta: {
-                parentPath: 'sw.settings.index'
+                parentPath: 'sw.settings.index',
+                privilege: 'system.system_config',
             }
         },
         detail: {
             component: 'sg-api-credentials-detail',
             path: 'detail/:id',
             meta: {
-                parentPath: 'sg.api.credentials.index'
+                parentPath: 'sg.api.credentials.index',
+                privilege: 'system.system_config',
             }
         },
         create: {
             component: 'sg-api-credentials-create',
             path: 'create',
             meta: {
-                parentPath: 'sg.api.credentials.index'
+                parentPath: 'sg.api.credentials.index',
+                privilege: 'system.system_config',
             }
         }
     },
 
-    settingsItem: [
-        {
-            name: 'sg-api-credentials',
-            to: 'sg.api.credentials.index',
-            label: 'sg-api-credentials.general.mainMenuItemGeneral',
-            group: 'plugins',
-            iconComponent: 'shopgate-icon'
-        }
-    ]
+    settingsItem: {
+        name: 'sg-api-credentials',
+        to: 'sg.api.credentials.index',
+        label: 'sg-api-credentials.general.mainMenuItemGeneral',
+        group: 'plugins',
+        icon: 'regular-shopping-bag'
+    }
 });
