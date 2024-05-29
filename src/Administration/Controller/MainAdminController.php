@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Shopgate\Shopware\Storefront\Controller;
+namespace Shopgate\Shopware\Administration\Controller;
 
 use Exception;
 use Shopgate\Shopware\Plugin;
@@ -10,15 +10,15 @@ use ShopgateLibraryException;
 use ShopgatePluginApiResponseAppJson;
 use ShopgatePluginApiResponseAppXmlExport;
 use ShopgatePluginApiResponseTextPlain;
-use Shopware\Storefront\Controller\StorefrontController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(defaults: ['_routeScope' => ['storefront']])]
-class MainController extends StorefrontController
+#[Route(defaults: ['_routeScope' => ['api']])]
+class MainController extends AbstractController
 {
     public const IS_SHOPGATE = 'IS_SHOPGATE_CALL';
 
@@ -26,7 +26,7 @@ class MainController extends StorefrontController
     {
     }
 
-    #[Route(path: '/shopgate/plugin', name: 'frontend.shopgate.action', methods: [
+    #[Route(path: '/api/shopgate/plugin', name: 'api.shopgate.action', methods: [
         'GET',
         'POST'
     ])]
