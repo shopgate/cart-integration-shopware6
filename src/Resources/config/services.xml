@@ -57,9 +57,17 @@
         <service id="shopgate.sdk.external_order_coupon" class="\ShopgateExternalOrderExternalCoupon"/>
         <service id="shopgate.sdk.external_order" class="\ShopgateExternalOrder"/>
         <service id="shopgate.sdk.external_order_extra_cost" class="\ShopgateExternalOrderExtraCost"/>
-        <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge"/>
+        <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge">
+            <argument key="$categoryProductMapRepository" type="service" id="shopgate_go_category_product_mapping.repository" />
+        </service>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer">
             <argument key="$categoryMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
+        </service>
+        <service id="Shopgate\Shopware\Catalog\DataAbstractionLayer\CategoryProductMappingIndexer">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory"/>
+            <argument type="service" id="category.repository"/>
+            <tag name="shopware.entity_indexer"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge">
             <argument key="$productRepository" type="service" id="sales_channel.product.repository"/>
@@ -106,9 +114,7 @@
             <argument key="$cacheInvalidator" type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheInvalidator"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree">
-            <argument key="$cache" type="service" id="cache.object"/>
-        </service>
+        <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree" />
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
             <argument key="$swSalutationRepository" type="service" id="salutation.repository"/>
             <argument key="$sgSalutationRepository" type="service" id="shopgate_go_salutations.repository"/>
@@ -223,6 +229,9 @@
         </service>
         <service id="Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsDefinition">
             <tag name="shopware.entity.definition" entity="shopgate_api_credentials"/>
+        </service>
+        <service id="Shopgate\Shopware\Shopgate\Catalog\CategoryProductMappingDefinition">
+            <tag name="shopware.entity.definition" entity="shopgate_go_category_product_mapping"/>
         </service>
         <service id="Shopgate\Shopware\Shopgate\ExtendedClassFactory">
             <argument key="$cart" type="service" id="Shopgate\Shopware\Shopgate\Extended\ExtendedCart"/>

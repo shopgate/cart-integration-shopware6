@@ -2,13 +2,12 @@
 
 namespace Shopgate\Shopware\Catalog\Mapping;
 
-use Psr\Cache\CacheException;
-use Psr\Cache\InvalidArgumentException;
 use ReflectionException;
 use Shopgate\Shopware\Catalog\Mapping\Events\AfterSimpleProductPropertyMapEvent;
 use Shopgate\Shopware\Catalog\Product\ProductExportExtension;
 use Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
+use Shopgate\Shopware\Shopgate\Catalog\CategoryProductCollection;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\CurrencyComposer;
@@ -28,15 +27,16 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 {
     use MapTrait;
+
     /** @var SalesChannelProductEntity */
     protected $item;
+    protected CategoryProductCollection $categoryMap;
 
     public function __construct(
         protected ContextManager $contextManager,
@@ -173,34 +173,19 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     /**
      * Setting the same sort order for every category as supposedly
      * we have a sort order for the whole catalog.
-     * @throws InvalidArgumentException
-     * @throws CacheException
      */
     public function setCategoryPaths(): void
     {
-        $rootCategoryId = $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
-        $sortTree = $this->sortTree->getSortTree($rootCategoryId)[$this->item->getId()] ?? [];
+        $categoryMap = $this->categoryMap->filterByProperty('productId', $this->item->getId());
+
         $paths = [];
-        foreach ($sortTree as $item) {
-            if ($this->isRootCategory($item['categoryId'])) {
-                continue;
-            }
+        foreach ($categoryMap as $mapping) {
             $path = new Shopgate_Model_Catalog_CategoryPath();
-            $path->setUid($item['categoryId']);
-            if (array_key_exists('position', $item)) {
-                $path->setSortOrder($item['position']);
-            }
+            $path->setUid($mapping->getCategoryId());
+            $path->setSortOrder($mapping->getSortOrder());
             $paths[] = $path;
         }
         parent::setCategoryPaths($paths);
-    }
-
-    /**
-     * Check if provided category is a root category
-     */
-    private function isRootCategory(string $id): bool
-    {
-        return $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId() === $id;
     }
 
     public function setShipping(): void
@@ -445,5 +430,12 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $value = [];
         }
         return parent::setData($key, $value);
+    }
+
+    public function setCategoryMap(CategoryProductCollection $collection): self
+    {
+        $this->categoryMap = $collection;
+
+        return $this;
     }
 }

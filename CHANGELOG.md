@@ -1,3 +1,8 @@
+# 3.3.0
+
+- added category -> product indexer to help speed up catalog export
+- removed flag that disabled sort export
+
 # 3.2.1
 
 - fixed admin panel JS for 6.6 compatibility

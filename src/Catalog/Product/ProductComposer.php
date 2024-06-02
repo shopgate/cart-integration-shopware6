@@ -2,6 +2,7 @@
 
 namespace Shopgate\Shopware\Catalog\Product;
 
+use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
@@ -9,11 +10,11 @@ use Throwable;
 
 class ProductComposer
 {
-
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly ProductMapFactory $productMapFactory,
-        private readonly ProductBridge $productBridge
+        private readonly ProductBridge $productBridge,
+        private readonly CategoryBridge $categoryBridge
     ) {
     }
 
@@ -26,10 +27,13 @@ class ProductComposer
     public function loadProducts(?int $limit, ?int $offset, array $uids = []): array
     {
         $products = $this->productBridge->getProductList($limit, $offset, $uids);
+        $categoryProductMap = $this->categoryBridge->getCategoryProductMap($products->getIds());
+
         $list = [];
         foreach ($products as $product) {
             $shopgateProduct = $this->productMapFactory->createMapClass($product);
             $shopgateProduct->setItem($product);
+            $shopgateProduct->setCategoryMap($categoryProductMap);
             try {
                 $item = $shopgateProduct->generateData();
                 $list[$item->getUid()] = $item;
