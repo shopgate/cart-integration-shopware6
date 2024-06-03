@@ -21,7 +21,7 @@ class ProductComposer
     /**
      * @param int|null $limit
      * @param int|null $offset
-     * @param array $uids
+     * @param string[] $uids
      * @return Shopgate_Model_Catalog_Product[]
      */
     public function loadProducts(?int $limit, ?int $offset, array $uids = []): array

@@ -19,7 +19,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexer;
 use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexingMessage;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Uuid\Uuid;
-use function array_key_exists;
 use function count;
 use function json_decode;
 
@@ -67,11 +66,10 @@ class CategoryProductMappingIndexer extends EntityIndexer
                 continue;
             }
 
-            $payload = $result->getPayload();
-            if (array_key_exists('parentId', $payload)) {
-                if ($payload['parentId'] !== null) {
-                    $ids[] = $payload['parentId'];
-                }
+            // no need to generate for a delete category
+            if ($result->getOperation() === 'delete') {
+                $key = array_search($result->getPrimaryKey(), $ids);
+                unset($ids[$key]);
             }
         }
 
@@ -120,6 +118,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
                                             product_version_id = :productVersionId')
         );
 
+        $count = 0;
         foreach ($channels as $channel) {
             $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
             $salesChannelContext = $this->contextManager->createNewContext($channelId);
@@ -134,7 +133,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
                 $maxProducts = $products->count();
                 $i = 0;
                 foreach ($products as $product) {
-                    $update->execute([
+                    $count += $update->execute([
                         'productId' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),
                         'categoryId' => Uuid::fromHexToBytes($category->getId()),
                         'channelId' => Uuid::fromHexToBytes($channelId),
@@ -144,9 +143,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
                     ]);
                 }
             }
-
-            count($result) && $this->writeLog('Successfully populated catalog/product map index table');
         }
+        $count && $this->writeLog('Successfully updated catalog/product map index table');
     }
 
     public function getTotal(): int
@@ -164,11 +162,12 @@ class CategoryProductMappingIndexer extends EntityIndexer
      */
     private function writeLog(string $message): void
     {
-        $this->connection->executeStatement('INSERT INTO `log_entry` (`id`, `message`, `level`, `channel`, `created_at`) VALUES (:id, :message, :level, :channel, now())', [
-            'id' => Uuid::randomBytes(),
-            'message' => $message,
-            'level' => 200,
-            'channel' => 'Shopgate Go',
-        ]);
+        $this->connection->executeStatement('INSERT INTO `log_entry` (`id`, `message`, `level`, `channel`, `created_at`) VALUES (:id, :message, :level, :channel, now())',
+            [
+                'id' => Uuid::randomBytes(),
+                'message' => $message,
+                'level' => 200,
+                'channel' => 'Shopgate Go',
+            ]);
     }
 }
