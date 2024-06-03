@@ -30,7 +30,7 @@ class CategoryBridge
         return $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
     }
 
-    public function getChildCategories(string $parentId, ?int $offset = null): CategoryCollection
+    public function getChildCategories(string $parentId): CategoryCollection
     {
         $criteria = (new Criteria())
             ->addAssociation('media')
@@ -41,8 +41,7 @@ class CategoryBridge
                     RangeFilter::GT => 1,
                     RangeFilter::LTE => 99,
                 ])
-            )
-            ->setOffset($offset);
+            );
         $criteria->setTitle('shopgate::category::parent-id');
         $list = $this->categoryListRoute->load($criteria, $this->contextManager->getSalesContext())->getCategories();
         $tree = $this->buildTree($parentId, $list);
