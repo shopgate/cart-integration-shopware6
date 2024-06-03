@@ -53,14 +53,12 @@ class CategoryProductMappingIndexer extends EntityIndexer
 
     public function update(EntityWrittenContainerEvent $event): ?EntityIndexingMessage
     {
-        // todo: test
         $categoryEvent = $event->getEventByEntityName(CategoryDefinition::ENTITY_NAME);
         if (!$categoryEvent) {
             return null;
         }
         $ids = $categoryEvent->getIds();
 
-        // todo: check categories where product content was modified (or product sort order), subscriber?
         foreach ($categoryEvent->getWriteResults() as $result) {
             if (!$result->getExistence()) {
                 continue;

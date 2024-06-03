@@ -124,7 +124,7 @@ class Plugin extends ShopgatePlugin
 
     public function checkStock(ShopgateCart $cart)
     {
-        // TODO: Implement checkStock() method.
+        // not needed
     }
 
     /**
@@ -154,7 +154,7 @@ class Plugin extends ShopgatePlugin
 
     public function syncFavouriteList($customerToken, $items)
     {
-        // TODO: Implement syncFavouriteList() method.
+        // not needed
     }
 
     public function createPluginInfo(): array
@@ -178,7 +178,7 @@ class Plugin extends ShopgatePlugin
 
     protected function createMediaCsv(): void
     {
-        // TODO: Implement createMediaCsv() method.
+        // not needed
     }
 
     /**
