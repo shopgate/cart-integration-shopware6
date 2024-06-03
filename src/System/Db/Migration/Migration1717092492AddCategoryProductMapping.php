@@ -32,6 +32,9 @@ class Migration1717092492AddCategoryProductMapping extends MigrationStep
               CONSTRAINT `fk.sg_category_product_mapping.sales_channel_id` FOREIGN KEY (sales_channel_id) REFERENCES `sales_channel` (id) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
+
+        // remove feature flag
+        $connection->executeStatement('DELETE FROM `system_config` WHERE configuration_key = "SgateShopgatePluginSW6.config.ignoreSortOrderInCategories"');
     }
 
     public function updateDestructive(Connection $connection): void
