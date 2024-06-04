@@ -1366,6 +1366,55 @@
 									"name": "setup",
 									"item": [
 										{
+											"name": "SW: get variant child",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"pm.test(\"Get child ID\", function () {\r",
+															"    const jsonData = pm.response.json();\r",
+															"    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
+															"    pm.expect(child).length(1, 'Should have found a child product');\r",
+															"    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{gen_access_token}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
+													"host": [
+														"{{sw_endpoint_api}}"
+													],
+													"path": [
+														"product",
+														"{{catalog_product_variant}}",
+														"children"
+													]
+												}
+											},
+											"response": []
+										},
+										{
 											"name": "SW: get prod taxId",
 											"event": [
 												{
@@ -1412,55 +1461,6 @@
 													"path": [
 														"product",
 														"{{catalog_product_variant}}"
-													]
-												}
-											},
-											"response": []
-										},
-										{
-											"name": "SW: get variant child",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", function () {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"pm.test(\"Get child ID\", function () {\r",
-															"    const jsonData = pm.response.json();\r",
-															"    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
-															"    pm.expect(child).length(1, 'Should have found a child product');\r",
-															"    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{gen_access_token}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
-													"host": [
-														"{{sw_endpoint_api}}"
-													],
-													"path": [
-														"product",
-														"{{catalog_product_variant}}",
-														"children"
 													]
 												}
 											},
@@ -1896,7 +1896,7 @@
 									"name": "setup",
 									"item": [
 										{
-											"name": "SW: get CMS page ID",
+											"name": "SW: get slot id",
 											"event": [
 												{
 													"listen": "test",
@@ -1906,19 +1906,20 @@
 															"    pm.response.to.have.status(200);\r",
 															"});\r",
 															"\r",
-															"pm.test(\"Get values\", function () {\r",
+															"pm.test(\"get slot id\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.data[0].attributes.name).to.be.a('string');\r",
-															"    pm.environment.set(\"gen_cms_page_default_id\", jsonData.data[0].id);\r",
+															"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
+															"\r",
+															"    const slot = jsonData.data[0];\r",
+															"    pm.expect(slot.id).to.be.a('string')\r",
+															"    pm.environment.set('gen_cms_slot_productListing_id', slot.id);\r",
 															"});"
 														],
-														"type": "text/javascript"
+														"type": "text/javascript",
+														"packages": {}
 													}
 												}
 											],
-											"protocolProfileBehavior": {
-												"disabledSystemHeaders": {}
-											},
 											"request": {
 												"auth": {
 													"type": "bearer",
@@ -1934,14 +1935,12 @@
 												"header": [
 													{
 														"key": "Accept",
-														"value": "application/json",
-														"type": "text",
-														"disabled": true
+														"value": "application/json"
 													}
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default category layout\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default listing layout\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+													"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"type\",\n                    \"value\": \"product-listing\"\n                }\n            ]\n        }\n    ]\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -1949,13 +1948,13 @@
 													}
 												},
 												"url": {
-													"raw": "{{sw_endpoint_api}}/search/cms-page",
+													"raw": "{{sw_endpoint_api}}/search/cms-slot",
 													"host": [
 														"{{sw_endpoint_api}}"
 													],
 													"path": [
 														"search",
-														"cms-page"
+														"cms-slot"
 													]
 												}
 											},
@@ -2031,7 +2030,7 @@
 											"response": []
 										},
 										{
-											"name": "SW: get slot id",
+											"name": "SW: get CMS page ID",
 											"event": [
 												{
 													"listen": "test",
@@ -2041,20 +2040,19 @@
 															"    pm.response.to.have.status(200);\r",
 															"});\r",
 															"\r",
-															"pm.test(\"get slot id\", function () {\r",
+															"pm.test(\"Get values\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
-															"\r",
-															"    const slot = jsonData.data[0];\r",
-															"    pm.expect(slot.id).to.be.a('string')\r",
-															"    pm.environment.set('gen_cms_slot_productListing_id', slot.id);\r",
+															"    pm.expect(jsonData.data[0].attributes.name).to.be.a('string');\r",
+															"    pm.environment.set(\"gen_cms_page_default_id\", jsonData.data[0].id);\r",
 															"});"
 														],
-														"type": "text/javascript",
-														"packages": {}
+														"type": "text/javascript"
 													}
 												}
 											],
+											"protocolProfileBehavior": {
+												"disabledSystemHeaders": {}
+											},
 											"request": {
 												"auth": {
 													"type": "bearer",
@@ -2070,12 +2068,14 @@
 												"header": [
 													{
 														"key": "Accept",
-														"value": "application/json"
+														"value": "application/json",
+														"type": "text",
+														"disabled": true
 													}
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"type\",\n                    \"value\": \"product-listing\"\n                }\n            ]\n        }\n    ]\n}",
+													"raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default category layout\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default listing layout\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -2083,13 +2083,13 @@
 													}
 												},
 												"url": {
-													"raw": "{{sw_endpoint_api}}/search/cms-slot",
+													"raw": "{{sw_endpoint_api}}/search/cms-page",
 													"host": [
 														"{{sw_endpoint_api}}"
 													],
 													"path": [
 														"search",
-														"cms-slot"
+														"cms-page"
 													]
 												}
 											},
@@ -9409,64 +9409,6 @@
 							"response": []
 						},
 						{
-							"name": "SW: re-index",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{gen_access_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"offset\": 0\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
-									"host": [
-										"{{sw_endpoint_api}}"
-									],
-									"path": [
-										"_action",
-										"indexing",
-										":indexer"
-									],
-									"variable": [
-										{
-											"key": "indexer",
-											"value": "shopgate.go.category.product.mapping.indexer"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "SG: check Z-A name sort",
 							"event": [
 								{
@@ -9481,6 +9423,11 @@
 											"pm.test(\"General check\", function () {",
 											"    pm.expect(jsonObject.items.item).to.be.a('array').length.to.be.gte(4, 'Should have certain number of products');",
 											"});",
+											"",
+											"// seems like sort is not working on 6.5 CI container well",
+											"if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.6.0.0')){",
+											"    return;",
+											"}",
 											"",
 											"pm.test(\"Check `adv price` product category sort\", function () {",
 											"    checkManualCategoryExistence(pm.environment.get('catalog_product_advPrices_id'), '1');",
