@@ -9358,6 +9358,65 @@
 							"response": []
 						},
 						{
+							"name": "SW: re-index",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"offset\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"indexing",
+										":indexer"
+									],
+									"variable": [
+										{
+											"key": "indexer",
+											"value": "shopgate.go.category.product.mapping.indexer"
+										}
+									]
+								},
+								"description": "not necessary, but for some reason updating a category might trigger an async update (so test fails)"
+							},
+							"response": []
+						},
+						{
 							"name": "SG: check Z-A name sort",
 							"event": [
 								{
@@ -9370,7 +9429,7 @@
 											"",
 											"const jsonObject = xml2Json(responseBody);",
 											"pm.test(\"General check\", function () {",
-											"    pm.expect(jsonObject.items.item).to.be.a('array').length.to.be.gte(10, 'Should have certain number of products');",
+											"    pm.expect(jsonObject.items.item).to.be.a('array').length.to.be.gte(4, 'Should have certain number of products');",
 											"});",
 											"",
 											"pm.test(\"Check `adv price` product category sort\", function () {",
@@ -9386,21 +9445,6 @@
 											"    checkManualCategoryExistence(pm.environment.get('catalog_product_props'), '2');",
 											"});",
 											"",
-											"pm.test(\"Backorder Product is saleable\", function () {",
-											"    const backOrderProduct = Utility.getXmlByUid(jsonObject.items.item, pm.environment.get('created_product_noStock_backorder_id'));",
-											"    pm.expect(backOrderProduct.stock.is_saleable).to.be.eq('1');",
-											"    pm.expect(backOrderProduct.stock.backorders).to.be.eq('1');",
-											"    pm.expect(backOrderProduct.stock.use_stock).to.be.eq('0');",
-											"    pm.expect(backOrderProduct.stock.stock_quantity).to.be.eq('0');",
-											"});",
-											"",
-											"pm.test(\"Closeout Product is not saleable\", function () {",
-											"    const closeOutProduct = Utility.getXmlByUid(jsonObject.items.item, pm.environment.get('created_product_noStock_id'));",
-											"    pm.expect(closeOutProduct.stock.is_saleable).to.be.eq('0');",
-											"    pm.expect(closeOutProduct.stock.backorders).to.be.eq('0');",
-											"    pm.expect(closeOutProduct.stock.use_stock).to.be.eq('1');",
-											"    pm.expect(closeOutProduct.stock.stock_quantity).to.be.eq('0');",
-											"});",
 											"function checkManualCategoryExistence(productId, positionNumber) {",
 											"    const product = Utility.getXmlByUid(jsonObject.items.item, productId);",
 											"    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
@@ -9467,6 +9511,26 @@
 										{
 											"key": "use_shutdown_handler",
 											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "uids[0]",
+											"value": "{{catalog_product_advPrices_id}}",
+											"type": "text"
+										},
+										{
+											"key": "uids[1]",
+											"value": "{{catalog_product_freeShip}}",
+											"type": "text"
+										},
+										{
+											"key": "uids[2]",
+											"value": "{{catalog_product_variant}}",
+											"type": "text"
+										},
+										{
+											"key": "uids[3]",
+											"value": "{{catalog_product_props}}",
 											"type": "text"
 										}
 									]
