@@ -9350,7 +9350,6 @@
 											"}",
 											"",
 											"requestBody = requestBody.replaceAll('#slotId#', pm.environment.get('gen_cms_slot_productListing_id'));",
-											"console.log(requestBody)",
 											"pm.environment.set(\"requestBody\", requestBody);"
 										],
 										"type": "text/javascript",
@@ -9403,6 +9402,64 @@
 										{
 											"key": "catId",
 											"value": "{{created_category_manual_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: re-index",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"offset\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"indexing",
+										":indexer"
+									],
+									"variable": [
+										{
+											"key": "indexer",
+											"value": "shopgate.go.category.product.mapping.indexer"
 										}
 									]
 								}
@@ -9509,21 +9566,25 @@
 										{
 											"key": "uids[0]",
 											"value": "{{catalog_product_advPrices_id}}",
+											"description": "1",
 											"type": "text"
 										},
 										{
 											"key": "uids[1]",
-											"value": "{{catalog_product_freeShip}}",
+											"value": "{{catalog_product_props}}",
+											"description": "2",
 											"type": "text"
 										},
 										{
 											"key": "uids[2]",
-											"value": "{{catalog_product_variant}}",
+											"value": "{{catalog_product_freeShip}}",
+											"description": "3",
 											"type": "text"
 										},
 										{
 											"key": "uids[3]",
-											"value": "{{catalog_product_props}}",
+											"value": "{{catalog_product_variant}}",
+											"description": "4",
 											"type": "text"
 										}
 									]
