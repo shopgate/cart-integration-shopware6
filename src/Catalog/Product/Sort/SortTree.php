@@ -67,6 +67,7 @@ class SortTree
                 $config = array_merge(...$list);
                 if (isset($config['defaultSorting']['value'])) {
                     $value = $config['defaultSorting']['value'];
+                    // in SW6.6 this became a UUID
                     if (Uuid::isValid($value) && $entry = $sortingCollection->get($value)) {
                         return $entry->getKey();
                     }
