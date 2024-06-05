@@ -9,7 +9,7 @@
     },
     {
       "key": "domain",
-      "value": "{{host}}{{system_port}}/shopgate/plugin",
+      "value": "{{sw_endpoint_api}}/shopgate/plugin",
       "enabled": true
     },
     {
