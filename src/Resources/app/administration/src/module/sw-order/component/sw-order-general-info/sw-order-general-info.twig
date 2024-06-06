@@ -1,7 +1,7 @@
 {% block sw_order_detail_base_general_info_summary_sub_description %}
     <div class="sw-order-general-info__summary-sub-description">
         {{ $tc('sw-order.generalTab.info.summary.on') }}
-        {{ order.orderDateTime | date({
+        {{ dateFilter(order.orderDateTime, {
             hour: '2-digit',
             minute: '2-digit',
             day: '2-digit',
