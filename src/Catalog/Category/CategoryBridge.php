@@ -2,11 +2,16 @@
 
 namespace Shopgate\Shopware\Catalog\Category;
 
+use Shopgate\Shopware\Shopgate\Catalog\CategoryProductCollection;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class CategoryBridge
@@ -14,7 +19,9 @@ class CategoryBridge
 
     public function __construct(
         private readonly AbstractCategoryListRoute $categoryListRoute,
-        private readonly ContextManager $contextManager
+        private readonly ContextManager $contextManager,
+        private readonly EntityRepository $categoryProductMapRepository,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -40,6 +47,25 @@ class CategoryBridge
         $tree = $this->buildTree($parentId, $list);
 
         return $this->flattenTree($tree, new CategoryCollection());
+    }
+
+    /**
+     * @param string[] $uids
+     * @return CategoryProductCollection
+     */
+    public function getCategoryProductMap(array $uids = []): CategoryProductCollection
+    {
+        $channel = $this->contextManager->getSalesContext();
+        $criteria = (new Criteria());
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $channel->getSalesChannelId()));
+        if ($uids) {
+            $criteria->addFilter(new EqualsAnyFilter('productId', $uids));
+        }
+
+        $entities = $this->categoryProductMapRepository->search($criteria, $channel->getContext())->getEntities();
+        $entities->count() === 0 && $this->logger->debug('No category/product mapping entities found in index');
+
+        return $entities;
     }
 
     private function buildTree(?string $parentId, CategoryCollection $categories): CategoryCollection

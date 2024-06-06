@@ -77,9 +77,11 @@ class ConfigProductMapping extends SimpleProductMapping
         $variantId = $this->checkVariantListingConfig() ?? $this->productBridge->findBestVariant($this->item->getId());
 
         foreach ($children as $child) {
+            /** @var ChildProductMapping $exportChild */
             $exportChild = clone $this->childProductMapping;
             $result[] = $exportChild
                 ->setItem($child)
+                ->setCategoryMap($this->categoryMap)
                 ->setDefaultChildId($variantId ?? $children->getIds()[0])
                 ->generateData();
         }
