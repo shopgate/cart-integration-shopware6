@@ -342,6 +342,7 @@
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
+        <service id="Shopgate\Shopware\Storefront\Controller\MainApiController" public="true"/>
         <!-- Interfaces & aliases-->
         <service id="Shopgate\Shopware\Plugin" alias="shopgate.plugin"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager" alias="shopgate.context_manager"/>
