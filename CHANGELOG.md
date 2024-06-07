@@ -2,6 +2,7 @@
 
 - added category -> product indexer to help speed up catalog export
 - added API endpoint for main controller action. Use `website.de/api/shopgate/plugin` instead.
+- fixed order date in order twig template
 - removed flag that disabled sort export
 
 # 3.2.1
