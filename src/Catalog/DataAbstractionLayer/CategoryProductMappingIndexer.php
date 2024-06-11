@@ -11,10 +11,12 @@ use Shopgate\Shopware\Shopgate\Catalog\CategoryProductIndexingMessage;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductCategory\ProductCategoryDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\RetryableQuery;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexer;
 use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexingMessage;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -41,6 +43,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
 
     public function iterate(?array $offset): ?EntityIndexingMessage
     {
+        // todo: maybe table should get dropped before full re-index?
         $iterator = $this->iteratorFactory->createIterator($this->repository->getDefinition(), $offset);
         $ids = $iterator->fetch();
 
@@ -53,22 +56,15 @@ class CategoryProductMappingIndexer extends EntityIndexer
 
     public function update(EntityWrittenContainerEvent $event): ?EntityIndexingMessage
     {
+        $ids = [];
         $categoryEvent = $event->getEventByEntityName(CategoryDefinition::ENTITY_NAME);
-        if (!$categoryEvent) {
-            return null;
+        if ($categoryEvent) {
+            $ids = $this->handleCategoryEvent($categoryEvent);
         }
-        $ids = $categoryEvent->getIds();
 
-        foreach ($categoryEvent->getWriteResults() as $result) {
-            if (!$result->getExistence()) {
-                continue;
-            }
-
-            // no need to generate for a delete category
-            if ($result->getOperation() === 'delete') {
-                $key = array_search($result->getPrimaryKey(), $ids);
-                unset($ids[$key]);
-            }
+        $productCategoryEvent = $event->getEventByEntityName(ProductCategoryDefinition::ENTITY_NAME);
+        if ($productCategoryEvent) {
+            $ids = array_merge($ids, $this->handleCategoryEvent($productCategoryEvent));
         }
 
         if (empty($ids)) {
@@ -96,7 +92,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         }
 
         $result = $this->connection->fetchAllAssociative(
-            'SELECT cat.id, cat.version_id, ct.slot_config
+            'SELECT DISTINCT cat.id, cat.version_id, ct.slot_config
              FROM category as cat
              LEFT JOIN category_translation ct on cat.id = ct.category_id
              WHERE cat.id IN (:ids) AND cat.parent_id IS NOT NULL
@@ -109,14 +105,28 @@ class CategoryProductMappingIndexer extends EntityIndexer
         $update = new RetryableQuery(
             $this->connection,
             $this->connection->prepare(
-                'INSERT INTO shopgate_go_category_product_mapping (product_id, category_id, sales_channel_id, product_version_id, category_version_id, sort_order) 
+                'INSERT INTO shopgate_go_category_product_mapping (product_id, category_id, sales_channel_id, product_version_id, category_version_id, sort_order)
                     VALUES (:productId, :categoryId, :channelId, :productVersionId, :categoryVersionId, :sortOrder)
                     ON DUPLICATE KEY UPDATE product_id = :productId, category_id = :categoryId, sales_channel_id = :channelId,
                                             sort_order = :sortOrder, category_version_id = :categoryVersionId,
                                             product_version_id = :productVersionId')
         );
-
         $count = 0;
+        $channelIds = array_map(fn($channel) => $channel['sales_channel_id'], $channels);
+        $categories = array_map(fn($category) => $category['id'], $result);
+
+        $channelIds = implode(',', array_map([$this->connection, 'quote'], $channelIds));
+        $categories = implode(',', array_map([$this->connection, 'quote'], $categories));
+
+        $sql = "DELETE FROM shopgate_go_category_product_mapping WHERE category_id IN ($categories) AND sales_channel_id IN ($channelIds)";
+
+        $delete = new RetryableQuery(
+            $this->connection,
+            $this->connection->prepare($sql)
+        );
+
+        $count += $delete->execute();
+
         foreach ($channels as $channel) {
             $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
             $salesChannelContext = $this->contextManager->createNewContext($channelId);
@@ -167,5 +177,23 @@ class CategoryProductMappingIndexer extends EntityIndexer
                 'level' => 200,
                 'channel' => 'Shopgate Go',
             ]);
+    }
+
+    private function handleCategoryEvent(EntityWrittenEvent $categoryEvent): array
+    {
+        $ids = [];
+        foreach ($categoryEvent->getWriteResults() as $result) {
+            $primary = $result->getPrimaryKey();
+            $ids[] = $primary['categoryId'] ?? $primary;
+            // if no entity exist, don't process (nothing to update or delete)
+            // no need to generate for a category delete (DB cascade will handle)
+            $isCategoryDelete = $result->getEntityName() === CategoryDefinition::ENTITY_NAME && $result->getOperation() === 'delete';
+            if (!$result->getExistence() || $isCategoryDelete) {
+                $key = array_search($result->getPrimaryKey(), $ids);
+                unset($ids[$key]);
+            }
+        }
+
+        return $ids;
     }
 }

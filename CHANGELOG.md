@@ -1,3 +1,8 @@
+# 3.3.1
+
+- added catchers of category/product update events
+- added category/product mapping pruning better
+
 # 3.3.0
 
 - added category -> product indexer to help speed up catalog export

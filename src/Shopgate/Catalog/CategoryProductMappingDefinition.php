@@ -42,10 +42,10 @@ class CategoryProductMappingDefinition extends MappingEntityDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-            (new FkField('category_id', 'categoryId', CategoryDefinition::class))->addFlags(new PrimaryKey(), new Required()),
-            (new FkField('product_id', 'productId', ProductDefinition::class))->addFlags(new PrimaryKey(), new Required()),
+            (new FkField('category_id', 'categoryId', CategoryDefinition::class))->addFlags(new PrimaryKey(), new Required(), new ApiAware()),
+            (new FkField('product_id', 'productId', ProductDefinition::class))->addFlags(new PrimaryKey(), new Required(), new ApiAware()),
             (new IntField('sort_order', 'sortOrder'))->addFlags(new Required(), new ApiAware()),
-            (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class)),
+            (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required(), new ApiAware()),
             (new ReferenceVersionField(CategoryDefinition::class))->addFlags(new Required()),
             (new ReferenceVersionField(ProductDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('product', 'product_id', ProductDefinition::class, 'id', false),
