@@ -1366,55 +1366,6 @@
 									"name": "setup",
 									"item": [
 										{
-											"name": "SW: get variant child",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Status code is 200\", function () {\r",
-															"    pm.response.to.have.status(200);\r",
-															"});\r",
-															"\r",
-															"pm.test(\"Get child ID\", function () {\r",
-															"    const jsonData = pm.response.json();\r",
-															"    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
-															"    pm.expect(child).length(1, 'Should have found a child product');\r",
-															"    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{gen_access_token}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
-													"host": [
-														"{{sw_endpoint_api}}"
-													],
-													"path": [
-														"product",
-														"{{catalog_product_variant}}",
-														"children"
-													]
-												}
-											},
-											"response": []
-										},
-										{
 											"name": "SW: get prod taxId",
 											"event": [
 												{
@@ -1461,6 +1412,55 @@
 													"path": [
 														"product",
 														"{{catalog_product_variant}}"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "SW: get variant child",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"pm.test(\"Get child ID\", function () {\r",
+															"    const jsonData = pm.response.json();\r",
+															"    const child = jsonData.data.filter(product => product.attributes.productNumber === 'SWDEMO10005.3');\r",
+															"    pm.expect(child).length(1, 'Should have found a child product');\r",
+															"    pm.environment.set('gen_product_variant_child_id', child[0].id);\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{gen_access_token}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{sw_endpoint_api}}/product/{{catalog_product_variant}}/children",
+													"host": [
+														"{{sw_endpoint_api}}"
+													],
+													"path": [
+														"product",
+														"{{catalog_product_variant}}",
+														"children"
 													]
 												}
 											},
@@ -1896,7 +1896,7 @@
 									"name": "setup",
 									"item": [
 										{
-											"name": "SW: get slot id",
+											"name": "SW: get CMS page ID",
 											"event": [
 												{
 													"listen": "test",
@@ -1906,20 +1906,19 @@
 															"    pm.response.to.have.status(200);\r",
 															"});\r",
 															"\r",
-															"pm.test(\"get slot id\", function () {\r",
+															"pm.test(\"Get values\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
-															"\r",
-															"    const slot = jsonData.data[0];\r",
-															"    pm.expect(slot.id).to.be.a('string')\r",
-															"    pm.environment.set('gen_cms_slot_productListing_id', slot.id);\r",
+															"    pm.expect(jsonData.data[0].attributes.name).to.be.a('string');\r",
+															"    pm.environment.set(\"gen_cms_page_default_id\", jsonData.data[0].id);\r",
 															"});"
 														],
-														"type": "text/javascript",
-														"packages": {}
+														"type": "text/javascript"
 													}
 												}
 											],
+											"protocolProfileBehavior": {
+												"disabledSystemHeaders": {}
+											},
 											"request": {
 												"auth": {
 													"type": "bearer",
@@ -1935,12 +1934,14 @@
 												"header": [
 													{
 														"key": "Accept",
-														"value": "application/json"
+														"value": "application/json",
+														"type": "text",
+														"disabled": true
 													}
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"type\",\n                    \"value\": \"product-listing\"\n                }\n            ]\n        }\n    ]\n}",
+													"raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default category layout\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default listing layout\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -1948,13 +1949,13 @@
 													}
 												},
 												"url": {
-													"raw": "{{sw_endpoint_api}}/search/cms-slot",
+													"raw": "{{sw_endpoint_api}}/search/cms-page",
 													"host": [
 														"{{sw_endpoint_api}}"
 													],
 													"path": [
 														"search",
-														"cms-slot"
+														"cms-page"
 													]
 												}
 											},
@@ -2030,7 +2031,7 @@
 											"response": []
 										},
 										{
-											"name": "SW: get CMS page ID",
+											"name": "SW: get slot id",
 											"event": [
 												{
 													"listen": "test",
@@ -2040,19 +2041,20 @@
 															"    pm.response.to.have.status(200);\r",
 															"});\r",
 															"\r",
-															"pm.test(\"Get values\", function () {\r",
+															"pm.test(\"get slot id\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.data[0].attributes.name).to.be.a('string');\r",
-															"    pm.environment.set(\"gen_cms_page_default_id\", jsonData.data[0].id);\r",
+															"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
+															"\r",
+															"    const slot = jsonData.data[0];\r",
+															"    pm.expect(slot.id).to.be.a('string')\r",
+															"    pm.environment.set('gen_cms_slot_productListing_id', slot.id);\r",
 															"});"
 														],
-														"type": "text/javascript"
+														"type": "text/javascript",
+														"packages": {}
 													}
 												}
 											],
-											"protocolProfileBehavior": {
-												"disabledSystemHeaders": {}
-											},
 											"request": {
 												"auth": {
 													"type": "bearer",
@@ -2068,14 +2070,12 @@
 												"header": [
 													{
 														"key": "Accept",
-														"value": "application/json",
-														"type": "text",
-														"disabled": true
+														"value": "application/json"
 													}
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"filter\": [\r\n        {\r\n            \"type\": \"multi\",\r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default category layout\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Default listing layout\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+													"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"type\",\n                    \"value\": \"product-listing\"\n                }\n            ]\n        }\n    ]\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -2083,13 +2083,13 @@
 													}
 												},
 												"url": {
-													"raw": "{{sw_endpoint_api}}/search/cms-page",
+													"raw": "{{sw_endpoint_api}}/search/cms-slot",
 													"host": [
 														"{{sw_endpoint_api}}"
 													],
 													"path": [
 														"search",
-														"cms-page"
+														"cms-slot"
 													]
 												}
 											},
@@ -8728,6 +8728,942 @@
 		{
 			"name": "Product",
 			"item": [
+				{
+					"name": "Indexer Check",
+					"item": [
+						{
+							"name": "setup",
+							"item": [
+								{
+									"name": "SW: find Men cat",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"const jsonData = pm.response.json();\r",
+													"pm.environment.set(\"gen_category_count\", jsonData.total);\r",
+													"\r",
+													"pm.test(\"get category by name\", function () {\r",
+													"    pm.expect(jsonData.total).to.eq(1);\r",
+													"    pm.environment.set(`gen_category_men_id`, jsonData.data[0])\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Men\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search-ids/category",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search-ids",
+												"category"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: create manual cat",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Created single entity\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": \"{{created_category_manual_two_id}}\",\r\n    \"displayNestedProducts\": true,\r\n    \"parentId\": \"{{category_freeTime_id}}\",\r\n    \"afterCategoryId\": \"{{created_category_manual_id}}\",\r\n    \"type\": \"page\",\r\n    \"productAssignmentType\": \"product\",\r\n    \"name\": \"API: Index test manual products category\",\r\n    \"cmsPageId\": \"{{gen_cms_page_default_id}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/category",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"category"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: create index prod",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Product created\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"overwrites\": {\r\n        \"id\": \"{{created_product_index_table_id}}\",\r\n        \"name\": \"API: product for idnex table test\",\r\n        \"productNumber\": \"SG.DEMO.INDEX.TABLE\",\r\n        \"stock\": 100,\r\n        \"releaseDate\": \"2024-06-13T11:00:04.389+00:00\",\r\n        \"categories\": [\r\n            {\r\n                \"id\": \"{{created_category_manual_two_id}}\"\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/clone/product/{{catalog_product_main_id}}",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"clone",
+												"product",
+												"{{catalog_product_main_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: re-index",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"offset\": 0\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"indexing",
+												":indexer"
+											],
+											"variable": [
+												{
+													"key": "indexer",
+													"value": "shopgate.go.category.product.mapping.indexer"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Tests",
+							"item": [
+								{
+									"name": "SW: check prod mapping",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"check data\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.meta.total).to.be.eq(3);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{created_product_index_table_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"shopgate-go-category-product-mapping"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: add category to product",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully activated/deactivated payment method\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"categories\": [\r\n        {\r\n            \"id\": \"{{gen_category_men_id}}\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/product/:prodId",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"product",
+												":prodId"
+											],
+											"variable": [
+												{
+													"key": "prodId",
+													"value": "{{created_product_index_table_id}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: check prod mapping",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"check data\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.meta.total).to.be.eq(4);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{created_product_index_table_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"shopgate-go-category-product-mapping"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: delete via sync (men)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully created all SG system config entities\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"delete-product\": {\r\n        \"entity\": \"product_category\",\r\n        \"action\": \"delete\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{created_product_index_table_id}}\",\r\n                \"categoryId\": \"{{gen_category_men_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/sync",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"sync"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: check prod mapping",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"check data\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.meta.total).to.be.eq(3);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{created_product_index_table_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"shopgate-go-category-product-mapping"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: upsert prod cat (men)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully created all SG system config entities\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"write-product\": {\r\n        \"entity\": \"product\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"{{created_product_index_table_id}}\",\r\n                \"categories\": [\r\n                    {\r\n                        \"id\": \"{{gen_category_men_id}}\"\r\n                    }\r\n                ]\r\n            }\r\n        ]\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/sync",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"sync"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: check prod mapping",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"check data\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.meta.total).to.be.eq(4);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{created_product_index_table_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"shopgate-go-category-product-mapping"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: delete via sync (men)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully created all SG system config entities\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"delete-product\": {\r\n        \"entity\": \"product_category\",\r\n        \"action\": \"delete\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{created_product_index_table_id}}\",\r\n                \"categoryId\": \"{{gen_category_men_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/sync",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"sync"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: check prod mapping",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"check data\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.meta.total).to.be.eq(3);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{created_product_index_table_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"shopgate-go-category-product-mapping"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: delete prod",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Created single entity\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{sw_endpoint_api}}/product/:prodId",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"product",
+												":prodId"
+											],
+											"variable": [
+												{
+													"key": "prodId",
+													"value": "{{created_product_index_table_id}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: check prod mapping",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"check data\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.meta.total).to.be.eq(0);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{created_product_index_table_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"shopgate-go-category-product-mapping"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Cleanup",
+							"item": [
+								{
+									"name": "SW: delete index cat",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Created single entity\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{sw_endpoint_api}}/category/:catId",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"category",
+												":catId"
+											],
+											"variable": [
+												{
+													"key": "catId",
+													"value": "{{created_category_manual_two_id}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"description": "Tests that check if the indexer table is working correctly. E.g. picks up CRUD events on categories/products & handles updating the table"
+				},
 				{
 					"name": "Details",
 					"item": [

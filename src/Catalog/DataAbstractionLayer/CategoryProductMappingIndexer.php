@@ -6,19 +6,23 @@ use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use JsonException;
+use Monolog\Level;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductIndexingMessage;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductCategory\ProductCategoryDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\RetryableQuery;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexer;
 use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexingMessage;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Uuid\Uuid;
+
 use function count;
 use function json_decode;
 
@@ -26,7 +30,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
 {
 
     public function __construct(
-        private readonly Connection $connection,
+        private readonly Connection $db,
         private readonly IteratorFactory $iteratorFactory,
         private readonly EntityRepository $repository,
         private readonly SortTree $sortTree,
@@ -53,22 +57,15 @@ class CategoryProductMappingIndexer extends EntityIndexer
 
     public function update(EntityWrittenContainerEvent $event): ?EntityIndexingMessage
     {
+        $ids = [];
         $categoryEvent = $event->getEventByEntityName(CategoryDefinition::ENTITY_NAME);
-        if (!$categoryEvent) {
-            return null;
+        if ($categoryEvent) {
+            $ids = $this->handleCategoryEvent($categoryEvent);
         }
-        $ids = $categoryEvent->getIds();
 
-        foreach ($categoryEvent->getWriteResults() as $result) {
-            if (!$result->getExistence()) {
-                continue;
-            }
-
-            // no need to generate for a delete category
-            if ($result->getOperation() === 'delete') {
-                $key = array_search($result->getPrimaryKey(), $ids);
-                unset($ids[$key]);
-            }
+        $productCategoryEvent = $event->getEventByEntityName(ProductCategoryDefinition::ENTITY_NAME);
+        if ($productCategoryEvent) {
+            $ids = array_merge($ids, $this->handleCategoryEvent($productCategoryEvent));
         }
 
         if (empty($ids)) {
@@ -88,15 +85,15 @@ class CategoryProductMappingIndexer extends EntityIndexer
         if (empty($ids)) {
             return;
         }
-        $channels = $this->connection->fetchAllAssociative('SELECT DISTINCT sales_channel_id FROM shopgate_api_credentials');
 
+        $channels = $this->db->fetchAllAssociative('SELECT DISTINCT sales_channel_id FROM shopgate_api_credentials');
         if (!$channels) {
-            $this->writeLog('No Shopgate interfaces exist, skipping index creation');
+            $this->writeLog('No Shopgate interfaces exist, skipping index creation', Level::Notice);
             return;
         }
 
-        $result = $this->connection->fetchAllAssociative(
-            'SELECT cat.id, cat.version_id, ct.slot_config
+        $categoryList = $this->db->fetchAllAssociative(
+            'SELECT DISTINCT cat.id, cat.version_id, ct.slot_config
              FROM category as cat
              LEFT JOIN category_translation ct on cat.id = ct.category_id
              WHERE cat.id IN (:ids) AND cat.parent_id IS NOT NULL
@@ -105,44 +102,12 @@ class CategoryProductMappingIndexer extends EntityIndexer
             ['ids' => ArrayParameterType::BINARY]
         );
 
-        // index table update
-        $update = new RetryableQuery(
-            $this->connection,
-            $this->connection->prepare(
-                'INSERT INTO shopgate_go_category_product_mapping (product_id, category_id, sales_channel_id, product_version_id, category_version_id, sort_order) 
-                    VALUES (:productId, :categoryId, :channelId, :productVersionId, :categoryVersionId, :sortOrder)
-                    ON DUPLICATE KEY UPDATE product_id = :productId, category_id = :categoryId, sales_channel_id = :channelId,
-                                            sort_order = :sortOrder, category_version_id = :categoryVersionId,
-                                            product_version_id = :productVersionId')
+        $delCount = $this->deleteCategories($categoryList, $channels);
+        $writeCount = $this->upsertCategories($categoryList, $channels);
+
+        ($delCount || $writeCount) && $this->writeLog(
+            "Catalog/product map index table updated. Removed $delCount items. Written $writeCount items."
         );
-
-        $count = 0;
-        foreach ($channels as $channel) {
-            $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
-            $salesChannelContext = $this->contextManager->createNewContext($channelId);
-            $this->contextManager->overwriteSalesContext($salesChannelContext);
-
-            foreach ($result as $rawCat) {
-                $category = new CategoryEntity();
-                $category->setId(Uuid::fromBytesToHex($rawCat['id']));
-                $category->setVersionId(Uuid::fromBytesToHex($rawCat['version_id']));
-                $category->setSlotConfig($rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true) : []);
-                $products = $this->sortTree->getAllCategoryProducts($category);
-                $maxProducts = $products->count();
-                $i = 0;
-                foreach ($products as $product) {
-                    $count += $update->execute([
-                        'productId' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),
-                        'categoryId' => Uuid::fromHexToBytes($category->getId()),
-                        'channelId' => Uuid::fromHexToBytes($channelId),
-                        'productVersionId' => Uuid::fromHexToBytes($product->getVersionId()),
-                        'categoryVersionId' => Uuid::fromHexToBytes($category->getVersionId()),
-                        'sortOrder' => $maxProducts - $i++,
-                    ]);
-                }
-            }
-        }
-        $count && $this->writeLog('Successfully updated catalog/product map index table');
     }
 
     public function getTotal(): int
@@ -158,14 +123,99 @@ class CategoryProductMappingIndexer extends EntityIndexer
     /**
      * @throws Exception
      */
-    private function writeLog(string $message): void
+    private function deleteCategories(array $categoryEntries, array $channelEntries): int
     {
-        $this->connection->executeStatement('INSERT INTO `log_entry` (`id`, `message`, `level`, `channel`, `created_at`) VALUES (:id, :message, :level, :channel, now())',
+        $channelIds = implode(',', array_map(fn($row) => $this->db->quote($row['sales_channel_id']), $channelEntries));
+        $catIds = implode(',', array_map(fn($row) => $this->db->quote($row['id']), $categoryEntries));
+        $delete = new RetryableQuery(
+            $this->db,
+            $this->db->prepare(
+                "DELETE FROM shopgate_go_category_product_mapping
+                        WHERE category_id IN ($catIds) AND sales_channel_id IN ($channelIds)"
+            )
+        );
+
+        return $delete->execute();
+    }
+
+    /**
+     * @throws JsonException
+     * @throws Exception
+     */
+    private function upsertCategories(array $categoryEntries, array $channelEntries): int
+    {
+        $update = new RetryableQuery(
+            $this->db,
+            $this->db->prepare(
+                'INSERT INTO shopgate_go_category_product_mapping (product_id, category_id, sales_channel_id, product_version_id, category_version_id, sort_order)
+                    VALUES (:productId, :categoryId, :channelId, :productVersionId, :categoryVersionId, :sortOrder)
+                    ON DUPLICATE KEY UPDATE product_id = :productId, category_id = :categoryId, sales_channel_id = :channelId,
+                                            sort_order = :sortOrder, category_version_id = :categoryVersionId,
+                                            product_version_id = :productVersionId'
+            )
+        );
+
+        $writeCount = 0;
+        foreach ($channelEntries as $channel) {
+            $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
+            $salesChannelContext = $this->contextManager->createNewContext($channelId);
+            $this->contextManager->overwriteSalesContext($salesChannelContext);
+
+            foreach ($categoryEntries as $rawCat) {
+                $category = new CategoryEntity();
+                $category->setId(Uuid::fromBytesToHex($rawCat['id']));
+                $category->setVersionId(Uuid::fromBytesToHex($rawCat['version_id']));
+                $category->setSlotConfig($rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true) : []);
+                $products = $this->sortTree->getAllCategoryProducts($category);
+                $maxProducts = $products->count();
+                $i = 0;
+                foreach ($products as $product) {
+                    $writeCount += $update->execute([
+                        'productId' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),
+                        'categoryId' => Uuid::fromHexToBytes($category->getId()),
+                        'channelId' => Uuid::fromHexToBytes($channelId),
+                        'productVersionId' => Uuid::fromHexToBytes($product->getVersionId()),
+                        'categoryVersionId' => Uuid::fromHexToBytes($category->getVersionId()),
+                        'sortOrder' => $maxProducts - $i++,
+                    ]);
+                }
+            }
+        }
+
+        return $writeCount;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function writeLog(string $message, Level $level = Level::Info): void
+    {
+        $this->db->executeStatement(
+            'INSERT INTO `log_entry` (`id`, `message`, `level`, `channel`, `created_at`) VALUES (:id, :message, :level, :channel, now())',
             [
                 'id' => Uuid::randomBytes(),
-                'message' => $message,
-                'level' => 200,
+                'message' => 'Shopgate Go: ' . $message,
+                'level' => $level->value,
                 'channel' => 'Shopgate Go',
-            ]);
+            ]
+        );
+    }
+
+    private function handleCategoryEvent(EntityWrittenEvent $categoryEvent): array
+    {
+        $ids = [];
+        foreach ($categoryEvent->getWriteResults() as $write) {
+            $primary = $write->getPrimaryKey()['categoryId'] ?? $write->getPrimaryKey();
+            $ids[$primary] = $primary;
+            // no need to generate for a category delete (DB cascade will handle)
+            $isCategoryDelete = $write->getEntityName() === CategoryDefinition::ENTITY_NAME
+                && $write->getOperation() === 'delete';
+            // if no entity exist, don't process (nothing to update or delete)
+            if (!$write->getExistence() || $isCategoryDelete) {
+                unset($ids[$primary]);
+            }
+        }
+
+        return $ids;
     }
 }

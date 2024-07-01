@@ -3,6 +3,12 @@
   "name": "Shopware 6 - phase 2",
   "values": [
     {
+      "key": "system_port",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "host",
       "value": "http://localhost",
       "enabled": true
@@ -181,6 +187,12 @@
       "enabled": true
     },
     {
+      "key": "created_category_manual_two_id",
+      "value": "862e0b58f0e94f6d96148217a52e0513",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "created_customer_customFieldSet_id",
       "value": "f5d45e2679d66386aeb584ada3f79267",
       "enabled": true
@@ -277,6 +289,12 @@
     {
       "key": "created_product_variant_child_id",
       "value": "ff951c236e5b9fca68f186da252aa026",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "created_product_index_table_id",
+      "value": "0507704d45a241e2b6d2819ce13a4b3b",
       "type": "default",
       "enabled": true
     },
@@ -482,6 +500,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2023-04-15T10:39:24.004Z",
-  "_postman_exported_using": "Postman/10.12.13"
+  "_postman_exported_at": "2024-06-12T21:49:04.194Z",
+  "_postman_exported_using": "Postman/11.1.25"
 }
