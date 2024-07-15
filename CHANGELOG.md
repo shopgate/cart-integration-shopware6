@@ -1,3 +1,7 @@
+# 3.3.2
+
+- adjusted symfony/expression-language to be compatible with 6.6.4.x+
+
 # 3.3.1
 
 - added catchers of category/product update events
