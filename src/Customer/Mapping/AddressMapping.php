@@ -26,7 +26,6 @@ class AddressMapping
     public function mapToShopwareAddress(ShopgateAddress $shopgateAddress): RequestDataBag
     {
         $address = [];
-        $address['salutationId'] = $this->salutationMapping->getSalutationIdByGender($shopgateAddress->getGender());
         $address['firstName'] = $shopgateAddress->getFirstName();
         $address['lastName'] = $shopgateAddress->getLastName();
         $address['street'] = $shopgateAddress->getStreet1();
@@ -36,6 +35,11 @@ class AddressMapping
         $address['countryStateId'] = $this->locationMapping->getStateIdByIso($shopgateAddress->getState());
         $address = array_merge(
             $address,
+            $shopgateAddress->getGender() ? [
+                'salutationId' => $this->salutationMapping->getSalutationIdByGender(
+                    $shopgateAddress->getGender()
+                )
+            ] : [],
             $this->customFieldMapping->mapToShopwareCustomFields($shopgateAddress),
             $shopgateAddress->getCompany() ? ['company' => $shopgateAddress->getCompany()] : [],
             $shopgateAddress->getStreet2() ? ['additionalAddressLine1' => $shopgateAddress->getStreet2()] : [],
