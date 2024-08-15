@@ -17,7 +17,7 @@ class AddressMapping
 {
 
     public function __construct(
-        private readonly LocationMapping   $locationMapping,
+        private readonly LocationMapping $locationMapping,
         private readonly SalutationMapping $salutationMapping,
         private readonly CustomFieldMapping $customFieldMapping
     ) {
@@ -76,6 +76,7 @@ class AddressMapping
 
     /**
      * @param ShopgateCustomer $customer
+     *
      * @return false|ShopgateAddress
      */
     public function getShippingAddress(ShopgateCustomer $customer)
@@ -116,9 +117,11 @@ class AddressMapping
     {
         $shopgateAddresses = [];
         foreach ($customerEntity->getAddresses() as $shopwareAddress) {
-            $type = $this->mapAddressType($shopwareAddress,
+            $type = $this->mapAddressType(
+                $shopwareAddress,
                 $customerEntity->getDefaultBillingAddressId(),
-                $customerEntity->getDefaultShippingAddressId());
+                $customerEntity->getDefaultShippingAddressId()
+            );
             $address = $this->mapAddress($shopwareAddress, $type);
             $shopgateAddresses[] = $address;
         }
@@ -145,6 +148,7 @@ class AddressMapping
     /**
      * @param CustomerAddressEntity|OrderAddressEntity $shopwareAddress
      * @param int $addressType - shopgate address type
+     *
      * @return ShopgateAddress
      */
     public function mapAddress(Entity $shopwareAddress, int $addressType): ShopgateAddress

@@ -50,20 +50,17 @@ php bin/console plugin:install -a SgateShopgatePluginSW6
 
 You may install and activate via the Shopware administration panel instead, if you prefer.
 
-### JS Compilation
+### Indexing
 
-For Shopware 6.5+ after installing & enabling the plugin you will need to re-compile JS.
-If you have a GitHub installation, this should suffice:
+A full re-index is required after installation or update to 3.3.0+ for product->category export to work.
+Can be done via Admin:
+`Admin > Settings > System > Cache & Indexes > Update Indexes`
 
+Can be done via CLI:
 ```shell
-composer run build:js
-bin/console theme:compile
+bin/console dal:refresh:index
 ```
-
-For regular installations via Symfony2 Flex, zip or shopware-installer.phar.php:
-```shell
-bin/build-js.sh
-```
+Can also be done with the API as well, see `tests/Postman/indexer_check.collection.json` for details
 
 # Known errors
 

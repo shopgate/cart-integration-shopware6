@@ -1,0 +1,82 @@
+{
+  "id": "14a91e46-98c2-4046-9198-78ccd1501e3d",
+  "name": "SG Go: Indexer Check",
+  "values": [
+    {
+      "key": "host",
+      "value": "https://example.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "domain",
+      "value": "{{host}}/shopgate/plugin",
+      "enabled": true
+    },
+    {
+      "key": "sw_endpoint_api",
+      "value": "{{host}}/api",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "sw_endpoint_auth",
+      "value": "{{sw_endpoint_api}}/oauth/token",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "baseUrl",
+      "value": "{{host}}/store-api",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "sw_store_api",
+      "value": "{{host}}/store-api",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "sw_client_id",
+      "value": "administration",
+      "enabled": true
+    },
+    {
+      "key": "sw_admin",
+      "value": "<required for SWA calls>",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "sw_pass",
+      "value": "<required for SWA calls>",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "shop_number",
+      "value": "<required for SG calls>",
+      "enabled": true
+    },
+    {
+      "key": "api_key",
+      "value": "<required for SG calls>",
+      "enabled": true
+    },
+    {
+      "key": "customer_number",
+      "value": "<required for SG calls>",
+      "enabled": true
+    },
+    {
+      "key": "test_product1_id",
+      "value": "<product ID required for tests>",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2024-07-30T19:35:46.660Z",
+  "_postman_exported_using": "Postman/11.5.1"
+}
