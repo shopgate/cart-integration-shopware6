@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0e2ae5a0-b325-4659-854a-95dd9d41e51c",
+		"_postman_id": "730ef518-eacc-44f6-9450-70c83c4b2565",
 		"name": "SW6 CI Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "5289226"
@@ -26389,6 +26389,366 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Register",
+					"item": [
+						{
+							"name": "SG: no address gender",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"",
+											"let saultation = 'd'",
+											"if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.5.4.0')){",
+											"    saultation = null",
+											"}",
+											"",
+											"const jsonData = pm.response.json();",
+											"",
+											"// Salutation has a fallback after 6.5.4.0+",
+											"pm.test(\"Check customer data\", function () {",
+											"    pm.expect(jsonData.user_data.gender).to.eql(saultation);",
+											"});",
+											"",
+											"// Shopware rewrites billing address name, last name & salutation with customer's",
+											"pm.test(\"Billing check\", function () {",
+											"    const billing = jsonData.addresses.find(element => element.is_invoice_address === 1);",
+											"    pm.expect(billing.gender).to.eql(saultation);",
+											"});",
+											"",
+											"pm.test(\"shipping check\", function () {",
+											"    const shipping = jsonData.addresses.find(element => element.is_delivery_address === 1)",
+											"    pm.expect(shipping.gender).to.eql(null);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.variables.set(\"temp-email\", pm.variables.replaceIn('{{$randomEmail}}'));",
+											"pm.variables.set(\"temp-first-name\", pm.variables.replaceIn('{{$randomFirstName}}'));",
+											"pm.variables.set(\"temp-last-name\", pm.variables.replaceIn('{{$randomLastName}}'));"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "action",
+											"value": "{{framework_action_register_customer}}",
+											"type": "text"
+										},
+										{
+											"key": "user",
+											"value": "{{temp-email}}",
+											"type": "text"
+										},
+										{
+											"key": "pass",
+											"value": "{{userPass}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[registration_date]",
+											"value": "2021-01-27T13:07:38+0000",
+											"type": "text"
+										},
+										{
+											"key": "user_data[first_name]",
+											"value": "{{temp-first-name}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[last_name]",
+											"value": "{{temp-last-name}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[gender]",
+											"value": "d",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "user_data[mail]",
+											"value": "{{temp-email}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[birthday]",
+											"value": "1987-05-19",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][is_invoice_address]",
+											"value": "0",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][is_delivery_address]",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][first_name]",
+											"value": "{{$randomFirstName}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][last_name]",
+											"value": "{{$randomLastName}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][gender]",
+											"value": "f",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "user_data[addresses][0][street_1]",
+											"value": "{{$randomStreetAddress}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][zipcode]",
+											"value": "12340",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][city]",
+											"value": "{{$randomCity}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][country]",
+											"value": "DE",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][phone]",
+											"value": "12345",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][is_invoice_address]",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][is_delivery_address]",
+											"value": "0",
+											"description": "Seems like this field get rewritten no matter what we set",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][first_name]",
+											"value": "rewritten_first_name",
+											"description": "Seems like this field get rewritten no matter what we set",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][last_name]",
+											"value": "rewritten_last_name",
+											"description": "Seems like this field get rewritten no matter what we set",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][gender]",
+											"value": "f",
+											"description": "Seems like this field get rewritten no matter what we set",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "user_data[addresses][1][street_1]",
+											"value": "{{$randomStreetAddress}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][zipcode]",
+											"value": "54321",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][city]",
+											"value": "{{$randomCity}}",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][country]",
+											"value": "DE",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][state]",
+											"value": "DE-SH",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][company]",
+											"value": "My Company",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][street_2]",
+											"value": "Street2",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][0][name]",
+											"value": "VAT IDs",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][0][internal_field_name]",
+											"value": "vat_ids",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][0][value]",
+											"value": "1234,12345",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][1][internal_field_name]",
+											"value": "affiliate_code",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][1][value]",
+											"value": "AFFILIATE_CODE",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][2][internal_field_name]",
+											"value": "title",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][2][value]",
+											"value": "Big Boss",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][3][internal_field_name]",
+											"value": "account_type",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][3][value]",
+											"value": "business",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][4][internal_field_name]",
+											"value": "cannotMap",
+											"type": "text"
+										},
+										{
+											"key": "user_data[custom_fields][4][value]",
+											"value": "not mapped",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][0][internal_field_name]",
+											"value": "title",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][0][value]",
+											"value": "Mr.",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][1][internal_field_name]",
+											"value": "notMapped",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][1][value]",
+											"value": "not mapped either",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][2][internal_field_name]",
+											"value": "department",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][2][value]",
+											"value": "Some department",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][3][internal_field_name]",
+											"value": "phone_number",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][1][custom_fields][3][value]",
+											"value": "112233445",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][custom_fields][0][internal_field_name]",
+											"value": "title",
+											"type": "text"
+										},
+										{
+											"key": "user_data[addresses][0][custom_fields][0][value]",
+											"value": "Mrs.",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Different scenarios for registration payload"
 				},
 				{
 					"name": "SW: set req. phone cfg",

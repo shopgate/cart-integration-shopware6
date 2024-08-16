@@ -1,3 +1,8 @@
+# 3.3.3
+
+- fixed `register_customer` call when address salutation (gender) is empty
+- removed unnecessary sort export config
+
 # 3.3.2
 
 - adjusted symfony/expression-language to be compatible with 6.6.4.x+
