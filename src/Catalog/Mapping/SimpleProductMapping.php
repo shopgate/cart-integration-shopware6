@@ -21,6 +21,7 @@ use Shopgate_Model_Catalog_Relation;
 use Shopgate_Model_Catalog_Shipping;
 use Shopgate_Model_Catalog_Stock;
 use Shopgate_Model_Catalog_Tag;
+use Shopgate_Model_Catalog_TierPrice;
 use Shopgate_Model_Catalog_Visibility;
 use Shopgate_Model_Media_Image;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -108,7 +109,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         $shopgatePrice = new Shopgate_Model_Catalog_Price();
         $shopgatePrice->setType($this->priceMapping->getPriceType());
         if ($shopwarePrice = $this->currencyComposer->extractCalculatedPrice($this->item->getPrice())) {
-            $shopgatePrice->setPrice($this->priceMapping->mapPrice($shopwarePrice));
+            $formattedBasePrice = $this->priceMapping->mapPrice($shopwarePrice);
+            $shopgatePrice->setPrice($formattedBasePrice);
             if ($listPrice = $shopwarePrice->getListPrice()) {
                 $shopgatePrice->setMsrp(
                     $this->priceMapping->mapPrice($this->currencyComposer->toCalculatedPrice($listPrice))
@@ -118,10 +120,27 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             if ($priceCollection = $this->item->getPrices()) {
                 $priceCollection->sortByQuantity();
                 $highestPrice = $this->tierPriceMapping->getHighestPrice($priceCollection, $shopwarePrice);
-                $shopgatePrice->setPrice($this->priceMapping->mapPrice($highestPrice));
-                $shopgatePrice->setTierPricesGroup(
-                    $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice)
-                );
+                $formattedHighestPrice = $this->priceMapping->mapPrice($highestPrice);
+                $shopgatePrice->setPrice($formattedHighestPrice);
+                $tierPrices = $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice);
+
+                // special case whenever highest price is higher than regular price & no fallback group exists
+                if ($formattedHighestPrice > $formattedBasePrice) {
+                    $hasAllValidRule = $this->tierPriceMapping->hasAlwaysValidRule($priceCollection);
+                    $customerGrpId = $this->contextManager->getSalesContext()->getSalesChannel()->getCustomerGroupId();
+                    $hasDefaultGroupRule = $this->tierPriceMapping->hasCustomerGroupRule($tierPrices, $customerGrpId);
+                    if (!$hasAllValidRule && !$hasDefaultGroupRule) {
+                        $defaultTier = new Shopgate_Model_Catalog_TierPrice();
+                        $defaultTier->setFromQuantity(1);
+                        $defaultTier->setReduction($formattedHighestPrice - $formattedBasePrice);
+                        /** @noinspection PhpStrictTypeCheckingInspection */
+                        $defaultTier->setCustomerGroupUid($customerGrpId);
+                        $defaultTier->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
+                        $tierPrices[] = $defaultTier;
+                    }
+                }
+
+                $shopgatePrice->setTierPricesGroup($tierPrices);
             }
         }
 
@@ -163,7 +182,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $image->setUrl($media->getUrl());
             $image->setSortOrder($productMedia->getPosition());
             $image->setIsCover(
-                (int)$this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
+                (int) $this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
             );
             $images[] = $image;
         }
@@ -318,8 +337,10 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         $deliveryTime = $this->item->getDeliveryTime();
         if ($deliveryTime && $availableStock >= $this->item->getMinPurchase()) {
             //e.g. Available, delivery time 2-5 days
-            $text = $this->formatter->translate('detail.deliveryTimeAvailable',
-                ['%name%' => $deliveryTime->getTranslation('name')]);
+            $text = $this->formatter->translate(
+                'detail.deliveryTimeAvailable',
+                ['%name%' => $deliveryTime->getTranslation('name')]
+            );
         } elseif ($deliveryTime
             && ($restockTime = $this->item->getRestockTime())
             && $availableStock < $this->item->getMinPurchase()) {
@@ -368,7 +389,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setInternalOrderInfo(): void
     {
         if ($extension = $this->item->getExtension(ProductExportExtension::EXT_KEY)) {
-            parent::setInternalOrderInfo((string)$extension);
+            parent::setInternalOrderInfo((string) $extension);
         }
     }
 

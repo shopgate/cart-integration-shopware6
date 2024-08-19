@@ -22,13 +22,14 @@ class TierPriceMapping
 {
 
     public function __construct(
-        private readonly CustomerBridge   $customerBridge,
+        private readonly CustomerBridge $customerBridge,
         private readonly CurrencyComposer $currencyComposer,
         private readonly PriceMapping $priceMapping
     ) {
     }
 
     /**
+     * @returns Shopgate_Model_Catalog_TierPrice[]
      * @throws ReflectionException
      */
     public function mapTierPrices(ProductPriceCollection $priceCollection, Price $mainPrice): array
@@ -92,6 +93,7 @@ class TierPriceMapping
      *
      * @param bool $carry - recursive memory
      * @param AndRule|OrRule|Rule $rule
+     *
      * @return bool
      */
     private function isValidRule(bool $carry, Rule $rule): bool
@@ -129,8 +131,10 @@ class TierPriceMapping
      *
      * @throws ReflectionException
      */
-    private function getConditionalCustomerGroups(AndRule|OrRule $ruleContainer, CustomerGroupCollection $groupCollection): array
-    {
+    private function getConditionalCustomerGroups(
+        AndRule|OrRule $ruleContainer,
+        CustomerGroupCollection $groupCollection
+    ): array {
         if (null !== $customerGroupRule = $this->findCustomerGroup(null, $ruleContainer)) {
             $reflection = new ReflectionClass(get_class($customerGroupRule));
             $grpProp = $reflection->getProperty('customerGroupIds');
@@ -175,5 +179,23 @@ class TierPriceMapping
             },
             $basePrice
         );
+    }
+
+    public function hasAlwaysValidRule(ProductPriceCollection $priceCollection): bool
+    {
+        return $priceCollection
+                ->filter(fn(ProductPriceEntity $entity) => $entity->getRule() instanceof AlwaysValidRule)
+                ->count() > 0;
+    }
+
+    /**
+     * @param Shopgate_Model_Catalog_TierPrice[] $sgTierPrices
+     */
+    public function hasCustomerGroupRule(array $sgTierPrices, string $customerGroupId): bool
+    {
+        return count(array_filter(
+                $sgTierPrices,
+                fn(Shopgate_Model_Catalog_TierPrice $price) => $price->getCustomerGroupUid() === $customerGroupId
+            )) > 0 ;
     }
 }

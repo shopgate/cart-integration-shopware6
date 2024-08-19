@@ -1,3 +1,7 @@
+# 3.3.4
+
+- added fallback to tier price edge case where no "all valid" or "default customer group" tier price exists
+
 # 3.3.3
 
 - fixed `register_customer` call when address salutation (gender) is empty
