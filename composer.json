@@ -16,7 +16,7 @@
     ],
     "require": {
         "shopware/core": "^6.5.2",
-        "shopgate/cart-integration-sdk": "2.10.2",
+        "shopgate/cart-integration-sdk": "2.10.3",
         "symfony/expression-language": "^6.3.0 | ^7.0.0"
     },
     "require-dev": {
