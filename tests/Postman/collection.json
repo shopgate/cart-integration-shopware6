@@ -7563,7 +7563,7 @@
 									"script": {
 										"exec": [
 											"const moment = require('moment');",
-											"const now = moment().format('YYYY-MM-DD');",
+											"const now = moment().subtract(1, 'hour').format('YYYY-MM-DD');",
 											"",
 											"pm.test(\"Not an error\", function () {",
 											"    pm.response.to.not.have.jsonBody('error');",
@@ -8101,7 +8101,7 @@
 							"script": {
 								"exec": [
 									"const moment = require('moment');",
-									"const now = moment().format('YYYY-MM-DD');",
+									"const now = moment().subtract(1, 'hour').format('YYYY-MM-DD');",
 									"",
 									"pm.test(\"Not an error\", function () {",
 									"    pm.response.to.not.have.jsonBody('error');",
@@ -19701,7 +19701,7 @@
 							"script": {
 								"exec": [
 									"const moment = require('moment');",
-									"const now = moment().format('YYYY-MM-DD');",
+									"const now = moment().subtract(1, 'hour').format('YYYY-MM-DD');",
 									"",
 									"pm.test(\"Not an error\", function () {",
 									"    pm.response.to.not.have.jsonBody('error');",
@@ -19882,7 +19882,7 @@
 							"script": {
 								"exec": [
 									"const moment = require('moment');",
-									"const now = moment().format('YYYY-MM-DD');",
+									"const now = moment().subtract(1, 'hour').format('YYYY-MM-DD');",
 									"",
 									"pm.test(\"Not an error\", function () {",
 									"    pm.response.to.not.have.jsonBody('error');",
@@ -19974,7 +19974,7 @@
 							"script": {
 								"exec": [
 									"const moment = require('moment');",
-									"const now = moment().format('YYYY-MM-DD');",
+									"const now = moment().subtract(1, 'hour').format('YYYY-MM-DD');",
 									"",
 									"pm.test(\"Not an error\", function () {",
 									"    pm.response.to.not.have.jsonBody('error');",
