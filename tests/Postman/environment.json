@@ -1,6 +1,6 @@
 {
   "id": "19aac0dd-0b1c-446c-9987-4d1557f2e63e",
-  "name": "Shopware 6 - phase 2",
+  "name": "Shopware 6 Legacy",
   "values": [
     {
       "key": "system_port",
@@ -247,6 +247,12 @@
       "enabled": true
     },
     {
+      "key": "created_product_advPrice_noFallback_id",
+      "value": "fbeb7c2b8aa44a5c85d8014e9d872ceb",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "created_product_headless_advPriceOne_id",
       "value": "c5c346f6a30c689fc862d43655702136",
       "enabled": true
@@ -484,6 +490,12 @@
       "enabled": true
     },
     {
+      "key": "created_rule_customerGrp_net_id",
+      "value": "1b6fe4c7c0414f9ba8cac03c731bb69a",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "default_shipMethod_sgDefault_id",
       "value": "368e891dbec442c2892f82edd6f4a7dc",
       "enabled": true
@@ -500,6 +512,6 @@
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2024-06-12T21:49:04.194Z",
-  "_postman_exported_using": "Postman/11.1.25"
+  "_postman_exported_at": "2024-08-19T22:15:13.840Z",
+  "_postman_exported_using": "Postman/11.8.1"
 }

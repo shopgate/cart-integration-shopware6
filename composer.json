@@ -3,7 +3,7 @@
     "description": "Shopgate Shopping App Plugin for Shopware 6",
     "license": "proprietary",
     "type": "shopware-platform-plugin",
-    "version": "3.3.3",
+    "version": "3.3.4",
     "keywords": [
         "mobile",
         "app"
@@ -16,7 +16,7 @@
     ],
     "require": {
         "shopware/core": "^6.5.2",
-        "shopgate/cart-integration-sdk": "2.10.2",
+        "shopgate/cart-integration-sdk": "2.10.3",
         "symfony/expression-language": "^6.3.0 | ^7.0.0"
     },
     "require-dev": {
