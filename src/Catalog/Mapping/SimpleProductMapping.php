@@ -265,11 +265,32 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                     continue;
                 }
                 // Use language label, fallback "my_key" -> "My Key"
-                $label = $entity->getConfig()['label'][$locale]
-                    ?? $entity->getConfig()['label']['en-GB']
-                    ?? implode(' ', array_map(static function ($item) {
-                        return ucfirst($item);
-                    }, explode('_', $key)));
+                $labelRetriever = function (array $config, string $fallback) use ($locale) {
+                    return $config['label'][$locale]
+                        ?? $config['label']['en-GB']
+                        ?? implode(
+                            ' ',
+                            array_map(static function ($item) {
+                                return ucfirst($item);
+                            }, explode('_', $fallback))
+                        );
+                };
+                $label = $labelRetriever($entity->getConfig(), $key);
+                // multi-select
+                if (is_array($value)) {
+                    $valueMap = array_map(function (string $techName) use ($entity, $labelRetriever) {
+                        $found = array_filter(
+                            $entity->getConfig()['options'],
+                            fn(array $option) => $option['value'] === $techName
+                        );
+                        $config = current($found);
+                        if ($config) {
+                            return $labelRetriever($config, $techName);
+                        }
+                        return $techName;
+                    }, $value);
+                    $value = implode(', ', $valueMap);
+                }
                 $properties[] = $this->classFactory->createProperty()
                     ->setUid($entity->getId())
                     ->setValue($value)
