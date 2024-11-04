@@ -268,16 +268,14 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                 $labelRetriever = function (array $config, string $fallback) use ($locale) {
                     return $config['label'][$locale]
                         ?? $config['label']['en-GB']
-                        ?? implode(
-                            ' ',
-                            array_map(static function ($item) {
-                                return ucfirst($item);
-                            }, explode('_', $fallback))
-                        );
+                        ?? $fallback;
                 };
                 $label = $labelRetriever($entity->getConfig(), $key);
-                // multi-select
-                if (is_array($value)) {
+                // select & multi-select handling
+                if (isset($entity->getConfig()['options'])) {
+                    if (!is_array($value)) {
+                        $value = [$value];
+                    }
                     $valueMap = array_map(function (string $techName) use ($entity, $labelRetriever) {
                         $found = array_filter(
                             $entity->getConfig()['options'],

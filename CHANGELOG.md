@@ -1,6 +1,7 @@
 # 3.3.5
 
-- fixe multi-select custom field export
+- fixed select custom field value export
+- fixed multi-select custom field value export
 
 # 3.3.4
 
