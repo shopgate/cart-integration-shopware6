@@ -1,3 +1,8 @@
+# 3.3.5
+
+- fixed select custom field value export
+- fixed multi-select custom field value export
+
 # 3.3.4
 
 - added fallback to tier price edge case where no "all valid" or "default customer group" tier price exists
