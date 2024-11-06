@@ -6,6 +6,7 @@ use Shopgate\Shopware\Storefront\ContextManager;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -24,6 +25,7 @@ class SortTree
 
     /**
      * Loops through all products for every category out there. Expensive stuff!
+     * @deprecated since 3.4.0
      */
     public function getAllCategoryProducts(CategoryEntity $category): ProductCollection
     {
@@ -52,11 +54,31 @@ class SortTree
         return $list;
     }
 
+    public function getPaginatedCategoryProducts(CategoryEntity $category, int $page, int $limit = 100): ProductListingResult
+    {
+        $channel = $this->contextManager->getSalesContext();
+        $productSorts = $this->productSortingRepository->search(new Criteria(), $channel->getContext())->getEntities();
+
+        $request = new Request();
+        $request->setMethod(Request::METHOD_POST);
+        $request->request->set('p', $page);
+        $request->request->set('limit', $limit);
+        $request->setSession(new Session()); // 3rd party subscriber support
+        if ($orderKey = $this->getSortOrderKey($category, $productSorts)) {
+            $request->request->set('order', $orderKey);
+        }
+        $criteria = new Criteria();
+        $criteria->setTitle('shopgate::product::paginated::category-id');
+
+        return $this->listingRoute->load($category->getId(), $request, $channel, $criteria)->getResult();
+    }
+
     /**
      * Retrieves the default key to sort the category by
      *
      * @param CategoryEntity $category
      * @param ProductSortingCollection $sortingCollection
+     *
      * @return string|null - e.g. price-asc, topseller
      */
     private function getSortOrderKey(CategoryEntity $category, ProductSortingCollection $sortingCollection): ?string

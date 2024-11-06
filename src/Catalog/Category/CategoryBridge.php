@@ -51,19 +51,23 @@ class CategoryBridge
 
     /**
      * @param string[] $uids
+     *
      * @return CategoryProductCollection
      */
     public function getCategoryProductMap(array $uids = []): CategoryProductCollection
     {
-        $channel = $this->contextManager->getSalesContext();
-        $criteria = (new Criteria());
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $channel->getSalesChannelId()));
-        if ($uids) {
-            $criteria->addFilter(new EqualsAnyFilter('productId', $uids));
+        // todo: test that this works
+        // we are checking language because the sort order can be different per language
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('languageId', $this->contextManager->getSalesContext()->getLanguageId()));
+        $entities = $this->getCategoryProductMapEntries($criteria, $uids);
+        if ($entities->count() === 0) {
+            // no language fallback because we are not always generating entries if sort order is same for different languages
+            $entities = $this->getCategoryProductMapEntries(new Criteria(), $uids);
         }
-
-        $entities = $this->categoryProductMapRepository->search($criteria, $channel->getContext())->getEntities();
-        $entities->count() === 0 && $this->logger->debug('No category/product mapping entities found in index');
+        $entities->count() === 0 && $this->logger->debug(
+            'No category/product mapping entities found in index. Run the indexer.'
+        );
 
         return $entities;
     }
@@ -102,5 +106,16 @@ class CategoryBridge
             $result->add($item);
         }
         return $result;
+    }
+
+    private function getCategoryProductMapEntries(Criteria $criteria, array $uids = []): CategoryProductCollection
+    {
+        $channel = $this->contextManager->getSalesContext();
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $channel->getSalesChannelId()));
+        if ($uids) {
+            $criteria->addFilter(new EqualsAnyFilter('productId', $uids));
+        }
+
+        return $this->categoryProductMapRepository->search($criteria, $channel->getContext())->getEntities();
     }
 }

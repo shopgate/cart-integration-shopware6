@@ -67,6 +67,7 @@
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory"/>
             <argument type="service" id="category.repository"/>
+            <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
             <tag name="shopware.entity_indexer"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge">
@@ -338,6 +339,18 @@
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
         <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
             <tag name="kernel.event_subscriber"/>
+        </service>
+        <!-- @todo: look into PrefixFilesystem instead -->
+        <service id="shopgate.go.fallback.logger" class="Monolog\Logger">
+            <argument type="string">ShopgateGo</argument>
+            <argument type="collection">
+                <argument type="service" id="shopgate.go.file.handler"/>
+            </argument>
+        </service>
+        <service id="shopgate.go.file.handler" class="Monolog\Handler\RotatingFileHandler">
+            <argument key="$filename" type="string">%kernel.logs_dir%/shopgate/go/%kernel.environment%.log</argument>
+            <argument key="$dateFormat" type="string">Y-m</argument>
+            <argument key="$maxFiles" type="string">6</argument>
         </service>
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
