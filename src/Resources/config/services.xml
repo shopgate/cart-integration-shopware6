@@ -60,13 +60,17 @@
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge">
             <argument key="$categoryProductMapRepository" type="service" id="shopgate_go_category_product_mapping.repository" />
         </service>
+        <service id="Shopgate\Shopware\Catalog\Category\ProductMapBridge">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument key="$logger" type="service" id="shopgate.go.fallback.logger"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer">
             <argument key="$categoryMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\DataAbstractionLayer\CategoryProductMappingIndexer">
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory"/>
-            <argument type="service" id="category.repository"/>
+            <argument key="$repository" type="service" id="category.repository"/>
             <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
             <tag name="shopware.entity_indexer"/>
         </service>
@@ -303,6 +307,12 @@
         <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"
                  alias="sg.customer.custom_field.whitelist"/>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
+        <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FileLogger">
+            <argument type="string">ShopgateGo</argument>
+            <argument type="collection">
+                <argument type="service" id="shopgate.go.file.handler"/>
+            </argument>
+        </service>
         <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Configuration\ConfigMapping" shared="true">
             <argument>%shopgate.configurations%</argument>
             <call method="setConfigBridge"/>
@@ -341,12 +351,6 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <!-- @todo: look into PrefixFilesystem instead -->
-        <service id="shopgate.go.fallback.logger" class="Monolog\Logger">
-            <argument type="string">ShopgateGo</argument>
-            <argument type="collection">
-                <argument type="service" id="shopgate.go.file.handler"/>
-            </argument>
-        </service>
         <service id="shopgate.go.file.handler" class="Monolog\Handler\RotatingFileHandler">
             <argument key="$filename" type="string">%kernel.logs_dir%/shopgate/go/%kernel.environment%.log</argument>
             <argument key="$dateFormat" type="string">Y-m</argument>
