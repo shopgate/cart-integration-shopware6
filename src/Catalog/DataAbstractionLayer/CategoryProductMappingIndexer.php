@@ -9,6 +9,7 @@ use Monolog\Level;
 use Shopgate\Shopware\Catalog\Category\ProductMapBridge;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductIndexingMessage;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Log\FileLogger;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -23,6 +24,7 @@ use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Profiling\Profiler;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use function count;
 use function json_decode;
@@ -37,7 +39,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
         private readonly ProductMapBridge $productMapBridge,
         private readonly EntityRepository $repository,
         private readonly ContextManager $contextManager,
-        private readonly FileLogger $logger
+        private readonly FileLogger $logger,
+        private readonly SystemConfigService $systemConfigService
     ) {
     }
 
@@ -166,9 +169,12 @@ class CategoryProductMappingIndexer extends EntityIndexer
                 $langSortOrder[] = ['catId' => $catId, 'slot' => $rawCat['slot_config']];
 
 
-                // todo: config needed
-                $totalCreated = $this->productMapBridge->createMappings($category, $channel);
-//              $totalCreated =  $this->productMapBridge->upsertMappings($category, $channel);
+                $indexType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
+                if (!$indexType || $indexType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
+                    $totalCreated = $this->productMapBridge->upsertMappings($category, $channel);
+                } else {
+                    $totalCreated = $this->productMapBridge->createMappings($category, $channel);
+                }
 
                 $this->logger->logBasics(
                     'Written index entities',

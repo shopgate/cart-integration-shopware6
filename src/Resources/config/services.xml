@@ -308,8 +308,8 @@
                  alias="sg.customer.custom_field.whitelist"/>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
         <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FileLogger">
-            <argument type="string">ShopgateGo</argument>
-            <argument type="collection">
+            <argument key="$name" type="string">ShopgateGo</argument>
+            <argument key="$handlers" type="collection">
                 <argument type="service" id="shopgate.go.file.handler"/>
             </argument>
         </service>

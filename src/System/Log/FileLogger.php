@@ -3,7 +3,9 @@
 namespace Shopgate\Shopware\System\Log;
 
 use DateTimeZone;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class FileLogger extends \Monolog\Logger
 {
@@ -11,9 +13,10 @@ class FileLogger extends \Monolog\Logger
 
     public function __construct(
         string $name,
+        private readonly SystemConfigService $systemConfigService,
         array $handlers = [],
         array $processors = [],
-        ?DateTimeZone $timezone = null
+        ?DateTimeZone $timezone = null,
     ) {
         $this->sequence = Uuid::randomHex();
         parent::__construct($name, $handlers, $processors, $timezone);
@@ -21,14 +24,16 @@ class FileLogger extends \Monolog\Logger
 
     public function logDetails(string $message, array $context = []): void
     {
-        // todo: check config to see if logging should be done
-//        $this->logToFile($message, $context);
+        if ($this->systemConfigService->getFloat(ConfigBridge::ADVANCED_CONFIG_LOGGING_DETAILED)) {
+            $this->logToFile($message, $context);
+        }
     }
 
     public function logBasics(string $message, array $context = []): void
     {
-        // todo: check config to see if logging should be done
-        $this->logToFile($message, $context);
+        if ($this->systemConfigService->getFloat(ConfigBridge::ADVANCED_CONFIG_LOGGING_BASIC)) {
+            $this->logToFile($message, $context);
+        }
     }
 
     /**
