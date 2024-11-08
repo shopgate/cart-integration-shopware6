@@ -146,8 +146,12 @@ class ProductMapBridge
     public function deleteCategories(array $categoryIds, array $channelEntries): int
     {
         $categoryEntries = $this->getCategoryList($categoryIds);
-        $channelIds = implode(',', array_map(fn($row) => $this->db->quote($row['sales_channel_id']), $channelEntries));
-        $catIds = implode(',', array_map(fn($row) => $this->db->quote($row['id']), $categoryEntries));
+        // delete category event could trigger product updates
+        if (empty($categoryEntries)) {
+            return 0;
+        }
+        $channelIds = implode(',', array_unique(array_map(fn($row) => $this->db->quote($row['sales_channel_id']), $channelEntries)));
+        $catIds = implode(',', array_unique(array_map(fn($row) => $this->db->quote($row['id']), $categoryEntries)));
         $delete = new RetryableQuery(
             $this->db,
             $this->db->prepare(
