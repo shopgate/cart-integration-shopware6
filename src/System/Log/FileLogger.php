@@ -24,7 +24,7 @@ class FileLogger extends \Monolog\Logger
 
     public function logDetails(string $message, array $context = []): void
     {
-        if ($this->systemConfigService->getFloat(ConfigBridge::ADVANCED_CONFIG_LOGGING_DETAILED)) {
+        if ($this->systemConfigService->getFloat(ConfigBridge::ADVANCED_CONFIG_LOGGING_DETAIL)) {
             $this->logToFile($message, $context);
         }
     }

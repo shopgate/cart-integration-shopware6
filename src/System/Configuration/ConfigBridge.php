@@ -31,8 +31,9 @@ class ConfigBridge
     public const SYSTEM_CONFIG_IS_LIVE_SHOPPING = 'isLiveShopping';
     public const ADVANCED_CONFIG_INDEXER_WRITE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerWriteType';
     public const ADVANCED_CONFIG_LOGGING_BASIC = self::SYSTEM_CONFIG_DOMAIN . 'basicLogging';
-    public const ADVANCED_CONFIG_LOGGING_DETAILED = self::SYSTEM_CONFIG_DOMAIN . 'detailedLogging';
+    public const ADVANCED_CONFIG_LOGGING_DETAIL = self::SYSTEM_CONFIG_DOMAIN . 'detailLogging';
     public const INDEXER_WRITE_TYPE_SAFE = 'safe';
+    public const INDEXER_WRITE_TYPE_PERFORMANT = 'performant';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 
