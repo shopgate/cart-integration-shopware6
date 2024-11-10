@@ -16,7 +16,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class CategoryBridge
 {
-
     public function __construct(
         private readonly AbstractCategoryListRoute $categoryListRoute,
         private readonly ContextManager $contextManager,
@@ -56,7 +55,6 @@ class CategoryBridge
      */
     public function getCategoryProductMap(array $uids = []): CategoryProductCollection
     {
-        // todo: test that this works
         // we are checking language because the sort order can be different per language
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('languageId', $this->contextManager->getSalesContext()->getLanguageId()));

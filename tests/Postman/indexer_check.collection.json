@@ -1,300 +1,754 @@
 {
-  "info": {
-    "_postman_id": "79b76bf3-04de-482a-89d9-357b61945ed1",
-    "name": "SG Go: Indexer check",
-    "description": "Realated to [https://apite.atlassian.net/browse/SW6M-106](https://apite.atlassian.net/browse/SW6M-106)",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "5289226"
-  },
-  "item": [
-    {
-      "name": "SW: re-index",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 200\", function () {\r",
-              "    pm.response.to.have.status(200);\r",
-              "});\r",
-              "\r",
-              ""
-            ],
-            "type": "text/javascript",
-            "packages": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{gen_access_token}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"offset\": 0\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
-          "host": [
-            "{{sw_endpoint_api}}"
-          ],
-          "path": [
-            "_action",
-            "indexing",
-            ":indexer"
-          ],
-          "variable": [
-            {
-              "key": "indexer",
-              "value": "shopgate.go.category.product.mapping.indexer"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "SG: check categories",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Not an error\", function () {",
-              "    pm.response.to.not.have.jsonBody('error');",
-              "});",
-              "",
-              "const jsonObject = xml2Json(responseBody);",
-              "",
-              "pm.test(\"Check categories\", function () {",
-              "    pm.expect(jsonObject.items.item.categories.category).not.be.undefined;",
-              "    pm.expect(jsonObject.items.item.categories.category).length.greaterThan(0)",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "*/*"
-          },
-          {
-            "key": "X-Shopgate-Auth-User",
-            "value": "{{gen_sg_header_auth_user}}"
-          },
-          {
-            "key": "X-Shopgate-Auth-Token",
-            "value": "{{gen_sg_header_auth_token}}"
-          }
-        ],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            {
-              "key": "shop_number",
-              "value": "{{shop_number}}",
-              "type": "text"
-            },
-            {
-              "key": "action",
-              "value": "{{framework_action_get_items}}",
-              "type": "text"
-            },
-            {
-              "key": "uids[0]",
-              "value": "{{test_product1_id}}",
-              "type": "text"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{domain}}",
-          "host": [
-            "{{domain}}"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "SW: check prod mapping",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status code is 200\", function () {\r",
-              "    pm.response.to.have.status(200);\r",
-              "});\r",
-              "\r",
-              "pm.test(\"check data\", function () {\r",
-              "    var jsonData = pm.response.json();\r",
-              "    pm.expect(jsonData.meta.total).to.be.gt(0);\r",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{gen_access_token}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{test_product1_id}}\"\n                }\n            ]\n        }\n    ]\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
-          "host": [
-            "{{sw_endpoint_api}}"
-          ],
-          "path": [
-            "search",
-            "shopgate-go-category-product-mapping"
-          ]
-        }
-      },
-      "response": []
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "exec": [
-          "/**",
-          " *  SG Token generation",
-          " */",
-          "var tstamp = Math.floor(Date.now() / 1000);",
-          "",
-          "const customerNumber = pm.environment.get('customer_number');",
-          "const apiKey = pm.environment.get('api_key');",
-          "",
-          "// Use the CryptoJS",
-          "var authUser = customerNumber + \"-\" + tstamp;",
-          "var tokenData = \"SPA-\" + customerNumber + \"-\" + tstamp + \"-\" + apiKey;",
-          "",
-          "var authToken = CryptoJS.SHA1(tokenData).toString();",
-          "",
-          "// Set the new header values",
-          "pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
-          "pm.environment.set(\"gen_sg_header_auth_token\", authToken);",
-          "",
-          "/**",
-          " * SW Token generation",
-          " */",
-          "var getToken = true;",
-          "if (!pm.environment.get('gen_token_expires') || !pm.environment.get('gen_access_token')) {",
-          "    console.log('Token or expiry date are missing');",
-          "} else if (pm.environment.get('gen_token_expires') <= (new Date()).getTime()) {",
-          "    console.log('Token is expired');",
-          "} else {",
-          "    getToken = false;",
-          "}",
-          "",
-          "if (getToken === true) {",
-          "    const createRequest = {",
-          "        \"client_id\": pm.environment.get(\"sw_client_id\"),",
-          "        \"grant_type\": \"password\",",
-          "        \"scopes\": \"write\",",
-          "        \"username\": pm.environment.get(\"sw_admin\"),",
-          "        \"password\": pm.environment.get(\"sw_pass\")",
-          "    };",
-          "    const refreshRequest = {",
-          "        \"grant_type\": \"refresh_token\",",
-          "        \"client_id\": pm.environment.get(\"sw_client_id\"),",
-          "        \"refresh_token\": pm.environment.get(\"gen_refresh_token\")",
-          "    };",
-          "    // SW Auth",
-          "    const authRequest = {",
-          "        url: pm.globals.replaceIn(pm.environment.replaceIn(pm.environment.get(\"sw_endpoint_auth\"))),",
-          "        method: 'POST',",
-          "        header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
-          "        body: {",
-          "            mode: 'application/json'",
-          "        }",
-          "    };",
-          "    // set body depending on type of request needed",
-          "    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
-          "    pm.sendRequest(authRequest, function (err, res) {",
-          "        if (res.code !== 200) {",
-          "            pm.environment.unset('gen_access_token');",
-          "            pm.environment.unset('gen_token_expires');",
-          "            pm.environment.unset('gen_refresh_token');",
-          "            console.log('Invalidated refresh token');",
-          "            return;",
-          "        }",
-          "        ",
-          "        var responseJson = res.json();",
-          "        pm.environment.set('gen_access_token', responseJson.access_token)",
-          "",
-          "        var expiryDate = new Date();",
-          "        expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
-          "        pm.environment.set('gen_token_expires', expiryDate.getTime());",
-          "        pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
-          "        console.log('Saved the token and expiry date');",
-          "    });",
-          "}",
-          "",
-          "/**",
-          " * Global utility functions",
-          " */",
-          "Utility = {};"
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "exec": [
-          "// remove generated token data if not authorized",
-          "if (pm.response.code === 401) {",
-          "    console.log('Removing tokens due to 401 response. Please try again.');",
-          "    pm.environment.unset('gen_access_token');",
-          "    pm.environment.unset('gen_token_expires');",
-          "    pm.environment.unset('gen_refresh_token');",
-          "}"
-        ]
-      }
-    }
-  ]
+	"info": {
+		"_postman_id": "79b76bf3-04de-482a-89d9-357b61945ed1",
+		"name": "SG Go Indexer check",
+		"description": "Realated to [https://apite.atlassian.net/browse/SW6M-106](https://apite.atlassian.net/browse/SW6M-106)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5289226"
+	},
+	"item": [
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "SW: find product by number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"get product by number\", function () {\r",
+									"    pm.expect(jsonData.total).to.eq(1);\r",
+									"    pm.environment.set(`test_product1_id`, jsonData.data[0])\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{gen_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"productNumber\",\r\n                    \"value\": \"K10000825\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sw_endpoint_api}}/search-ids/product",
+							"host": [
+								"{{sw_endpoint_api}}"
+							],
+							"path": [
+								"search-ids",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SW: find category by name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.environment.set(\"gen_category_count\", jsonData.total);\r",
+									"\r",
+									"pm.test(\"get category by name\", function () {\r",
+									"    pm.expect(jsonData.total).to.eq(1);\r",
+									"    pm.environment.set(`test_category1_id`, jsonData.data[0])\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{gen_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Neu\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sw_endpoint_api}}/search-ids/category",
+							"host": [
+								"{{sw_endpoint_api}}"
+							],
+							"path": [
+								"search-ids",
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SW: get product details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"is in category?\", function () {\r",
+									"    pm.expect(jsonData.data).to.eq(1);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{gen_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Neu\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sw_endpoint_api}}/product/:prodId/categories",
+							"host": [
+								"{{sw_endpoint_api}}"
+							],
+							"path": [
+								"product",
+								":prodId",
+								"categories"
+							],
+							"variable": [
+								{
+									"key": "prodId",
+									"value": "{{test_product1_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SW: get category details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"is in category?\", function () {\r",
+									"    pm.expect(jsonData.data).to.eq(1);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{gen_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Neu\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sw_endpoint_api}}/category/:catId",
+							"host": [
+								"{{sw_endpoint_api}}"
+							],
+							"path": [
+								"category",
+								":catId"
+							],
+							"variable": [
+								{
+									"key": "catId",
+									"value": "{{test_category1_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SW: Enable logs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successfully enabled NET Prices\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sw_endpoint_api}}/_action/sync",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"_action",
+						"sync"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: re-index",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"offset\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"_action",
+						"indexing",
+						":indexer"
+					],
+					"variable": [
+						{
+							"key": "indexer",
+							"value": "shopgate.go.category.product.mapping.indexer"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SG: check categories",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Not an error\", function () {",
+							"    pm.response.to.not.have.jsonBody('error');",
+							"});",
+							"",
+							"const jsonObject = xml2Json(responseBody);",
+							"",
+							"pm.test(\"Check categories exist\", function () {",
+							"    pm.expect(jsonObject.items.item.categories.category).not.be.undefined;",
+							"    pm.expect(jsonObject.items.item.categories.category).length.greaterThan(0)",
+							"});",
+							"",
+							"const testCat = pm.variables.get('test_category1_id')",
+							"if (!testCat) {",
+							"    return",
+							"}",
+							"",
+							"pm.test(\"Check specific category\", function () {",
+							"    const cat = jsonObject.items.item.categories.category.find(i => i.$.uid === testCat)",
+							"    pm.expect(cat, 'should have found the caetgory').to.not.be.undefined;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "*/*"
+					},
+					{
+						"key": "X-Shopgate-Auth-User",
+						"value": "{{gen_sg_header_auth_user}}"
+					},
+					{
+						"key": "X-Shopgate-Auth-Token",
+						"value": "{{gen_sg_header_auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "shop_number",
+							"value": "{{shop_number}}",
+							"type": "text"
+						},
+						{
+							"key": "action",
+							"value": "{{framework_action_get_items}}",
+							"type": "text"
+						},
+						{
+							"key": "uids[0]",
+							"value": "{{test_product1_id}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{domain}}",
+					"host": [
+						"{{domain}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: check prod mapping",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check data\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.meta.total).to.be.gt(0);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{test_product1_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"search",
+						"shopgate-go-category-product-mapping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: check prod / cat map",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"check data\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.meta.total).to.be.gt(0);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"and\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{test_product1_id}}\"\n                },\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"categoryId\",\n                    \"value\": \"{{test_category1_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"search",
+						"shopgate-go-category-product-mapping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: re-index (test product)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ids\": [\r\n        \"{{test_product1_id}}\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sw_endpoint_api}}/_action/index-products",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"_action",
+						"index-products"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"/**",
+					" *  SG Token generation",
+					" */",
+					"var tstamp = Math.floor(Date.now() / 1000);",
+					"",
+					"const customerNumber = pm.environment.get('customer_number');",
+					"const apiKey = pm.environment.get('api_key');",
+					"",
+					"// Use the CryptoJS",
+					"var authUser = customerNumber + \"-\" + tstamp;",
+					"var tokenData = \"SPA-\" + customerNumber + \"-\" + tstamp + \"-\" + apiKey;",
+					"",
+					"var authToken = CryptoJS.SHA1(tokenData).toString();",
+					"",
+					"// Set the new header values",
+					"pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
+					"pm.environment.set(\"gen_sg_header_auth_token\", authToken);",
+					"",
+					"/**",
+					" * SW Token generation",
+					" */",
+					"var getToken = true;",
+					"if (!pm.environment.get('gen_token_expires') || !pm.environment.get('gen_access_token')) {",
+					"    console.log('Token or expiry date are missing');",
+					"} else if (pm.environment.get('gen_token_expires') <= (new Date()).getTime()) {",
+					"    console.log('Token is expired');",
+					"} else {",
+					"    getToken = false;",
+					"}",
+					"",
+					"if (getToken === true) {",
+					"    const createRequest = {",
+					"        \"client_id\": pm.environment.get(\"sw_client_id\"),",
+					"        \"grant_type\": \"password\",",
+					"        \"scopes\": \"write\",",
+					"        \"username\": pm.environment.get(\"sw_admin\"),",
+					"        \"password\": pm.environment.get(\"sw_pass\")",
+					"    };",
+					"    const refreshRequest = {",
+					"        \"grant_type\": \"refresh_token\",",
+					"        \"client_id\": pm.environment.get(\"sw_client_id\"),",
+					"        \"refresh_token\": pm.environment.get(\"gen_refresh_token\")",
+					"    };",
+					"    // SW Auth",
+					"    const authRequest = {",
+					"        url: pm.globals.replaceIn(pm.environment.replaceIn(pm.environment.get(\"sw_endpoint_auth\"))),",
+					"        method: 'POST',",
+					"        header: 'Accept: application/json\\nContent-Type: application/json; charset=utf-8',",
+					"        body: {",
+					"            mode: 'application/json'",
+					"        }",
+					"    };",
+					"    // set body depending on type of request needed",
+					"    authRequest.body.raw = JSON.stringify(pm.environment.get(\"gen_refresh_token\") ? refreshRequest : createRequest);",
+					"    pm.sendRequest(authRequest, function (err, res) {",
+					"        if (res.code !== 200) {",
+					"            pm.environment.unset('gen_access_token');",
+					"            pm.environment.unset('gen_token_expires');",
+					"            pm.environment.unset('gen_refresh_token');",
+					"            console.log('Invalidated refresh token');",
+					"            return;",
+					"        }",
+					"        ",
+					"        var responseJson = res.json();",
+					"        pm.environment.set('gen_access_token', responseJson.access_token)",
+					"",
+					"        var expiryDate = new Date();",
+					"        expiryDate.setSeconds(expiryDate.getSeconds() + responseJson.expires_in);",
+					"        pm.environment.set('gen_token_expires', expiryDate.getTime());",
+					"        pm.environment.set('gen_refresh_token', responseJson.refresh_token);",
+					"        console.log('Saved the token and expiry date');",
+					"    });",
+					"}",
+					"",
+					"/**",
+					" * Global utility functions",
+					" */",
+					"Utility = {};"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"// remove generated token data if not authorized",
+					"if (pm.response.code === 401) {",
+					"    console.log('Removing tokens due to 401 response. Please try again.');",
+					"    pm.environment.unset('gen_access_token');",
+					"    pm.environment.unset('gen_token_expires');",
+					"    pm.environment.unset('gen_refresh_token');",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "test_product1_id",
+			"value": "0190b6ad62cb7099a2d84469b63f46b8",
+			"type": "string"
+		},
+		{
+			"key": "test_category1_id",
+			"value": "018f049ce88c7085b8436054b022d827",
+			"type": "string"
+		}
+	]
 }

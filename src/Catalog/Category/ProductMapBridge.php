@@ -150,7 +150,10 @@ class ProductMapBridge
         if (empty($categoryEntries)) {
             return 0;
         }
-        $channelIds = implode(',', array_unique(array_map(fn($row) => $this->db->quote($row['sales_channel_id']), $channelEntries)));
+        $channelIds = implode(
+            ',',
+            array_unique(array_map(fn($row) => $this->db->quote($row['sales_channel_id']), $channelEntries))
+        );
         $catIds = implode(',', array_unique(array_map(fn($row) => $this->db->quote($row['id']), $categoryEntries)));
         $delete = new RetryableQuery(
             $this->db,
@@ -173,7 +176,7 @@ class ProductMapBridge
     public function getCategoryList(array $ids, string $languageId = null): array
     {
         $langQuery = $languageId ? ' AND ct.language_id = :language_id ' : ' ';
-        $langParams = $languageId ? ['language_id' => $languageId] : [];
+        $langParams = $languageId ? ['language_id' => Uuid::fromHexToBytes($languageId)] : [];
         $langTypes = $languageId ? ['language_id' => ParameterType::BINARY] : [];
 
         return $this->db->fetchAllAssociative(

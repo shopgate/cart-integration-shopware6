@@ -11,11 +11,14 @@ use Shopware\Core\Content\Product\SalesChannel\Sorting\ProductSortingCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class SortTree
 {
+    private ProductSortingCollection|null $sortCollection = null;
+
     public function __construct(
         private readonly ContextManager $contextManager,
         private readonly AbstractProductListingRoute $listingRoute,
@@ -33,7 +36,7 @@ class SortTree
         $page = 1;
         $limit = 100;
         $channel = $this->contextManager->getSalesContext();
-        $productSorts = $this->productSortingRepository->search(new Criteria(), $channel->getContext())->getEntities();
+        $productSorts = $this->getSorts($channel);
 
         do {
             $request = new Request();
@@ -57,7 +60,7 @@ class SortTree
     public function getPaginatedCategoryProducts(CategoryEntity $category, int $page, int $limit = 100): ProductListingResult
     {
         $channel = $this->contextManager->getSalesContext();
-        $productSorts = $this->productSortingRepository->search(new Criteria(), $channel->getContext())->getEntities();
+        $productSorts = $this->getSorts($channel);
 
         $request = new Request();
         $request->setMethod(Request::METHOD_POST);
@@ -99,5 +102,13 @@ class SortTree
         }
 
         return null;
+    }
+
+    private function getSorts(SalesChannelContext $channel): ProductSortingCollection
+    {
+        if ($this->sortCollection === null) {
+            $this->sortCollection = $this->productSortingRepository->search(new Criteria(), $channel->getContext())->getEntities();
+        }
+        return $this->sortCollection;
     }
 }

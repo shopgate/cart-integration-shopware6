@@ -31,8 +31,6 @@ use function json_decode;
 
 class CategoryProductMappingIndexer extends EntityIndexer
 {
-    private int $writeCount = 0;
-
     public function __construct(
         private readonly Connection $db,
         private readonly IteratorFactory $iteratorFactory,
@@ -94,13 +92,17 @@ class CategoryProductMappingIndexer extends EntityIndexer
             return;
         }
 
+        // sorted by default channel language first
         $channels = $this->db->fetchAllAssociative(
-            'SELECT DISTINCT sales_channel_id, language_id FROM shopgate_api_credentials WHERE active = 1'
+            'SELECT DISTINCT sg.sales_channel_id, sg.language_id, sc.language_id = sg.language_id AS defaultLang FROM shopgate_api_credentials as sg
+                LEFT JOIN sales_channel as sc on sc.id = sg.sales_channel_id WHERE sg.active = 1 ORDER BY defaultLang DESC'
         );
+
         if (!$channels) {
             $this->writeLog('No Shopgate interfaces exist, skipping index creation', Level::Notice);
             return;
         }
+
 
         $delCount = Profiler::trace('shopgate:catalog:product:indexer:delete', function () use ($ids, $channels): int {
             $this->logger->logBasics('Removing categories', ['categories' => array_values($ids)]);
@@ -110,13 +112,13 @@ class CategoryProductMappingIndexer extends EntityIndexer
         $writeCount = Profiler::trace(
             'shopgate:catalog:product:indexer:update',
             function () use ($ids, $channels): int {
-                return $this->upsertCategories($ids, $channels);
+                return $this->insertMappings($ids, $channels);
             }
         );
 
         $msg = "Catalog/product map index table updated. Removed $delCount items. Written $writeCount items.";
-        ($delCount || $this->writeCount) && $this->writeLog($msg);
-        ($delCount || $this->writeCount) && $this->logger->logBasics($msg);
+        ($delCount || $writeCount) && $this->writeLog($msg);
+        ($delCount || $writeCount) && $this->logger->logBasics($msg);
     }
 
     public function getTotal(): int
@@ -132,42 +134,79 @@ class CategoryProductMappingIndexer extends EntityIndexer
     /**
      * @throws JsonException
      * @throws Exception
-     * @todo: not upsert anymore
      */
-    private function upsertCategories(array $categoryIds, array $channelEntries): int
+    private function insertMappings(array $categoryIds, array $channelEntries): int
     {
         $writeCount = 0;
+        // tracks sort order per language & skips generating duplicates
         $langSortOrder = [];
 
         foreach ($channelEntries as $channel) {
             $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
+            $channelLangId = Uuid::fromBytesToHex($channel['language_id']);
             $salesChannelContext = $this->contextManager->createNewContext(
                 $channelId,
-                [SalesChannelContextService::LANGUAGE_ID => Uuid::fromBytesToHex($channel['language_id'])]
+                [SalesChannelContextService::LANGUAGE_ID => $channelLangId]
             );
             $this->contextManager->overwriteSalesContext($salesChannelContext);
-            // todo: make sure lang constraint does what it needs to do here
-            $categoryEntries = $this->productMapBridge->getCategoryList($categoryIds, $channel['language_id']);
+
+            $defaultLang = $salesChannelContext->getSalesChannel()->getLanguageId();
+            $categoryEntries = $this->productMapBridge->getCategoryList($categoryIds, $channelLangId);
 
             foreach ($categoryEntries as $rawCat) {
-                // todo: check, can we get away with mapping one set if slot_configs are null on the same language?
-                //  but then, we will need to check for this somehow when searching the mappings (with fallback)
                 $catId = Uuid::fromBytesToHex($rawCat['id']);
-                // sort order is stored in slot_config, if it's the same across the languages, then skip mapping
+                $langId = Uuid::fromBytesToHex($rawCat['language_id']);
+                // sort order is stored in slot_config, if it's the same across the languages, then skip mapping same sorts
                 // our retriever will just pull the mappings using any language as fallback
-                $findNotUnique = array_filter($langSortOrder, function (array $category) use ($catId, $rawCat) {
-                    return $category['catId'] === $catId && $category['slot'] === $rawCat['slot_config'];
-                });
+                $findNotUnique = array_filter(
+                    $langSortOrder,
+                    function (array $category) use ($catId, $channelId, $rawCat, $langId, $defaultLang) {
+                        $sameSlot = $category['slot'] === $rawCat['slot_config'] && $category['slot'] === null;
+                        // for a specific channel, if default language sorting is set and non-default lang sort is null, skip map
+                        // because SW falls back to default language sorting
+//                        $nonMainIsNull = $defaultLang !== $langId && $rawCat['slot_config'] === null && $sameChannel;
+                        $sameChannel = $channelId === $category['channelId'];
+                        return $category['catId'] === $catId && $sameSlot && $sameChannel/*|| $nonMainIsNull*/;
+                    }
+                );
                 if (!empty($findNotUnique)) {
+                    $this->logger->logBasics(
+                        'Skipping category mapping due to non-unique sort order',
+                        [
+                            'channel_id' => $channelId,
+                            'channel_lang_id' => $langId,
+                            'channel_default_lang_id' => $defaultLang,
+                            'category_id' => $catId,
+                            'slot' => $rawCat['slot_config']
+                        ]
+                    );
                     continue;
                 }
                 $category = new CategoryEntity();
                 $category->setId($catId);
                 $category->setVersionId(Uuid::fromBytesToHex($rawCat['version_id']));
+                // mimic of SW6 behavior where a category with non-main channel language inherits sort order from main language
+                $mainLangCategory = array_filter($langSortOrder, function ($category) use ($channelId, $defaultLang) {
+                    return $category['langId'] === $defaultLang && $category['slot'] !== null && $channelId === $category['channelId'];
+                });
+                if ($defaultLang !== $langId && $rawCat['slot_config'] === null && $mainLangCategory) {
+                    $this->logger->logBasics('Falling back to default language sort', [
+                        'channel_id' => $channelId,
+                        'channel_lang_id' => $langId,
+                        'channel_default_lang_id' => $defaultLang,
+                        'category_id' => $catId,
+                        'slot' => $rawCat['slot_config']
+                    ]);
+                    $rawCat['slot_config'] = $mainLangCategory[0]['slot'];
+                }
                 $category->setSlotConfig($rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true) : []);
                 $category->setName($rawCat['name'] ?? null);
-                $langSortOrder[] = ['catId' => $catId, 'slot' => $rawCat['slot_config']];
-
+                $langSortOrder[] = [
+                    'channelId' => $channelId,
+                    'langId' => $langId,
+                    'catId' => $catId,
+                    'slot' => $rawCat['slot_config']
+                ];
 
                 $indexType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
                 if (!$indexType || $indexType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
@@ -179,8 +218,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
                 $this->logger->logBasics(
                     'Written index entities',
                     [
-                        'channel_id' => Uuid::fromBytesToHex($channel['sales_channel_id']),
-                        'language_id' => Uuid::fromBytesToHex($channel['language_id']),
+                        'channel_id' => $channelId,
+                        'language_id' => $langId,
                         'category_id' => $category->getName() ?: $category->getId(),
                         'count' => $totalCreated
                     ]
@@ -218,7 +257,6 @@ class CategoryProductMappingIndexer extends EntityIndexer
      */
     private function writeLog(string $message, Level $level = Level::Info): void
     {
-        // todo: create and check config for logging
         $this->db->executeStatement(
             'INSERT INTO `log_entry` (`id`, `message`, `level`, `channel`, `created_at`) VALUES (:id, :message, :level, :channel, now())',
             [
