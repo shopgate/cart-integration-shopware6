@@ -311,7 +311,7 @@
             <argument key="$db" type="service" id="Doctrine\DBAL\Connection" />
         </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
-        <service id="Shopgate\Shopware\System\Log\FileReader"/>
+        <service id="Shopgate\Shopware\System\File\FileReader"/>
         <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FallbackLogger">
             <argument key="$name" type="string">ShopgateGo</argument>
             <argument key="$handlers" type="collection">
@@ -338,6 +338,11 @@
         <service id="Shopgate\Shopware\System\Db\Rule\IsShopgateRuleCondition">
             <tag name="shopware.rule.definition"/>
         </service>
+        <service id="shopgate.go.file.handler" class="Shopgate\Shopware\System\File\ExtendedRotatingFileHandler">
+            <argument key="$filename" type="string">%shopgate.go.secondary.log.location%/%kernel.environment%.log</argument>
+            <argument key="$customDateTime" type="string">Y-m-d</argument>
+            <argument key="$maxFiles" type="string">5</argument>
+        </service>
         <service id="Shopgate\Shopware\System\Tax\TaxBridge">
             <argument type="service" id="tax.repository"/>
             <argument type="service" id="tax_rule.repository"/>
@@ -354,11 +359,6 @@
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
         <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
             <tag name="kernel.event_subscriber"/>
-        </service>
-        <service id="shopgate.go.file.handler" class="Monolog\Handler\RotatingFileHandler">
-            <argument key="$filename" type="string">%shopgate.go.secondary.log.location%/%kernel.environment%.log</argument>
-            <argument key="$dateFormat" type="string">Y-m-d</argument>
-            <argument key="$maxFiles" type="string">5</argument>
         </service>
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>

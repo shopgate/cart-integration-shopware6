@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Shopgate\Shopware\System\Log;
+namespace Shopgate\Shopware\System\File;
 
 class FileReader
 {

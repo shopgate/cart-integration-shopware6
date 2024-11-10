@@ -2,7 +2,7 @@
 
 namespace Shopgate\Shopware\Storefront\Controller;
 
-use Shopgate\Shopware\System\Log\FileReader;
+use Shopgate\Shopware\System\File\FileReader;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
