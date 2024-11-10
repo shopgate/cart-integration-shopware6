@@ -22,6 +22,10 @@ class LogController
     ])]
     public function read(Request $request): JsonResponse
     {
+        if (!is_dir($this->logDirectory)) {
+            return new JsonResponse(['error' => 'Log directory does not exist'], 404);
+        }
+
         $lines = (int) $request->get('lines', 25);
         $sequence = $request->get('sequence');
         $file = $request->get('file', $this->fileReader->getLatestFile($this->logDirectory));
@@ -55,10 +59,11 @@ class LogController
     ])]
     public function list(): JsonResponse
     {
+        if (!is_dir($this->logDirectory)) {
+            return new JsonResponse(['error' => 'Log directory does not exist'], 404);
+        }
         return new JsonResponse(
             $this->fileReader->getDirectoryFiles($this->logDirectory)
         );
     }
-
-
 }
