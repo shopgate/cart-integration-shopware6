@@ -1,5 +1,9 @@
-# 3.3.5
+# 3.4.0
 
+- added category/product map logging
+- added log API reader (see postman collection for example)
+- fixed some performance issues with generating category/product maps
+- fixed language sort order for category export
 - fixed select custom field value export
 - fixed multi-select custom field value export
 

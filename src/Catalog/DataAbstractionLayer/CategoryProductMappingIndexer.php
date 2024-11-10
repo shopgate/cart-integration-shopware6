@@ -10,7 +10,7 @@ use Shopgate\Shopware\Catalog\Category\ProductMapBridge;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductIndexingMessage;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
-use Shopgate\Shopware\System\Log\FileLogger;
+use Shopgate\Shopware\System\Log\FallbackLogger;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductCategory\ProductCategoryDefinition;
@@ -37,7 +37,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         private readonly ProductMapBridge $productMapBridge,
         private readonly EntityRepository $repository,
         private readonly ContextManager $contextManager,
-        private readonly FileLogger $logger,
+        private readonly FallbackLogger $logger,
         private readonly SystemConfigService $systemConfigService
     ) {
     }
@@ -99,7 +99,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         );
 
         if (!$channels) {
-            $this->writeLog('No Shopgate interfaces exist, skipping index creation', Level::Notice);
+            $this->logger->logBasics('No Shopgate interfaces exist, skipping index creation');
             return;
         }
 
@@ -117,7 +117,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         );
 
         $msg = "Catalog/product map index table updated. Removed $delCount items. Written $writeCount items.";
-        ($delCount || $writeCount) && $this->writeLog($msg);
+        ($delCount || $writeCount) && $this->logger->writeEvent($msg);
         ($delCount || $writeCount) && $this->logger->logBasics($msg);
     }
 
@@ -250,21 +250,5 @@ class CategoryProductMappingIndexer extends EntityIndexer
         }
 
         return $ids;
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function writeLog(string $message, Level $level = Level::Info): void
-    {
-        $this->db->executeStatement(
-            'INSERT INTO `log_entry` (`id`, `message`, `level`, `channel`, `created_at`) VALUES (:id, :message, :level, :channel, now())',
-            [
-                'id' => Uuid::randomBytes(),
-                'message' => 'Shopgate Go: ' . $message,
-                'level' => $level->value,
-                'channel' => 'Shopgate Go',
-            ]
-        );
     }
 }

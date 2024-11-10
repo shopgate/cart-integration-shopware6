@@ -7,7 +7,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
-use Shopgate\Shopware\System\Log\FileLogger;
+use Shopgate\Shopware\System\Log\FallbackLogger;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\RetryableQuery;
@@ -20,7 +20,7 @@ class ProductMapBridge
     public function __construct(
         private readonly Connection $db,
         private readonly SortTree $sortTree,
-        private readonly FileLogger $logger
+        private readonly FallbackLogger $logger
     ) {
     }
 

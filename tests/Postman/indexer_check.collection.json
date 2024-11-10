@@ -632,6 +632,201 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "SW: get logs in directory",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{sw_endpoint_api}}/shopgate/log/list",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"shopgate",
+						"log",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: get log by lines",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{sw_endpoint_api}}/shopgate/log?lines=5",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"shopgate",
+						"log"
+					],
+					"query": [
+						{
+							"key": "lines",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: get log by sequence",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{sw_endpoint_api}}/shopgate/log?sequence=0193159f1fc471258b943154b61cf940",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"shopgate",
+						"log"
+					],
+					"query": [
+						{
+							"key": "sequence",
+							"value": "0193159f1fc471258b943154b61cf940"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: get other file log",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{sw_endpoint_api}}/shopgate/log?lines=5&file=dev-2024-11-06.log",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"shopgate",
+						"log"
+					],
+					"query": [
+						{
+							"key": "lines",
+							"value": "5"
+						},
+						{
+							"key": "file",
+							"value": "dev-2024-11-06.log"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [

@@ -47,6 +47,7 @@
             <parameter key="phone_number">phoneNumber</parameter>
             <parameter key="vat_ids">vatIds</parameter>
         </parameter>
+        <parameter key="shopgate.go.secondary.log.location" type="string">%kernel.logs_dir%/shopgate/go</parameter>
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
@@ -306,8 +307,12 @@
         </service>
         <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"
                  alias="sg.customer.custom_field.whitelist"/>
+        <service id="Shopgate\Shopware\System\Log\EventLogger">
+            <argument key="$db" type="service" id="Doctrine\DBAL\Connection" />
+        </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
-        <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FileLogger">
+        <service id="Shopgate\Shopware\System\Log\FileReader"/>
+        <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FallbackLogger">
             <argument key="$name" type="string">ShopgateGo</argument>
             <argument key="$handlers" type="collection">
                 <argument type="service" id="shopgate.go.file.handler"/>
@@ -350,16 +355,18 @@
         <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
-        <!-- @todo: look into PrefixFilesystem instead -->
         <service id="shopgate.go.file.handler" class="Monolog\Handler\RotatingFileHandler">
-            <argument key="$filename" type="string">%kernel.logs_dir%/shopgate/go/%kernel.environment%.log</argument>
-            <argument key="$dateFormat" type="string">Y-m</argument>
-            <argument key="$maxFiles" type="string">6</argument>
+            <argument key="$filename" type="string">%shopgate.go.secondary.log.location%/%kernel.environment%.log</argument>
+            <argument key="$dateFormat" type="string">Y-m-d</argument>
+            <argument key="$maxFiles" type="string">5</argument>
         </service>
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainApiController" public="true"/>
+        <service id="Shopgate\Shopware\Storefront\Controller\LogController" public="true">
+            <argument key="$logDirectory">%shopgate.go.secondary.log.location%</argument>
+        </service>
         <!-- Interfaces & aliases-->
         <service id="Shopgate\Shopware\Plugin" alias="shopgate.plugin"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager" alias="shopgate.context_manager"/>
