@@ -32,6 +32,8 @@ class ProductMapBridge
     {
         $writeCount = 0;
         $page = 1;
+        $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
+        $channelLangId = Uuid::fromBytesToHex($channel['language_id']);
         do {
             // this is the heaviest part of all of the code
             $result = $this->sortTree->getPaginatedCategoryProducts($category, $page++, self::PAGE_LIMIT);
@@ -39,13 +41,13 @@ class ProductMapBridge
             $products = $result->getEntities();
 
             $batch = $products->map(
-                function (ProductEntity $product) use ($category, $channel, $result) {
+                function (ProductEntity $product) use ($category, $channel, $channelId, $channelLangId, $result) {
                     static $position = 0;
                     $this->logger->logDetails('Writing entry', [
-                        'prod' => $product->getParentId() ?: $product->getId(),
+                        'product_id' => $product->getParentId() ?: $product->getId(),
                         'category_id' => $category->getId(),
-                        'channel_id' => Uuid::fromBytesToHex($channel['sales_channel_id']),
-                        'language_id' => Uuid::fromBytesToHex($channel['language_id']),
+                        'channel_id' => $channelId,
+                        'language_id' => $channelLangId,
                         'sort_order' => $result->getTotal() - $position,
                     ]);
                     return [
@@ -95,7 +97,7 @@ class ProductMapBridge
      * Less performant writer, but can handle duplicates
      * @throws Exception
      */
-    public function upsertMappings(CategoryEntity $category, mixed $channel): int
+    public function upsertMappings(CategoryEntity $category, array $channel): int
     {
         $update = new RetryableQuery(
             $this->db,
@@ -110,17 +112,19 @@ class ProductMapBridge
         $writeCount = 0;
         $page = 1;
         $position = 0;
+        $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
+        $channelLangId = Uuid::fromBytesToHex($channel['language_id']);
         do {
             $result = $this->sortTree->getPaginatedCategoryProducts($category, $page++, self::PAGE_LIMIT);
             $pageCount = ceil($result->getTotal() / self::PAGE_LIMIT);
             $products = $result->getEntities();
             foreach ($products as $product) {
                 $this->logger->logDetails('Writing entry', [
-                    'prod' => $product->getParentId() ?: $product->getId(),
-                    'category_id' => $category->getId(),
-                    'channel_id' => Uuid::fromBytesToHex($channel['sales_channel_id']),
-                    'language_id' => Uuid::fromBytesToHex($channel['language_id']),
-                    'sort_order' => $result->getTotal() - $position,
+                    'productId' => $product->getParentId() ?: $product->getId(),
+                    'categoryId' => $category->getId(),
+                    'channelId' => $channelId,
+                    'languageId' => $channelLangId,
+                    'sortOrder' => $result->getTotal() - $position,
                 ]);
                 $writeCount += $update->execute([
                     'productId' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),
