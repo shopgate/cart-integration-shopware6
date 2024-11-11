@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
+use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 class CategoryProductMappingDefinition extends MappingEntityDefinition
@@ -45,11 +46,13 @@ class CategoryProductMappingDefinition extends MappingEntityDefinition
             (new FkField('category_id', 'categoryId', CategoryDefinition::class))->addFlags(new PrimaryKey(), new Required(), new ApiAware()),
             (new FkField('product_id', 'productId', ProductDefinition::class))->addFlags(new PrimaryKey(), new Required(), new ApiAware()),
             (new IntField('sort_order', 'sortOrder'))->addFlags(new Required(), new ApiAware()),
+            (new FkField('language_id', 'languageId', LanguageDefinition::class))->addFlags(new Required(), new ApiAware()),
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required(), new ApiAware()),
             (new ReferenceVersionField(CategoryDefinition::class))->addFlags(new Required()),
             (new ReferenceVersionField(ProductDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('product', 'product_id', ProductDefinition::class, 'id', false),
-            new ManyToOneAssociationField('category', 'category_id', CategoryDefinition::class, 'id', false)
+            new ManyToOneAssociationField('category', 'category_id', CategoryDefinition::class, 'id', false),
+            new ManyToOneAssociationField('language', 'language_id', LanguageDefinition::class, 'id', false)
         ]);
     }
 }

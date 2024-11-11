@@ -8,17 +8,23 @@
             <name>isLiveShopping</name>
             <label>Live Shopping</label>
             <label lang="de-DE">Live-Shopping</label>
-            <helpText>This will apply custom prices from the App to the cart and order to allow the Shopgate Live Shopping feature</helpText>
+            <helpText>This will apply custom prices from the App to the cart and order to allow the Shopgate Live
+                Shopping feature
+            </helpText>
             <helpText lang="de-DE">
-                Überschreibt Produktpreise aus der App im Warenkorb und Bestellung, um abweichende Produktpreise für Shopgate Live Shopping zu ermöglichen
+                Überschreibt Produktpreise aus der App im Warenkorb und Bestellung, um abweichende Produktpreise für
+                Shopgate Live Shopping zu ermöglichen
             </helpText>
         </input-field>
         <input-field type="bool">
             <name>isFlysystem</name>
             <label>Flysystem writer</label>
             <label lang="de-DE">Flysystem Filewriter</label>
-            <helpText>Less performant alternative. Enable only if your system disallows file writing operations.</helpText>
-            <helpText lang="de-DE">Weniger performante Alternative. Nur aktivieren, falls der Server keine Schreiboperationen erlaubt.</helpText>
+            <helpText>Less performant alternative. Enable only if your system disallows file writing operations.
+            </helpText>
+            <helpText lang="de-DE">Weniger performante Alternative. Nur aktivieren, falls der Server keine
+                Schreiboperationen erlaubt.
+            </helpText>
         </input-field>
         <input-field type="bool">
             <name>exportNetPrices</name>
@@ -49,6 +55,42 @@
             <label>Allow reviews from all Sales Channels</label>
             <label lang="de-DE">Exportiert Reviews von allen Sales Channels</label>
             <defaultValue>true</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Advanced</title>
+        <title lang="de-DE">Erweiterte</title>
+        <input-field type="single-select">
+            <name>indexerWriteType</name>
+            <label>Type of write style for the indexer</label>
+            <label lang="de-DE">Art des Schreibstils für den Indexer</label>
+            <options>
+                <option>
+                    <id>safe</id>
+                    <name>Safe</name>
+                    <name lang="de-DE">Sicher</name>
+                </option>
+                <option>
+                    <id>performant</id>
+                    <name>Performant</name>
+                    <name lang="de-DE">Leistungsfähig</name>
+                </option>
+            </options>
+            <defaultValue>safe</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>basicLogging</name>
+            <label>Basic Logging</label>
+            <label lang="de-DE">Grundlegende Protokollierung</label>
+            <helpText>Minimal file logging.</helpText>
+            <helpText lang="de-DE">Minimale Dateiprotokollierung.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>detailedLogging</name>
+            <label>Detailed Logging</label>
+            <label lang="de-DE">Detaillierte Protokollierung</label>
+            <helpText>Detailed file logging. Uses a lot of storage.</helpText>
+            <helpText lang="de-DE">Detaillierte Dateiprotokollierung. Verbraucht eine Menge Speicherplatz.</helpText>
         </input-field>
     </card>
 </config>

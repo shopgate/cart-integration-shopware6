@@ -2,19 +2,19 @@
 
 namespace Shopgate\Shopware\Catalog\DataAbstractionLayer;
 
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use JsonException;
 use Monolog\Level;
-use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
+use Shopgate\Shopware\Catalog\Category\ProductMapBridge;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductIndexingMessage;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
+use Shopgate\Shopware\System\Log\FallbackLogger;
 use Shopware\Core\Content\Category\CategoryDefinition;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductCategory\ProductCategoryDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory;
-use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\RetryableQuery;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
@@ -22,19 +22,23 @@ use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexer;
 use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexingMessage;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Profiling\Profiler;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use function count;
 use function json_decode;
 
 class CategoryProductMappingIndexer extends EntityIndexer
 {
-
     public function __construct(
         private readonly Connection $db,
         private readonly IteratorFactory $iteratorFactory,
+        private readonly ProductMapBridge $productMapBridge,
         private readonly EntityRepository $repository,
-        private readonly SortTree $sortTree,
-        private readonly ContextManager $contextManager
+        private readonly ContextManager $contextManager,
+        private readonly FallbackLogger $logger,
+        private readonly SystemConfigService $systemConfigService
     ) {
     }
 
@@ -52,6 +56,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
             return null;
         }
 
+        $this->logger->logBasics('Running full index', ['category count' => count($ids)]);
         return new CategoryProductIndexingMessage(array_values($ids), $iterator->getOffset());
     }
 
@@ -72,6 +77,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
             return null;
         }
 
+        $this->logger->logBasics('Running partial index', ['categories' => array_values($ids)]);
         return new CategoryProductIndexingMessage(array_values($ids), null, $event->getContext(), count($ids) > 20);
     }
 
@@ -86,28 +92,33 @@ class CategoryProductMappingIndexer extends EntityIndexer
             return;
         }
 
-        $channels = $this->db->fetchAllAssociative('SELECT DISTINCT sales_channel_id FROM shopgate_api_credentials');
+        // sorted by default channel language first
+        $channels = $this->db->fetchAllAssociative(
+            'SELECT DISTINCT sg.sales_channel_id, sg.language_id, sc.language_id = sg.language_id AS defaultLang FROM shopgate_api_credentials as sg
+                LEFT JOIN sales_channel as sc on sc.id = sg.sales_channel_id WHERE sg.active = 1 ORDER BY defaultLang DESC'
+        );
+
         if (!$channels) {
-            $this->writeLog('No Shopgate interfaces exist, skipping index creation', Level::Notice);
+            $this->logger->logBasics('No Shopgate interfaces exist, skipping index creation');
             return;
         }
 
-        $categoryList = $this->db->fetchAllAssociative(
-            'SELECT DISTINCT cat.id, cat.version_id, ct.slot_config
-             FROM category as cat
-             LEFT JOIN category_translation ct on cat.id = ct.category_id
-             WHERE cat.id IN (:ids) AND cat.parent_id IS NOT NULL
-             ORDER BY cat.auto_increment',
-            ['ids' => Uuid::fromHexToBytesList($ids)],
-            ['ids' => ArrayParameterType::BINARY]
+
+        $delCount = Profiler::trace('shopgate:catalog:product:indexer:delete', function () use ($ids, $channels): int {
+            $this->logger->logBasics('Removing categories', ['categories' => array_values($ids)]);
+            return $this->productMapBridge->deleteCategories($ids, $channels);
+        });
+
+        $writeCount = Profiler::trace(
+            'shopgate:catalog:product:indexer:update',
+            function () use ($ids, $channels): int {
+                return $this->insertMappings($ids, $channels);
+            }
         );
 
-        $delCount = $this->deleteCategories($categoryList, $channels);
-        $writeCount = $this->upsertCategories($categoryList, $channels);
-
-        ($delCount || $writeCount) && $this->writeLog(
-            "Catalog/product map index table updated. Removed $delCount items. Written $writeCount items."
-        );
+        $msg = "Catalog/product map index table updated. Removed $delCount items. Written $writeCount items.";
+        ($delCount || $writeCount) && $this->logger->writeEvent($msg);
+        ($delCount || $writeCount) && $this->logger->logBasics($msg);
     }
 
     public function getTotal(): int
@@ -121,64 +132,99 @@ class CategoryProductMappingIndexer extends EntityIndexer
     }
 
     /**
-     * @throws Exception
-     */
-    private function deleteCategories(array $categoryEntries, array $channelEntries): int
-    {
-        $channelIds = implode(',', array_map(fn($row) => $this->db->quote($row['sales_channel_id']), $channelEntries));
-        $catIds = implode(',', array_map(fn($row) => $this->db->quote($row['id']), $categoryEntries));
-        $delete = new RetryableQuery(
-            $this->db,
-            $this->db->prepare(
-                "DELETE FROM shopgate_go_category_product_mapping
-                        WHERE category_id IN ($catIds) AND sales_channel_id IN ($channelIds)"
-            )
-        );
-
-        return $delete->execute();
-    }
-
-    /**
      * @throws JsonException
      * @throws Exception
      */
-    private function upsertCategories(array $categoryEntries, array $channelEntries): int
+    private function insertMappings(array $categoryIds, array $channelEntries): int
     {
-        $update = new RetryableQuery(
-            $this->db,
-            $this->db->prepare(
-                'INSERT INTO shopgate_go_category_product_mapping (product_id, category_id, sales_channel_id, product_version_id, category_version_id, sort_order)
-                    VALUES (:productId, :categoryId, :channelId, :productVersionId, :categoryVersionId, :sortOrder)
-                    ON DUPLICATE KEY UPDATE product_id = :productId, category_id = :categoryId, sales_channel_id = :channelId,
-                                            sort_order = :sortOrder, category_version_id = :categoryVersionId,
-                                            product_version_id = :productVersionId'
-            )
-        );
-
         $writeCount = 0;
+        // tracks sort order per language & skips generating duplicates
+        $langSortOrder = [];
+
         foreach ($channelEntries as $channel) {
             $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
-            $salesChannelContext = $this->contextManager->createNewContext($channelId);
+            $channelLangId = Uuid::fromBytesToHex($channel['language_id']);
+            $salesChannelContext = $this->contextManager->createNewContext(
+                $channelId,
+                [SalesChannelContextService::LANGUAGE_ID => $channelLangId]
+            );
             $this->contextManager->overwriteSalesContext($salesChannelContext);
 
+            $defaultLang = $salesChannelContext->getSalesChannel()->getLanguageId();
+            $categoryEntries = $this->productMapBridge->getCategoryList($categoryIds, $channelLangId);
+
             foreach ($categoryEntries as $rawCat) {
-                $category = new CategoryEntity();
-                $category->setId(Uuid::fromBytesToHex($rawCat['id']));
-                $category->setVersionId(Uuid::fromBytesToHex($rawCat['version_id']));
-                $category->setSlotConfig($rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true) : []);
-                $products = $this->sortTree->getAllCategoryProducts($category);
-                $maxProducts = $products->count();
-                $i = 0;
-                foreach ($products as $product) {
-                    $writeCount += $update->execute([
-                        'productId' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),
-                        'categoryId' => Uuid::fromHexToBytes($category->getId()),
-                        'channelId' => Uuid::fromHexToBytes($channelId),
-                        'productVersionId' => Uuid::fromHexToBytes($product->getVersionId()),
-                        'categoryVersionId' => Uuid::fromHexToBytes($category->getVersionId()),
-                        'sortOrder' => $maxProducts - $i++,
-                    ]);
+                $catId = Uuid::fromBytesToHex($rawCat['id']);
+                $langId = Uuid::fromBytesToHex($rawCat['language_id']);
+                // sort order is stored in slot_config, if it's the same across the languages, then skip mapping same sorts
+                // our retriever will just pull the mappings using any language as fallback
+                $findNotUnique = array_filter(
+                    $langSortOrder,
+                    function (array $category) use ($catId, $channelId, $rawCat, $langId, $defaultLang) {
+                        $sameSlot = $category['slot'] === $rawCat['slot_config'] && $category['slot'] === null;
+                        // for a specific channel, if default language sorting is set and non-default lang sort is null, skip map
+                        // because SW falls back to default language sorting
+//                        $nonMainIsNull = $defaultLang !== $langId && $rawCat['slot_config'] === null && $sameChannel;
+                        $sameChannel = $channelId === $category['channelId'];
+                        return $category['catId'] === $catId && $sameSlot && $sameChannel/*|| $nonMainIsNull*/;
+                    }
+                );
+                if (!empty($findNotUnique)) {
+                    $this->logger->logBasics(
+                        'Skipping category mapping due to non-unique sort order',
+                        [
+                            'channel_id' => $channelId,
+                            'channel_lang_id' => $langId,
+                            'channel_default_lang_id' => $defaultLang,
+                            'category_id' => $catId,
+                            'slot' => $rawCat['slot_config']
+                        ]
+                    );
+                    continue;
                 }
+                $category = new CategoryEntity();
+                $category->setId($catId);
+                $category->setVersionId(Uuid::fromBytesToHex($rawCat['version_id']));
+                // mimic of SW6 behavior where a category with non-main channel language inherits sort order from main language
+                $mainLangCategory = array_filter($langSortOrder, function ($category) use ($channelId, $defaultLang) {
+                    return $category['langId'] === $defaultLang && $category['slot'] !== null && $channelId === $category['channelId'];
+                });
+                if ($defaultLang !== $langId && $rawCat['slot_config'] === null && $mainLangCategory) {
+                    $this->logger->logBasics('Falling back to default language sort', [
+                        'channel_id' => $channelId,
+                        'channel_lang_id' => $langId,
+                        'channel_default_lang_id' => $defaultLang,
+                        'category_id' => $catId,
+                        'slot' => $rawCat['slot_config']
+                    ]);
+                    $rawCat['slot_config'] = $mainLangCategory[0]['slot'];
+                }
+                $category->setSlotConfig($rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true) : []);
+                $category->setName($rawCat['name'] ?? null);
+                $langSortOrder[] = [
+                    'channelId' => $channelId,
+                    'langId' => $langId,
+                    'catId' => $catId,
+                    'slot' => $rawCat['slot_config']
+                ];
+
+                $indexType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
+                if (!$indexType || $indexType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
+                    $totalCreated = $this->productMapBridge->upsertMappings($category, $channel);
+                } else {
+                    $totalCreated = $this->productMapBridge->createMappings($category, $channel);
+                }
+
+                $this->logger->logBasics(
+                    'Written index entities',
+                    [
+                        'channel_id' => $channelId,
+                        'language_id' => $langId,
+                        'category_id' => $category->getName() ?: $category->getId(),
+                        'count' => $totalCreated
+                    ]
+                );
+                $writeCount += $totalCreated;
             }
         }
 
@@ -186,21 +232,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
     }
 
     /**
-     * @throws Exception
+     * Parses events & returns category ids that need to be processed
      */
-    private function writeLog(string $message, Level $level = Level::Info): void
-    {
-        $this->db->executeStatement(
-            'INSERT INTO `log_entry` (`id`, `message`, `level`, `channel`, `created_at`) VALUES (:id, :message, :level, :channel, now())',
-            [
-                'id' => Uuid::randomBytes(),
-                'message' => 'Shopgate Go: ' . $message,
-                'level' => $level->value,
-                'channel' => 'Shopgate Go',
-            ]
-        );
-    }
-
     private function handleCategoryEvent(EntityWrittenEvent $categoryEvent): array
     {
         $ids = [];

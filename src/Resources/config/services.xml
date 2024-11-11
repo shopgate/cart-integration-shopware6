@@ -47,6 +47,7 @@
             <parameter key="phone_number">phoneNumber</parameter>
             <parameter key="vat_ids">vatIds</parameter>
         </parameter>
+        <parameter key="shopgate.go.secondary.log.location" type="string">%kernel.logs_dir%/shopgate/go</parameter>
     </parameters>
     <services>
         <defaults autoconfigure="true" autowire="true"/>
@@ -60,13 +61,18 @@
         <service id="Shopgate\Shopware\Catalog\Category\CategoryBridge">
             <argument key="$categoryProductMapRepository" type="service" id="shopgate_go_category_product_mapping.repository" />
         </service>
+        <service id="Shopgate\Shopware\Catalog\Category\ProductMapBridge">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument key="$logger" type="service" id="shopgate.go.fallback.logger"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Category\CategoryComposer">
             <argument key="$categoryMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\DataAbstractionLayer\CategoryProductMappingIndexer">
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory"/>
-            <argument type="service" id="category.repository"/>
+            <argument key="$repository" type="service" id="category.repository"/>
+            <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
             <tag name="shopware.entity_indexer"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge">
@@ -301,7 +307,17 @@
         </service>
         <service id="Shopgate\Shopware\System\CustomFields\CustomFieldMapping"
                  alias="sg.customer.custom_field.whitelist"/>
+        <service id="Shopgate\Shopware\System\Log\EventLogger">
+            <argument key="$db" type="service" id="Doctrine\DBAL\Connection" />
+        </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
+        <service id="Shopgate\Shopware\System\File\FileReader"/>
+        <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FallbackLogger">
+            <argument key="$name" type="string">ShopgateGo</argument>
+            <argument key="$handlers" type="collection">
+                <argument type="service" id="shopgate.go.file.handler"/>
+            </argument>
+        </service>
         <service id="shopgate.config_mapping" class="Shopgate\Shopware\System\Configuration\ConfigMapping" shared="true">
             <argument>%shopgate.configurations%</argument>
             <call method="setConfigBridge"/>
@@ -321,6 +337,11 @@
         </service>
         <service id="Shopgate\Shopware\System\Db\Rule\IsShopgateRuleCondition">
             <tag name="shopware.rule.definition"/>
+        </service>
+        <service id="shopgate.go.file.handler" class="Shopgate\Shopware\System\File\ExtendedRotatingFileHandler">
+            <argument key="$filename" type="string">%shopgate.go.secondary.log.location%/%kernel.environment%.log</argument>
+            <argument key="$customDateTime" type="string">Y-m-d</argument>
+            <argument key="$maxFiles" type="string">5</argument>
         </service>
         <service id="Shopgate\Shopware\System\Tax\TaxBridge">
             <argument type="service" id="tax.repository"/>
@@ -343,6 +364,9 @@
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainApiController" public="true"/>
+        <service id="Shopgate\Shopware\Storefront\Controller\LogController" public="true">
+            <argument key="$logDirectory">%shopgate.go.secondary.log.location%</argument>
+        </service>
         <!-- Interfaces & aliases-->
         <service id="Shopgate\Shopware\Plugin" alias="shopgate.plugin"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager" alias="shopgate.context_manager"/>
