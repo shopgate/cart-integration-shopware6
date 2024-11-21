@@ -10958,6 +10958,809 @@
 					"description": "Sets a sort order on the primary channel language, and makes sure that secondary language falls back on the same sort as primary."
 				},
 				{
+					"name": "Indexer API",
+					"item": [
+						{
+							"name": "SW: Enable logs",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully enabled NET Prices\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: create manual cat",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Created single entity\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"{{created_category_manual_id}}\",\r\n    \"displayNestedProducts\": true,\r\n    \"parentId\": \"{{category_freeTime_id}}\",\r\n    \"afterCategoryId\": \"{{created_category_noFreeShip_id}}\",\r\n    \"type\": \"page\",\r\n    \"productAssignmentType\": \"product\",\r\n    \"name\": \"API: Manual products category\",\r\n    \"cmsPageId\": \"{{gen_cms_page_default_id}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/category",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"category"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: create prod map",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully created all SG system config entities\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "indexing-behavior",
+										"value": "disable-indexing",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-product-category\": {\r\n        \"entity\": \"product_category\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"productId\": \"{{catalog_product_disabled}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_freeShip}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_variant}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_props}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            },\r\n            {\r\n                \"productId\": \"{{catalog_product_advPrices_id}}\",\r\n                \"categoryId\": \"{{created_category_manual_id}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: check no mappings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"check data\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.meta.total).to.be.eq(0);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"and\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"categoryId\",\n                    \"value\": \"{{created_category_manual_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"search",
+										"shopgate-go-category-product-mapping"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: re-index cat",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ids\": [\r\n        \"{{created_category_manual_id}}\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/shopgate/index/categories",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"shopgate",
+										"index",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: check 4 mappings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"check data\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.meta.total).to.be.eq(4);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"and\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"categoryId\",\n                    \"value\": \"{{created_category_manual_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"search",
+										"shopgate-go-category-product-mapping"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: check logs are working",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"Your test name\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.be.an('array');\r",
+											"    const lastLine = jsonData.pop()\r",
+											"    pm.expect(lastLine).to.contain(\"Removed 0 items. Written 4 items\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{sw_endpoint_api}}/shopgate/log?lines=20",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"shopgate",
+										"log"
+									],
+									"query": [
+										{
+											"key": "lines",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: create product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Created single entity\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "indexing-behavior",
+										"value": "disable-indexing",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": \"{{created_product_manual_sort_test_id}}\",\r\n    \"name\": \"Main product with manual cat assingment\",\r\n    \"translations\": {\r\n        \"de-DE\": {\r\n            \"name\": \"Main product with manual cat assingment (DE)\"\r\n        }\r\n    },\r\n    \"productNumber\": \"API.MANUAL.CAT.ASSIGNED\",\r\n    \"stock\": 10,\r\n    \"taxId\": \"{{gen_tax_reduced_id}}\",\r\n    \"price\": [\r\n        {\r\n            \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n            \"gross\": 15,\r\n            \"net\": 10,\r\n            \"linked\": false\r\n        }\r\n    ],\r\n    \"categories\": [\r\n        {\r\n            \"id\": \"{{created_category_manual_id}}\"\r\n        }\r\n    ],\r\n    \"visibilities\": [\r\n        {\r\n            \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n            \"visibility\": 30\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/product",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"product"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: check 5 mappings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"check data\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.meta.total).to.be.eq(5);\r",
+											"    const prod = jsonData.data.find(item => item.attributes.productId === pm.environment.get('created_product_manual_sort_test_id'));\r",
+											"    pm.expect(prod).to.not.be.undefined;\r",
+											"    pm.expect(prod.attributes.sortOrder, 'Product should be in the middle of other products sorted').to.eq(3);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"and\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"categoryId\",\n                    \"value\": \"{{created_category_manual_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"search",
+										"shopgate-go-category-product-mapping"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: delete product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Created single entity\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{sw_endpoint_api}}/product/:productId",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"product",
+										":productId"
+									],
+									"variable": [
+										{
+											"key": "productId",
+											"value": "{{created_product_manual_sort_test_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: check sort of 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"check data\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.meta.total).to.be.eq(4);\r",
+											"    const prod = jsonData.data.find(item => item.attributes.productId === pm.environment.get('catalog_product_advPrices_id'));\r",
+											"    pm.expect(prod).to.not.be.undefined;\r",
+											"    pm.expect(prod.attributes.sortOrder, 'Product should be 3rd sorted A-Z eng').to.eq(3);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"and\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"categoryId\",\n                    \"value\": \"{{created_category_manual_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"search",
+										"shopgate-go-category-product-mapping"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: delete manual cat",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Created single entity\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{sw_endpoint_api}}/category/:catId",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"category",
+										":catId"
+									],
+									"variable": [
+										{
+											"key": "catId",
+											"value": "{{created_category_manual_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: check no mappings",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"check data\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.meta.total).to.be.eq(0);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"and\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"categoryId\",\n                    \"value\": \"{{created_category_manual_id}}\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"search",
+										"shopgate-go-category-product-mapping"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: Disable logs",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully enabled NET Prices\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailLogging\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Checks that the category index API is working & partially test logging"
+				},
+				{
 					"name": "Sort Update (performant)",
 					"item": [
 						{

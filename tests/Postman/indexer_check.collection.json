@@ -50,7 +50,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"productNumber\",\r\n                    \"value\": \"K10000825\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"productNumber\",\r\n                    \"value\": \"10081144\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -111,7 +111,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Neu\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Hosen\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -132,7 +132,7 @@
 					"response": []
 				},
 				{
-					"name": "SW: get product details",
+					"name": "SW: get product categories",
 					"event": [
 						{
 							"listen": "test",
@@ -145,7 +145,11 @@
 									"const jsonData = pm.response.json();\r",
 									"\r",
 									"pm.test(\"is in category?\", function () {\r",
-									"    pm.expect(jsonData.data).to.eq(1);\r",
+									"    const desiredCategory = pm.environment.get('test_category1_id')\r",
+									"    pm.expect(jsonData.meta.total, 'expect to be in a category').to.be.gte(1);\r",
+									"    const found = jsonData.data.filter(item => item.id === desiredCategory);\r",
+									"    console.log(found)\r",
+									"    pm.expect(found, 'expected to find product in category: ' + desiredCategory).to.not.be.empty;\r",
 									"});\r",
 									"\r",
 									""
@@ -155,9 +159,6 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -171,15 +172,6 @@
 						},
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Neu\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{sw_endpoint_api}}/product/:prodId/categories",
 							"host": [
@@ -224,9 +216,6 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -240,15 +229,6 @@
 						},
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Neu\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{sw_endpoint_api}}/category/:catId",
 							"host": [
@@ -583,7 +563,59 @@
 			"response": []
 		},
 		{
-			"name": "SW: re-index (test product)",
+			"name": "SW: re-index cat",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{gen_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ids\": [\r\n        \"{{test_category1_id}}\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{sw_endpoint_api}}/shopgate/index/categories",
+					"host": [
+						"{{sw_endpoint_api}}"
+					],
+					"path": [
+						"shopgate",
+						"index",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SW: re-index products",
 			"event": [
 				{
 					"listen": "test",
@@ -708,7 +740,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{sw_endpoint_api}}/shopgate/log?lines=5",
+					"raw": "{{sw_endpoint_api}}/shopgate/log?lines=20",
 					"host": [
 						"{{sw_endpoint_api}}"
 					],
@@ -719,7 +751,7 @@
 					"query": [
 						{
 							"key": "lines",
-							"value": "5"
+							"value": "20"
 						}
 					]
 				}
@@ -757,7 +789,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{sw_endpoint_api}}/shopgate/log?sequence=0193159f1fc471258b943154b61cf940",
+					"raw": "{{sw_endpoint_api}}/shopgate/log?sequence=01931746a82a7311ada206714d6dd571",
 					"host": [
 						"{{sw_endpoint_api}}"
 					],
@@ -768,7 +800,7 @@
 					"query": [
 						{
 							"key": "sequence",
-							"value": "0193159f1fc471258b943154b61cf940"
+							"value": "01931746a82a7311ada206714d6dd571"
 						}
 					]
 				}

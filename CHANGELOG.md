@@ -1,3 +1,8 @@
+# 3.5.0
+
+- added API endpoint for specific category indexing
+- index mapping removal runs on full indexes to avoid accidental removals
+
 # 3.4.0
 
 - added category/product map logging
