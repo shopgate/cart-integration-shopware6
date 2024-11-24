@@ -173,7 +173,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
                     function (array $category) use ($catId, $channelId, $rawCat, $langId, $defaultLang) {
                         $sameSlot = $category['slot'] === $rawCat['slot_config'] && $category['slot'] === null;
                         $sameChannel = $channelId === $category['channelId'];
-                        return $category['catId'] === $catId && $sameSlot && $sameChannel/*|| $nonMainIsNull*/ ;
+                        return $category['catId'] === $catId && $sameSlot && $sameChannel;
                     }
                 );
                 if (!empty($findNotUnique)) {
