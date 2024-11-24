@@ -1,7 +1,7 @@
 # 3.5.0
 
 - added API endpoint for specific category indexing
-- index mapping removal runs on full indexes to avoid accidental removals
+- added deletion type config for index map to always remove (default), full index only or never
 
 # 3.4.0
 

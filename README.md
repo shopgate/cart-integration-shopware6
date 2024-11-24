@@ -88,6 +88,14 @@ Can also be done with the API as well, see `tests/Postman/indexer_check.collecti
 
 - Flysystem - uses Flysystem to write SDK file export
 
+#### Advanced
+- Type of writing for the indexer - performant selection will be ignored if deletion is not set to "always" because
+the performant writer cannot handle duplicate entries in the DB. Performant should be slightly faster than the safe one.
+- Type of deletion for the indexer. Always means that category/product map is generated every time a product or category
+gets updated or a full index is ran. The "Full" type only runs when all indexers are being indexed. None just means it
+never deletes mappings. Only updates them & leaves mappings hanging. Can be problematic after a while as it will degrade
+export performance over time.
+
 ### Email template variable usage
 
 For create order emails:

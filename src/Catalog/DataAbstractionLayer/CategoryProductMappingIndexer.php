@@ -102,9 +102,13 @@ class CategoryProductMappingIndexer extends EntityIndexer
             return;
         }
 
-        // todo: add config?
         $delCount = 0;
-        if ($message->isFullIndexing) {
+        // makes sure to always delete when non-safe is on. Because the Performant will throw if same entries exist in DB
+        $writeType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
+        $deleteType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_DELETE_TYPE);
+        if ($writeType !== ConfigBridge::INDEXER_WRITE_TYPE_SAFE ||
+            ($deleteType === null || $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_ALWAYS) ||
+            ($message->isFullIndexing && $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_FULL)) {
             $delCount = Profiler::trace(
                 'shopgate:catalog:product:indexer:delete',
                 function () use ($ids, $channels): int {
@@ -145,6 +149,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         $writeCount = 0;
         // tracks sort order per language & skips generating duplicates
         $langSortOrder = [];
+        $indexWriteType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
 
         foreach ($channelEntries as $channel) {
             $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
@@ -210,8 +215,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
                     'slot' => $rawCat['slot_config']
                 ];
 
-                $indexType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
-                if (!$indexType || $indexType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
+
+                if (!$indexWriteType || $indexWriteType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
                     $totalCreated = $this->productMapBridge->upsertMappings($category, $channel);
                 } else {
                     $totalCreated = $this->productMapBridge->createMappings($category, $channel);
