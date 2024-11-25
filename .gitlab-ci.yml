@@ -69,7 +69,7 @@ newman:
     matrix:
       - PLATFORM_BRANCH:
           - 6.5.2.0
-          - 6.6.7.1
+          - 6.6.8.2
       - PHP_VERSION:
           - '8.1'
   except:
