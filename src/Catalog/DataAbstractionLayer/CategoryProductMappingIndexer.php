@@ -106,9 +106,11 @@ class CategoryProductMappingIndexer extends EntityIndexer
         // makes sure to always delete when non-safe is on. Because the Performant will throw if same entries exist in DB
         $writeType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
         $deleteType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_DELETE_TYPE);
+        // php8.1 seems to be failing if this is not checked, not quite sure why
+        $isFullIndex = property_exists($message, 'isFullIndexing') && $message->isFullIndexing;
         if ($writeType !== ConfigBridge::INDEXER_WRITE_TYPE_SAFE ||
             ($deleteType === null || $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_ALWAYS) ||
-            ($message->isFullIndexing && $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_FULL)) {
+            ($isFullIndex && $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_FULL)) {
             $delCount = Profiler::trace(
                 'shopgate:catalog:product:indexer:delete',
                 function () use ($ids, $channels): int {
