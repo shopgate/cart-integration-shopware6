@@ -30,10 +30,19 @@ class ConfigBridge
     public const SYSTEM_CONFIG_NET_PRICE_EXPORT = 'exportNetPrices';
     public const SYSTEM_CONFIG_IS_LIVE_SHOPPING = 'isLiveShopping';
     public const ADVANCED_CONFIG_INDEXER_WRITE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerWriteType';
+    public const ADVANCED_CONFIG_INDEXER_DELETE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerDeleteType';
     public const ADVANCED_CONFIG_LOGGING_BASIC = self::SYSTEM_CONFIG_DOMAIN . 'basicLogging';
     public const ADVANCED_CONFIG_LOGGING_DETAIL = self::SYSTEM_CONFIG_DOMAIN . 'detailLogging';
+    // it can handle writing to a DB with same entries & update them
     public const INDEXER_WRITE_TYPE_SAFE = 'safe';
+    // slightly faster DB writing in chunks, but cannot handle duplicate entries at all
     public const INDEXER_WRITE_TYPE_PERFORMANT = 'performant';
+    // always deletes entries before creating/updating
+    public const INDEXER_DELETE_TYPE_ALWAYS = 'always';
+    // only deletes entries when all the indexers are being indexed
+    public const INDEXER_DELETE_TYPE_FULL = 'full';
+    // never delete entries before creating/updating
+    public const INDEXER_DELETE_TYPE_NEVER = 'never';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
 

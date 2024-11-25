@@ -312,7 +312,7 @@
         </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
         <service id="Shopgate\Shopware\System\File\FileReader"/>
-        <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FallbackLogger">
+        <service id="shopgate.go.fallback.logger" class="Shopgate\Shopware\System\Log\FallbackLogger" shared="true">
             <argument key="$name" type="string">ShopgateGo</argument>
             <argument key="$handlers" type="collection">
                 <argument type="service" id="shopgate.go.file.handler"/>
@@ -362,6 +362,10 @@
         </service>
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
+        <service id="Shopgate\Shopware\Storefront\Controller\IndexController" public="true">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexerRegistry"/>
+            <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
+        </service>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainApiController" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\LogController" public="true">

@@ -1,3 +1,8 @@
+# 3.5.0
+
+- added API endpoint for specific category indexing
+- added deletion type config for index map to always remove (default), full index only or never
+
 # 3.4.0
 
 - added category/product map logging

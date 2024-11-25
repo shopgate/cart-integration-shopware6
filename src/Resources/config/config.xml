@@ -78,6 +78,39 @@
             </options>
             <defaultValue>safe</defaultValue>
         </input-field>
+        <input-field type="single-select">
+            <name>indexerDeleteType</name>
+            <label>Type of deletion for the indexer</label>
+            <label lang="de-DE">Art der Löschung für den Indexierer</label>
+            <helpText>
+                Always - always deletes entries before generating them (consistent).
+                Full - only when full indexing is ran it deletes entries.
+                Never - does not delete entries at all
+            </helpText>
+            <helpText lang="de-DE">
+                Immer - löscht Einträge immer, bevor sie erzeugt werden (konsistent).
+                Vollständig - löscht Einträge nur, wenn die vollständige Indizierung ausgeführt wird.
+                Nie - löscht überhaupt keine Einträge
+            </helpText>
+            <options>
+                <option>
+                    <id>always</id>
+                    <name>Always</name>
+                    <name lang="de-DE">Immer</name>
+                </option>
+                <option>
+                    <id>full</id>
+                    <name>Full Index Only</name>
+                    <name lang="de-DE">Nur vollständiger Index</name>
+                </option>
+                <option>
+                    <id>never</id>
+                    <name>Never</name>
+                    <name lang="de-DE">Nie</name>
+                </option>
+            </options>
+            <defaultValue>always</defaultValue>
+        </input-field>
         <input-field type="bool">
             <name>basicLogging</name>
             <label>Basic Logging</label>

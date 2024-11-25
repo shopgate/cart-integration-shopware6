@@ -5,7 +5,6 @@ namespace Shopgate\Shopware\Catalog\DataAbstractionLayer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use JsonException;
-use Monolog\Level;
 use Shopgate\Shopware\Catalog\Category\ProductMapBridge;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductIndexingMessage;
 use Shopgate\Shopware\Storefront\ContextManager;
@@ -103,11 +102,23 @@ class CategoryProductMappingIndexer extends EntityIndexer
             return;
         }
 
-
-        $delCount = Profiler::trace('shopgate:catalog:product:indexer:delete', function () use ($ids, $channels): int {
-            $this->logger->logBasics('Removing categories', ['categories' => array_values($ids)]);
-            return $this->productMapBridge->deleteCategories($ids, $channels);
-        });
+        $delCount = 0;
+        // makes sure to always delete when non-safe is on. Because the Performant will throw if same entries exist in DB
+        $writeType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
+        $deleteType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_DELETE_TYPE);
+        // php8.1 seems to be failing if this is not checked, not quite sure why
+        $isFullIndex = property_exists($message, 'isFullIndexing') && $message->isFullIndexing;
+        if ($writeType !== ConfigBridge::INDEXER_WRITE_TYPE_SAFE ||
+            ($deleteType === null || $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_ALWAYS) ||
+            ($isFullIndex && $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_FULL)) {
+            $delCount = Profiler::trace(
+                'shopgate:catalog:product:indexer:delete',
+                function () use ($ids, $channels): int {
+                    $this->logger->logBasics('Removing categories', ['categories' => array_values($ids)]);
+                    return $this->productMapBridge->deleteCategories($ids, $channels);
+                }
+            );
+        }
 
         $writeCount = Profiler::trace(
             'shopgate:catalog:product:indexer:update',
@@ -140,6 +151,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         $writeCount = 0;
         // tracks sort order per language & skips generating duplicates
         $langSortOrder = [];
+        $indexWriteType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
 
         foreach ($channelEntries as $channel) {
             $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
@@ -162,11 +174,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
                     $langSortOrder,
                     function (array $category) use ($catId, $channelId, $rawCat, $langId, $defaultLang) {
                         $sameSlot = $category['slot'] === $rawCat['slot_config'] && $category['slot'] === null;
-                        // for a specific channel, if default language sorting is set and non-default lang sort is null, skip map
-                        // because SW falls back to default language sorting
-//                        $nonMainIsNull = $defaultLang !== $langId && $rawCat['slot_config'] === null && $sameChannel;
                         $sameChannel = $channelId === $category['channelId'];
-                        return $category['catId'] === $catId && $sameSlot && $sameChannel/*|| $nonMainIsNull*/;
+                        return $category['catId'] === $catId && $sameSlot && $sameChannel;
                     }
                 );
                 if (!empty($findNotUnique)) {
@@ -208,8 +217,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
                     'slot' => $rawCat['slot_config']
                 ];
 
-                $indexType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_WRITE_TYPE);
-                if (!$indexType || $indexType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
+
+                if (!$indexWriteType || $indexWriteType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
                     $totalCreated = $this->productMapBridge->upsertMappings($category, $channel);
                 } else {
                     $totalCreated = $this->productMapBridge->createMappings($category, $channel);

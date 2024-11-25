@@ -311,6 +311,12 @@
 			"enabled": true
 		},
 		{
+			"key": "created_product_manual_sort_test_id",
+			"value": "115682c4c54e4506be9fae3916c5e09f",
+			"type": "default",
+			"enabled": true
+		},
+		{
 			"key": "created_promotion_byCode_code",
 			"value": "API-PROMO-BY_CODE",
 			"type": "default",
@@ -518,6 +524,6 @@
 		}
 	],
 	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2024-11-09T20:01:47.941Z",
+	"_postman_exported_at": "2024-11-21T19:24:53.821Z",
 	"_postman_exported_using": "Postman/11.19.0"
 }
