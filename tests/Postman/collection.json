@@ -14252,7 +14252,7 @@
 							]
 						}
 					],
-					"description": "Same as the other sort, but checks a different way of writing to the DB"
+					"description": "Testing how the delete configuration works with DB save configurations: \"performant\" and \"safe\""
 				},
 				{
 					"name": "Indexer API",
@@ -16246,6 +16246,275 @@
 										{
 											"key": "uids[0]",
 											"value": "{{created_product_reducedTax_id}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Custom Field Export Types",
+					"item": [
+						{
+							"name": "SW: get default config ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Get config ID\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.meta.total).to.eql(1);",
+											"    const id = jsonData.data[0].id;",
+											"    pm.environment.set('gen_exportTypeConfig_id', id);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"equals\",\n            \"field\": \"configurationKey\",\n            \"value\": \"SgateShopgatePluginSW6.config.customFieldTypeExport\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/search/system-config",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"search",
+										"system-config"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: remove default",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{sw_endpoint_api}}/system-config/:id",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"system-config",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{gen_exportTypeConfig_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: empty export conifg",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully changed config\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"7f62783355b2452bbd15d22da68811b3\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.customFieldTypeExport\",\r\n                \"configurationValue\": [],\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SG: check previous price Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// functionality is only supported in SW 6.4.10+",
+											"if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.4.10.0')){",
+											"    return;",
+											"}",
+											"",
+											"pm.test(\"Not an error\", function () {",
+											"    pm.response.to.not.have.jsonBody('error');",
+											"});",
+											"",
+											"const jsonObject = xml2Json(responseBody);",
+											"const properties = jsonObject.items.item.properties.property;",
+											"pm.test('Check properties', function() {",
+											"    pm.expect(properties).to.be.an('array', 'Should be a property array');",
+											"    const previous = Utility.getXmlByUid(properties, 'previousPrice');",
+											"    pm.expect(previous).to.haveOwnProperty('label').to.eq('Previous price');",
+											"    pm.expect(previous).to.haveOwnProperty('value').to.eq('470');",
+											"});",
+											"",
+											"pm.test('Check custom field props export', function() {",
+											"    const integer = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: int');",
+											"    pm.expect(integer, 'should not have found width').to.be.undefined;",
+											"    const bool = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: bool');",
+											"    pm.expect(bool, 'should not have found height').to.be.undefined;",
+											"    const text = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: text');",
+											"    pm.expect(text, 'should not have found length').to.be.undefined;",
+											"",
+											"    const float = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: float');",
+											"    pm.expect(float, 'should not have found length').to.be.undefined;",
+											"",
+											"    const multi = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: multi-select');",
+											"    pm.expect(multi, 'should not have found length').to.be.undefined;",
+											"",
+											"    const select = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: select');",
+											"    pm.expect(select, 'should not have found length').to.be.undefined;",
+											"",
+											"    const selectTwo = Utility.getXmlByLabel(properties, 'API product Custom Field 0002: select');",
+											"    pm.expect(selectTwo, 'should not have found length').to.be.undefined;",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "action",
+											"value": "{{framework_action_get_items}}",
+											"type": "text"
+										},
+										{
+											"key": "uids[0]",
+											"value": "{{created_product_prevPrice_id}}",
 											"type": "text"
 										}
 									]
@@ -33480,7 +33749,8 @@
 					"var authUser = customerNumber + \"-\" + tstamp;",
 					"var tokenData = \"SPA-\" + customerNumber + \"-\" + tstamp + \"-\" + apiKey;",
 					"",
-					"var authToken = CryptoJS.SHA1(tokenData).toString();",
+					"var crypto = require(\"crypto-js\");",
+					"var authToken = crypto.SHA1(tokenData).toString();",
 					"",
 					"// Set the new header values",
 					"pm.environment.set(\"gen_sg_header_auth_user\", authUser);",
