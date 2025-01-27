@@ -257,8 +257,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         }
 
         $fields = [
-            ...$this->item->getCustomFields(),
-            ...$this->item->getManufacturer()?->getCustomFields(),
+            ...$this->item->getCustomFields() ?? [],
+            ...($this->item->getManufacturer()?->getCustomFields() ?? []),
         ];
         if ($fields) {
             $locale = $this->formatter->getLocaleCode() ?: 'en-GB';
