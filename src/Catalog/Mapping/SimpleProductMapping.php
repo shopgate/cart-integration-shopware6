@@ -256,7 +256,11 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             }
         }
 
-        if ($fields = $this->item->getCustomFields()) {
+        $fields = [
+            ...$this->item->getCustomFields(),
+            ...$this->item->getManufacturer()?->getCustomFields(),
+        ];
+        if ($fields) {
             $locale = $this->formatter->getLocaleCode() ?: 'en-GB';
             $allFields = $this->customFieldSetBridge->getAllProductFieldSets();
             foreach ($fields as $key => $value) {
@@ -270,7 +274,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                         ?? $config['label']['en-GB']
                         ?? $fallback;
                 };
-                $label = $labelRetriever($entity->getConfig(), $key);
+                $label = $labelRetriever($entity->getConfig(), (string) $key);
                 // select & multi-select handling
                 if (isset($entity->getConfig()['options'])) {
                     if (!is_array($value)) {

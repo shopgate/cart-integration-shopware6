@@ -230,6 +230,12 @@
 			"enabled": true
 		},
 		{
+			"key": "created_customFieldSet_manufacturer_id",
+			"value": "bf11ac0b593e43febdb66637989e58db",
+			"type": "default",
+			"enabled": true
+		},
+		{
 			"key": "created_discount_customerUSA_cart_1_id",
 			"value": "9c9b73c4076e2d8d2926c827598089cb",
 			"type": "default",
@@ -244,6 +250,12 @@
 		{
 			"key": "created_discount_customerUSA_delivery_2_id",
 			"value": "3ac8e9825cb87f1eb81f7b6a99185bae",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "created_manufacturer_simpleOne_id",
+			"value": "1a49dc6c09154382955e804375f7d55e",
 			"type": "default",
 			"enabled": true
 		},
@@ -524,6 +536,6 @@
 		}
 	],
 	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2024-11-21T19:24:53.821Z",
-	"_postman_exported_using": "Postman/11.19.0"
+	"_postman_exported_at": "2024-12-18T16:14:38.043Z",
+	"_postman_exported_using": "Postman/11.22.1"
 }
