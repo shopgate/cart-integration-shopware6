@@ -1,3 +1,7 @@
+# 3.6.0
+
+- added a multi-select config to allow exporting properties of other domains (e.g. Manufacturer)
+
 # 3.5.0
 
 - added API endpoint for specific category indexing

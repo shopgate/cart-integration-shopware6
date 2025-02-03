@@ -56,6 +56,13 @@
             <label lang="de-DE">Exportiert Reviews von allen Sales Channels</label>
             <defaultValue>true</defaultValue>
         </input-field>
+        <component name="sg-custom-field-type-select">
+            <name>customFieldTypeExport</name>
+            <label>Custom Field Types to Export</label>
+            <label lang="de-DE">Benutzerdefinierte Feldtypen für den Export</label>
+            <helpText>Allows to choose which various custom field types to export as product properties</helpText>
+            <helpText lang="de-DE">Ermöglicht die Auswahl der verschiedenen benutzerdefinierten Feldtypen, die als Produkteigenschaften exportiert werden sollen</helpText>
+        </component>
     </card>
     <card>
         <title>Advanced</title>

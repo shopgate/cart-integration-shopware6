@@ -1,0 +1,15 @@
+{% block sg_custom_field_type_select %}
+<sw-container class="sg-custom-field-type-select">
+
+    {% block sg_custom_field_type_select_multi_select %}
+        <!--suppress CheckEmptyScriptTag -->
+        <sw-multi-select
+            :value="selectedRelationEntityNames"
+            :options="relationEntityNames"
+            @item-add="onAddRelation"
+            @item-remove="onRemoveRelation"
+        />
+    {% endblock %}
+
+</sw-container>
+{% endblock %}
