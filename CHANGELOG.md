@@ -1,6 +1,7 @@
 # 3.6.0
 
 - added a multi-select config to allow exporting properties of other domains (e.g. Manufacturer)
+- added a configuration to export manufacturer data as properties (name, description, url)
 
 # 3.5.0
 
