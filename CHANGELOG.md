@@ -1,12 +1,9 @@
-# 3.6.0
-
-- added a multi-select config to allow exporting properties of other domains (e.g. Manufacturer)
-- added a configuration to export manufacturer data as properties (name, description, url)
-
 # 3.5.0
 
 - added API endpoint for specific category indexing
 - added deletion type config for index map to always remove (default), full index only or never
+- added a multi-select config to allow exporting properties of other domains (e.g. Manufacturer)
+- added a configuration to export manufacturer data as properties (name, description, url)
 
 # 3.4.0
 
