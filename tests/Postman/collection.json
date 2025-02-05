@@ -1750,6 +1750,177 @@
 							"name": "Manufacturers",
 							"item": [
 								{
+									"name": "SWA: get media folder",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Retrieve ID of folder\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.meta.total).to.eq(1);",
+													"    const folder = jsonData.included.pop()",
+													"    pm.expect(folder).to.have.property('id');",
+													"    pm.environment.set('gen_media_folder_prodManufacturer_id', folder.id);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/vnd.api+json",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"equals\",\n            \"field\": \"entity\",\n            \"value\": \"product_manufacturer\"\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/media-default-folder",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"media-default-folder"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SWA: media entity",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{created_media_iconOne_id}}\",\n    \"mediaFolderId\": \"{{gen_media_folder_prodManufacturer_id}}\",\n    \"private\": false\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/media",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"media"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SWA: media",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 204\", function () {",
+													"    pm.response.to.have.status(204);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"url\": \"https://placehold.co/200x200@2x.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/media/:mediaId/upload?extension=png&fileName=200x200%402x",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"media",
+												":mediaId",
+												"upload"
+											],
+											"query": [
+												{
+													"key": "extension",
+													"value": "png"
+												},
+												{
+													"key": "fileName",
+													"value": "200x200%402x"
+												}
+											],
+											"variable": [
+												{
+													"key": "mediaId",
+													"value": "{{created_media_iconOne_id}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "SWA: create simpleOne",
 									"event": [
 										{
@@ -1780,7 +1951,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"id\": \"{{created_manufacturer_simpleOne_id}}\",\n    \"name\": \"API: simpleOne manufacturer\",\n    \"customFields\": {\n        \"api_manufacturer_custom_field_text_0001\": \"Manufacturer test field text\"\n    }\n}",
+											"raw": "{\n    \"id\": \"{{created_manufacturer_simpleOne_id}}\",\n    \"name\": \"API: simpleOne manufacturer (EN)\",\n    \"description\": \"API: some description or another (EN)\",\n    \"link\": \"http://someLink.com\",\n    \"mediaId\": \"{{created_media_iconOne_id}}\",\n    \"translations\": {\n        \"de-DE\": {\n            \"name\": \"API: simpleOne manufacturer (DE)\",\n            \"description\": \"API: some description or another (DE)\",\n            \"customFields\": {\n                \"api_manufacturer_custom_field_text_0001\": \"Manufacturer test field text (DE)\"\n            }\n        }\n    },\n    \"customFields\": {\n        \"api_manufacturer_custom_field_text_0001\": \"Manufacturer test field text\"\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -16504,11 +16675,10 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"",
 											"pm.test('Check manufacturer', async function() {",
 											"    const jsonObject = await Utility.getJson(pm.response.text());",
 											"    const properties = jsonObject.items.item.properties.property;",
-											"    pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer');",
+											"    pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
 											"",
 											"    pm.expect(properties).to.be.a('array');",
 											"    const manufacturer = Utility.getXmlByLabel(properties, 'API Manufacturer Custom Field 0001: text');",
@@ -16650,7 +16820,7 @@
 											"pm.test('Check manufacturer', async function() {",
 											"    const jsonObject = await Utility.getJson(pm.response.text());",
 											"    const properties = jsonObject.items.item.properties.property;",
-											"    pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer');",
+											"    pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
 											"",
 											"    pm.expect(properties).to.be.a('array');",
 											"    const manufacturer = Utility.getXmlByLabel(properties, 'API Manufacturer Custom Field 0001: text');",
@@ -16716,6 +16886,302 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Manufacturer export",
+					"item": [
+						{
+							"name": "SG: no manufacturer props",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Not an error\", function () {",
+											"    pm.response.to.not.have.jsonBody('error');",
+											"});",
+											"",
+											"pm.test('Check properties',  async function() {",
+											"    const jsonObject = await Utility.getJson(pm.response.text());",
+											"    const properties = jsonObject.items.item.properties.property;",
+											"    pm.expect(properties).to.be.an('array', 'Should be a property array');",
+											"",
+											"    const manufacturer = jsonObject.items.item.manufacturer;",
+											"    pm.expect(manufacturer).to.not.be.undefined;",
+											"    pm.expect(manufacturer.$.uid).to.eq(pm.environment.get('created_manufacturer_simpleOne_id'))",
+											"    pm.expect(manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
+											"",
+											"    const name = Utility.getXmlByUid(properties, 'manufacturer_name');",
+											"    pm.expect(name).to.be.undefined;",
+											"",
+											"    const description = Utility.getXmlByUid(properties, 'manufacturer_description');",
+											"    pm.expect(description).to.be.undefined;",
+											"",
+											"    const url = Utility.getXmlByUid(properties, 'manufacturer_url');",
+											"    pm.expect(url).to.be.undefined;",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "action",
+											"value": "{{framework_action_get_items}}",
+											"type": "text"
+										},
+										{
+											"key": "uids[0]",
+											"value": "{{created_product_prevPrice_id}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: set config to true",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully changed config\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"ed34b97139254e678cbaf9df60bdbc1c\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.manufacturerProductProps\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SG: check manufacturer props",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Not an error\", function () {",
+											"    pm.response.to.not.have.jsonBody('error');",
+											"});",
+											"",
+											"pm.test('Check properties',  async function() {",
+											"    const jsonObject = await Utility.getJson(pm.response.text());",
+											"",
+											"    const manufacturer = jsonObject.items.item.manufacturer;",
+											"    pm.expect(manufacturer).to.not.be.undefined;",
+											"    pm.expect(manufacturer.$.uid).to.eq(pm.environment.get('created_manufacturer_simpleOne_id'))",
+											"    pm.expect(manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
+											"",
+											"    const properties = jsonObject.items.item.properties.property;",
+											"",
+											"    pm.expect(properties).to.be.an('array', 'Should be a property array');",
+											"    const name = Utility.getXmlByUid(properties, 'manufacturer_name');",
+											"    pm.expect(name).to.haveOwnProperty('label').to.eq('Manufacturer name');",
+											"    pm.expect(name).to.haveOwnProperty('value').to.eq('API: simpleOne manufacturer (EN)');",
+											"",
+											"    const description = Utility.getXmlByUid(properties, 'manufacturer_description');",
+											"    pm.expect(description).to.haveOwnProperty('label').to.eq('Manufacturer description');",
+											"    pm.expect(description).to.haveOwnProperty('value').to.eq('API: some description or another (EN)');",
+											"",
+											"    const url = Utility.getXmlByUid(properties, 'manufacturer_url');",
+											"    pm.expect(url).to.haveOwnProperty('label').to.eq('Manufacturer url');",
+											"    pm.expect(url).to.haveOwnProperty('value').to.eq('http://localhost:8000/media/c5/54/72/1738776055/200x200@2x.png');",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "action",
+											"value": "{{framework_action_get_items}}",
+											"type": "text"
+										},
+										{
+											"key": "uids[0]",
+											"value": "{{created_product_prevPrice_id}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: set config to false",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully changed config\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"ed34b97139254e678cbaf9df60bdbc1c\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.manufacturerProductProps\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Testing configuration that allow exporting manufacturer data as properties"
 				}
 			]
 		},

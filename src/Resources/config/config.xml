@@ -63,6 +63,13 @@
             <helpText>Allows to choose which various custom field types to export as product properties</helpText>
             <helpText lang="de-DE">Ermöglicht die Auswahl der verschiedenen benutzerdefinierten Feldtypen, die als Produkteigenschaften exportiert werden sollen</helpText>
         </component>
+        <input-field type="bool">
+            <name>manufacturerProductProps</name>
+            <label>Export manufacturer data</label>
+            <label lang="de-DE">Herstellerdaten exportieren</label>
+            <helpText>Exports manufacturer data as product properties</helpText>
+            <helpText lang="de-DE">Exportiert Herstellerdaten als Produkteigenschaften</helpText>
+        </input-field>
     </card>
     <card>
         <title>Advanced</title>

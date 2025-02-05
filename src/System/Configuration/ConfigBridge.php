@@ -28,6 +28,8 @@ class ConfigBridge
     public const SYSTEM_CONFIG_DOMAIN = self::PLUGIN_NAMESPACE . '.config.';
     public const SYSTEM_CONFIG_PROD_EXPORT = self::SYSTEM_CONFIG_DOMAIN . 'productTypesToExport';
     public const SYSTEM_CONFIG_PROD_PROP_DOMAIN = self::SYSTEM_CONFIG_DOMAIN . 'customFieldTypeExport';
+    // allows export of manufacturer details as properties
+    public const PRODUCT_PROPERTY_EXPORT_MANUFACTURER = self::SYSTEM_CONFIG_DOMAIN . 'manufacturerProductProps';
     public const SYSTEM_CONFIG_NET_PRICE_EXPORT = 'exportNetPrices';
     public const SYSTEM_CONFIG_IS_LIVE_SHOPPING = 'isLiveShopping';
     public const ADVANCED_CONFIG_INDEXER_WRITE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerWriteType';
