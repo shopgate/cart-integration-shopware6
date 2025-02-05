@@ -7,6 +7,7 @@ use Shopgate\Shopware\Catalog\Product\Events\BeforeProductLoadEvent;
 use Shopgate\Shopware\Shopgate\Extended\ExtendedProperty;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
+use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_Property;
 use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -16,6 +17,7 @@ class ManufacturerPropertySubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly ExtendedClassFactory $classFactory,
+        private readonly Formatter $formatter,
         private readonly SystemConfigService $systemConfigService
     ) {
     }
@@ -61,13 +63,13 @@ class ManufacturerPropertySubscriber implements EventSubscriberInterface
         $list = [
             'name' => $manufacturer->getTranslation('name'),
             ...$description ? ['description' => $description] : [],
-            ...$media ? ['url' => $media->getUrl()] : []
+            ...$media ? ['mediaUrl' => $media->getUrl()] : []
         ];
 
         return array_map(function (string $key, string $value) {
             return $this->classFactory->createProperty()
                 ->setUid('manufacturer_' . $key)
-                ->setLabel('Manufacturer ' . $key)
+                ->setLabel('Manufacturer ' . $this->formatter->camelCaseToSpaced($key))
                 ->setValue($value);
         }, array_keys($list), array_values($list));
     }

@@ -1882,7 +1882,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"url\": \"https://placehold.co/200x200@2x.png\"\n}",
+											"raw": "{\n    \"url\": \"https://placehold.co/200x200@2x.png\",\n    \"alt\": \"some alt text (EN)\",\n    \"title\": \"some title text (EN)\",\n    \"translations\": {\n        \"de-DE\": {\n            \"url\": \"https://placehold.co/250x250@2x.png\",\n            \"alt\": \"some alt text (DE)\",\n            \"title\": \"some title text (DE)\"\n        }\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1951,7 +1951,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"id\": \"{{created_manufacturer_simpleOne_id}}\",\n    \"name\": \"API: simpleOne manufacturer (EN)\",\n    \"description\": \"API: some description or another (EN)\",\n    \"link\": \"http://someLink.com\",\n    \"mediaId\": \"{{created_media_iconOne_id}}\",\n    \"translations\": {\n        \"de-DE\": {\n            \"name\": \"API: simpleOne manufacturer (DE)\",\n            \"description\": \"API: some description or another (DE)\",\n            \"customFields\": {\n                \"api_manufacturer_custom_field_text_0001\": \"Manufacturer test field text (DE)\"\n            }\n        }\n    },\n    \"customFields\": {\n        \"api_manufacturer_custom_field_text_0001\": \"Manufacturer test field text\"\n    }\n}",
+											"raw": "{\n    \"id\": \"{{created_manufacturer_simpleOne_id}}\",\n    \"name\": \"API: simpleOne manufacturer (EN)\",\n    \"description\": \"API: some description or another (EN)\",\n    \"link\": \"http://someLink.com/en\",\n    \"mediaId\": \"{{created_media_iconOne_id}}\",\n    \"translations\": {\n        \"de-DE\": {\n            \"name\": \"API: simpleOne manufacturer (DE)\",\n            \"description\": \"API: some description or another (DE)\",\n            \"customFields\": {\n                \"api_manufacturer_custom_field_text_0001\": \"Manufacturer test field text (DE)\"\n            },\n            \"link\": \"http://someLink.com/de\"\n        }\n    },\n    \"customFields\": {\n        \"api_manufacturer_custom_field_text_0001\": \"Manufacturer test field text\"\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -16912,13 +16912,13 @@
 											"    pm.expect(manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
 											"",
 											"    const name = Utility.getXmlByUid(properties, 'manufacturer_name');",
-											"    pm.expect(name).to.be.undefined;",
+											"    pm.expect(name, 'Should be no name prop').to.be.undefined;",
 											"",
 											"    const description = Utility.getXmlByUid(properties, 'manufacturer_description');",
-											"    pm.expect(description).to.be.undefined;",
+											"    pm.expect(description, 'Should be no desc prop').to.be.undefined;",
 											"",
-											"    const url = Utility.getXmlByUid(properties, 'manufacturer_url');",
-											"    pm.expect(url).to.be.undefined;",
+											"    const url = Utility.getXmlByUid(properties, 'manufacturer_mediaUrl');",
+											"    pm.expect(url, 'Should be no media url prop').to.be.undefined;",
 											"});"
 										],
 										"type": "text/javascript",
@@ -17056,16 +17056,16 @@
 											"",
 											"    pm.expect(properties).to.be.an('array', 'Should be a property array');",
 											"    const name = Utility.getXmlByUid(properties, 'manufacturer_name');",
-											"    pm.expect(name).to.haveOwnProperty('label').to.eq('Manufacturer name');",
+											"    pm.expect(name).to.haveOwnProperty('label').to.eq('Manufacturer Name');",
 											"    pm.expect(name).to.haveOwnProperty('value').to.eq('API: simpleOne manufacturer (EN)');",
 											"",
 											"    const description = Utility.getXmlByUid(properties, 'manufacturer_description');",
-											"    pm.expect(description).to.haveOwnProperty('label').to.eq('Manufacturer description');",
+											"    pm.expect(description).to.haveOwnProperty('label').to.eq('Manufacturer Description');",
 											"    pm.expect(description).to.haveOwnProperty('value').to.eq('API: some description or another (EN)');",
 											"",
-											"    const url = Utility.getXmlByUid(properties, 'manufacturer_url');",
-											"    pm.expect(url).to.haveOwnProperty('label').to.eq('Manufacturer url');",
-											"    pm.expect(url).to.haveOwnProperty('value').to.eq('http://localhost:8000/media/c5/54/72/1738776055/200x200@2x.png');",
+											"    const url = Utility.getXmlByUid(properties, 'manufacturer_mediaUrl');",
+											"    pm.expect(url).to.haveOwnProperty('label').to.eq('Manufacturer Media Url');",
+											"    pm.expect(url).to.haveOwnProperty('value').to.contain('200x200@2x.png');",
 											"});"
 										],
 										"type": "text/javascript",
