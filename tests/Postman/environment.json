@@ -260,6 +260,12 @@
 			"enabled": true
 		},
 		{
+			"key": "created_media_iconOne_id",
+			"value": "238a77e3ea684aa68e571bc88c609e41",
+			"type": "default",
+			"enabled": true
+		},
+		{
 			"key": "created_order_customFieldSet_id",
 			"value": "247b3a83846c6774ec120d4edb655594",
 			"enabled": true
@@ -536,6 +542,6 @@
 		}
 	],
 	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2024-12-18T16:14:38.043Z",
-	"_postman_exported_using": "Postman/11.22.1"
+	"_postman_exported_at": "2025-02-05T18:25:06.357Z",
+	"_postman_exported_using": "Postman/11.29.5"
 }
