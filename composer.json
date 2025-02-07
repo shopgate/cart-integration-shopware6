@@ -3,7 +3,7 @@
     "description": "Shopgate Shopping App Plugin for Shopware 6",
     "license": "proprietary",
     "type": "shopware-platform-plugin",
-    "version": "3.5.0",
+    "version": "3.5.1",
     "keywords": [
         "mobile",
         "app"

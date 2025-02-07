@@ -1,3 +1,7 @@
+# 3.5.1
+
+- fixed uninstall routine to also remove the `...category_product_mapping` table
+
 # 3.5.0
 
 - added API endpoint for specific category indexing
