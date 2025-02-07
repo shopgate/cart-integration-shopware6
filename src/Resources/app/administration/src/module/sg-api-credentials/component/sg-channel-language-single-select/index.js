@@ -4,7 +4,7 @@ const {Criteria} = Shopware.Data;
 Component.extend('sg-channel-language-single-select', 'sw-entity-single-select', {
     props: {
         salesChannelId: {
-            required: true,
+            required: false,
             type: String,
             default: null
         },
