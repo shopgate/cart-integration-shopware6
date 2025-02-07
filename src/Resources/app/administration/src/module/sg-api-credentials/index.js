@@ -5,7 +5,7 @@ import './component/sg-channel-language-single-select';
 import deDE from './snippet/de-DE';
 import enGB from './snippet/en-GB';
 
-const {Module} = Shopware;
+const { Module} = Shopware;
 
 Module.register('sg-api-credentials', {
     type: 'plugin',
@@ -26,7 +26,7 @@ Module.register('sg-api-credentials', {
             path: 'index',
             meta: {
                 parentPath: 'sw.settings.index',
-                privilege: 'system.system_config',
+                privilege: 'shopgate_go.viewer',
             }
         },
         detail: {
@@ -34,7 +34,7 @@ Module.register('sg-api-credentials', {
             path: 'detail/:id',
             meta: {
                 parentPath: 'sg.api.credentials.index',
-                privilege: 'system.system_config',
+                privilege: 'shopgate_go.viewer',
             }
         },
         create: {
@@ -42,7 +42,7 @@ Module.register('sg-api-credentials', {
             path: 'create',
             meta: {
                 parentPath: 'sg.api.credentials.index',
-                privilege: 'system.system_config',
+                privilege: 'shopgate_go.creator',
             }
         }
     },
@@ -52,6 +52,7 @@ Module.register('sg-api-credentials', {
         to: 'sg.api.credentials.index',
         label: 'sg-api-credentials.general.mainMenuItemGeneral',
         group: 'plugins',
-        icon: 'regular-shopping-bag'
+        icon: 'regular-shopping-bag',
+        privilege: 'shopgate_go.viewer'
     }
 });
