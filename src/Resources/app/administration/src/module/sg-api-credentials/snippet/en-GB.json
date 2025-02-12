@@ -42,5 +42,15 @@
             "messageSaveSuccess": "Credentials have been saved.",
             "noLanguages": "No languages are defined, please select a Sales Channel"
         }
+    },
+    "sw-privileges": {
+        "permissions": {
+            "parents": {
+                "shopgate": "Shopgate"
+            },
+            "shopgate_go": {
+                "label": "Module (Go)"
+            }
+        }
     }
 }

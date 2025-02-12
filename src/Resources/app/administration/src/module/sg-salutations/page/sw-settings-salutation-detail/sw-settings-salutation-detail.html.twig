@@ -14,7 +14,7 @@
                     { value: 'd', label: $tc('sg-salutations.detail.genderDiverse') }
                 ]
             }"
-            :disabled="!acl.can('salutation.editor')"
+            :disabled="!acl.can('shopgate_go.editor')"
             :help-text="$tc('sg-salutations.detail.genderTooltip')">
     </sw-form-field-renderer>
 {% endblock %}

@@ -6,7 +6,7 @@ import template from './sg-api-credentials-detail.html.twig';
 Component.register('sg-api-credentials-detail', {
     template,
 
-    inject: ['repositoryFactory'],
+    inject: ['repositoryFactory', 'acl'],
 
     mixins: [
         Mixin.getByName('notification')
@@ -41,6 +41,29 @@ Component.register('sg-api-credentials-detail', {
             if (this.channelLanguageMap) {
                 this.languageOptions = this.channelLanguageMap[channelId];
             }
+        }
+    },
+    computed: {
+
+        tooltipSave () {
+            if (!this.allowSaving) {
+                return {
+                    message: this.$tc('sw-privileges.tooltip.warning'),
+                    disabled: this.allowSaving,
+                    showOnDisabledElements: true,
+                };
+            }
+
+            const systemKey = this.$device.getSystemKey();
+
+            return {
+                message: `${systemKey} + S`,
+                appearance: 'light',
+            };
+        },
+
+        allowSaving () {
+            return this.acl.can('shopgate_go.editor');
         }
     },
 

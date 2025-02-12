@@ -42,5 +42,15 @@
             "messageSaveSuccess": "Zugangsdaten wurden gespeichert.",
             "noLanguages": "Keine Sprache ausgewählt, bitte Verkaufskanal (Sales Channel) auswählen."
         }
+    },
+    "sw-privileges": {
+        "permissions": {
+            "parents": {
+                "shopgate": "Shopgate"
+            },
+            "shopgate_go": {
+                "label": "Modul (Go)"
+            }
+        }
     }
 }

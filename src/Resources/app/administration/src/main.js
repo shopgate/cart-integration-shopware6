@@ -1,3 +1,4 @@
+import './acl'
 import './mixins/sg-order-key-value';
 import './decorator/rule-condition-service-decoration';
 import './module/sw-order/component/sw-order-general-info';
