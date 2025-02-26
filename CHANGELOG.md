@@ -1,5 +1,6 @@
 # 3.5.1
 
+- changed indexer priority to run after categories, set to -10
 - fixed ACL permissions for API credential lists
 - fixed uninstall routine to also remove the `...category_product_mapping` table
 
