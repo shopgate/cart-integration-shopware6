@@ -73,7 +73,7 @@
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\IteratorFactory"/>
             <argument key="$repository" type="service" id="category.repository"/>
             <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
-            <tag name="shopware.entity_indexer"/>
+            <tag name="shopware.entity_indexer" priority="-10" />
         </service>
         <service id="Shopgate\Shopware\Catalog\Product\ProductBridge">
             <argument key="$productRepository" type="service" id="sales_channel.product.repository"/>
