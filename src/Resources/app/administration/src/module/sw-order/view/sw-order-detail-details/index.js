@@ -3,5 +3,10 @@ import loader from '../../../../shopgateOrderLoader';
 /* global Shopware */
 Shopware.Component.override('sw-order-detail-details', {
     template,
-    ...loader
+    computed: {
+        ...loader.computed
+    },
+    methods: {
+        ...loader.methods
+    }
 });

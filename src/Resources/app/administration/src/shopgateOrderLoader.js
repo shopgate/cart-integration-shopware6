@@ -1,9 +1,6 @@
 /* global Shopware */
 
 export default {
-    inject: [
-        'repositoryFactory'
-    ],
     computed: {
         getPaymentName() {
             if (this.getOrder().extensions.hasOwnProperty('shopgateOrder')) {
