@@ -4,7 +4,10 @@ import loader from '../../../../shopgateOrderLoader';
 Shopware.Component.override('sw-order-general-info', {
     template,
     computed: {
-        ...loader.computed
+        ...loader.computed,
+        dateFilter() {
+            return Shopware.Filter.getByName('date');
+        }
     },
     methods: {
         ...loader.methods

@@ -1,23 +1,13 @@
 {% block sw_order_detail_base_general_info_summary_sub_description %}
     <div class="sw-order-general-info__summary-sub-description">
         {{ $tc('sw-order.generalTab.info.summary.on') }}
-        {% if dateFilter is defined %}
-            {{ dateFilter(order.orderDateTime, {
-                hour: '2-digit',
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            }) }}
-        {% else %}
-            {{ order.orderDateTime | date({
-                hour: '2-digit',
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            }) }}
-        {% endif %}
+        {{ dateFilter(order.orderDateTime, {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }) }}
 
         {{ $tc('sw-order.generalTab.info.summary.with') }}
 
