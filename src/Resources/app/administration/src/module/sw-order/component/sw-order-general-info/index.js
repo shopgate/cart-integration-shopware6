@@ -3,5 +3,13 @@ import loader from '../../../../shopgateOrderLoader';
 /* global Shopware */
 Shopware.Component.override('sw-order-general-info', {
     template,
-    ...loader
+    computed: {
+        ...loader.computed,
+        dateFilter() {
+            return Shopware.Filter.getByName('date');
+        }
+    },
+    methods: {
+        ...loader.methods
+    }
 });

@@ -1,3 +1,8 @@
+# 3.5.2
+
+- fixed 6.6.x issue with order info not loading on SG orders
+- fixed 6.5.x twig order date template
+
 # 3.5.1
 
 - changed indexer priority to run after categories, set to -10
