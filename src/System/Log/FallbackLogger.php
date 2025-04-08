@@ -3,11 +3,11 @@
 namespace Shopgate\Shopware\System\Log;
 
 use DateTimeZone;
-use Doctrine\DBAL\Exception;
 use Monolog\Level;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Throwable;
 
 class FallbackLogger extends \Monolog\Logger
 {
@@ -19,7 +19,7 @@ class FallbackLogger extends \Monolog\Logger
         private readonly EventLogger $eventLogger,
         array $handlers = [],
         array $processors = [],
-        ?DateTimeZone $timezone = null,
+        ?DateTimeZone $timezone = null
     ) {
         $this->sequence = Uuid::randomHex();
         parent::__construct($name, $handlers, $processors, $timezone);
@@ -39,12 +39,33 @@ class FallbackLogger extends \Monolog\Logger
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    public function writeEvent(string $message, Level $level = Level::Info): void
+    public function writeThrowableEvent(Throwable $error, $level = Level::Critical): void
     {
-        $this->eventLogger->writeLog($message, $this->sequence, $level);
+        $this->writeEvent($error->getMessage(), $level, [
+            'message' => $error->getMessage(),
+            'code' => $error->getCode(),
+            'file' => $error->getFile(),
+            'line' => $error->getLine(),
+            'trace' => $error->getTraceAsString()
+        ]);
+    }
+
+    /**
+     * Writes to database event log.
+     * These messages can be looked up in admin panel.
+     */
+    public function writeEvent(string $message, Level $level = Level::Info, array $context = []): void
+    {
+        if (!$this->systemConfigService->getFloat(ConfigBridge::ADVANCED_CONFIG_LOGGING_BASIC)) {
+            return;
+        }
+
+        try {
+            $this->eventLogger->writeLog($message, $this->sequence, $level, $context);
+        } catch (Throwable $e) {
+            $this->debug('Could not write to DB. ' . $e->getMessage());
+            $this->debug($message);
+        }
     }
 
     /**
