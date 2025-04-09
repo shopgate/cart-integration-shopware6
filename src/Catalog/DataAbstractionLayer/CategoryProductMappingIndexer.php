@@ -24,6 +24,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Profiling\Profiler;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Throwable;
 
 use function count;
 use function json_decode;
@@ -59,17 +60,25 @@ class CategoryProductMappingIndexer extends EntityIndexer
         return new CategoryProductIndexingMessage(array_values($ids), $iterator->getOffset());
     }
 
+    /**
+     * @throws Throwable
+     */
     public function update(EntityWrittenContainerEvent $event): ?EntityIndexingMessage
     {
         $ids = [];
-        $categoryEvent = $event->getEventByEntityName(CategoryDefinition::ENTITY_NAME);
-        if ($categoryEvent) {
-            $ids = $this->handleCategoryEvent($categoryEvent);
-        }
+        try {
+            $categoryEvent = $event->getEventByEntityName(CategoryDefinition::ENTITY_NAME);
+            if ($categoryEvent) {
+                $ids = $this->handleCategoryEvent($categoryEvent);
+            }
 
-        $productCategoryEvent = $event->getEventByEntityName(ProductCategoryDefinition::ENTITY_NAME);
-        if ($productCategoryEvent) {
-            $ids = array_merge($ids, $this->handleCategoryEvent($productCategoryEvent));
+            $productCategoryEvent = $event->getEventByEntityName(ProductCategoryDefinition::ENTITY_NAME);
+            if ($productCategoryEvent) {
+                $ids = array_merge($ids, $this->handleCategoryEvent($productCategoryEvent));
+            }
+        } catch (Throwable $e) {
+            $this->logger->writeThrowableEvent($e);
+            throw $e;
         }
 
         if (empty($ids)) {
@@ -81,10 +90,25 @@ class CategoryProductMappingIndexer extends EntityIndexer
     }
 
     /**
-     * @throws Exception
-     * @throws JsonException
+     * @throws Throwable
      */
     public function handle(EntityIndexingMessage $message): void
+    {
+        // would love to avoid a try catch like this,
+        // but no good way to intercept errors in SW6 async worker
+        try {
+            $this->handleMessage($message);
+        } catch (Throwable $e) {
+            $this->logger->writeThrowableEvent($e);
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws JsonException
+     * @throws Exception
+     */
+    public function handleMessage(EntityIndexingMessage $message): void
     {
         $ids = array_unique(array_filter($message->getData()));
         if (empty($ids)) {
@@ -198,7 +222,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
                 $mainLangCategory = array_filter($langSortOrder, function ($category) use ($channelId, $defaultLang) {
                     return $category['langId'] === $defaultLang && $category['slot'] !== null && $channelId === $category['channelId'];
                 });
-                if ($defaultLang !== $langId && $rawCat['slot_config'] === null && $mainLangCategory) {
+                if ($defaultLang !== $langId && $rawCat['slot_config'] === null && !empty($mainLangCategory)) {
                     $this->logger->logBasics('Falling back to default language sort', [
                         'channel_id' => $channelId,
                         'channel_lang_id' => $langId,
@@ -206,7 +230,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
                         'category_id' => $catId,
                         'slot' => $rawCat['slot_config']
                     ]);
-                    $rawCat['slot_config'] = $mainLangCategory[0]['slot'];
+                    $temp = array_pop($mainLangCategory);
+                    $rawCat['slot_config'] = $temp['slot'];
                 }
                 $category->setSlotConfig($rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true) : []);
                 $category->setName($rawCat['name'] ?? null);
@@ -216,7 +241,6 @@ class CategoryProductMappingIndexer extends EntityIndexer
                     'catId' => $catId,
                     'slot' => $rawCat['slot_config']
                 ];
-
 
                 if (!$indexWriteType || $indexWriteType === ConfigBridge::INDEXER_WRITE_TYPE_SAFE) {
                     $totalCreated = $this->productMapBridge->upsertMappings($category, $channel);

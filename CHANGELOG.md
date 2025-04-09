@@ -1,3 +1,8 @@
+# 3.5.3
+
+- added an error event log to record errors in sync & async calls
+- fixed indexing errors caused in multi-language setups
+
 # 3.5.2
 
 - fixed 6.6.x issue with order info not loading on SG orders

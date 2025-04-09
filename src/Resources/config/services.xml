@@ -312,6 +312,7 @@
                  alias="sg.customer.custom_field.whitelist"/>
         <service id="Shopgate\Shopware\System\Log\EventLogger">
             <argument key="$db" type="service" id="Doctrine\DBAL\Connection" />
+            <argument key="$serializer" type="service" id="serializer"/>
         </service>
         <service id="Shopgate\Shopware\System\Log\Logger"/>
         <service id="Shopgate\Shopware\System\File\FileReader"/>
