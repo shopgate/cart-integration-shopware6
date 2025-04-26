@@ -49,7 +49,6 @@ class ConfigBridge
     public const INDEXER_DELETE_TYPE_NEVER = 'never';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
-    public const CROSS_SELL_EXPORT_TYPE_NONE = 'none';
     public const CROSS_SELL_EXPORT_TYPE_REL = 'relations';
     public const CROSS_SELL_EXPORT_TYPE_PROPS = 'properties';
 
