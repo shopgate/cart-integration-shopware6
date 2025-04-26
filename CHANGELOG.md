@@ -1,3 +1,7 @@
+# 3.6.0
+
+- added configuration to export cross-sell products as properties
+
 # 3.5.3
 
 - added an error event log to record errors in sync & async calls

@@ -11,6 +11,7 @@ use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Abstract;
 use Shopgate_Model_Catalog_Attribute;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ChildProductMapping extends SimpleProductMapping
@@ -30,7 +31,8 @@ class ChildProductMapping extends SimpleProductMapping
         protected CurrencyComposer $currencyComposer,
         protected ExtendedClassFactory $classFactory,
         protected AbstractProductCrossSellingRoute $crossSellingRoute,
-        protected EventDispatcherInterface $eventDispatcher
+        protected EventDispatcherInterface $eventDispatcher,
+        protected SystemConfigService $systemConfigService
     ) {
         parent::__construct(
             $contextManager,
@@ -42,7 +44,8 @@ class ChildProductMapping extends SimpleProductMapping
             $currencyComposer,
             $classFactory,
             $crossSellingRoute,
-            $eventDispatcher
+            $eventDispatcher,
+            $systemConfigService
         );
         $this->fireMethods[] = 'setAttributes';
         $this->fireMethods[] = 'setIsDefaultChild';

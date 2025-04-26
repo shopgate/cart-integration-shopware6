@@ -70,6 +70,24 @@
             <helpText>Exports manufacturer data as product properties</helpText>
             <helpText lang="de-DE">Exportiert Herstellerdaten als Produkteigenschaften</helpText>
         </input-field>
+        <input-field type="single-select">
+            <name>exportCrossSell</name>
+            <label>Export product cross sell as</label>
+            <label lang="de-DE">Exportprodukt Cross-Sell als</label>
+            <options>
+                <option>
+                    <id>relations</id>
+                    <name>Relations</name>
+                    <name lang="de-DE">Produktbeziehungen</name>
+                </option>
+                <option>
+                    <id>properties</id>
+                    <name>Properties</name>
+                    <name lang="de-DE">Eigenschaften</name>
+                </option>
+            </options>
+            <defaultValue>relations</defaultValue>
+        </input-field>
     </card>
     <card>
         <title>Advanced</title>

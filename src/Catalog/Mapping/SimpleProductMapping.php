@@ -10,6 +10,7 @@ use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductCollection;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\CurrencyComposer;
 use Shopgate\Shopware\System\Formatter;
 use Shopgate_Model_Catalog_CategoryPath;
@@ -28,6 +29,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -49,7 +51,8 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
         protected CurrencyComposer $currencyComposer,
         protected ExtendedClassFactory $classFactory,
         protected AbstractProductCrossSellingRoute $crossSellingRoute,
-        protected EventDispatcherInterface $eventDispatcher
+        protected EventDispatcherInterface $eventDispatcher,
+        protected SystemConfigService $systemConfigService
     ) {
         parent::__construct();
     }
@@ -422,6 +425,12 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setRelations(): void
     {
         if (!$this->item->getCrossSellings()) {
+            parent::setRelations([]);
+            return;
+        }
+
+        $exportAs = $this->systemConfigService->getString(ConfigBridge::PRODUCT_CROSS_SELL_EXPORT);
+        if ($exportAs !== ConfigBridge::CROSS_SELL_EXPORT_TYPE_REL) {
             parent::setRelations([]);
             return;
         }
