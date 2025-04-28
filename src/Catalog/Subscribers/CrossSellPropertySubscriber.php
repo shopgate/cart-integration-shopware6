@@ -33,7 +33,8 @@ class CrossSellPropertySubscriber implements EventSubscriberInterface
             return;
         }
 
-        $exportType = $this->systemConfigService->getString(ConfigBridge::PRODUCT_CROSS_SELL_EXPORT);
+        $channelId = $this->contextManager->getSalesContext()->getSalesChannelId();
+        $exportType = $this->systemConfigService->getString(ConfigBridge::PRODUCT_CROSS_SELL_EXPORT, $channelId);
         if ($exportType !== ConfigBridge::CROSS_SELL_EXPORT_TYPE_PROPS) {
             return;
         }

@@ -428,9 +428,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             parent::setRelations([]);
             return;
         }
-
-        $exportAs = $this->systemConfigService->getString(ConfigBridge::PRODUCT_CROSS_SELL_EXPORT);
-        if ($exportAs !== ConfigBridge::CROSS_SELL_EXPORT_TYPE_REL) {
+        $channelId = $this->contextManager->getSalesContext()->getSalesChannelId();
+        $exportAs = $this->systemConfigService->getString(ConfigBridge::PRODUCT_CROSS_SELL_EXPORT, $channelId);
+        if ($exportAs !== ConfigBridge::CROSS_SELL_EXPORT_TYPE_REL && $exportAs !== '') {
             parent::setRelations([]);
             return;
         }
