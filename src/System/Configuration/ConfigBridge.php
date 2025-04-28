@@ -30,6 +30,7 @@ class ConfigBridge
     public const SYSTEM_CONFIG_PROD_PROP_DOMAIN = self::SYSTEM_CONFIG_DOMAIN . 'customFieldTypeExport';
     // allows export of manufacturer details as properties
     public const PRODUCT_PROPERTY_EXPORT_MANUFACTURER = self::SYSTEM_CONFIG_DOMAIN . 'manufacturerProductProps';
+    public const PRODUCT_CROSS_SELL_EXPORT = self::SYSTEM_CONFIG_DOMAIN . 'exportCrossSell';
     public const SYSTEM_CONFIG_NET_PRICE_EXPORT = 'exportNetPrices';
     public const SYSTEM_CONFIG_IS_LIVE_SHOPPING = 'isLiveShopping';
     public const ADVANCED_CONFIG_INDEXER_WRITE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerWriteType';
@@ -48,6 +49,8 @@ class ConfigBridge
     public const INDEXER_DELETE_TYPE_NEVER = 'never';
     public const PROD_EXPORT_TYPE_SIMPLE = 'simple';
     public const PROD_EXPORT_TYPE_VARIANT = 'variant';
+    public const CROSS_SELL_EXPORT_TYPE_REL = 'relations';
+    public const CROSS_SELL_EXPORT_TYPE_PROPS = 'properties';
 
     private ?SystemConfigCollection $config = null;
     private ?ShopgateApiCredentialsEntity $apiCredentialsEntity = null;

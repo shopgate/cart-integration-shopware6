@@ -15,6 +15,7 @@ use Shopgate_Model_Catalog_AttributeGroup;
 use Shopgate_Model_Catalog_Product;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ConfigProductMapping extends SimpleProductMapping
@@ -32,7 +33,8 @@ class ConfigProductMapping extends SimpleProductMapping
         protected Shopgate_Model_AbstractExport $childProductMapping,
         protected ExtendedClassFactory $classFactory,
         protected AbstractProductCrossSellingRoute $crossSellingRoute,
-        protected EventDispatcherInterface $eventDispatcher
+        protected EventDispatcherInterface $eventDispatcher,
+        protected SystemConfigService $systemConfigService
     ) {
         parent::__construct(
             $contextManager,
@@ -44,7 +46,8 @@ class ConfigProductMapping extends SimpleProductMapping
             $currencyComposer,
             $classFactory,
             $crossSellingRoute,
-            $eventDispatcher
+            $eventDispatcher,
+            $systemConfigService
         );
     }
 
