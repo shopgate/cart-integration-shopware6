@@ -3,14 +3,9 @@
 namespace Shopgate\Shopware\Catalog\Subscribers;
 
 use Shopgate\Shopware\Catalog\Mapping\Events\AfterSimpleProductPropertyMapEvent;
-use Shopgate\Shopware\Catalog\Product\Events\BeforeProductLoadEvent;
-use Shopgate\Shopware\Shopgate\Extended\ExtendedProperty;
 use Shopgate\Shopware\Shopgate\ExtendedClassFactory;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
-use Shopgate\Shopware\System\Formatter;
-use Shopgate_Model_Catalog_Property;
-use Shopware\Core\Content\Product\Aggregate\ProductManufacturer\ProductManufacturerEntity;
 use Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
