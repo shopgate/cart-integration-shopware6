@@ -36,7 +36,7 @@ class ConfigBridge
     public const ADVANCED_CONFIG_INDEXER_WRITE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerWriteType';
     public const ADVANCED_CONFIG_INDEXER_DELETE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerDeleteType';
     public const ADVANCED_CONFIG_LOGGING_BASIC = self::SYSTEM_CONFIG_DOMAIN . 'basicLogging';
-    public const ADVANCED_CONFIG_LOGGING_DETAIL = self::SYSTEM_CONFIG_DOMAIN . 'detailLogging';
+    public const ADVANCED_CONFIG_LOGGING_DETAIL = self::SYSTEM_CONFIG_DOMAIN . 'detailedLogging';
     // it can handle writing to a DB with same entries & update them
     public const INDEXER_WRITE_TYPE_SAFE = 'safe';
     // slightly faster DB writing in chunks, but cannot handle duplicate entries at all

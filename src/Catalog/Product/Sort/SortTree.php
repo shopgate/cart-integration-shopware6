@@ -3,6 +3,7 @@
 namespace Shopgate\Shopware\Catalog\Product\Sort;
 
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Log\FallbackLogger;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute;
@@ -22,13 +23,14 @@ class SortTree
     public function __construct(
         private readonly ContextManager $contextManager,
         private readonly AbstractProductListingRoute $listingRoute,
-        private readonly EntityRepository $productSortingRepository
+        private readonly EntityRepository $productSortingRepository,
+        private readonly FallbackLogger $logger
     ) {
     }
 
     /**
      * Loops through all products for every category out there. Expensive stuff!
-     * @deprecated since 3.4.0
+     * @deprecated will be removed starting version 4.x
      */
     public function getAllCategoryProducts(CategoryEntity $category): ProductCollection
     {
@@ -57,8 +59,11 @@ class SortTree
         return $list;
     }
 
-    public function getPaginatedCategoryProducts(CategoryEntity $category, int $page, int $limit = 100): ProductListingResult
-    {
+    public function getPaginatedCategoryProducts(
+        CategoryEntity $category,
+        int $page,
+        int $limit = 100
+    ): ProductListingResult {
         $channel = $this->contextManager->getSalesContext();
         $productSorts = $this->getSorts($channel);
 
@@ -73,7 +78,17 @@ class SortTree
         $criteria = new Criteria();
         $criteria->setTitle('shopgate::product::paginated::category-id');
 
-        return $this->listingRoute->load($category->getId(), $request, $channel, $criteria)->getResult();
+        $result = $this->listingRoute->load($category->getId(), $request, $channel, $criteria)->getResult();
+        $this->logger->logDetails(
+            'Category Query',
+            [
+                'result_total' => $result->getTotal(),
+                'category_id' => $category->getId(),
+                'category_name' => $category->getName(),
+                'criteria' => $criteria->__toString()
+            ]
+        );
+        return $result;
     }
 
     /**
@@ -86,7 +101,7 @@ class SortTree
      */
     private function getSortOrderKey(CategoryEntity $category, ProductSortingCollection $sortingCollection): ?string
     {
-        if ($slot = (array)$category->getSlotConfig()) {
+        if ($slot = (array) $category->getSlotConfig()) {
             $list = array_values($slot);
             if (is_array($list[0])) {
                 $config = array_merge(...$list);
@@ -107,7 +122,10 @@ class SortTree
     private function getSorts(SalesChannelContext $channel): ProductSortingCollection
     {
         if ($this->sortCollection === null) {
-            $this->sortCollection = $this->productSortingRepository->search(new Criteria(), $channel->getContext())->getEntities();
+            $this->sortCollection = $this->productSortingRepository->search(
+                new Criteria(),
+                $channel->getContext()
+            )->getEntities();
         }
         return $this->sortCollection;
     }

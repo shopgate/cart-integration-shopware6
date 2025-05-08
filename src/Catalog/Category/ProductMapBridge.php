@@ -49,6 +49,8 @@ class ProductMapBridge
                         'channel_id' => $channelId,
                         'language_id' => $channelLangId,
                         'sort_order' => $result->getTotal() - $position,
+                        'category_name' => $category->getName(),
+                        'product_name' => $product->getTranslation('name'),
                     ]);
                     return [
                         'product_id' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),
@@ -120,11 +122,13 @@ class ProductMapBridge
             $products = $result->getEntities();
             foreach ($products as $product) {
                 $this->logger->logDetails('Writing entry', [
-                    'productId' => $product->getParentId() ?: $product->getId(),
-                    'categoryId' => $category->getId(),
-                    'channelId' => $channelId,
-                    'languageId' => $channelLangId,
-                    'sortOrder' => $result->getTotal() - $position,
+                    'product_id' => $product->getParentId() ?: $product->getId(),
+                    'category_id' => $category->getId(),
+                    'channel_id' => $channelId,
+                    'language_id' => $channelLangId,
+                    'sort_order' => $result->getTotal() - $position,
+                    'category_name' => $category->getName(),
+                    'product_name' => $product->getTranslation('name'),
                 ]);
                 $writeCount += $update->execute([
                     'productId' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),

@@ -124,6 +124,7 @@
         </service>
         <service id="Shopgate\Shopware\Catalog\Product\Sort\SortTree">
             <argument key="$productSortingRepository" type="service" id="product_sorting.repository"/>
+            <argument key="$logger" type="service" id="shopgate.go.fallback.logger"/>
         </service>
         <service id="Shopgate\Shopware\Customer\Mapping\SalutationMapping">
             <argument key="$swSalutationRepository" type="service" id="salutation.repository"/>
