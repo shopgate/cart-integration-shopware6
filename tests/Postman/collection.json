@@ -14534,7 +14534,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailedLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -15269,7 +15269,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailLogging\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailedLogging\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"

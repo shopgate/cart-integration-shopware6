@@ -1,3 +1,8 @@
+# 3.6.1
+
+- added category query request to log
+- fixed detailed log config not properly enabling logging
+
 # 3.6.0
 
 - added configuration to export cross-sell products as properties
