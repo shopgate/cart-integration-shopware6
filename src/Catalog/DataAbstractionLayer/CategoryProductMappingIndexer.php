@@ -25,7 +25,6 @@ use Shopware\Core\Profiling\Profiler;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
-
 use function count;
 use function json_decode;
 
@@ -49,6 +48,11 @@ class CategoryProductMappingIndexer extends EntityIndexer
 
     public function iterate(?array $offset): ?EntityIndexingMessage
     {
+        // note that there is no sales channel at this point
+        if ($this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
+            return null;
+        }
+
         $iterator = $this->iteratorFactory->createIterator($this->repository->getDefinition(), $offset);
         $ids = $iterator->fetch();
 
@@ -65,6 +69,10 @@ class CategoryProductMappingIndexer extends EntityIndexer
      */
     public function update(EntityWrittenContainerEvent $event): ?EntityIndexingMessage
     {
+        if ($this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
+            return null;
+        }
+
         $ids = [];
         try {
             $categoryEvent = $event->getEventByEntityName(CategoryDefinition::ENTITY_NAME);

@@ -1,3 +1,8 @@
+# 3.7.0
+
+- added config to ignore sort order for exports & disable product/category indexer
+- changed indexer writer to load 25 products at a time to reduce memory consumption
+
 # 3.6.1
 
 - added category query request to log

@@ -88,6 +88,13 @@
             </options>
             <defaultValue>relations</defaultValue>
         </input-field>
+        <input-field type="bool">
+            <name>ignoreSortOrderInCategories</name>
+            <label>Ignore sort order in categories</label>
+            <label lang="de-DE">Ignoriere die Sortierung in den Kategorien</label>
+            <helpText>Disables Indexer. Enable only if your system has an own property for product sorting.</helpText>
+            <helpText lang="de-DE">Deaktiviert den Indexer. Aktivieren Sie diese Option nur, wenn Ihr System über eine eigene Eigenschaft für die Produktsortierung verfügt.</helpText>
+        </input-field>
     </card>
     <card>
         <title>Advanced</title>

@@ -134,7 +134,8 @@
 										"exec": [
 											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -4538,7 +4539,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"typeId\": \"{{gen_salesChannel_typeId}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{default_category_fTimeAndElectronics_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
+													"raw": "{\r\n    \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n    \"countryId\": \"{{gen_country_USA_id}}\",\r\n    \"typeId\": \"{{gen_salesChannel_typeId}}\",\r\n    \"domains\": [\r\n        {\r\n            \"id\": \"5b94d397afe8cb29211756f3e9b2c91b\",\r\n            \"currencyId\": \"{{gen_currency_usd_id}}\",\r\n            \"languageId\": \"{{gen_language_german_id}}\",\r\n            \"snippetSetId\": \"{{gen_snippetSet_de}}\",\r\n            \"url\": \"{{host}}/de\"\r\n        }\r\n    ],\r\n    \"navigationCategoryId\": \"{{category_freeTime_id}}\",\r\n    \"customerGroupId\": \"{{created_customerGroup_net_id}}\",\r\n    \"countries\": [\r\n        {\r\n            \"id\": \"{{gen_country_USA_id}}\"\r\n        }\r\n    ]\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -9150,7 +9151,10 @@
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
-													""
+													"pm.test(\"Index Finishes\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.finish).to.eql(false);\r",
+													"});"
 												],
 												"type": "text/javascript",
 												"packages": {}
@@ -9200,6 +9204,199 @@
 									"response": []
 								}
 							]
+						},
+						{
+							"name": "Disable Indexer",
+							"item": [
+								{
+									"name": "SW: enable sort ignore cfg",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully changed config\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"c4497cc086ac4a77a0fda942479d8625\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.ignoreSortOrderInCategories\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/sync",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"sync"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: re-index",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Index Finishes\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.finish).to.eql(true);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"offset\": 0\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"indexing",
+												":indexer"
+											],
+											"variable": [
+												{
+													"key": "indexer",
+													"value": "shopgate.go.category.product.mapping.indexer"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SW: disable sort ignore cfg",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully changed config\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"c4497cc086ac4a77a0fda942479d8625\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.ignoreSortOrderInCategories\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/_action/sync",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"_action",
+												"sync"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "Checks he Ignore Sort config that disables the indexer too"
 						},
 						{
 							"name": "Tests",
@@ -9786,62 +9983,6 @@
 										}
 									},
 									"response": []
-								},
-								{
-									"name": "SW: check prod mapping",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Status code is 200\", function () {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});\r",
-													"\r",
-													"pm.test(\"check data\", function () {\r",
-													"    var jsonData = pm.response.json();\r",
-													"    pm.expect(jsonData.meta.total).to.be.eq(0);\r",
-													"});"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{gen_access_token}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"productId\",\n                    \"value\": \"{{created_product_index_table_id}}\"\n                }\n            ]\n        }\n    ]\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{sw_endpoint_api}}/search/shopgate-go-category-product-mapping",
-											"host": [
-												"{{sw_endpoint_api}}"
-											],
-											"path": [
-												"search",
-												"shopgate-go-category-product-mapping"
-											]
-										}
-									},
-									"response": []
 								}
 							]
 						},
@@ -10199,18 +10340,16 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test(\"Dynamic category created\", function () {",
-											"    const jsonObject = xml2Json(responseBody);",
-											"    if (pm.globals.get('verbose')){",
-											"        console.log(jsonObject);",
-											"    }",
+											"pm.test(\"Dynamic category created\", async function () {",
+											"    const jsonObject = await Utility.getJson(pm.response.text());",
 											"",
 											"    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
 											"    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
 											"    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.eq('API: No Free Ship Dynamic Cat')",
 											"});"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -10270,8 +10409,8 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test(\"Is in the dynamic category\", function () {",
-											"    const jsonObject = xml2Json(responseBody);",
+											"pm.test(\"Is in the dynamic category\", async function () {",
+											"    const jsonObject = await Utility.getJson(pm.response.text());",
 											"",
 											"    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
 											"",
@@ -10350,6 +10489,564 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Ignore Sort",
+					"item": [
+						{
+							"name": "SW: enable sort ignore cfg",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully changed config\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"c4497cc086ac4a77a0fda942479d8625\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.ignoreSortOrderInCategories\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SG: check dynamic",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Not an error\", function () {",
+											"    pm.response.to.not.have.jsonBody('error');",
+											"});",
+											"",
+											"pm.test(\"Is in the dynamic category\", async function () {",
+											"    const jsonObject = await Utility.getJson(pm.response.text());",
+											"",
+											"    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
+											"",
+											"    const noFreeShipCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('created_category_noFreeShip_id'));",
+											"    pm.expect(noFreeShipCat).to.not.be.undefined;",
+											"    pm.expect(noFreeShipCat.$.sort_order).to.be.eq('10');",
+											"",
+											"    const freeTimeCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('category_freeTime_id'));",
+											"    pm.expect(freeTimeCat).to.not.be.undefined;",
+											"     pm.expect(freeTimeCat.$.sort_order).to.be.eq('10');",
+											"});",
+											"",
+											"pm.test(\"Header check\", function () {",
+											"    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
+											"    pm.response.to.have.header('Content-Length');",
+											"    pm.response.to.have.header('Content-Disposition', 'attachment; filename=\"shopgate_items.xml\"');",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "action",
+											"value": "{{framework_action_get_items}}",
+											"type": "text"
+										},
+										{
+											"key": "limit",
+											"value": "100",
+											"description": "\n",
+											"type": "text"
+										},
+										{
+											"key": "offset",
+											"value": "0",
+											"type": "text"
+										},
+										{
+											"key": "uids[0]",
+											"value": "{{catalog_product_main_id}}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SG: check manual cats",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Not an error\", function () {",
+											"    pm.response.to.not.have.jsonBody('error');",
+											"});",
+											"",
+											"const jsonObject = xml2Json(responseBody);",
+											"const freeTimeCatId = pm.environment.get('category_freeTime_id');",
+											"const noFreeShipCatId = pm.environment.get('created_category_noFreeShip_id')",
+											"const menCategoryId = pm.environment.get('gen_category_men_id')",
+											"const manualCreatedCatId = pm.environment.get('created_category_manual_id')",
+											"",
+											"pm.test(\"General check\", function () {",
+											"    pm.expect(jsonObject.items.item).to.be.a('array').length.to.be.gte(10, 'Should have certain number of products');",
+											"});",
+											"",
+											"// API: cheapest & previous price",
+											"pm.test(\"Check `prev. price` product category\", function () {",
+											"    const prevProductId = pm.environment.get('created_product_prevPrice_id');",
+											"    checkProductCategoryExistence(prevProductId, freeTimeCatId);",
+											"    checkProductCategoryExistence(prevProductId, noFreeShipCatId);",
+											"});",
+											"",
+											"// API: Complex Advanced Prices",
+											"pm.test(\"Check `no fallback` product category\", function () {",
+											"    const noFallbackProdId = pm.environment.get('created_product_advPrice_noFallback_id');",
+											"    checkProductCategoryExistence(noFallbackProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(noFallbackProdId, noFreeShipCatId);",
+											"});",
+											"",
+											"// API: max purchase 10 product",
+											"pm.test(\"Check `max 10 item` product category\", function () {",
+											"    const maxPurchaseTenProdId = pm.environment.get('created_product_maxPurchaseTen_id');",
+											"    checkProductCategoryExistence(maxPurchaseTenProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// API: out of stock backorder product",
+											"pm.test(\"Check `no backorder` product category\", function () {",
+											"    const noStockBOProdId = pm.environment.get('created_product_noStock_backorder_id');",
+											"    checkProductCategoryExistence(noStockBOProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// API: out of stock product",
+											"pm.test(\"Check `no stock` product category\", function () {",
+											"    const noStockProdId = pm.environment.get('created_product_noStock_id');",
+											"    checkProductCategoryExistence(noStockProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// API: reduced tax product",
+											"pm.test(\"Check `API reduced` product category\", function () {",
+											"    const reducedTaxProdId = pm.environment.get('created_product_reducedTax_id');",
+											"    checkProductCategoryExistence(reducedTaxProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// Main",
+											"pm.test(\"Check `main` product category\", function () {",
+											"    const mainProductId = pm.environment.get('catalog_product_main_id');",
+											"    checkProductCategoryExistence(mainProductId, freeTimeCatId);",
+											"});",
+											"",
+											"// Main product with advanced prices",
+											"pm.test(\"Check `main /w adv price` product category\", function () {",
+											"    const mainProdAdvancedId = pm.environment.get('catalog_product_advPrices_id');",
+											"    checkProductCategoryExistence(mainProdAdvancedId, freeTimeCatId);",
+											"});",
+											"",
+											"// Main product with properties",
+											"pm.test(\"Check `prod props` product category\", function () {",
+											"    const withPropsProdId = pm.environment.get('catalog_product_props');",
+											"    checkProductCategoryExistence(withPropsProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(withPropsProdId, menCategoryId);",
+											"    checkProductCategoryExistence(withPropsProdId, manualCreatedCatId);",
+											"    // clothing category",
+											"    checkProductCategoryExistence(withPropsProdId, 'a515ae260223466f8e37471d279e6406');",
+											"});",
+											"",
+											"// Main product, free shipping with highlighting",
+											"pm.test(\"Check `Free ship highlight` product category\", function () {",
+											"    const mainFreeShipProdId = pm.environment.get('catalog_product_freeShip');",
+											"    checkProductCategoryExistence(mainFreeShipProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(mainFreeShipProdId, menCategoryId);",
+											"    checkProductCategoryExistence(mainFreeShipProdId, manualCreatedCatId);",
+											"    // clothing category",
+											"    checkProductCategoryExistence(mainFreeShipProdId, 'a515ae260223466f8e37471d279e6406');",
+											"});",
+											"",
+											"// 251448b91bc742de85643f5fccd89051 = freeTimeCatId",
+											"// 756340dd497a0a7d5177f1bbd554ddab = created_category_noFreeShip_id",
+											"// a515ae260223466f8e37471d279e6406 - clothing",
+											"// 13ac93d00dce334bba916278aa7eba9e - created_category_manual_id",
+											"// 2185182cbbd4462ea844abeb2a438b33 - gen_category_men_id",
+											"// 8de9b484c54f441c894774e5f57e485c - women",
+											"",
+											"//Variant product",
+											"pm.test(\"Check `variant main` product category\", function () {",
+											"    const variantMainProdId = pm.environment.get('catalog_product_variant');",
+											"    checkProductCategoryExistence(variantMainProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(variantMainProdId, manualCreatedCatId);",
+											"    // clothing category",
+											"    checkProductCategoryExistence(variantMainProdId, 'a515ae260223466f8e37471d279e6406');",
+											"    // women category",
+											"    checkProductCategoryExistence(variantMainProdId, '8de9b484c54f441c894774e5f57e485c');",
+											"",
+											"});",
+											"",
+											"function checkProductCategoryExistence(productId, categoryId) {",
+											"    const product = Utility.getXmlByUid(jsonObject.items.item, productId);",
+											"    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
+											"    if (Array.isArray(product.categories.category)) {",
+											"        const category = Utility.getXmlByUid(product.categories.category, categoryId);",
+											"        pm.expect(category, 'Could not locate categoryId: ' + categoryId + ' for prod id: ' + productId).to.haveOwnProperty('$').to.haveOwnProperty('sort_order').to.eq('10');",
+											"    } else {",
+											"        pm.expect(product.categories.category.$.uid).to.eq(categoryId);",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "action",
+											"value": "{{framework_action_get_items}}",
+											"type": "text"
+										},
+										{
+											"key": "limit",
+											"value": "100",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SW: disable sort ignore cfg",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successfully changed config\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{gen_access_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"c4497cc086ac4a77a0fda942479d8625\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.ignoreSortOrderInCategories\",\r\n                \"configurationValue\": false,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{sw_endpoint_api}}/_action/sync",
+									"host": [
+										"{{sw_endpoint_api}}"
+									],
+									"path": [
+										"_action",
+										"sync"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SG: double check indexer cat export",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Not an error\", function () {",
+											"    pm.response.to.not.have.jsonBody('error');",
+											"});",
+											"",
+											"const jsonObject = xml2Json(responseBody);",
+											"const freeTimeCatId = pm.environment.get('category_freeTime_id');",
+											"const noFreeShipCatId = pm.environment.get('created_category_noFreeShip_id')",
+											"const menCategoryId = pm.environment.get('gen_category_men_id')",
+											"const manualCreatedCatId = pm.environment.get('created_category_manual_id')",
+											"",
+											"pm.test(\"General check\", function () {",
+											"    pm.expect(jsonObject.items.item).to.be.a('array').length.to.be.gte(10, 'Should have certain number of products');",
+											"});",
+											"",
+											"// API: cheapest & previous price",
+											"pm.test(\"Check `prev. price` product category\", function () {",
+											"    const prevProductId = pm.environment.get('created_product_prevPrice_id');",
+											"    checkProductCategoryExistence(prevProductId, freeTimeCatId);",
+											"    checkProductCategoryExistence(prevProductId, noFreeShipCatId);",
+											"});",
+											"",
+											"// API: Complex Advanced Prices",
+											"pm.test(\"Check `no fallback` product category\", function () {",
+											"    const noFallbackProdId = pm.environment.get('created_product_advPrice_noFallback_id');",
+											"    checkProductCategoryExistence(noFallbackProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(noFallbackProdId, noFreeShipCatId);",
+											"});",
+											"",
+											"// API: max purchase 10 product",
+											"pm.test(\"Check `max 10 item` product category\", function () {",
+											"    const maxPurchaseTenProdId = pm.environment.get('created_product_maxPurchaseTen_id');",
+											"    checkProductCategoryExistence(maxPurchaseTenProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// API: out of stock backorder product",
+											"pm.test(\"Check `no backorder` product category\", function () {",
+											"    const noStockBOProdId = pm.environment.get('created_product_noStock_backorder_id');",
+											"    checkProductCategoryExistence(noStockBOProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// API: out of stock product",
+											"pm.test(\"Check `no stock` product category\", function () {",
+											"    const noStockProdId = pm.environment.get('created_product_noStock_id');",
+											"    checkProductCategoryExistence(noStockProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// API: reduced tax product",
+											"pm.test(\"Check `API reduced` product category\", function () {",
+											"    const reducedTaxProdId = pm.environment.get('created_product_reducedTax_id');",
+											"    checkProductCategoryExistence(reducedTaxProdId, freeTimeCatId);",
+											"});",
+											"",
+											"// Main",
+											"pm.test(\"Check `main` product category\", function () {",
+											"    const mainProductId = pm.environment.get('catalog_product_main_id');",
+											"    checkProductCategoryExistence(mainProductId, freeTimeCatId);",
+											"});",
+											"",
+											"// Main product with advanced prices",
+											"pm.test(\"Check `main /w adv price` product category\", function () {",
+											"    const mainProdAdvancedId = pm.environment.get('catalog_product_advPrices_id');",
+											"    checkProductCategoryExistence(mainProdAdvancedId, freeTimeCatId);",
+											"});",
+											"",
+											"// Main product with properties",
+											"pm.test(\"Check `prod props` product category\", function () {",
+											"    const withPropsProdId = pm.environment.get('catalog_product_props');",
+											"    checkProductCategoryExistence(withPropsProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(withPropsProdId, menCategoryId);",
+											"    checkProductCategoryExistence(withPropsProdId, manualCreatedCatId);",
+											"    // clothing category",
+											"    checkProductCategoryExistence(withPropsProdId, 'a515ae260223466f8e37471d279e6406');",
+											"});",
+											"",
+											"// Main product, free shipping with highlighting",
+											"pm.test(\"Check `Free ship highlight` product category\", function () {",
+											"    const mainFreeShipProdId = pm.environment.get('catalog_product_freeShip');",
+											"    checkProductCategoryExistence(mainFreeShipProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(mainFreeShipProdId, menCategoryId);",
+											"    checkProductCategoryExistence(mainFreeShipProdId, manualCreatedCatId);",
+											"    // clothing category",
+											"    checkProductCategoryExistence(mainFreeShipProdId, 'a515ae260223466f8e37471d279e6406');",
+											"});",
+											"",
+											"//Variant product",
+											"pm.test(\"Check `variant main` product category\", function () {",
+											"    const variantMainProdId = pm.environment.get('catalog_product_variant');",
+											"    checkProductCategoryExistence(variantMainProdId, freeTimeCatId);",
+											"    checkProductCategoryExistence(variantMainProdId, manualCreatedCatId);",
+											"    // clothing category",
+											"    checkProductCategoryExistence(variantMainProdId, 'a515ae260223466f8e37471d279e6406');",
+											"    // women category",
+											"    checkProductCategoryExistence(variantMainProdId, '8de9b484c54f441c894774e5f57e485c');",
+											"",
+											"});",
+											"",
+											"function checkProductCategoryExistence(productId, categoryId) {",
+											"    const product = Utility.getXmlByUid(jsonObject.items.item, productId);",
+											"    pm.expect(product, 'Could not locate product by id: ' + productId).to.haveOwnProperty('categories');",
+											"    if (Array.isArray(product.categories.category)) {",
+											"        const category = Utility.getXmlByUid(product.categories.category, categoryId);",
+											"        pm.expect(category, 'Could not locate categoryId: ' + categoryId + ' for prod id: ' + productId).to.haveOwnProperty('$').to.haveOwnProperty('sort_order');",
+											"    } else {",
+											"        pm.expect(product.categories.category.$.uid).to.eq(categoryId);",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-Shopgate-Auth-User",
+										"value": "{{gen_sg_header_auth_user}}"
+									},
+									{
+										"key": "X-Shopgate-Auth-Token",
+										"value": "{{gen_sg_header_auth_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "shop_number",
+											"value": "{{shop_number}}",
+											"type": "text"
+										},
+										{
+											"key": "action",
+											"value": "{{framework_action_get_items}}",
+											"type": "text"
+										},
+										{
+											"key": "limit",
+											"value": "100",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}",
+									"host": [
+										"{{domain}}"
+									]
+								},
+								"description": "// 251448b91bc742de85643f5fccd89051 = freeTimeCatId\n\n// 756340dd497a0a7d5177f1bbd554ddab = created_category_noFreeShip_id\n\n// a515ae260223466f8e37471d279e6406 - clothing\n\n// 13ac93d00dce334bba916278aa7eba9e - created_category_manual_id\n\n// 2185182cbbd4462ea844abeb2a438b33 - gen_category_men_id\n\n// 8de9b484c54f441c894774e5f57e485c - women"
+							},
+							"response": []
+						}
+					],
+					"description": "Checks flag that ignores sorting parameter (and disables indexing)"
 				},
 				{
 					"name": "Manual Category Sort",

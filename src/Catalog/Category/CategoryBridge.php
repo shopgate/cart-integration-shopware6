@@ -2,17 +2,22 @@
 
 namespace Shopgate\Shopware\Catalog\Category;
 
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Connection;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductCollection;
+use Shopgate\Shopware\Shopgate\Catalog\CategoryProductEntity;
 use Shopgate\Shopware\Storefront\ContextManager;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class CategoryBridge
 {
@@ -20,7 +25,8 @@ class CategoryBridge
         private readonly AbstractCategoryListRoute $categoryListRoute,
         private readonly ContextManager $contextManager,
         private readonly EntityRepository $categoryProductMapRepository,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly Connection $db
     ) {
     }
 
@@ -48,11 +54,6 @@ class CategoryBridge
         return $this->flattenTree($tree, new CategoryCollection());
     }
 
-    /**
-     * @param string[] $uids
-     *
-     * @return CategoryProductCollection
-     */
     public function getCategoryProductMap(array $uids = []): CategoryProductCollection
     {
         // we are checking language because the sort order can be different per language
@@ -68,6 +69,63 @@ class CategoryBridge
         );
 
         return $entities;
+    }
+
+    /**
+     * Maps dynamic category (stream) data into our IndexerMap format
+     */
+    public function getCategoryStreamMap(array $uids = []): CategoryProductCollection
+    {
+        $items = [];
+        try {
+            $items = $this->db->fetchAllAssociative(
+                'SELECT ps.product_id, cat.id as category_id
+             FROM product_stream_mapping as ps
+             LEFT JOIN category cat on cat.product_stream_id = ps.product_stream_id
+             WHERE ps.product_id IN (:ids) AND cat.parent_id IS NOT NULL ' .
+                'ORDER BY ps.product_id',
+                ['ids' => Uuid::fromHexToBytesList($uids)],
+                ['ids' => ArrayParameterType::BINARY]
+            );
+        } catch (\Throwable $e) {
+            $this->logger->error('Issue retrieving category stream map: ' . $e->getMessage());
+        }
+
+        $collection = [];
+        foreach ($items as $item) {
+            $prodId = Uuid::fromBytesToHex($item['product_id']);
+            $catId = Uuid::fromBytesToHex($item['category_id']);
+            $item = (new CategoryProductEntity())
+                ->setProductId($prodId)
+                ->setCategoryId($catId)
+                ->setSortOrder(10);
+            $item->setUniqueIdentifier($catId . '-' . $prodId);
+            $collection[] = $item;
+        }
+
+        return new CategoryProductCollection($collection);
+    }
+
+    /**
+     * Simply loads categories from products into our IndexerMap format
+     */
+    public function getCategoryProductMapFromProductList(ProductCollection $collection): CategoryProductCollection
+    {
+        $map = new CategoryProductCollection();
+        $rootCategoryId = $this->contextManager->getSalesContext()->getSalesChannel()->getNavigationCategoryId();
+        foreach ($collection as $product) {
+            foreach ($product->getCategoryTree() ?? [] as $categoryId) {
+                if ($categoryId === $rootCategoryId) {
+                    continue;
+                }
+                $item = (new CategoryProductEntity())->setProductId($product->getId())
+                    ->setCategoryId($categoryId)
+                    ->setSortOrder(10);
+                $item->setUniqueIdentifier($categoryId . '-' . $product->getId());
+                $map->add($item);
+            }
+        }
+        return $map;
     }
 
     private function buildTree(?string $parentId, CategoryCollection $categories): CategoryCollection

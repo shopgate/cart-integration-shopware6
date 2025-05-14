@@ -50,6 +50,7 @@ class ProductBridge
             ->addFilter(new EqualsFilter('product.parentId', null))
             ->addAssociations([
                 'crossSellings',
+                'categoryIds',
                 'manufacturer',
                 'media',
                 'options',
