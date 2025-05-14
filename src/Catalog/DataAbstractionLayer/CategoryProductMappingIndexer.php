@@ -140,8 +140,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         $deleteType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_DELETE_TYPE);
         // php8.1 seems to be failing if this is not checked, not quite sure why
         $isFullIndex = property_exists($message, 'isFullIndexing') && $message->isFullIndexing;
-        if ($writeType !== ConfigBridge::INDEXER_WRITE_TYPE_SAFE ||
-            ($deleteType === null || $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_ALWAYS) ||
+        if (($deleteType === null || $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_ALWAYS) ||
             ($isFullIndex && $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_FULL)) {
             $delCount = Profiler::trace(
                 'shopgate:catalog:product:indexer:delete',
