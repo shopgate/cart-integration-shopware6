@@ -15,7 +15,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class ProductMapBridge
 {
-    private const PAGE_LIMIT = 2000;
+    private const PAGE_LIMIT = 25;
 
     public function __construct(
         private readonly Connection $db,
