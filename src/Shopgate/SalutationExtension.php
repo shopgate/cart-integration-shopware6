@@ -19,6 +19,14 @@ class SalutationExtension extends EntityExtension
         );
     }
 
+    /**
+     * Not needed starting SW 6.7
+     */
+    public function getDefinitionClass(): string
+    {
+        return SalutationDefinition::class;
+    }
+
     public function getEntityName(): string
     {
         return SalutationDefinition::ENTITY_NAME;

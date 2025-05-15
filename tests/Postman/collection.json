@@ -16375,7 +16375,7 @@
 													"        pm.expect(upsellSplit).contains(pm.environment.get('created_product_prevPrice_id'));",
 													"        pm.expect(upsellSplit).contains(pm.environment.get('created_product_advPrice_noFallback_id'));",
 													"        if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.7')) {",
-													"            pm.expect(splitActive).contains(pm.environment.get('catalog_product_main_id'));",
+													"            pm.expect(upsellSplit).contains(pm.environment.get('catalog_product_main_id'));",
 													"        }",
 													"    });",
 													"})"

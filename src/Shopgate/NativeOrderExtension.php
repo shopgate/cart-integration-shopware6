@@ -19,6 +19,14 @@ class NativeOrderExtension extends EntityExtension
         );
     }
 
+    /**
+     * Not needed starting SW 6.7
+     */
+    public function getDefinitionClass(): string
+    {
+        return OrderDefinition::class;
+    }
+
     public function getEntityName(): string
     {
         return OrderDefinition::ENTITY_NAME;
