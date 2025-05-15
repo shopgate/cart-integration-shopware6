@@ -4,8 +4,11 @@ namespace Shopgate\Shopware\Catalog\Product;
 
 use Shopgate\Shopware\Catalog\Category\CategoryBridge;
 use Shopgate\Shopware\Catalog\Mapping\ProductMapFactory;
+use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopgate_Model_Catalog_Product;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
 
 class ProductComposer
@@ -14,7 +17,9 @@ class ProductComposer
         private readonly LoggerInterface $logger,
         private readonly ProductMapFactory $productMapFactory,
         private readonly ProductBridge $productBridge,
-        private readonly CategoryBridge $categoryBridge
+        private readonly CategoryBridge $categoryBridge,
+        private readonly SystemConfigService $systemConfigService,
+        private readonly ContextManager $contextManager
     ) {
     }
 
@@ -27,7 +32,14 @@ class ProductComposer
     public function loadProducts(?int $limit, ?int $offset, array $uids = []): array
     {
         $products = $this->productBridge->getProductList($limit, $offset, $uids);
-        $categoryProductMap = $this->categoryBridge->getCategoryProductMap($products->getIds());
+        $channelId = $this->contextManager->getSalesContext()->getSalesChannelId();
+
+        if ($this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER, $channelId)) {
+            $categoryProductMap = $this->categoryBridge->getCategoryStreamMap($products->getIds());
+            $categoryProductMap->merge($this->categoryBridge->getCategoryProductMapFromProductList($products));
+        } else {
+            $categoryProductMap = $this->categoryBridge->getCategoryProductMap($products->getIds());
+        }
 
         $list = [];
         foreach ($products as $product) {

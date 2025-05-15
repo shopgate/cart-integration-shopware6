@@ -1,3 +1,9 @@
+# 3.7.0
+
+- added config to ignore sort order for exports & disable product/category indexer
+- changed indexer writer to load 25 products at a time to reduce memory consumption
+- changed performant writer option to not error when duplicate category/product map entries exist
+
 # 3.6.1
 
 - added category query request to log

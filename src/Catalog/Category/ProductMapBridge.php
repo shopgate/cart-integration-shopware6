@@ -10,12 +10,15 @@ use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
 use Shopgate\Shopware\System\Log\FallbackLogger;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Defaults;
+use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\FetchModeHelper;
+use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\MultiInsertQueryQueue;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\RetryableQuery;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ProductMapBridge
 {
-    private const PAGE_LIMIT = 2000;
+    private const PAGE_LIMIT = 25;
 
     public function __construct(
         private readonly Connection $db,
@@ -46,7 +49,7 @@ class ProductMapBridge
                     $this->logger->logDetails('Writing entry', [
                         'product_id' => $product->getParentId() ?: $product->getId(),
                         'category_id' => $category->getId(),
-                        'channel_id' => $channelId,
+                        'sales_channel_id' => $channelId,
                         'language_id' => $channelLangId,
                         'sort_order' => $result->getTotal() - $position,
                         'category_name' => $category->getName(),
@@ -55,7 +58,7 @@ class ProductMapBridge
                     return [
                         'product_id' => Uuid::fromHexToBytes($product->getParentId() ?: $product->getId()),
                         'category_id' => Uuid::fromHexToBytes($category->getId()),
-                        'channel_id' => $channel['sales_channel_id'],
+                        'sales_channel_id' => $channel['sales_channel_id'],
                         'language_id' => $channel['language_id'],
                         'product_version_id' => Uuid::fromHexToBytes($product->getVersionId()),
                         'category_version_id' => Uuid::fromHexToBytes($category->getVersionId()),
@@ -70,29 +73,19 @@ class ProductMapBridge
         return $writeCount;
     }
 
-    /**
-     * This one is less safe as it will throw if duplicates exist
-     * @throws Exception
-     */
     private function insertBatch(array $batch): int
     {
         if (empty($batch)) {
             return 0;
         }
-        $sql = 'INSERT INTO shopgate_go_category_product_mapping (product_id, category_id, sales_channel_id, language_id, product_version_id, category_version_id, sort_order) VALUES ';
-        $params = [];
 
+        $queue = new MultiInsertQueryQueue($this->db, 250, true);
         foreach ($batch as $row) {
-            $sql .= '(?, ?, ?, ?, ?, ?, ?), ';
-            $params = array_merge($params, array_values($row));
+            $queue->addInsert('shopgate_go_category_product_mapping', $row);
         }
-        $sql = rtrim($sql, ', ');
-        $update = new RetryableQuery(
-            $this->db,
-            $this->db->prepare($sql)
-        );
-
-        return $update->execute($params);
+        $queue->execute();
+        // unfortunately the count is not returned
+        return count($batch);
     }
 
     /**
@@ -183,18 +176,28 @@ class ProductMapBridge
      */
     public function getCategoryList(array $ids, string $languageId = null): array
     {
-        $langQuery = $languageId ? ' AND ct.language_id = :language_id ' : ' ';
-        $langParams = $languageId ? ['language_id' => Uuid::fromHexToBytes($languageId)] : [];
-        $langTypes = $languageId ? ['language_id' => ParameterType::BINARY] : [];
-
-        return $this->db->fetchAllAssociative(
-            'SELECT DISTINCT cat.id, cat.version_id, ct.name, ct.language_id, ct.slot_config
-             FROM category as cat
-             LEFT JOIN category_translation ct on cat.id = ct.category_id
-             WHERE cat.id IN (:ids) AND cat.parent_id IS NOT NULL' .
-            $langQuery . 'ORDER BY cat.auto_increment',
-            ['ids' => Uuid::fromHexToBytesList($ids)] + $langParams,
-            ['ids' => ArrayParameterType::BINARY] + $langTypes
+        $query = $this->db->createQueryBuilder();
+        $query->select(['cat.id', 'cat.version_id', 'ct.name', 'ct.language_id', 'ct.slot_config',]);
+        $query->from('category', 'cat');
+        $query->leftJoin(
+            'cat',
+            'category_translation',
+            'ct',
+            'cat.id = ct.category_id AND cat.version_id = ct.category_version_id'
         );
+        $query->andWhere('cat.id IN (:ids)');
+        $query->andWhere('cat.version_id = :live');
+        $query->andWhere('cat.parent_id IS NOT NULL');
+        $query->orderBy('cat.auto_increment');
+
+        if ($languageId) {
+            $query->andWhere('ct.language_id = :language_id');
+            $query->setParameter('language_id', Uuid::fromHexToBytes($languageId), ParameterType::BINARY);
+        }
+
+        $query->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
+        $query->setParameter('ids', Uuid::fromHexToBytesList($ids), ArrayParameterType::BINARY);
+
+        return $query->executeQuery()->fetchAllAssociative();
     }
 }

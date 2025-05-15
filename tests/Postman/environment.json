@@ -505,11 +505,6 @@
 			"enabled": true
 		},
 		{
-			"key": "default_category_fTimeAndElectronics_id",
-			"value": "251448b91bc742de85643f5fccd89051",
-			"enabled": true
-		},
-		{
 			"key": "default_deliveryTime_sg_id",
 			"value": "49dd403eea0b4ca69e5c14894263cf2e",
 			"enabled": true
@@ -542,6 +537,6 @@
 		}
 	],
 	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2025-02-05T18:25:06.357Z",
-	"_postman_exported_using": "Postman/11.29.5"
+	"_postman_exported_at": "2025-05-14T19:50:39.833Z",
+	"_postman_exported_using": "Postman/11.45.1"
 }

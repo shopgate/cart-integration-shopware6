@@ -25,7 +25,6 @@ use Shopware\Core\Profiling\Profiler;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
-
 use function count;
 use function json_decode;
 
@@ -49,6 +48,11 @@ class CategoryProductMappingIndexer extends EntityIndexer
 
     public function iterate(?array $offset): ?EntityIndexingMessage
     {
+        // note that there is no sales channel at this point
+        if ($this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
+            return null;
+        }
+
         $iterator = $this->iteratorFactory->createIterator($this->repository->getDefinition(), $offset);
         $ids = $iterator->fetch();
 
@@ -65,6 +69,10 @@ class CategoryProductMappingIndexer extends EntityIndexer
      */
     public function update(EntityWrittenContainerEvent $event): ?EntityIndexingMessage
     {
+        if ($this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
+            return null;
+        }
+
         $ids = [];
         try {
             $categoryEvent = $event->getEventByEntityName(CategoryDefinition::ENTITY_NAME);
@@ -132,8 +140,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         $deleteType = $this->systemConfigService->get(ConfigBridge::ADVANCED_CONFIG_INDEXER_DELETE_TYPE);
         // php8.1 seems to be failing if this is not checked, not quite sure why
         $isFullIndex = property_exists($message, 'isFullIndexing') && $message->isFullIndexing;
-        if ($writeType !== ConfigBridge::INDEXER_WRITE_TYPE_SAFE ||
-            ($deleteType === null || $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_ALWAYS) ||
+        if (($deleteType === null || $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_ALWAYS) ||
             ($isFullIndex && $deleteType === ConfigBridge::INDEXER_DELETE_TYPE_FULL)) {
             $delCount = Profiler::trace(
                 'shopgate:catalog:product:indexer:delete',
