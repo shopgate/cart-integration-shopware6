@@ -79,6 +79,7 @@ class SortTree
         }
         $criteria = new Criteria();
         $criteria->setTitle('shopgate::product::paginated::category-id');
+        $criteria->setIncludes(['product' => ['id', 'parentId', 'versionId']]);
 
         $result = $this->listingRoute->load($category->getId(), $request, $channel, $criteria)->getResult();
         $this->logger->logDetails(

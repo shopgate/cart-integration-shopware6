@@ -29,7 +29,6 @@ class ProductMapBridge
 
     /**
      * More performant DB writer, but will throw on duplicates
-     * @throws Exception
      */
     public function createMappings(CategoryEntity $category, array $channel): int
     {
@@ -42,7 +41,6 @@ class ProductMapBridge
             $result = $this->sortTree->getPaginatedCategoryProducts($category, $page++, self::PAGE_LIMIT);
             $pageCount = ceil($result->getTotal() / self::PAGE_LIMIT);
             $products = $result->getEntities();
-
             $batch = $products->map(
                 function (ProductEntity $product) use ($category, $channel, $channelId, $channelLangId, $result) {
                     static $position = 0;
@@ -177,7 +175,7 @@ class ProductMapBridge
     public function getCategoryList(array $ids, string $languageId = null): array
     {
         $query = $this->db->createQueryBuilder();
-        $query->select(['cat.id', 'cat.version_id', 'ct.name', 'ct.language_id', 'ct.slot_config',]);
+        $query->select('cat.id', 'cat.version_id', 'ct.name', 'ct.language_id', 'ct.slot_config');
         $query->from('category', 'cat');
         $query->leftJoin(
             'cat',

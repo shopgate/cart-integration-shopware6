@@ -16,4 +16,5 @@ class GenericPayment extends AbstractPayment
     protected int $position = 10;
     protected bool $afterOrder = false;
     protected string $availabilityRuleId = IsShopgateRuleGroup::UUID;
+    protected string $technicalName = 'sg_generic_payment';
 }

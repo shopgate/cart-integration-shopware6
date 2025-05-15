@@ -19,8 +19,8 @@ class NativeOrderExtension extends EntityExtension
         );
     }
 
-    public function getDefinitionClass(): string
+    public function getEntityName(): string
     {
-        return OrderDefinition::class;
+        return OrderDefinition::ENTITY_NAME;
     }
 }

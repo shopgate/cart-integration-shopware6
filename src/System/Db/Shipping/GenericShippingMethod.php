@@ -9,11 +9,12 @@ use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 class GenericShippingMethod extends ShippingMethodEntity implements ClassCastInterface
 {
     public const UUID = '368e891dbec442c2892f82edd6f4a7dc';
-    protected $id = self::UUID;
-    protected $deliveryTimeId = GenericDeliveryTime::UUID;
-    protected $name = 'Generic Shipping (SG)';
-    protected $description = '';
-    protected $active = false;
+    protected string $id = self::UUID;
+    protected string $deliveryTimeId = GenericDeliveryTime::UUID;
+    protected ?string $name = 'Generic Shipping (SG)';
+    protected ?string $description = '';
+    protected ?bool $active = false;
+    protected string $technicalName = 'sg_generic_shipping';
 
     public function __construct()
     {
@@ -29,7 +30,8 @@ class GenericShippingMethod extends ShippingMethodEntity implements ClassCastInt
             'name' => $this->name,
             'description' => $this->description,
             'active' => $this->active,
-            'availabilityRuleId' => $this->availabilityRuleId
+            'availabilityRuleId' => $this->availabilityRuleId,
+            'technicalName' => $this->technicalName
         ];
     }
 }

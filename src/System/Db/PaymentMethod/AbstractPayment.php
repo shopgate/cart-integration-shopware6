@@ -11,6 +11,7 @@ class AbstractPayment implements PaymentMethodInterface
     protected int $position;
     protected bool $afterOrder;
     protected string $availabilityRuleId;
+    protected string $technicalName;
 
     public function getId(): string
     {
@@ -56,7 +57,8 @@ class AbstractPayment implements PaymentMethodInterface
             'position' => $this->position,
             'handlerIdentifier' => $this->paymentHandler,
             'afterOrderEnabled' => $this->afterOrder,
-            'availabilityRuleId' => $this->availabilityRuleId
+            'availabilityRuleId' => $this->availabilityRuleId,
+            'technicalName' => $this->technicalName
         ];
     }
 

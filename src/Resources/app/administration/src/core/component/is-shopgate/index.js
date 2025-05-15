@@ -6,11 +6,11 @@ Shopware.Component.extend('is-shopgate', 'sw-condition-base', {
         selectValues() {
             return [
                 {
-                    label: this.$tc('global.sw-condition.condition.yes'),
+                    label: this.$tc('global.default.yes'),
                     value: true
                 },
                 {
-                    label: this.$tc('global.sw-condition.condition.no'),
+                    label: this.$tc('global.default.no'),
                     value: false
                 }
             ];
@@ -27,7 +27,7 @@ Shopware.Component.extend('is-shopgate', 'sw-condition-base', {
             },
             set(isShopgate) {
                 this.ensureValueExist();
-                this.condition.value = {...this.condition.value, isShopgate: isShopgate};
+                this.condition.value = {...this.condition.value, isShopgate};
             }
         }
     }

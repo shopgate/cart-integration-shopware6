@@ -7,6 +7,8 @@ use ShopgateOrder;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\Framework\Util\Random;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class ShopgateOrderEntity extends Entity
 {
@@ -192,6 +194,7 @@ class ShopgateOrderEntity extends Entity
      */
     public function mapQuote(string $id, string $channelId, ShopgateCartBase $order): ShopgateOrderEntity
     {
+        $this->setId(Uuid::randomHex());
         return $this
             ->setShopwareOrderId($id)
             ->setShopgateOrderNumber((string)$order->getOrderNumber())

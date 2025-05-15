@@ -33,10 +33,7 @@ class AfterIncItemMappingEvent extends Event
         return $this->mapping;
     }
 
-    /**
-     * @return ShopgateOrderItem|ExtendedOrderItem
-     */
-    public function getItem(): ShopgateOrderItem
+    public function getItem(): ShopgateOrderItem|ExtendedOrderItem
     {
         return $this->item;
     }

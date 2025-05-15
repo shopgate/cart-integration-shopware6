@@ -5,7 +5,11 @@ namespace Shopgate\Shopware\Storefront;
 use JsonException;
 use Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsEntity;
 use Shopgate\Shopware\Storefront\Events\ContextChangedEvent;
+use Shopware\Administration\Framework\Routing\AdministrationRouteScope;
+use Shopware\Core\Framework\Routing\ApiRouteScope;
+use Shopware\Core\Framework\Routing\RouteScopeRegistry;
 use Shopware\Core\Framework\Routing\SalesChannelRequestContextResolver;
+use Shopware\Core\Framework\Routing\StoreApiRouteScope;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
@@ -14,6 +18,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\CartRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -95,14 +100,29 @@ class ContextManager
         $baseContext = $context ?? $this->getSalesContext();
         $channel = $baseContext->getSalesChannel();
         $request = new Request();
-        $request->headers->set(
-            PlatformRequest::HEADER_LANGUAGE_ID,
-            $baseContext->getCustomer()?->getLanguageId() ?? $baseContext->getContext()->getLanguageId()
-        );
+        $langId = $baseContext->getCustomer()?->getLanguageId() ?? $baseContext->getContext()->getLanguageId();
+        $request->headers->set(PlatformRequest::HEADER_LANGUAGE_ID, $langId);
+        $request->headers->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $token);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID, $baseContext->getSalesChannelId());
         $request->attributes->set(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID, $channel->getCurrencyId());
-        $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $baseContext->getContext());
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [StoreApiRouteScope::ID]);
+//        $tempContext = $this->contextService->get(
+//            new SalesChannelContextServiceParameters(
+//                $context->getSalesChannelId(),
+//                $token,
+//                $langId,
+//                $channel->getCurrencyId()
+//            )
+//        );
+
+//        $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $tempContext->getContext());
+//        $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, $tempContext);
+        $this->contextResolver->resolve($request);
+//        $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
 
         // resolver is intended to be used as an API, therefore it returns context in request
+        // todo: can be null
         $newContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
         $this->overwriteSalesContext($newContext);
 
