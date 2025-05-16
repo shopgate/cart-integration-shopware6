@@ -43,6 +43,7 @@ class ContextManager
 
     /**
      * Note 6.5+ the valid language is only in the SalesChannelContext->Context->getLanguageId()
+     * @throws JsonException
      */
     public function createAndLoad(ShopgateApiCredentialsEntity $apiCredentialsEntity): ContextManager
     {
@@ -107,22 +108,9 @@ class ContextManager
         $request->attributes->set(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID, $channel->getCurrencyId());
         $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $baseContext->getContext());
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [StoreApiRouteScope::ID]);
-//        $tempContext = $this->contextService->get(
-//            new SalesChannelContextServiceParameters(
-//                $context->getSalesChannelId(),
-//                $token,
-//                $langId,
-//                $channel->getCurrencyId()
-//            )
-//        );
-
-//        $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $tempContext->getContext());
-//        $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT, $tempContext);
         $this->contextResolver->resolve($request);
-//        $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
 
-        // resolver is intended to be used as an API, therefore it returns context in request
-        // todo: can be null
+        // can be null, but what can we do...
         $newContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
         $this->overwriteSalesContext($newContext);
 
@@ -136,7 +124,9 @@ class ContextManager
      *
      * @param SalesChannelContext $context
      * @param string|null $customerId
+     *
      * @return SalesChannelContext
+     * @throws JsonException
      */
     public function duplicateContextWithNewToken(SalesChannelContext $context, ?string $customerId): SalesChannelContext
     {
