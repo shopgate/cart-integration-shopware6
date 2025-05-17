@@ -7,15 +7,6 @@ Component.extend('sg-channel-language-single-select', 'sw-entity-single-select',
             required: false,
             type: String,
             default: null
-        },
-        criteria: {
-            type: Object,
-            required: false,
-            default(props) {
-                const criteria = new Criteria(1, props.resultLimit);
-                criteria.addAssociation('languages');
-                return criteria;
-            }
         }
     },
     watch: {
