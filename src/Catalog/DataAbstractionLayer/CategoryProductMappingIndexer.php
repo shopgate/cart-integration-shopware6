@@ -102,6 +102,9 @@ class CategoryProductMappingIndexer extends EntityIndexer
      */
     public function handle(EntityIndexingMessage $message): void
     {
+        if ($this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
+            return;
+        }
         // would love to avoid a try catch like this,
         // but no good way to intercept errors in SW6 async worker
         try {
