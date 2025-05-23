@@ -100,9 +100,12 @@
         </service>
         <service id="Shopgate\Shopware\Customer\CustomerBridge"/>
         <service id="Shopgate\Shopware\Catalog\Mapping\CategoryMapping"/>
-        <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping">
+            <argument key="$crossSellingRoute" type="service" id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping">
             <argument key="$childProductMapping" type="service" id="Shopgate\Shopware\Catalog\Mapping\ChildProductMapping"/>
+            <argument key="$crossSellingRoute" type="service" id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Mapping\PriceMapping">
             <argument key="$exportNet" type="expression">service('shopgate.config_bridge').get('exportNetPrices', false)</argument>
@@ -111,7 +114,9 @@
             <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
             <argument type="service" id="Shopgate\Shopware\Catalog\Mapping\ConfigProductMapping"/>
         </service>
-        <service id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping"/>
+        <service id="Shopgate\Shopware\Catalog\Mapping\SimpleProductMapping">
+            <argument key="$crossSellingRoute" type="service" id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"/>
+        </service>
         <service id="Shopgate\Shopware\Catalog\Mapping\TierPriceMapping"/>
         <service id="Shopgate\Shopware\Catalog\Product\Property\CustomFieldBridge">
             <argument type="service" id="custom_field.repository"/>
@@ -188,7 +193,9 @@
         <service id="Shopgate\Shopware\Order\Shipping\ShippingComposer">
             <argument key="$shopwareVersion" type="string">%kernel.shopware_version%</argument>
         </service>
-        <service id="Shopgate\Shopware\Order\Shipping\ShippingBridge"/>
+        <service id="Shopgate\Shopware\Order\Shipping\ShippingBridge">
+            <argument key="$shippingMethodRoute" type="service" id="Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute"/>
+        </service>
         <service id="Shopgate\Shopware\Order\State\StateBridge"/>
         <service id="Shopgate\Shopware\Order\State\StateComposer"/>
         <service id="Shopgate\Shopware\Order\Taxes\TaxMapping"/>
@@ -362,6 +369,7 @@
         </service>
         <service id="Shopgate\Shopware\System\CurrencyComposer"/>
         <service id="Shopgate\Shopware\System\Formatter">
+            <argument key="$languageRoute" type="service" id="Shopware\Core\System\Language\SalesChannel\LanguageRoute"/>
             <argument key="$translator" id="translator"/>
         </service>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
@@ -383,18 +391,18 @@
         <service id="Shopgate\Shopware\Plugin" alias="shopgate.plugin"/>
         <service id="Shopgate\Shopware\Storefront\ContextManager" alias="shopgate.context_manager"/>
         <service id="Shopgate\Shopware\System\Log\LoggerInterface" alias="Shopgate\Shopware\System\Log\Logger"/>
-        <service id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute" alias="Shopware\Core\Content\Product\SalesChannel\CrossSelling\CachedProductCrossSellingRoute"/>
+        <service id="Shopware\Core\Content\Product\SalesChannel\CrossSelling\AbstractProductCrossSellingRoute" alias="Shopware\Core\Content\Product\SalesChannel\CrossSelling\ProductCrossSellingRoute"/>
         <service id="Shopware\Core\Content\Product\SalesChannel\Listing\AbstractProductListingRoute" alias="Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingRoute"/>
         <service id="Shopware\Core\Content\Product\SalesChannel\AbstractProductListRoute" alias="Shopware\Core\Content\Product\SalesChannel\ProductListRoute"/>
         <service id="Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute" alias="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
         <service id="Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory" alias="Shopware\Core\System\SalesChannel\Context\CachedSalesChannelContextFactory"/>
-        <service id="Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute" alias="Shopware\Core\System\Language\SalesChannel\CachedLanguageRoute"/>
+        <service id="Shopware\Core\System\Language\SalesChannel\AbstractLanguageRoute" alias="Shopware\Core\System\Language\SalesChannel\LanguageRoute"/>
         <service id="Shopware\Core\Checkout\Order\SalesChannel\AbstractOrderRoute" alias="Shopware\Core\Checkout\Order\SalesChannel\OrderRoute"/>
         <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartLoadRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartLoadRoute"/>
         <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartItemAddRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartItemAddRoute"/>
         <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
         <service id="Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartOrderRoute" alias="Shopware\Core\Checkout\Cart\SalesChannel\CartOrderRoute"/>
-        <service id="Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute" alias="Shopware\Core\Checkout\Shipping\SalesChannel\CachedShippingMethodRoute"/>
+        <service id="Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute" alias="Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute"/>
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractCustomerRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\CustomerRoute"/>
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractLoginRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\LoginRoute"/>
         <service id="Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute" alias="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>

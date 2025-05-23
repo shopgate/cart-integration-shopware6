@@ -8,13 +8,11 @@ use Doctrine\DBAL\Exception;
 use JsonException;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 use const JSON_THROW_ON_ERROR;
 
-#[Package('core')]
 class Migration1734462181DefaultFieldTypeConfig extends MigrationStep
 {
     public function getCreationTimestamp(): int

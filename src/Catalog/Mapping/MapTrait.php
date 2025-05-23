@@ -4,6 +4,7 @@ namespace Shopgate\Shopware\Catalog\Mapping;
 
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Throwable;
 
 /**
  * Use the trait for common logic between mappers
@@ -15,9 +16,10 @@ trait MapTrait
         if (null === $urlEntity) {
             return '';
         }
-        // intentional use of get, URL can be null which throws PHP invalid return type exception
-        if (null !== $urlEntity->get('url')) {
+        try {
             return $urlEntity->getUrl();
+        } catch (Throwable) {
+            // url was not indexed & is not in the seo_url table
         }
         $domains = $context->getSalesChannel()->getDomains();
         if (null === $domains) {

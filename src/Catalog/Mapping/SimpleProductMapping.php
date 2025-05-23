@@ -185,7 +185,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
             $image->setUrl($media->getUrl());
             $image->setSortOrder($productMedia->getPosition());
             $image->setIsCover(
-                (int) $this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
+                (int)$this->item->getCoverId() && $this->item->getCoverId() === $productMedia->getId()
             );
             $images[] = $image;
         }
@@ -277,7 +277,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
                         ?? $config['label']['en-GB']
                         ?? $fallback;
                 };
-                $label = $labelRetriever($entity->getConfig(), (string) $key);
+                $label = $labelRetriever($entity->getConfig(), (string)$key);
                 // select & multi-select handling
                 if (isset($entity->getConfig()['options'])) {
                     if (!is_array($value)) {
@@ -415,7 +415,7 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
     public function setInternalOrderInfo(): void
     {
         if ($extension = $this->item->getExtension(ProductExportExtension::EXT_KEY)) {
-            parent::setInternalOrderInfo((string) $extension);
+            parent::setInternalOrderInfo((string)$extension);
         }
     }
 

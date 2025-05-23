@@ -79,9 +79,6 @@ class PaymentComposer
             if ($context->getCustomer()->getLastPaymentMethodId()) {
                 $methods[] = $context->getCustomer()->getLastPaymentMethodId(); // customer last order payment
             }
-            if ($context->getCustomer()->getDefaultPaymentMethodId()) {
-                $methods[] = $context->getCustomer()->getDefaultPaymentMethodId(); // customer default
-            }
         }
         $methods[] = $context->getSalesChannel()->getPaymentMethodId(); // channel default payment
         $ids = array_combine($methods, $methods);

@@ -5,7 +5,11 @@ namespace Shopgate\Shopware\Storefront;
 use JsonException;
 use Shopgate\Shopware\Shopgate\ApiCredentials\ShopgateApiCredentialsEntity;
 use Shopgate\Shopware\Storefront\Events\ContextChangedEvent;
+use Shopware\Administration\Framework\Routing\AdministrationRouteScope;
+use Shopware\Core\Framework\Routing\ApiRouteScope;
+use Shopware\Core\Framework\Routing\RouteScopeRegistry;
 use Shopware\Core\Framework\Routing\SalesChannelRequestContextResolver;
+use Shopware\Core\Framework\Routing\StoreApiRouteScope;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
@@ -14,6 +18,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\CartRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +43,7 @@ class ContextManager
 
     /**
      * Note 6.5+ the valid language is only in the SalesChannelContext->Context->getLanguageId()
+     * @throws JsonException
      */
     public function createAndLoad(ShopgateApiCredentialsEntity $apiCredentialsEntity): ContextManager
     {
@@ -95,14 +101,16 @@ class ContextManager
         $baseContext = $context ?? $this->getSalesContext();
         $channel = $baseContext->getSalesChannel();
         $request = new Request();
-        $request->headers->set(
-            PlatformRequest::HEADER_LANGUAGE_ID,
-            $baseContext->getCustomer()?->getLanguageId() ?? $baseContext->getContext()->getLanguageId()
-        );
+        $langId = $baseContext->getCustomer()?->getLanguageId() ?? $baseContext->getContext()->getLanguageId();
+        $request->headers->set(PlatformRequest::HEADER_LANGUAGE_ID, $langId);
+        $request->headers->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $token);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID, $baseContext->getSalesChannelId());
         $request->attributes->set(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID, $channel->getCurrencyId());
-        $this->contextResolver->handleSalesChannelContext($request, $channel->getId(), $token);
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_CONTEXT_OBJECT, $baseContext->getContext());
+        $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [StoreApiRouteScope::ID]);
+        $this->contextResolver->resolve($request);
 
-        // resolver is intended to be used as an API, therefore it returns context in request
+        // can be null, but what can we do...
         $newContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
         $this->overwriteSalesContext($newContext);
 
@@ -116,7 +124,9 @@ class ContextManager
      *
      * @param SalesChannelContext $context
      * @param string|null $customerId
+     *
      * @return SalesChannelContext
+     * @throws JsonException
      */
     public function duplicateContextWithNewToken(SalesChannelContext $context, ?string $customerId): SalesChannelContext
     {

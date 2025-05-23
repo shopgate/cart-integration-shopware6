@@ -7,15 +7,6 @@ Component.extend('sg-channel-language-single-select', 'sw-entity-single-select',
             required: false,
             type: String,
             default: null
-        },
-        criteria: {
-            type: Object,
-            required: false,
-            default() {
-                const criteria = new Criteria(1, this.resultLimit);
-                criteria.addAssociation('languages');
-                return criteria;
-            }
         }
     },
     watch: {
@@ -47,10 +38,12 @@ Component.extend('sg-channel-language-single-select', 'sw-entity-single-select',
 
             this.isLoading = true;
 
+            const criteria = this.criteria
+            criteria.addAssociation('languages');
             return this.repository.get(this.salesChannelId, {
                 ...this.context,
                 inheritance: true
-            }, this.criteria).then((item) => {
+            }, criteria).then((item) => {
                 this.singleSelection = item.languages.get(this.value);
                 this.isLoading = false;
                 if (!this.singleSelection) {
@@ -65,11 +58,13 @@ Component.extend('sg-channel-language-single-select', 'sw-entity-single-select',
         },
         loadData() {
             this.isLoading = true;
+            const criteria = this.criteria
+            criteria.addAssociation('languages');
 
             return this.repository.get(this.salesChannelId, {
                 ...this.context,
                 inheritance: true
-            }, this.criteria).then((result) => {
+            }, criteria).then((result) => {
                 this.isLoading = false;
                 this.displaySearch(result.languages);
 

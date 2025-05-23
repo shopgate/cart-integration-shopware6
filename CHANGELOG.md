@@ -1,3 +1,7 @@
+# 3.8.0
+
+- added support to Shopware 6.7
+
 # 3.7.0
 
 - added config to ignore sort order for exports & disable product/category indexer

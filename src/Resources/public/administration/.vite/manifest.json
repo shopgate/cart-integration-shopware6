@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/sgate-shopgate-plugin-s-w6-DLBK757Z.js",
+    "name": "sgate-shopgate-plugin-s-w6",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/sgate-shopgate-plugin-s-w6-BLXV6yLN.css"
+    ]
+  }
+}

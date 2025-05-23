@@ -1,0 +1,25 @@
+{
+  "base": "/bundles/sgateshopgatepluginsw6/administration/",
+  "entryPoints": {
+    "sgate-shopgate-plugin-s-w6": {
+      "css": [
+        "/bundles/sgateshopgatepluginsw6/administration/assets/sgate-shopgate-plugin-s-w6-BLXV6yLN.css"
+      ],
+      "dynamic": [],
+      "js": [
+        "/bundles/sgateshopgatepluginsw6/administration/assets/sgate-shopgate-plugin-s-w6-DLBK757Z.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

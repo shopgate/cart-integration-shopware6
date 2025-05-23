@@ -9,6 +9,7 @@ use Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Symfony\Component\HttpFoundation\Request;
 
 class PaymentBridge
@@ -51,7 +52,7 @@ class PaymentBridge
         return $this->stateBridge->transition(
             'order_transaction',
             $transactionId,
-            'pay',
+            StateMachineTransitionActions::ACTION_PAID,
             $context->getContext()
         );
     }
