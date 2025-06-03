@@ -117,7 +117,7 @@ class TierPriceMapping
         $reduction = $this->priceMapping->mapPrice($normalPrice) - $this->priceMapping->mapPrice($reducedPrice);
 
         // we remove any price tier that is higher than the base price
-        if ($reduction <= 0) {
+        if ($reduction < 0) {
             return null;
         }
         $tierPrice->setReduction($reduction);
