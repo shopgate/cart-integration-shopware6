@@ -175,22 +175,4 @@ class TierPriceMapping
             $basePrice
         );
     }
-
-    public function hasAlwaysValidRule(ProductPriceCollection $priceCollection): bool
-    {
-        return $priceCollection
-                ->filter(fn(ProductPriceEntity $entity) => $entity->getRule() instanceof AlwaysValidRule)
-                ->count() > 0;
-    }
-
-    /**
-     * @param Shopgate_Model_Catalog_TierPrice[] $sgTierPrices
-     */
-    public function hasCustomerGroupRule(array $sgTierPrices, string $customerGroupId): bool
-    {
-        return count(array_filter(
-                $sgTierPrices,
-                fn(Shopgate_Model_Catalog_TierPrice $price) => $price->getCustomerGroupUid() === $customerGroupId
-            )) > 0 ;
-    }
 }
