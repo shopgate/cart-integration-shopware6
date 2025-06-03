@@ -10413,13 +10413,14 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test(\"Dynamic category created\", async function () {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
-											"",
-											"    pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
-											"    pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
-											"    pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.eq('API: No Free Ship Dynamic Cat')",
-											"});"
+											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
+											"    pm.test(\"Dynamic category created\", function () {",
+											"        pm.expect(jsonObject.categories.category.$.is_active).to.be.eq('1');",
+											"        pm.expect(jsonObject.categories.category.$.is_anchor).to.be.eq('1');",
+											"        pm.expect(jsonObject.categories.category, 'Name not set').to.have.property('name').to.be.eq('API: No Free Ship Dynamic Cat')",
+											"    });",
+											"})",
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -10482,17 +10483,17 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test(\"Is in the dynamic category\", async function () {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
+											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
+											"    pm.test(\"Is in the dynamic category\", function () {",
+											"        pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
 											"",
-											"    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
+											"        const noFreeShipCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('created_category_noFreeShip_id'));",
+											"        pm.expect(noFreeShipCat.$.sort_order).to.be.eq('1');",
 											"",
-											"    const noFreeShipCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('created_category_noFreeShip_id'));",
-											"    pm.expect(noFreeShipCat.$.sort_order).to.be.eq('1');",
-											"",
-											"    const freeTimeCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('category_freeTime_id'));",
-											"    pm.expect(freeTimeCat.$.sort_order).to.be.eq('4');",
-											"});",
+											"        const freeTimeCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('category_freeTime_id'));",
+											"        pm.expect(freeTimeCat.$.sort_order).to.be.eq('4');",
+											"    });",
+											"})",
 											"",
 											"pm.test(\"Header check\", function () {",
 											"    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
@@ -10639,19 +10640,19 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test(\"Is in the dynamic category\", async function () {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
+											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
+											"    pm.test(\"Is in the dynamic category\", function () {",
+											"        pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
 											"",
-											"    pm.expect(jsonObject.items.item.categories.category).to.be.an('array', 'Should be more than 1 category').length(2);",
+											"        const noFreeShipCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('created_category_noFreeShip_id'));",
+											"        pm.expect(noFreeShipCat).to.not.be.undefined;",
+											"        pm.expect(noFreeShipCat.$.sort_order).to.be.eq('10');",
 											"",
-											"    const noFreeShipCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('created_category_noFreeShip_id'));",
-											"    pm.expect(noFreeShipCat).to.not.be.undefined;",
-											"    pm.expect(noFreeShipCat.$.sort_order).to.be.eq('10');",
-											"",
-											"    const freeTimeCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('category_freeTime_id'));",
-											"     pm.expect(freeTimeCat).to.not.be.undefined;",
-											"     pm.expect(freeTimeCat.$.sort_order).to.be.eq('10');",
-											"});",
+											"        const freeTimeCat = Utility.getXmlByUid(jsonObject.items.item.categories.category, pm.environment.get('category_freeTime_id'));",
+											"        pm.expect(freeTimeCat).to.not.be.undefined;",
+											"        pm.expect(freeTimeCat.$.sort_order).to.be.eq('10');",
+											"    });",
+											"})",
 											"",
 											"pm.test(\"Header check\", function () {",
 											"    pm.response.to.be.header(\"Content-Type\", 'application/xml');",
@@ -15194,6 +15195,418 @@
 					"name": "Indexer API",
 					"item": [
 						{
+							"name": "Test Listing API",
+							"item": [
+								{
+									"name": "SWA: get prod sorting",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"get sort\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
+													"\r",
+													"    const priceSort = jsonData.data.find(item => item.key === 'price-desc');\r",
+													"    pm.expect(priceSort).to.not.be.undefined;\r",
+													"    pm.environment.set('gen_product_sort_priceDesc_id', priceSort.id);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"key\",\n                    \"value\": \"price-desc\"\n                }\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/search/product-sorting",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"search",
+												"product-sorting"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SWA: update category sort",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully updated\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const body = {",
+													"    \"slotConfig\": {",
+													"        \"#slotId#\": {",
+													"            \"boxLayout\": {",
+													"                \"source\": \"static\",",
+													"                \"value\": \"standard\"",
+													"            },",
+													"            \"showSorting\": {",
+													"                \"source\": \"static\",",
+													"                \"value\": true",
+													"            },",
+													"            \"useCustomSorting\": {",
+													"                \"source\": \"static\",",
+													"                \"value\": true",
+													"            },",
+													"            \"availableSortings\": {",
+													"                \"source\": \"static\",",
+													"                \"value\": {",
+													"                    \"#nameDescId#\": 3,",
+													"                    \"#priceDesc#\": 1",
+													"                }",
+													"            },",
+													"            \"defaultSorting\": {",
+													"                \"source\": \"static\",",
+													"                \"value\": \"#priceDesc#\"",
+													"            }",
+													"        }",
+													"    }",
+													"}",
+													"let requestBody = JSON.stringify(body);",
+													"",
+													"// sort is changed in 6.6",
+													"if (Utility.version.isLT(pm.environment.get('gen_shopware_version'), '6.6.0.0')){",
+													"    requestBody = requestBody.replaceAll('#nameDescId#', 'name-desc');",
+													"    requestBody = requestBody.replaceAll('#priceDesc#', 'price-desc');",
+													"} else {",
+													"    requestBody = requestBody.replaceAll('#nameDescId#', pm.environment.get('gen_product_sort_nameDesc_id'));",
+													"    requestBody = requestBody.replaceAll('#priceDesc#', pm.environment.get('gen_product_sort_priceDesc_id'));",
+													"}",
+													"",
+													"requestBody = requestBody.replaceAll('#slotId#', pm.environment.get('gen_cms_slot_productListing_id'));",
+													"pm.environment.set(\"requestBody\", requestBody);"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{{requestBody}}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/category/:catId",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"category",
+												":catId"
+											],
+											"variable": [
+												{
+													"key": "catId",
+													"value": "{{created_category_noFreeShip_id}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SWS: cat products FE",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"get category items\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.total).to.eq(3);\r",
+													"    pm.expect(jsonData.elements[0].id).to.eq(pm.environment.get('created_product_prevPrice_id'));\r",
+													"    pm.expect(jsonData.elements[1].id).to.eq(pm.environment.get('catalog_product_main_id'));\r",
+													"    pm.expect(jsonData.elements[2].name).to.eq('API: Complex Advanced Prices');\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "sw-access-key",
+												"value": "{{gen_salesChannel_access_key}}",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/vnd.api+json",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"page\": 1,\r\n    \"limit\": 5,\r\n    \"includes\": {\r\n        \"product\": [\r\n            \"id\",\r\n            \"parentId\",\r\n            \"name\",\r\n            \"versionId\",\r\n            \"translated\"\r\n        ]\r\n    },\r\n    \"total-count-mode\": 1,\r\n    \"aggregations\": [],\r\n    \"order\":\"price-desc\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_store_api}}/product-listing/:categoryId",
+											"host": [
+												"{{sw_endpoint_store_api}}"
+											],
+											"path": [
+												"product-listing",
+												":categoryId"
+											],
+											"variable": [
+												{
+													"key": "categoryId",
+													"value": "{{created_category_noFreeShip_id}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SWA: check listing gen",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"get category items\", function () {\r",
+													"    const jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.total).to.eq(3);\r",
+													"    pm.expect(jsonData.elements[0].id).to.eq(pm.environment.get('created_product_prevPrice_id'));\r",
+													"    pm.expect(jsonData.elements[1].id).to.eq(pm.environment.get('catalog_product_main_id'));\r",
+													"    pm.expect(jsonData.elements[2].name).to.eq('API: Complex Advanced Prices');\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "sw-language-id",
+												"value": "{{system_default_language}}",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/vnd.api+json",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"page\": 1,\r\n    \"limit\": 5,\r\n    \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n    \"sortId\": \"{{gen_product_sort_priceDesc_id}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/shopgate/index/product-listing/:categoryId",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"shopgate",
+												"index",
+												"product-listing",
+												":categoryId"
+											],
+											"variable": [
+												{
+													"key": "categoryId",
+													"value": "{{created_category_noFreeShip_id}}",
+													"description": "Neu"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "SWA: reset cat",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successfully updated\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {
+											"accept": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{gen_access_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"slotConfig\": null\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{sw_endpoint_api}}/category/:catId",
+											"host": [
+												"{{sw_endpoint_api}}"
+											],
+											"path": [
+												"category",
+												":catId"
+											],
+											"variable": [
+												{
+													"key": "catId",
+													"value": "{{created_category_noFreeShip_id}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "SW: Enable logs",
 							"event": [
 								{
@@ -16532,8 +16945,7 @@
 													"        pm.expect(jsonObject.items.item.relations.relation[1].uid[2]).to.be.eq(pm.environment.get('catalog_product_props'));",
 													"    });",
 													"",
-													"    pm.test(\"Custom list check\", async function () {",
-													"        const jsonObject = await Utility.getJson(pm.response.text());",
+													"    pm.test(\"Custom list check\", function () {",
 													"        pm.expect(jsonObject.items.item.relations.relation[2].$.type).to.be.eq('custom');",
 													"        pm.expect(jsonObject.items.item.relations.relation[2].label).to.be.an('string').to.be.eq('Custom: manual 3');",
 													"        pm.expect(jsonObject.items.item.relations.relation[2].uid).to.be.an('array', 'Where be the children 3?').length(3, '3 manual products');",
@@ -17106,7 +17518,7 @@
 											"});",
 											"",
 											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
-											"    pm.test(\"Checking that we have a fallaback tier price\", async () => {",
+											"    pm.test(\"Checking that we have a fallaback tier price\", () => {",
 											"        pm.expect(jsonObject.items.item.prices.price).to.be.eq('17');",
 											"        pm.expect(jsonObject.items.item.prices.tier_prices).to.be.undefined;",
 											"    });",
@@ -17801,23 +18213,24 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test('Check manufacturer', async function() {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
-											"    const properties = jsonObject.items.item.properties.property;",
-											"    pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
+											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
+											"    pm.test('Check manufacturer', function() {",
+											"        const properties = jsonObject.items.item.properties.property;",
+											"        pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
 											"",
-											"    pm.expect(properties).to.be.a('array');",
-											"    const manufacturer = Utility.getXmlByLabel(properties, 'API Manufacturer Custom Field 0001: text');",
-											"    pm.expect(manufacturer).to.be.undefined;",
-											"});",
+											"        pm.expect(properties).to.be.a('array');",
+											"        const manufacturer = Utility.getXmlByLabel(properties, 'API Manufacturer Custom Field 0001: text');",
+											"        pm.expect(manufacturer).to.be.undefined;",
+											"    });",
 											"",
-											"pm.test('Check other props no longer export', async function() {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
-											"    const properties = jsonObject.items.item.properties.property;",
-											"     pm.expect(properties).to.be.a('array');",
-											"    const integer = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: int');",
-											"    pm.expect(integer, 'should have found width').be.undefined;",
-											"});",
+											"    pm.test('Check other props no longer export', function() {",
+											"        const properties = jsonObject.items.item.properties.property;",
+											"        pm.expect(properties).to.be.a('array');",
+											"        const integer = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: int');",
+											"        pm.expect(integer, 'should have found width').be.undefined;",
+											"    });",
+											"})",
+											"",
 											"    "
 										],
 										"type": "text/javascript",
@@ -17943,23 +18356,24 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test('Check manufacturer', async function() {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
-											"    const properties = jsonObject.items.item.properties.property;",
-											"    pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
+											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
+											"    pm.test('Check manufacturer', function() {",
+											"        const properties = jsonObject.items.item.properties.property;",
+											"        pm.expect(jsonObject.items.item.manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
 											"",
-											"    pm.expect(properties).to.be.a('array');",
-											"    const manufacturer = Utility.getXmlByLabel(properties, 'API Manufacturer Custom Field 0001: text');",
-											"    pm.expect(manufacturer).to.not.be.undefined;",
-											"});",
+											"        pm.expect(properties).to.be.a('array');",
+											"        const manufacturer = Utility.getXmlByLabel(properties, 'API Manufacturer Custom Field 0001: text');",
+											"        pm.expect(manufacturer).to.not.be.undefined;",
+											"    });",
 											"",
-											"pm.test('Check other props export again', async function() {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
-											"    const properties = jsonObject.items.item.properties.property;",
-											"     pm.expect(properties).to.be.a('array');",
-											"    const integer = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: int');",
-											"    pm.expect(integer, 'should have found width').not.be.undefined;",
-											"});"
+											"    pm.test('Check other props export again', function() {",
+											"        const properties = jsonObject.items.item.properties.property;",
+											"        pm.expect(properties).to.be.a('array');",
+											"        const integer = Utility.getXmlByLabel(properties, 'API product Custom Field 0001: int');",
+											"        pm.expect(integer, 'should have found width').not.be.undefined;",
+											"    });",
+											"})",
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -18027,25 +18441,27 @@
 											"    pm.response.to.not.have.jsonBody('error');",
 											"});",
 											"",
-											"pm.test('Check properties',  async function() {",
-											"    const jsonObject = await Utility.getJson(pm.response.text());",
-											"    const properties = jsonObject.items.item.properties.property;",
-											"    pm.expect(properties).to.be.an('array', 'Should be a property array');",
+											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
+											"    pm.test('Check properties', function() {",
+											"        const properties = jsonObject.items.item.properties.property;",
+											"        pm.expect(properties).to.be.an('array', 'Should be a property array');",
 											"",
-											"    const manufacturer = jsonObject.items.item.manufacturer;",
-											"    pm.expect(manufacturer).to.not.be.undefined;",
-											"    pm.expect(manufacturer.$.uid).to.eq(pm.environment.get('created_manufacturer_simpleOne_id'))",
-											"    pm.expect(manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
+											"        const manufacturer = jsonObject.items.item.manufacturer;",
+											"        pm.expect(manufacturer).to.not.be.undefined;",
+											"        pm.expect(manufacturer.$.uid).to.eq(pm.environment.get('created_manufacturer_simpleOne_id'))",
+											"        pm.expect(manufacturer.title).to.eq('API: simpleOne manufacturer (EN)');",
 											"",
-											"    const name = Utility.getXmlByUid(properties, 'manufacturer_name');",
-											"    pm.expect(name, 'Should be no name prop').to.be.undefined;",
+											"        const name = Utility.getXmlByUid(properties, 'manufacturer_name');",
+											"        pm.expect(name, 'Should be no name prop').to.be.undefined;",
 											"",
-											"    const description = Utility.getXmlByUid(properties, 'manufacturer_description');",
-											"    pm.expect(description, 'Should be no desc prop').to.be.undefined;",
+											"        const description = Utility.getXmlByUid(properties, 'manufacturer_description');",
+											"        pm.expect(description, 'Should be no desc prop').to.be.undefined;",
 											"",
-											"    const url = Utility.getXmlByUid(properties, 'manufacturer_mediaUrl');",
-											"    pm.expect(url, 'Should be no media url prop').to.be.undefined;",
-											"});"
+											"        const url = Utility.getXmlByUid(properties, 'manufacturer_mediaUrl');",
+											"        pm.expect(url, 'Should be no media url prop').to.be.undefined;",
+											"    });",
+											"})",
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}

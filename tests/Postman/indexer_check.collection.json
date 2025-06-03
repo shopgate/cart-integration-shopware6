@@ -50,7 +50,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"productNumber\",\r\n                    \"value\": \"10081144\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"productNumber\",\r\n                    \"value\": \"10081771\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -111,7 +111,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Hosen\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"name\",\r\n                    \"value\": \"Neu\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -251,6 +251,223 @@
 			]
 		},
 		{
+			"name": "Listing API",
+			"item": [
+				{
+					"name": "SWA: get prod sorting",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"get sort\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
+									"\r",
+									"    const priceSort = jsonData.data.find(item => item.key === 'price-desc');\r",
+									"    pm.expect(priceSort).to.not.be.undefined;\r",
+									"    pm.environment.set('gen_product_sort_priceDesc_id', priceSort.id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{gen_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"key\",\n                    \"value\": \"price-desc\"\n                }\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sw_endpoint_api}}/search/product-sorting",
+							"host": [
+								"{{sw_endpoint_api}}"
+							],
+							"path": [
+								"search",
+								"product-sorting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SWS: cat products FE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"get category items\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.total).to.eq(3);\r",
+									"    pm.expect(jsonData.elements[0].id).to.eq(pm.environment.get('created_product_prevPrice_id'));\r",
+									"    pm.expect(jsonData.elements[1].id).to.eq(pm.environment.get('catalog_product_main_id'));\r",
+									"    pm.expect(jsonData.elements[2].name).to.eq('API: Complex Advanced Prices');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "sw-access-key",
+								"value": "{{gen_salesChannel_access_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.api+json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1,\r\n    \"limit\": 5,\r\n    \"includes\": {\r\n        \"product\": [\r\n            \"id\",\r\n            \"parentId\",\r\n            \"name\",\r\n            \"versionId\",\r\n            \"translated\"\r\n        ]\r\n    },\r\n    \"total-count-mode\": 1,\r\n    \"aggregations\": [],\r\n    \"order\":\"price-desc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sw_store_api}}/product-listing/:categoryId",
+							"host": [
+								"{{sw_store_api}}"
+							],
+							"path": [
+								"product-listing",
+								":categoryId"
+							],
+							"variable": [
+								{
+									"key": "categoryId",
+									"value": "{{test_category1_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SWA: check listing gen",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"get category items\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.total).to.eq(3);\r",
+									"    pm.expect(jsonData.elements[0].id).to.eq(pm.environment.get('created_product_prevPrice_id'));\r",
+									"    pm.expect(jsonData.elements[1].id).to.eq(pm.environment.get('catalog_product_main_id'));\r",
+									"    pm.expect(jsonData.elements[2].name).to.eq('API: Complex Advanced Prices');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{gen_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "sw-language-id",
+								"value": "{{system_default_language}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/vnd.api+json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1,\r\n    \"limit\": 5,\r\n    \"salesChannelId\": \"{{gen_salesChannel_id}}\",\r\n    \"sortId\": \"{{gen_product_sort_priceDesc_id}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sw_endpoint_api}}/shopgate/index/product-listing/:categoryId",
+							"host": [
+								"{{sw_endpoint_api}}"
+							],
+							"path": [
+								"shopgate",
+								"index",
+								"product-listing",
+								":categoryId"
+							],
+							"variable": [
+								{
+									"key": "categoryId",
+									"value": "{{test_category1_id}}",
+									"description": "Neu"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "SW: Enable logs",
 			"event": [
 				{
@@ -292,7 +509,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
+					"raw": "{\r\n    \"write-system-config\": {\r\n        \"entity\": \"system_config\",\r\n        \"action\": \"upsert\",\r\n        \"payload\": [\r\n            {\r\n                \"id\": \"e1804791335e4cacb96224dd5ee087a8\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.basicLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            },\r\n            {\r\n                \"id\": \"05c3e035665845539ca49451bac69fc1\",\r\n                \"configurationKey\": \"SgateShopgatePluginSW6.config.detailedLogging\",\r\n                \"configurationValue\": true,\r\n                \"salesChannelId\": null\r\n            }\r\n        ]\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -970,12 +1187,14 @@
 		{
 			"key": "test_product1_id",
 			"value": "0190b6ad62cb7099a2d84469b63f46b8",
-			"type": "string"
+			"type": "string",
+			"disabled": true
 		},
 		{
 			"key": "test_category1_id",
 			"value": "018f049ce88c7085b8436054b022d827",
-			"type": "string"
+			"type": "string",
+			"disabled": true
 		}
 	]
 }

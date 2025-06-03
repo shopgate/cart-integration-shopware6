@@ -1,6 +1,7 @@
 # 3.8.0
 
-- added support to Shopware 6.7
+- added support to Shopware 6.7-RC5
+- added API call that checks part of the indexer logic
 - fixed indexer `limit` parameter when querying category products
 - changed logic to not export tier prices which higher than default product price
 - removed 3.3.4 tier price changes
