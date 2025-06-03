@@ -115,6 +115,11 @@ class TierPriceMapping
         $tierPrice->setToQuantity($priceEntity->getQuantityEnd());
         $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
         $reduction = $this->priceMapping->mapPrice($normalPrice) - $this->priceMapping->mapPrice($reducedPrice);
+
+        // we remove any price tier that is higher than the base price
+        if ($reduction <= 0) {
+            return null;
+        }
         $tierPrice->setReduction($reduction);
 
         return $tierPrice;
@@ -157,22 +162,5 @@ class TierPriceMapping
         }
 
         return $carry;
-    }
-
-    public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice): Price
-    {
-        return array_reduce(
-            $this->getValidTiers($priceCollection),
-            function (Price $carry, ProductPriceEntity $entity) {
-                $curPrice = $this->currencyComposer->extractCalculatedPrice($entity->getPrice());
-                if (!$curPrice) {
-                    return $carry;
-                }
-                return $this->priceMapping->mapPrice($carry) > $this->priceMapping->mapPrice($curPrice)
-                    ? $carry
-                    : $curPrice;
-            },
-            $basePrice
-        );
     }
 }

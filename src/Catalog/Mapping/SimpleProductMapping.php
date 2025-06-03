@@ -120,10 +120,9 @@ class SimpleProductMapping extends Shopgate_Model_Catalog_Product
 
             if ($priceCollection = $this->item->getPrices()) {
                 $priceCollection->sortByQuantity();
-                $highestPrice = $this->tierPriceMapping->getHighestPrice($priceCollection, $shopwarePrice);
-                $shopgatePrice->setPrice($this->priceMapping->mapPrice($highestPrice));
+                $shopgatePrice->setPrice($this->priceMapping->mapPrice($shopwarePrice));
                 $shopgatePrice->setTierPricesGroup(
-                    $this->tierPriceMapping->mapTierPrices($priceCollection, $highestPrice)
+                    $this->tierPriceMapping->mapTierPrices($priceCollection, $shopwarePrice)
                 );
             }
         }

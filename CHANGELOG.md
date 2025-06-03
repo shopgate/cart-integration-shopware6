@@ -1,6 +1,8 @@
 # 3.8.0
 
 - added support to Shopware 6.7
+- changed logic to not export tier prices which higher than default product price
+- removed 3.3.4 tier price changes
 
 # 3.7.0
 
