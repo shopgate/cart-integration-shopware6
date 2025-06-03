@@ -25,6 +25,7 @@ use Shopware\Core\Profiling\Profiler;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Throwable;
+
 use function count;
 use function json_decode;
 
@@ -243,7 +244,9 @@ class CategoryProductMappingIndexer extends EntityIndexer
                     $temp = array_pop($mainLangCategory);
                     $rawCat['slot_config'] = $temp['slot'];
                 }
-                $category->setSlotConfig($rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true) : []);
+                $category->setSlotConfig(
+                    $rawCat['slot_config'] ? json_decode($rawCat['slot_config'], true, flags: \JSON_THROW_ON_ERROR) : []
+                );
                 $category->setName($rawCat['name'] ?? null);
                 $langSortOrder[] = [
                     'channelId' => $channelId,
