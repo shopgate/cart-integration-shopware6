@@ -2145,7 +2145,7 @@
 											"response": []
 										}
 									],
-									"description": "This product is created to test SW6M-112. An issue where there is a tier with a price higher than base, but no fallback tier such as \"default customer grp\" or \"all valid tier\""
+									"description": "This product is created to test SW6M-112. An issue where there is a tier with a price higher than base, but no fallback tier such as \"default customer grp\" or \"all valid tier\"\n\nThe feature was removed in SW6M-135. Now we make sure we do not export any tiers that are higher price than the default price of a product"
 								},
 								{
 									"name": "SW: clone variant child",
@@ -2701,6 +2701,75 @@
 													"path": [
 														"search",
 														"cms-slot"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "SWA: get prod sorting",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});\r",
+															"\r",
+															"pm.test(\"get sort\", function () {\r",
+															"    var jsonData = pm.response.json();\r",
+															"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
+															"\r",
+															"    const nameSort = jsonData.data.find(item => item.key === 'name-desc');\r",
+															"    pm.expect(nameSort).to.not.be.undefined;\r",
+															"    pm.environment.set('gen_product_sort_nameDesc_id', nameSort.id);\r",
+															"\r",
+															"    const priceSort = jsonData.data.find(item => item.key === 'price-desc');\r",
+															"    pm.expect(priceSort).to.not.be.undefined;\r",
+															"    pm.environment.set('gen_product_sort_priceDesc_id', priceSort.id);\r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{gen_access_token}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"key\",\n                    \"value\": \"name-desc\"\n                },\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"key\",\n                    \"value\": \"price-desc\"\n                }\n            ]\n        }\n    ]\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{sw_endpoint_api}}/search/product-sorting",
+													"host": [
+														"{{sw_endpoint_api}}"
+													],
+													"path": [
+														"search",
+														"product-sorting"
 													]
 												}
 											},
@@ -11349,75 +11418,6 @@
 							"response": []
 						},
 						{
-							"name": "SWA: get prod sorting",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"pm.test(\"get sort\", function () {\r",
-											"    var jsonData = pm.response.json();\r",
-											"    pm.expect(jsonData.data).to.be.a('array').to.not.be.empty;\r",
-											"\r",
-											"    const nameSort = jsonData.data.find(item => item.key === 'name-desc');\r",
-											"    pm.expect(nameSort).to.not.be.undefined;\r",
-											"    pm.environment.set('gen_product_sort_nameDesc_id', nameSort.id);\r",
-											"\r",
-											"    const priceSort = jsonData.data.find(item => item.key === 'price-desc');\r",
-											"    pm.expect(priceSort).to.not.be.undefined;\r",
-											"    pm.environment.set('gen_product_sort_priceDesc_id', priceSort.id);\r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{gen_access_token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"filter\": [\n        {\n            \"type\": \"multi\",\n            \"operator\": \"or\",\n            \"queries\": [\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"key\",\n                    \"value\": \"name-desc\"\n                },\n                {\n                    \"type\": \"equals\",\n                    \"field\": \"key\",\n                    \"value\": \"price-desc\"\n                }\n            ]\n        }\n    ]\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{sw_endpoint_api}}/search/product-sorting",
-									"host": [
-										"{{sw_endpoint_api}}"
-									],
-									"path": [
-										"search",
-										"product-sorting"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "SWA: update category sort",
 							"event": [
 								{
@@ -17107,22 +17107,8 @@
 											"",
 											"Utility.getJson2(pm.response.text(), (jsonObject) => {",
 											"    pm.test(\"Checking that we have a fallaback tier price\", async () => {",
-											"        pm.expect(jsonObject.items.item.prices.price).to.be.eq('28');",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.threshold).to.be.eq('1');",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0]._).to.be.eq('0');",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$.type).to.be.eq('fixed');",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[0].$, 'Should be a customer group tier price')",
-											"            .to.haveOwnProperty('customer_group_uid')",
-											"            .to.be.eq(pm.environment.get('created_customerGroup_net_id'), 'Should equal NET group');",
-											"",
-											"        // this group was created on the fly",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.threshold).to.be.eq('1');",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.max_quantity).to.be.undefined;",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1]._).to.be.eq('11');",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$.type).to.be.eq('fixed');",
-											"        pm.expect(jsonObject.items.item.prices.tier_prices.tier_price[1].$, 'Should be a customer group tier price')",
-											"            .to.haveOwnProperty('customer_group_uid')",
-											"            .to.be.eq(pm.environment.get('gen_customer_group_main_id'), 'Should equal default customer group');",
+											"        pm.expect(jsonObject.items.item.prices.price).to.be.eq('17');",
+											"        pm.expect(jsonObject.items.item.prices.tier_prices).to.be.undefined;",
 											"    });",
 											"})",
 											""
@@ -17173,7 +17159,8 @@
 									"host": [
 										"{{domain}}"
 									]
-								}
+								},
+								"description": "Used to test SW6M-112, but feature was removed in SW6M-135\n\nNow we make sure that we ignore rules that are higher price than the base price of a product"
 							},
 							"response": []
 						}

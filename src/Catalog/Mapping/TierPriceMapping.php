@@ -115,6 +115,11 @@ class TierPriceMapping
         $tierPrice->setToQuantity($priceEntity->getQuantityEnd());
         $tierPrice->setReductionType(Shopgate_Model_Catalog_TierPrice::DEFAULT_TIER_PRICE_TYPE_FIXED);
         $reduction = $this->priceMapping->mapPrice($normalPrice) - $this->priceMapping->mapPrice($reducedPrice);
+
+        // we remove any price tier that is higher than the base price
+        if ($reduction < 0) {
+            return null;
+        }
         $tierPrice->setReduction($reduction);
 
         return $tierPrice;
@@ -157,40 +162,5 @@ class TierPriceMapping
         }
 
         return $carry;
-    }
-
-    public function getHighestPrice(ProductPriceCollection $priceCollection, Price $basePrice): Price
-    {
-        return array_reduce(
-            $this->getValidTiers($priceCollection),
-            function (Price $carry, ProductPriceEntity $entity) {
-                $curPrice = $this->currencyComposer->extractCalculatedPrice($entity->getPrice());
-                if (!$curPrice) {
-                    return $carry;
-                }
-                return $this->priceMapping->mapPrice($carry) > $this->priceMapping->mapPrice($curPrice)
-                    ? $carry
-                    : $curPrice;
-            },
-            $basePrice
-        );
-    }
-
-    public function hasAlwaysValidRule(ProductPriceCollection $priceCollection): bool
-    {
-        return $priceCollection
-                ->filter(fn(ProductPriceEntity $entity) => $entity->getRule() instanceof AlwaysValidRule)
-                ->count() > 0;
-    }
-
-    /**
-     * @param Shopgate_Model_Catalog_TierPrice[] $sgTierPrices
-     */
-    public function hasCustomerGroupRule(array $sgTierPrices, string $customerGroupId): bool
-    {
-        return count(array_filter(
-                $sgTierPrices,
-                fn(Shopgate_Model_Catalog_TierPrice $price) => $price->getCustomerGroupUid() === $customerGroupId
-            )) > 0 ;
     }
 }
