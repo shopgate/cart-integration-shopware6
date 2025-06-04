@@ -379,8 +379,10 @@
         <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\IndexController" public="true">
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexerRegistry"/>
+            <argument key="$contextManager" type="service" id="shopgate.context_manager" />
+            <argument key="$registry" type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexerRegistry"/>
             <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
+            <argument key="$sortTree" type="service" id="Shopgate\Shopware\Catalog\Product\Sort\SortTree" />
         </service>
         <service id="Shopgate\Shopware\Storefront\Controller\MainController" public="true"/>
         <service id="Shopgate\Shopware\Storefront\Controller\MainApiController" public="true"/>

@@ -46,12 +46,12 @@ class SortTree
             $request = new Request();
             $request->setMethod(Request::METHOD_POST);
             $request->request->set('p', $page++);
-            $request->request->set('limit', $limit);
             $request->setSession(new Session()); // 3rd party subscriber support
             if ($orderKey = $this->getSortOrderKey($category, $productSorts)) {
                 $request->request->set('order', $orderKey);
             }
             $criteria = new Criteria();
+            $criteria->setLimit($limit);
             $criteria->setTitle('shopgate::product::category-id');
             $result = $this->listingRoute->load($category->getId(), $request, $channel, $criteria)->getResult();
             $list->merge($result->getEntities());
@@ -72,14 +72,13 @@ class SortTree
         $request = new Request();
         $request->setMethod(Request::METHOD_POST);
         $request->request->set('p', $page);
-        $request->request->set('limit', $limit);
         $request->setSession(new Session()); // 3rd party subscriber support
         if ($orderKey = $this->getSortOrderKey($category, $productSorts)) {
             $request->request->set('order', $orderKey);
         }
         $criteria = new Criteria();
+        $criteria->setLimit($limit);
         $criteria->setTitle('shopgate::product::paginated::category-id');
-        $criteria->setIncludes(['product' => ['id', 'parentId', 'versionId']]);
 
         $result = $this->listingRoute->load($category->getId(), $request, $channel, $criteria)->getResult();
         $this->logger->logDetails(
