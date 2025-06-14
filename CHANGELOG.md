@@ -1,3 +1,9 @@
+# 3.9.0
+
+- added listener for category product stream updates
+- added config to disable/enable stream update index listener
+- changed update indexer queue force
+
 # 3.8.0
 
 - added support to Shopware 6.7-RC5
