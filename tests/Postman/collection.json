@@ -9294,14 +9294,9 @@
 												}
 											},
 											"response": []
-										}
-									]
-								},
-								{
-									"name": "regular",
-									"item": [
+										},
 										{
-											"name": "SW: check prod / cat map",
+											"name": "SW: product map count",
 											"event": [
 												{
 													"listen": "test",
@@ -9313,7 +9308,8 @@
 															"\r",
 															"pm.test(\"check data\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.meta.total).to.be.eq(5);\r",
+															"    pm.expect(jsonData.meta.total).to.be.a('number');\r",
+															"    pm.environment.set('gen_category_baseline_count', jsonData.meta.total)\r",
 															"});"
 														],
 														"type": "text/javascript",
@@ -9355,7 +9351,12 @@
 												}
 											},
 											"response": []
-										},
+										}
+									]
+								},
+								{
+									"name": "regular",
+									"item": [
 										{
 											"name": "SW: create product",
 											"event": [
@@ -9390,15 +9391,10 @@
 												"header": [
 													{
 														"key": "indexing-behavior",
-														"value": "disable-indexing",
+														"value": "use-queue-indexing",
+														"description": "doesn't seem to work with this API call",
 														"type": "text",
 														"disabled": true
-													},
-													{
-														"key": "indexing-behavior",
-														"value": "use-queue-indexing",
-														"description": "doesn't seem to work",
-														"type": "text"
 													}
 												],
 												"body": {
@@ -9435,7 +9431,8 @@
 															"\r",
 															"pm.test(\"check data\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.meta.total).to.be.eq(6);\r",
+															"    const base = pm.environment.get('gen_category_baseline_count')\r",
+															"    pm.expect(jsonData.meta.total).to.be.eq(base + 1);\r",
 															"});"
 														],
 														"type": "text/javascript",
@@ -9609,7 +9606,8 @@
 															"\r",
 															"pm.test(\"check data\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.meta.total).to.be.eq(5);\r",
+															"    const base = pm.environment.get('gen_category_baseline_count')\r",
+															"    pm.expect(jsonData.meta.total).to.be.eq(base);\r",
 															"});"
 														],
 														"type": "text/javascript",
@@ -9718,7 +9716,8 @@
 															"\r",
 															"pm.test(\"check data\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.meta.total).to.be.eq(5);\r",
+															"    const base = pm.environment.get('gen_category_baseline_count')\r",
+															"    pm.expect(jsonData.meta.total).to.be.eq(base);\r",
 															"});"
 														],
 														"type": "text/javascript",
@@ -9892,7 +9891,8 @@
 															"\r",
 															"pm.test(\"check data\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.meta.total).to.be.eq(5);\r",
+															"    const base = pm.environment.get('gen_category_baseline_count')\r",
+															"    pm.expect(jsonData.meta.total).to.be.eq(base);\r",
 															"});"
 														],
 														"type": "text/javascript",
@@ -10016,7 +10016,8 @@
 															"\r",
 															"pm.test(\"check data\", function () {\r",
 															"    var jsonData = pm.response.json();\r",
-															"    pm.expect(jsonData.meta.total).to.be.eq(6);\r",
+															"    const base = pm.environment.get('gen_category_baseline_count')\r",
+															"    pm.expect(jsonData.meta.total).to.be.eq(base + 1);\r",
 															"});"
 														],
 														"type": "text/javascript",
@@ -10124,6 +10125,7 @@
 														"exec": [
 															"pm.test(\"Modified single entity\", function () {\r",
 															"    pm.response.to.have.status(204);\r",
+															"    pm.environment.unset('gen_category_baseline_count');\r",
 															"});"
 														],
 														"type": "text/javascript",
@@ -11495,7 +11497,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"page\": 1,\r\n    \"limit\": 5,\r\n    \"includes\": {\r\n        \"product\": [\r\n            \"id\",\r\n            \"parentId\",\r\n            \"name\",\r\n            \"versionId\",\r\n            \"translated\"\r\n        ]\r\n    },\r\n    \"total-count-mode\": 1,\r\n    \"aggregations\": [],\r\n    \"order\":\"release_date\"\r\n}",
+											"raw": "{\r\n    \"page\": 1,\r\n    \"limit\": 5,\r\n    \"includes\": {\r\n        \"product\": [\r\n            \"id\",\r\n            \"parentId\",\r\n            \"name\",\r\n            \"versionId\",\r\n            \"translated\"\r\n        ]\r\n    },\r\n    \"total-count-mode\": 1,\r\n    \"aggregations\": []\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
