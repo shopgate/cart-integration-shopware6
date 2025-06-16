@@ -151,6 +151,13 @@
             <defaultValue>always</defaultValue>
         </input-field>
         <input-field type="bool">
+            <name>disableStreamUpdates</name>
+            <label>Disable Stream updates</label>
+            <label lang="de-DE">Stream-Updates deaktivieren</label>
+            <helpText>Product streams can be extremely large, we ensure that it can be disabled. This will not affect full-index.</helpText>
+            <helpText lang="de-DE">Produktströme können extrem groß sein, wir sorgen dafür, dass sie deaktiviert werden können. Dies hat keine Auswirkungen auf den Full-Index.</helpText>
+        </input-field>
+        <input-field type="bool">
             <name>basicLogging</name>
             <label>Basic Logging</label>
             <label lang="de-DE">Grundlegende Protokollierung</label>

@@ -198,4 +198,27 @@ class ProductMapBridge
 
         return $query->executeQuery()->fetchAllAssociative();
     }
+
+    /**
+     * Based on products provided we return a list of categories
+     * which include these products in streams. Original intent
+     * is to re-index these categories
+     * @throws Exception
+     */
+    public function getProductStreamCategoryIds(array $productIds): array
+    {
+        $query = $this->db->createQueryBuilder();
+        $query->select('cat.id');
+        $query->from('category', 'cat');
+        $query->leftJoin(
+            'cat',
+            'product_stream_mapping',
+            'ps',
+            'ps.product_stream_id = cat.product_stream_id'
+        );
+        $query->andWhere('ps.product_id IN (:ids)');
+        $query->setParameter('ids', Uuid::fromHexToBytesList($productIds), ArrayParameterType::BINARY);
+
+        return $query->executeQuery()->fetchAllAssociative();
+    }
 }

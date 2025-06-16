@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults autoconfigure="true" autowire="true"/>
+        <!-- Catalog -->
+        <service id="Shopgate\Shopware\Catalog\Review\Subscriber\AddChannelFilterSubscriber">
+            <argument key="$exportAllChannelReviews" type="expression">service('shopgate.config_bridge').get('exportAllChannelReviews', true)</argument>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Catalog\Subscribers\CrossSellPropertySubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Catalog\Subscribers\ManufacturerPropertySubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Catalog\Subscribers\ProductIndexerSubscriber">
+            <argument key="$indexer" type="service" id="Shopgate\Shopware\Catalog\DataAbstractionLayer\CategoryProductMappingIndexer"/>
+            <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
+            <argument key="$systemConfigService" type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Orders -->
+        <service id="Shopgate\Shopware\Order\Subscriber\AddSgOrderToCriteriaSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\ChangeLanguageSubscriber">
+            <argument key="$languageId" type="expression">service('shopgate.config_bridge').get('languageId')</argument>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\LiveShoppingSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\RoundingOverwriteSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\SaveCartSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\ShopgateCouponSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Shopgate\Shopware\Order\Subscriber\SortOutLineItemSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Storefront -->
+        <service id="Shopgate\Shopware\Storefront\Subscribers\ExceptionCatcherSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

@@ -34,6 +34,7 @@ class ConfigBridge
     public const SYSTEM_CONFIG_IGNORE_SORT_ORDER = self::SYSTEM_CONFIG_DOMAIN .'ignoreSortOrderInCategories';
     public const SYSTEM_CONFIG_NET_PRICE_EXPORT = 'exportNetPrices';
     public const SYSTEM_CONFIG_IS_LIVE_SHOPPING = 'isLiveShopping';
+    public const ADVANCED_CONFIG_INDEXER_STREAM_UPDATES = self::SYSTEM_CONFIG_DOMAIN . 'disableStreamUpdates';
     public const ADVANCED_CONFIG_INDEXER_WRITE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerWriteType';
     public const ADVANCED_CONFIG_INDEXER_DELETE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerDeleteType';
     public const ADVANCED_CONFIG_LOGGING_BASIC = self::SYSTEM_CONFIG_DOMAIN . 'basicLogging';

@@ -94,8 +94,8 @@ class CategoryProductMappingIndexer extends EntityIndexer
             return null;
         }
 
-        $this->logger->logBasics('Running partial index', ['categories' => array_values($ids)]);
-        return new CategoryProductIndexingMessage(array_values($ids), null, $event->getContext(), count($ids) > 20);
+        $this->logger->logBasics('Queuing partial index', ['categories' => array_values($ids)]);
+        return new CategoryProductIndexingMessage(array_values($ids), null, $event->getContext());
     }
 
     /**
@@ -106,8 +106,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
         if ($this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
             return;
         }
-        // would love to avoid a try catch like this,
-        // but no good way to intercept errors in SW6 async worker
+
         try {
             $this->handleMessage($message);
         } catch (Throwable $e) {
