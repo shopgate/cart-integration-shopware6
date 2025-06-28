@@ -70,7 +70,7 @@ newman:
       - PLATFORM_BRANCH:
           - 6.5.2.0
           - 6.6.10.4
-          - 6.7.0.0-rc5
+          - 6.7.0.0
       - PHP_VERSION:
           - '8.1'
   except:

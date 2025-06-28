@@ -2158,7 +2158,8 @@
 													"    pm.response.to.have.status(200);\r",
 													"});"
 												],
-												"type": "text/javascript"
+												"type": "text/javascript",
+												"packages": {}
 											}
 										}
 									],
@@ -2177,7 +2178,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"overwrites\": {\r\n        \"parentId\": \"{{catalog_product_variant}}\",\r\n        \"id\": \"{{created_product_variant_child_id}}\",\r\n        \"name\": \"API: Variant Child (Red-M)\",\r\n        \"productNumber\": \"SG.DEMO.CHILD.1\",\r\n        \"taxId\": \"{{gen_product_variant_taxId}}\",\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 21.25,\r\n                \"gross\": 24.50,\r\n                \"linked\": true\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
+											"raw": "{\r\n    \"overwrites\": {\r\n        \"parentId\": \"{{catalog_product_variant}}\",\r\n        \"id\": \"{{created_product_variant_child_id}}\",\r\n        \"name\": \"API: Variant Child (Red-M)\",\r\n        \"productNumber\": \"SG.DEMO.CHILD.1\",\r\n        \"taxId\": \"{{gen_product_variant_taxId}}\",\r\n        \"media\": [\r\n            {\r\n                \"media\": {\r\n                    \"id\": \"{{created_media_iconOne_id}}\"\r\n                }\r\n            }\r\n        ],\r\n        \"price\": [\r\n            {\r\n                \"currencyId\": \"{{gen_salesChannel_currency_id}}\",\r\n                \"net\": 21.25,\r\n                \"gross\": 24.50,\r\n                \"linked\": true\r\n            }\r\n        ]\r\n    },\r\n    \"cloneChildren\": false\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -11682,6 +11683,12 @@
 											"",
 											"    const selectTwo = Utility.getXmlByLabel(properties, 'API product Custom Field 0002: select');",
 											"    pm.expect(selectTwo, 'should have found length').to.haveOwnProperty('value').to.eq('Option One (en)');",
+											"});",
+											"",
+											"pm.test('Check images exists', () => {",
+											"    pm.expect(jsonObject.items.item.images).to.not.be.empty;",
+											"    pm.expect(jsonObject.items.item.images.image).to.not.be.undefined;",
+											"    pm.expect(jsonObject.items.item.images.image.url).to.contain('mobile_600x600.jpg')",
 											"});"
 										],
 										"type": "text/javascript",
@@ -11780,11 +11787,18 @@
 											"    pm.expect(firstTier.$.max_quantity).to.be.eq('11');",
 											"    pm.expect(firstTier.$.type).to.be.eq('fixed');",
 											"});",
+											"",
 											"pm.test('Check second tier price', function() {",
 											"    const secondTier = jsonObject.items.item.prices.tier_prices.tier_price.find(price => price.$.threshold === '12');",
 											"    pm.expect(secondTier._).to.be.eq('200');",
 											"    pm.expect(secondTier.$.threshold).to.be.eq('12');",
 											"    pm.expect(secondTier.$.type).to.be.eq('fixed');",
+											"});",
+											"",
+											"pm.test('Check images exists', () => {",
+											"    pm.expect(jsonObject.items.item.images).to.not.be.empty;",
+											"    pm.expect(jsonObject.items.item.images.image).to.not.be.undefined;",
+											"    pm.expect(jsonObject.items.item.images.image.url).to.contain('waschmaschine_600x600.jpg')",
 											"});"
 										],
 										"type": "text/javascript",
@@ -11860,9 +11874,16 @@
 											"",
 											"    const length = Utility.getXmlByLabel(props, 'Target group');",
 											"    pm.expect(length, 'should have found length').to.haveOwnProperty('value').to.eq('Man');",
+											"});",
+											"",
+											"pm.test('Check images exists', () => {",
+											"    pm.expect(jsonObject.items.item.images).to.not.be.empty;",
+											"    pm.expect(jsonObject.items.item.images.image).to.not.be.undefined;",
+											"    pm.expect(jsonObject.items.item.images.image.url).to.contain('hemd_600x600.jpg')",
 											"});"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -19126,6 +19147,15 @@
 											"        // created child which was set to be default",
 											"        const createdChild = Utility.getXmlByUid(variantProduct.children.item, pm.environment.get('created_product_variant_child_id'));",
 											"        pm.expect(createdChild.$.default_child, 'should be default variant').to.eq('1');",
+											"        pm.expect(createdChild.images).to.not.be.empty;",
+											"        pm.expect(createdChild.images.image).to.not.be.undefined;",
+											"        pm.expect(createdChild.images.image.url).to.contain('200x200@2x.png')",
+											"    });",
+											"",
+											"    pm.test('Check images exists', () => {",
+											"        pm.expect(jsonObject.items.item.images).to.not.be.empty;",
+											"        pm.expect(jsonObject.items.item.images.image).to.not.be.undefined;",
+											"        pm.expect(jsonObject.items.item.images.image.url).to.contain('shirt_600x600.jpg')",
 											"    });",
 											"})",
 											""
