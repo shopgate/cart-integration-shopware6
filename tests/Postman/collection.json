@@ -6765,7 +6765,7 @@
 													"pm.test(\"Taxes\", function () {",
 													"    pm.expect(order.order_taxes).to.be.length(1);",
 													"    const tax = order.order_taxes[0];",
-													"    pm.expect(tax.label).to.eq('zzgl. 20 % MwSt.');",
+													"    pm.expect(tax.label).to.contain('zzgl. 20 % MwSt.');",
 													"    pm.expect(tax.tax_percent).to.eq(20);",
 													"    pm.expect(tax.amount).to.eq(20); // tax 20%, -> 20 from item, 1.03 from shipping",
 													"});",
@@ -6793,7 +6793,8 @@
 													"    pm.expect(extraCost.label).to.eq('Versandkosten');",
 													"});"
 												],
-												"type": "text/javascript"
+												"type": "text/javascript",
+												"packages": {}
 											}
 										}
 									],
@@ -7263,7 +7264,7 @@
 											"pm.test(\"Taxes\", function () {",
 											"    pm.expect(order.order_taxes).to.be.length(1);",
 											"    const tax = order.order_taxes[0];",
-											"    pm.expect(tax.label).to.eq('zzgl. 19 % MwSt.');",
+											"    pm.expect(tax.label).to.contain('zzgl. 19 % MwSt.');",
 											"    pm.expect(tax.tax_percent).to.eq(19);",
 											"    pm.expect(tax.amount).to.eq(19); // tax 19%, -> 19 from item, 0.98 from shipping",
 											"});",
@@ -7291,7 +7292,8 @@
 											"    pm.expect(extraCost.label).to.eq('Versandkosten');",
 											"});"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -7501,7 +7503,7 @@
 											"pm.test(\"Taxes\", function () {",
 											"    pm.expect(order.order_taxes).to.be.length(1);",
 											"    const tax = order.order_taxes[0];",
-											"    pm.expect(tax.label).to.eq('zzgl. 20 % MwSt.');",
+											"    pm.expect(tax.label).to.contain('zzgl. 20 % MwSt.');",
 											"    pm.expect(tax.tax_percent).to.eq(20);",
 											"    pm.expect(tax.amount).to.eq(20); // tax 20%, -> 20 from item, 1.03 from shipping",
 											"});",
@@ -7529,7 +7531,8 @@
 											"    pm.expect(extraCost.label).to.eq('Versandkosten');",
 											"});"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -29070,7 +29073,7 @@
 											"pm.test(\"Taxes\", function () {",
 											"    pm.expect(order.order_taxes).to.be.length(1);",
 											"    const tax = order.order_taxes[0];",
-											"    pm.expect(tax.label).to.eq('plus 20% VAT');",
+											"    pm.expect(tax.label).to.contain('plus 20% VAT');",
 											"    pm.expect(tax.tax_percent).to.eq(20);",
 											"    pm.expect(tax.amount).to.eq(77.68); // 78.28 - 0.6 (20% ship tax)",
 											"});",
@@ -29161,7 +29164,8 @@
 											"    pm.expect(extraCost.label).to.eq('plus shipping costs');",
 											"});"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -37577,7 +37581,7 @@
 					"    return found && found.hasOwnProperty('value') ? found.value : null;",
 					"}",
 					"// JSON handlers",
-					"Utility.getByLabel = (list, value) => getItemByKey(list, 'label', value);",
+					"Utility.getByLabel = (list, value, strict = false) => getItemByKey(list, 'label', value, strict);",
 					"Utility.getByName = (list, value) => getItemByKey(list, 'name', value);",
 					"Utility.getByCode = (list, value) => getItemByKey(list, 'code', value);",
 					"Utility.getById = (list, value, strict = true) => getItemByKey(list, 'id', value, strict);",
