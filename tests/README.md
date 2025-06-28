@@ -40,3 +40,18 @@ both plugins mentioned earlier.
 # installs & activates plugins
 docker exec [CONTAINER_ID] sh -c "rm -rf var/cache/dev_*;rm -rf var/cache/prod_*;bin/console system:install --drop-database --basic-setup --force;bin/console plugin:refresh --quiet;bin/console plugin:install --activate SgateShopgatePluginSW6;bin/console plugin:install --activate SwagPlatformDemoData;bin/console bundle:dump --quiet;bin/console assets:install --quiet;"
 ```
+
+Another useful way to re-install is placing the following script in the `[root]/composer.json` **scripts** section:
+```json
+{
+    "reinstall": [
+        "@init:db",
+        "@php bin/console theme:compile",
+        "@php bin/console theme:change --all Storefront",
+        "@php bin/console plugin:refresh",
+        "@php bin/console plugin:install -a --skip-asset-build SwagPlatformDemoData",
+        "@php bin/console plugin:install -a --skip-asset-build SgateShopgatePluginSW6",
+        "@php bin/console assets:install"
+    ]
+}
+```
