@@ -9,3 +9,5 @@ import './module/sg-order/component/sg-title-content';
 import './module/sg-order/component/sg-key-value';
 import './module';
 import './core';
+
+Shopware.Component.register('sg-icon', () => import('./module/sg-api-credentials/component/sg-icon'))

@@ -5,9 +5,11 @@
       "css": [
         "/bundles/sgateshopgatepluginsw6/administration/assets/sgate-shopgate-plugin-s-w6-BLXV6yLN.css"
       ],
-      "dynamic": [],
+      "dynamic": [
+        "/bundles/sgateshopgatepluginsw6/administration/assets/index-C_PUeHT4.js"
+      ],
       "js": [
-        "/bundles/sgateshopgatepluginsw6/administration/assets/sgate-shopgate-plugin-s-w6-DLBK757Z.js"
+        "/bundles/sgateshopgatepluginsw6/administration/assets/sgate-shopgate-plugin-s-w6-B9iVdkV1.js"
       ],
       "legacy": false,
       "preload": []
