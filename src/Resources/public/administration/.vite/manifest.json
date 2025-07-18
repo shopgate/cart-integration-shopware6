@@ -1,11 +1,23 @@
 {
   "main.js": {
-    "file": "assets/sgate-shopgate-plugin-s-w6-DLBK757Z.js",
+    "file": "assets/sgate-shopgate-plugin-s-w6-B9iVdkV1.js",
     "name": "sgate-shopgate-plugin-s-w6",
     "src": "main.js",
     "isEntry": true,
+    "dynamicImports": [
+      "module/sg-api-credentials/component/sg-icon/index.js"
+    ],
     "css": [
       "assets/sgate-shopgate-plugin-s-w6-BLXV6yLN.css"
+    ]
+  },
+  "module/sg-api-credentials/component/sg-icon/index.js": {
+    "file": "assets/index-C_PUeHT4.js",
+    "name": "index",
+    "src": "module/sg-api-credentials/component/sg-icon/index.js",
+    "isDynamicEntry": true,
+    "css": [
+      "assets/index-BlYgI4U1.css"
     ]
   }
 }

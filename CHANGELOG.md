@@ -1,3 +1,7 @@
+# 3.9.2
+
+- added Shopgate icon to extensions tab
+
 # 3.9.1
 
 - fixed image export in 6.7
