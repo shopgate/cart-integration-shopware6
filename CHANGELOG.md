@@ -1,3 +1,7 @@
+# 3.9.3
+ 
+- fixes installation for MySQL >8.0 (foreign constraint error)
+
 # 3.9.2
 
 - added Shopgate icon to extensions tab

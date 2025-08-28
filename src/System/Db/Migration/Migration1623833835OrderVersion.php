@@ -25,7 +25,6 @@ class Migration1623833835OrderVersion extends MigrationStep
     public function update(Connection $connection): void
     {
         $sql = <<<SQL
-        DROP TABLE shopgate_order;
         CREATE TABLE `shopgate_order` (
             `id` BINARY(16) NOT NULL COMMENT 'Entity ID',
             `sw_order_id` BINARY(16) NOT NULL COMMENT 'Shopware Order Id',
