@@ -40,7 +40,7 @@ workflow:
     - when: always
 
 .defaults: &defaults
-  image: dockware/dev:$PLATFORM_BRANCH
+  image: dockware/shopware:$PLATFORM_BRANCH
   cache:
     <<: *cache
   before_script:
