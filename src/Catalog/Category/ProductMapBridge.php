@@ -2,22 +2,23 @@
 
 namespace Shopgate\Shopware\Catalog\Category;
 
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Shopgate\Shopware\Catalog\Product\Sort\SortTree;
+use Shopgate\Shopware\System\Db\DatabaseUtilityTrait;
 use Shopgate\Shopware\System\Log\FallbackLogger;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\FetchModeHelper;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\MultiInsertQueryQueue;
 use Shopware\Core\Framework\DataAbstractionLayer\Doctrine\RetryableQuery;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ProductMapBridge
 {
+    use DatabaseUtilityTrait;
+
     private const PAGE_LIMIT = 25;
 
     public function __construct(
@@ -194,7 +195,7 @@ class ProductMapBridge
         }
 
         $query->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
-        $query->setParameter('ids', Uuid::fromHexToBytesList($ids), ArrayParameterType::BINARY);
+        $query->setParameter('ids', Uuid::fromHexToBytesList($ids), $this->getBinaryParameterType());
 
         return $query->executeQuery()->fetchAllAssociative();
     }
@@ -217,7 +218,7 @@ class ProductMapBridge
             'ps.product_stream_id = cat.product_stream_id'
         );
         $query->andWhere('ps.product_id IN (:ids)');
-        $query->setParameter('ids', Uuid::fromHexToBytesList($productIds), ArrayParameterType::BINARY);
+        $query->setParameter('ids', Uuid::fromHexToBytesList($productIds), $this->getBinaryParameterType());
 
         return $query->executeQuery()->fetchAllAssociative();
     }

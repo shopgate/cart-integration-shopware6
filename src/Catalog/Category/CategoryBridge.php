@@ -2,11 +2,11 @@
 
 namespace Shopgate\Shopware\Catalog\Category;
 
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductCollection;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductEntity;
 use Shopgate\Shopware\Storefront\ContextManager;
+use Shopgate\Shopware\System\Db\DatabaseUtilityTrait;
 use Shopgate\Shopware\System\Log\LoggerInterface;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryListRoute;
@@ -18,9 +18,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Throwable;
 
 class CategoryBridge
 {
+    use DatabaseUtilityTrait;
+
     public function __construct(
         private readonly AbstractCategoryListRoute $categoryListRoute,
         private readonly ContextManager $contextManager,
@@ -85,9 +88,9 @@ class CategoryBridge
              WHERE ps.product_id IN (:ids) AND cat.parent_id IS NOT NULL ' .
                 'ORDER BY ps.product_id',
                 ['ids' => Uuid::fromHexToBytesList($uids)],
-                ['ids' => ArrayParameterType::BINARY]
+                ['ids' => $this->getBinaryParameterType()]
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Issue retrieving category stream map: ' . $e->getMessage());
         }
 
@@ -171,7 +174,7 @@ class CategoryBridge
         if ($uids) {
             $criteria->addFilter(new EqualsAnyFilter('productId', $uids));
         }
-
+        /** @var CategoryProductCollection */
         return $this->categoryProductMapRepository->search($criteria, $channel->getContext())->getEntities();
     }
 }

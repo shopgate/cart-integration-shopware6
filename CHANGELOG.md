@@ -1,3 +1,7 @@
+# 3.9.4
+
+- fixes the BINARY constant in Shopware 6.5.7< & DBAL library when running indexer 
+
 # 3.9.3
  
 - fixes installation for MySQL >8.0 (foreign constraint error)
