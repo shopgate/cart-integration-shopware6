@@ -14,10 +14,14 @@ trait DatabaseUtilityTrait
      * Uses BINARY if available, otherwise falls back to STRING.
      * This provides backward compatibility with different DBAL versions.
      */
-    protected function getBinaryParameterType(): int
+    protected function getBinaryParameterType()
     {
-        return defined('Doctrine\DBAL\ArrayParameterType::BINARY') 
-            ? ArrayParameterType::BINARY 
-            : ArrayParameterType::STRING;
+        // Check if BINARY constant exists (for older DBAL versions with integer constants)
+        if (defined('Doctrine\DBAL\ArrayParameterType::BINARY')) {
+            return ArrayParameterType::BINARY;
+        }
+        
+        // Fallback to STRING
+        return ArrayParameterType::STRING;
     }
 }
