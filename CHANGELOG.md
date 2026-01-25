@@ -1,13 +1,14 @@
 # 3.10.0
 
 - changed SDK to version 2.11.0
+- added support for 6.7.5.2 customer login
 
 # 3.9.4
 
-- fixes the BINARY constant in Shopware 6.5.7< & DBAL library when running indexer 
+- fixes the BINARY constant in Shopware 6.5.7< & DBAL library when running indexer
 
 # 3.9.3
- 
+
 - fixes installation for MySQL >8.0 (foreign constraint error)
 
 # 3.9.2
@@ -125,7 +126,7 @@
 
 # 3.1.0
 
-- added Shopgate icon to settings > extensions tab 
+- added Shopgate icon to settings > extensions tab
 - removed order manual shipping re-calculation for 6.5.5.0+
 
 # 3.0.1

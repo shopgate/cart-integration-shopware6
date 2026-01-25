@@ -18,6 +18,7 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\CartRestorer;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextPersister;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -35,6 +36,7 @@ class ContextManager
         private readonly AbstractSalesChannelContextFactory $channelContextFactory,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly SalesChannelRequestContextResolver $contextResolver,
+        private readonly SalesChannelContextService $contextService,
         private readonly CartRestorer $cartRestorer,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly SalesChannelContextPersister $contextPersist
@@ -72,6 +74,21 @@ class ContextManager
     public function loadByCustomerId(string $customerId): ContextManager
     {
         $context = $this->cartRestorer->restore($customerId, $this->salesContext);
+        // loads customer object until 6.7.5.1
+        if (!$context->getCustomer()) {
+            $contextServiceParameters = new SalesChannelContextServiceParameters(
+                $this->salesContext->getSalesChannelId(),
+                $context->getToken(),
+                $context->getLanguageId(),
+                $context->getCurrencyId(),
+                $context->getDomainId(),
+                $context->getContext(),
+                $customerId,
+                null,
+                null
+            );
+            $context = $this->contextService->get($contextServiceParameters);
+        }
         $this->overwriteSalesContext($context);
 
         return $this;
@@ -112,6 +129,20 @@ class ContextManager
 
         // not null until 6.7.5.1
         $newContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        if (!$newContext) {
+            $contextServiceParameters = new SalesChannelContextServiceParameters(
+                $baseContext->getSalesChannelId(),
+                $token,
+                $langId,
+                $channel->getCurrencyId(),
+                $baseContext->getDomainId(),
+                $baseContext->getContext(),
+                null,
+                null,
+                null
+            );
+            $newContext = $this->contextService->get($contextServiceParameters);
+        }
         $this->overwriteSalesContext($newContext);
 
         return $this;

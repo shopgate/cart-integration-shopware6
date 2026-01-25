@@ -71,6 +71,7 @@ class QuoteBridge
     ): OrderRouteResponse {
         $criteria->setTitle('shopgate::orders::as-customer');
         $this->dispatcher->dispatch(new BeforeCustomerGetOrdersLoadEvent($criteria, $request, $context));
+        // todo: log in customer, $context->getCustomer()
         $result = $this->orderRoute->load($request, $context, $criteria);
         $this->dispatcher->dispatch(new AfterCustomerGetOrdersLoadEvent($result, $context));
 
