@@ -2,7 +2,10 @@
 
 namespace Shopgate\Shopware\Shopgate\Catalog;
 
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\System\Language\LanguageEntity;
 
 class CategoryProductEntity extends Entity
 {
@@ -12,6 +15,11 @@ class CategoryProductEntity extends Entity
     public string $categoryId;
     public string $categoryVersionId;
     public int $sortOrder;
+    public string $languageId;
+
+    public ?ProductEntity $product = null;
+    public ?CategoryEntity $category = null;
+    public ?LanguageEntity $language = null;
 
     public function getSalesChannelId(): string
     {
@@ -83,5 +91,53 @@ class CategoryProductEntity extends Entity
     public function getSortOrder(): int
     {
         return $this->sortOrder;
+    }
+
+    public function getLanguageId(): string
+    {
+        return $this->languageId;
+    }
+
+    public function setLanguageId(string $languageId): CategoryProductEntity
+    {
+        $this->languageId = $languageId;
+
+        return $this;
+    }
+
+    public function getProduct(): ?ProductEntity
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?ProductEntity $product): CategoryProductEntity
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    public function getCategory(): ?CategoryEntity
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?CategoryEntity $category): CategoryProductEntity
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?LanguageEntity
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?LanguageEntity $language): CategoryProductEntity
+    {
+        $this->language = $language;
+
+        return $this;
     }
 }

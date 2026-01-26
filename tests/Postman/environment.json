@@ -419,6 +419,12 @@
 			"enabled": true
 		},
 		{
+      "key": "created_rule_billingUSA",
+      "value": "019be4a8d72d71c4a5a314edd33dd85f",
+      "type": "default",
+      "enabled": true
+    },
+    {
 			"key": "created_rule_cart5k",
 			"value": "15c7f24db961127894dd7c6022332dee",
 			"type": "default",
@@ -536,7 +542,8 @@
 			"enabled": true
 		}
 	],
+  "color": null,
 	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2025-05-14T19:50:39.833Z",
-	"_postman_exported_using": "Postman/11.45.1"
+  "_postman_exported_at": "2026-01-23T03:37:35.843Z",
+  "_postman_exported_using": "Postman/11.81.3"
 }
