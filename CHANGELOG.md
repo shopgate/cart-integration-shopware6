@@ -1,3 +1,7 @@
+# 3.10.0
+
+- changed SDK to version 2.11.0
+
 # 3.9.4
 
 - fixes the BINARY constant in Shopware 6.5.7< & DBAL library when running indexer 

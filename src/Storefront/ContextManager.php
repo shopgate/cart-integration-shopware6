@@ -110,7 +110,7 @@ class ContextManager
         $request->attributes->set(PlatformRequest::ATTRIBUTE_ROUTE_SCOPE, [StoreApiRouteScope::ID]);
         $this->contextResolver->resolve($request);
 
-        // can be null, but what can we do...
+        // not null until 6.7.5.1
         $newContext = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
         $this->overwriteSalesContext($newContext);
 
