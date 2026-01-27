@@ -74,8 +74,8 @@ newman:
       - DOCKER_IMAGE: 'dockware/shopware:6.6.10.11'
         PLATFORM_BRANCH: '6.6.10.11'
         PHP_VERSION: '8.3'
-      - DOCKER_IMAGE: 'dockware/dev:6.7.0.0'
-        PLATFORM_BRANCH: '6.7.0.0'
+      - DOCKER_IMAGE: 'dockware/shopware:6.7.6.2'
+        PLATFORM_BRANCH: '6.7.6.2'
         PHP_VERSION: '8.3'
   except:
     - tags
