@@ -1,3 +1,7 @@
+# 3.10.1
+
+- fixed circular error when using basic logging in newer Shopware 6.7.x versions
+
 # 3.10.0
 
 - changed SDK to version 2.11.0

@@ -7,3 +7,6 @@ composer.lock
 **/node_modules
 *.map
 **/.tmp/
+
+newman.junit.xml
+postman-report.html

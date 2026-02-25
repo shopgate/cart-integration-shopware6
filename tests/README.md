@@ -55,3 +55,11 @@ Another useful way to re-install is placing the following script in the `[root]/
     ]
 }
 ```
+
+Ways to run:
+
+```shell
+PHP=/nix/store/ck261w6q5b227d6bxg6x7qj6myaprf8d-php-with-extensions-8.2.18/bin/php && \
+ cd /Users/konstantin/Dev/apite/sw6-dev7/custom/plugins/shopgate-legacy && \
+ PROJECT_ROOT=/Users/konstantin/Dev/apite/sw6-dev7 $PHP ../../../vendor/bin/phpunit tests/Unit/System/Log/EventLoggerTest.php --no-coverage 2>&1
+```
