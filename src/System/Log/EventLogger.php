@@ -7,12 +7,12 @@ use Doctrine\DBAL\Exception;
 use Monolog\Level;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class EventLogger
 {
+    use SafeSerializerTrait;
+
     public function __construct(private readonly Connection $db, private readonly SerializerInterface $serializer)
     {
     }
@@ -41,49 +41,8 @@ class EventLogger
         );
     }
 
-    private function safeSerialize(mixed $data): string
+    private function getSerializer(): SerializerInterface
     {
-        try {
-            return $this->serializer->serialize($data, 'json', $this->getSerializerContext());
-        } catch (\Throwable) {
-            return json_encode($this->sanitize($data), \JSON_THROW_ON_ERROR);
-        }
-    }
-
-    /**
-     * Reduces data to scalars only — used as fallback when Symfony
-     * serializer fails due to recursion in JsonSerializable objects
-     * that bypass the normalizer's circular-reference tracking.
-     */
-    private function sanitize(mixed $data, int $depth = 0): mixed
-    {
-        if ($depth > 10) {
-            return '[max depth]';
-        }
-        if ($data === null || is_scalar($data)) {
-            return $data;
-        }
-        if (is_object($data)) {
-            return '[object] ' . get_class($data);
-        }
-        if (is_array($data)) {
-            $out = [];
-            foreach ($data as $k => $v) {
-                $out[$k] = $this->sanitize($v, $depth + 1);
-            }
-            return $out;
-        }
-        return '[' . get_debug_type($data) . ']';
-    }
-
-    private function getSerializerContext(): array
-    {
-        return [
-            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => static function (object $object): string {
-                return get_class($object);
-            },
-            AbstractNormalizer::IGNORED_ATTRIBUTES => ['session'],
-            JsonEncode::OPTIONS => \JSON_PARTIAL_OUTPUT_ON_ERROR,
-        ];
+        return $this->serializer;
     }
 }
