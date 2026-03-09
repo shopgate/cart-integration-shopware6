@@ -34,15 +34,46 @@ class EventLogger
                 'message' => "Shopgate Go ($sequence): " . $message,
                 'level' => $level->value,
                 'channel' => 'Shopgate Go',
-                'context' => $this->serializer->serialize($context, 'json', $this->getSerializerContext()),
-                'extra' => $this->serializer->serialize(
-                    ['sequence' => $sequence] + $extra,
-                    'json',
-                    $this->getSerializerContext()
-                ),
+                'context' => $this->safeSerialize($context),
+                'extra' => $this->safeSerialize(['sequence' => $sequence] + $extra),
                 'created' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT)
             ]
         );
+    }
+
+    private function safeSerialize(mixed $data): string
+    {
+        try {
+            return $this->serializer->serialize($data, 'json', $this->getSerializerContext());
+        } catch (\Throwable) {
+            return json_encode($this->sanitize($data), \JSON_THROW_ON_ERROR);
+        }
+    }
+
+    /**
+     * Reduces data to scalars only — used as fallback when Symfony
+     * serializer fails due to recursion in JsonSerializable objects
+     * that bypass the normalizer's circular-reference tracking.
+     */
+    private function sanitize(mixed $data, int $depth = 0): mixed
+    {
+        if ($depth > 10) {
+            return '[max depth]';
+        }
+        if ($data === null || is_scalar($data)) {
+            return $data;
+        }
+        if (is_object($data)) {
+            return '[object] ' . get_class($data);
+        }
+        if (is_array($data)) {
+            $out = [];
+            foreach ($data as $k => $v) {
+                $out[$k] = $this->sanitize($v, $depth + 1);
+            }
+            return $out;
+        }
+        return '[' . get_debug_type($data) . ']';
     }
 
     private function getSerializerContext(): array
