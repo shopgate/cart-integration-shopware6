@@ -1,3 +1,8 @@
+# 3.10.2
+
+- fixed recursion error in EventLogger and Logger when serializing context data containing JsonSerializable objects with cyclic references in Shopware 6.7.6.1+
+
+
 # 3.10.1
 
 - fixed circular error when using basic logging in newer Shopware 6.7.x versions

@@ -75,4 +75,27 @@ class EventLoggerTest extends TestCase
 
         $this->eventLogger->writeLog('test message', 'seq-004', Level::Info, ['a' => $a]);
     }
+
+    /**
+     * JsonSerializable objects bypass the normalizer's circular-reference
+     * tracking and cause recursion inside json_encode() itself.
+     * This is the Shopware 6.7.6.1 scenario (SW6M-157).
+     */
+    public function testWriteLogHandlesJsonSerializableRecursion(): void
+    {
+        $a = new class implements \JsonSerializable {
+            public object $ref;
+            public function jsonSerialize(): mixed
+            {
+                return ['type' => 'node', 'ref' => $this->ref];
+            }
+        };
+        $b = clone $a;
+        $a->ref = $b;
+        $b->ref = $a;
+
+        $this->connection->expects($this->once())->method('executeStatement');
+
+        $this->eventLogger->writeLog('test message', 'seq-005', Level::Info, ['obj' => $a]);
+    }
 }
