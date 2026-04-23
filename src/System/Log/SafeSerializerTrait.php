@@ -15,7 +15,13 @@ trait SafeSerializerTrait
         try {
             return $this->getSerializer()->serialize($data, 'json', [
                 AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => static fn(object $object): string => get_class($object),
-                AbstractNormalizer::IGNORED_ATTRIBUTES => ['session'],
+                AbstractNormalizer::IGNORED_ATTRIBUTES => [
+                    'session',
+                    'container',
+                    'kernel',
+                    'entityManager',
+                    'extensions',
+                ],
                 JsonEncode::OPTIONS => \JSON_PARTIAL_OUTPUT_ON_ERROR,
             ]);
         } catch (\Throwable) {

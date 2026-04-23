@@ -1,3 +1,7 @@
+# 3.10.3
+
+- fixed `NotEncodableValueException: "Recursion detected"` on Store API responses when serializing `OrderEntity` with `shopgateOrder` extension: removed `ApiAware` from the `order` back-reference association on `ShopgateOrderEntity` (bidirectional OneToOne with `OrderEntity` caused Symfony JSON encoder recursion)
+
 # 3.10.2
 
 - fixed recursion error in EventLogger and Logger when serializing context data containing JsonSerializable objects with cyclic references in Shopware 6.7.6.1+
