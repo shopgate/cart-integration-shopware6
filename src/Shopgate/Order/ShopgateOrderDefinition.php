@@ -51,8 +51,7 @@ class ShopgateOrderDefinition extends EntityDefinition
                 (new BoolField('is_paid', 'isPaid'))->addFlags(new ApiAware()),
                 (new BoolField('is_test', 'isTest'))->addFlags(new ApiAware()),
                 (new ObjectField('received_data', 'receivedData'))->addFlags(new ApiAware()),
-                (new OneToOneAssociationField('order', 'sw_order_id', 'id', OrderDefinition::class,
-                    false))->addFlags(new ApiAware()),
+                new OneToOneAssociationField('order', 'sw_order_id', 'id', OrderDefinition::class, false),
                 (new ManyToOneAssociationField(
                     'salesChannel',
                     'sales_channel_id',

@@ -15,18 +15,17 @@ class Logger implements LoggerInterface
 
     public function debug($info): void
     {
-        if (!is_scalar($info)) {
-            $info = $this->safeSerialize($info);
-        }
-        ShopgateLogger::getInstance()->log($info, ShopgateLogger::LOGTYPE_DEBUG);
+        ShopgateLogger::getInstance()->log($this->normalizeLogPayload($info), ShopgateLogger::LOGTYPE_DEBUG);
     }
 
     public function error($error): void
     {
-        if (!is_scalar($error)) {
-            $error = $this->safeSerialize($error);
-        }
-        ShopgateLogger::getInstance()->log($error);
+        ShopgateLogger::getInstance()->log($this->normalizeLogPayload($error));
+    }
+
+    private function normalizeLogPayload(mixed $value): mixed
+    {
+        return is_scalar($value) ? $value : $this->safeSerialize($value);
     }
 
     private function getSerializer(): SerializerInterface
