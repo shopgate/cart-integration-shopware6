@@ -5144,7 +5144,7 @@
               ]
             },
             {
-              "name": "SW: re-index",
+              "name": "SW: re-index (prod)",
               "event": [
                 {
                   "listen": "test",
@@ -5195,6 +5195,64 @@
                     {
                       "key": "indexer",
                       "value": "product.indexer"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "SW: re-index (category)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{gen_access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"offset\": 0\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{sw_endpoint_api}}/_action/indexing/:indexer",
+                  "host": [
+                    "{{sw_endpoint_api}}"
+                  ],
+                  "path": [
+                    "_action",
+                    "indexing",
+                    ":indexer"
+                  ],
+                  "variable": [
+                    {
+                      "key": "indexer",
+                      "value": "category.indexer"
                     }
                   ]
                 }
