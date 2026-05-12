@@ -346,7 +346,9 @@
         </service>
         <service id="Shopgate\Shopware\System\Tax\TaxComposer"/>
 
-        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager"/>
+        <service id="shopgate.context_manager" class="Shopgate\Shopware\Storefront\ContextManager">
+            <argument key="$contextService" type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+        </service>
         <service id="Shopware\Core\Framework\Validation\DataBag\RequestDataBag"/>
         <service id="Shopgate\Shopware\Storefront\Controller\IndexController" public="true">
             <argument key="$contextManager" type="service" id="shopgate.context_manager" />
