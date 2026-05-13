@@ -36,7 +36,7 @@ class ContextManager
         private readonly AbstractSalesChannelContextFactory $channelContextFactory,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly SalesChannelRequestContextResolver $contextResolver,
-        private readonly SalesChannelContextService $contextService,
+        private readonly SalesChannelContextServiceInterface $contextService,
         private readonly CartRestorer $cartRestorer,
         private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly SalesChannelContextPersister $contextPersist
