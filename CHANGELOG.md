@@ -1,3 +1,6 @@
+# 3.10.5
+- fixed plugin installation and activation on Shopware 6.7.14+ (generic Shopgate shipping method requires a price)
+
 # 3.10.4
 - fixed error during composer installation for non community editions
 
