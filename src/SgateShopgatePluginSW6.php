@@ -17,6 +17,7 @@ use Shopgate\Shopware\System\Db\Installers\ShippingMethodPriceInstaller;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
@@ -41,6 +42,20 @@ class SgateShopgatePluginSW6 extends Plugin
         (new ShippingMethodPriceInstaller($this->container))->install($installContext);
         (new PaymentMethodInstaller($this->container))->install($installContext);
         parent::install($installContext);
+    }
+
+    /**
+     * Installations created before the generic shipping method had a price row do not get one
+     * from install(), which only runs on a fresh install. Shopware 6.7.14+ rejects activating a
+     * shipping method without a price, so the row is added here on plugin update.
+     *
+     * Only prices are installed on purpose: ShippingMethodInstaller would upsert the methods with
+     * active = false and thereby deactivate them.
+     */
+    public function update(UpdateContext $updateContext): void
+    {
+        (new ShippingMethodPriceInstaller($this->container))->install($updateContext);
+        parent::update($updateContext);
     }
 
     public function uninstall(UninstallContext $uninstallContext): void
