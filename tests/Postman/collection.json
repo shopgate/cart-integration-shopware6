@@ -1021,6 +1021,12 @@
                       "pm.test(\"Status code is 200\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
+                      "\r",
+                      "const shippingData = pm.response.json();\r",
+                      "pm.test(\"SG shipping methods have at least one price\", function () {\r",
+                      "    pm.expect(shippingData.total, 'both SG shipping methods present').to.eql(2);\r",
+                      "    shippingData.data.forEach(m => pm.expect(m.prices, `${m.name} has no price`).to.have.length.of.at.least(1));\r",
+                      "});\r",
                       "// Disabled until SGSW6-88 is handled\r",
                       "/*\r",
                       "const jsonData = pm.response.json();\r",
@@ -1077,7 +1083,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {}\r\n    }\r\n}",
+                  "raw": "{\r\n    \"filter\": [\r\n        { \r\n            \"type\": \"multi\", \r\n            \"operator\": \"or\",\r\n            \"queries\": [\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgDefault_id}}\"\r\n                },\r\n                {\r\n                    \"type\": \"equals\",\r\n                    \"field\": \"id\",\r\n                    \"value\": \"{{default_shipMethod_sgFree_id}}\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"associations\": {\r\n        \"availabilityRule\": {},\r\n        \"prices\": {}\r\n    }\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
