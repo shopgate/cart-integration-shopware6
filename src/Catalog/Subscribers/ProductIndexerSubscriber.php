@@ -4,6 +4,7 @@ namespace Shopgate\Shopware\Catalog\Subscribers;
 
 use Doctrine\DBAL\Exception;
 use Shopgate\Shopware\Catalog\Category\ProductMapBridge;
+use Shopgate\Shopware\Catalog\DataAbstractionLayer\CategoryProductMappingIndexer;
 use Shopgate\Shopware\Shopgate\Catalog\CategoryProductIndexingMessage;
 use Shopgate\Shopware\System\Configuration\ConfigBridge;
 use Shopgate\Shopware\System\Log\FallbackLogger;
@@ -13,12 +14,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexer;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
 class ProductIndexerSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly ProductMapBridge $productMapBridge,
+        private readonly MessageBusInterface $messageBus,
         private readonly EntityIndexer $indexer,
         private readonly FallbackLogger $logger,
         private readonly SystemConfigService $systemConfigService
@@ -31,17 +34,22 @@ class ProductIndexerSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * This is done as a listener instead of our indexer is that we must ensure
-     * to run after the product.stream index. The queue process messes with that as
-     * 1) the stream update gets added to queue 2) We add ours based on stream products
-     * Since we are basing ours on a delayed stream update, there is nothing for us to queue
+     * This is done as a listener instead of inside our indexer's update(), because the categories
+     * to rebuild depend on the product stream mapping, which is only written by the product indexer.
+     * ProductIndexerEvent is dispatched after that mapping is up to date, so the affected categories
+     * are known here.
      *
-     * @throws Throwable
+     * By default the rebuild is dispatched to the message queue (SG-385). Running it inline made every
+     * product save in the Administration rebuild all of its stream categories within the request.
+     * Shops without a message queue worker can switch back to the inline rebuild via `indexerUseQueue`.
+     *
      * @throws Exception
+     * @throws Throwable
      */
     public function runProductStreamCategoryMapper(ProductIndexerEvent $event): void
     {
-        if ($this->systemConfigService->getBool(ConfigBridge::ADVANCED_CONFIG_INDEXER_STREAM_UPDATES)) {
+        if ($this->systemConfigService->getBool(ConfigBridge::ADVANCED_CONFIG_INDEXER_STREAM_UPDATES)
+            || $this->systemConfigService->getBool(ConfigBridge::SYSTEM_CONFIG_IGNORE_SORT_ORDER)) {
             return;
         }
 
@@ -54,10 +62,18 @@ class ProductIndexerSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $categoryIds = array_map(fn(array $row) => Uuid::fromBytesToHex($row['id']), $result);
+        $categoryIds = array_values(array_map(fn(array $row) => Uuid::fromBytesToHex($row['id']), $result));
 
-        $message = new CategoryProductIndexingMessage(array_values($categoryIds), null, $event->getContext());
-        $this->logger->logBasics('Running product stream listener', ['categories' => array_values($categoryIds)]);
-        $this->indexer->handle($message);
+        if (!ConfigBridge::isIndexerQueueEnabled($this->systemConfigService)) {
+            $this->logger->logBasics('Running product stream listener', ['categories' => $categoryIds]);
+            $this->indexer->handle(new CategoryProductIndexingMessage($categoryIds, null, $event->getContext()));
+
+            return;
+        }
+
+        $message = new CategoryProductIndexingMessage($categoryIds, null, $event->getContext(), forceQueue: true);
+        $message->setIndexer(CategoryProductMappingIndexer::NAME);
+        $this->logger->logBasics('Queuing product stream categories', ['categories' => $categoryIds]);
+        $this->messageBus->dispatch($message);
     }
 }

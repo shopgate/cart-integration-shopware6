@@ -151,6 +151,14 @@
             <defaultValue>always</defaultValue>
         </input-field>
         <input-field type="bool">
+            <name>indexerUseQueue</name>
+            <label>Update category sort order in the background (message queue)</label>
+            <label lang="de-DE">Kategorie-Sortierung im Hintergrund aktualisieren (Message Queue)</label>
+            <helpText>Recommended. Saving products and categories in the Administration stays fast; the Shopgate category sort order is updated by the message queue worker. Requires a running message queue worker (CLI worker recommended). Disable only if no worker is running: the sort order is then updated within the save request, which can take several minutes for large dynamic product groups. Applies to all sales channels.</helpText>
+            <helpText lang="de-DE">Empfohlen. Das Speichern von Produkten und Kategorien in der Administration bleibt schnell; die Shopgate-Kategorie-Sortierung aktualisiert der Message-Queue-Worker. Setzt einen laufenden Message-Queue-Worker voraus (CLI-Worker empfohlen). Nur deaktivieren, wenn kein Worker läuft: Die Sortierung wird dann beim Speichern aktualisiert, was bei großen dynamischen Produktgruppen mehrere Minuten dauern kann. Gilt für alle Verkaufskanäle.</helpText>
+            <defaultValue>true</defaultValue>
+        </input-field>
+        <input-field type="bool">
             <name>disableStreamUpdates</name>
             <label>Disable Stream updates</label>
             <label lang="de-DE">Stream-Updates deaktivieren</label>

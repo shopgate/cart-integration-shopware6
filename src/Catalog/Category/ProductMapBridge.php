@@ -39,7 +39,7 @@ class ProductMapBridge
         $channelLangId = Uuid::fromBytesToHex($channel['language_id']);
         do {
             // this is the heaviest part of all of the code
-            $result = $this->sortTree->getPaginatedCategoryProducts($category, $page++, self::PAGE_LIMIT);
+            $result = $this->sortTree->getPaginatedCategoryProducts($category, $page++, self::PAGE_LIMIT, false);
             $pageCount = ceil($result->getTotal() / self::PAGE_LIMIT);
             $products = $result->getEntities();
             $batch = $products->map(
@@ -109,7 +109,7 @@ class ProductMapBridge
         $channelId = Uuid::fromBytesToHex($channel['sales_channel_id']);
         $channelLangId = Uuid::fromBytesToHex($channel['language_id']);
         do {
-            $result = $this->sortTree->getPaginatedCategoryProducts($category, $page++, self::PAGE_LIMIT);
+            $result = $this->sortTree->getPaginatedCategoryProducts($category, $page++, self::PAGE_LIMIT, false);
             $pageCount = ceil($result->getTotal() / self::PAGE_LIMIT);
             $products = $result->getEntities();
             foreach ($products as $product) {
@@ -209,16 +209,18 @@ class ProductMapBridge
     public function getProductStreamCategoryIds(array $productIds): array
     {
         $query = $this->db->createQueryBuilder();
-        $query->select('cat.id');
+        $query->select('DISTINCT cat.id');
         $query->from('category', 'cat');
-        $query->leftJoin(
+        $query->innerJoin(
             'cat',
             'product_stream_mapping',
             'ps',
             'ps.product_stream_id = cat.product_stream_id'
         );
         $query->andWhere('ps.product_id IN (:ids)');
+        $query->andWhere('cat.version_id = :live');
         $query->setParameter('ids', Uuid::fromHexToBytesList($productIds), $this->getBinaryParameterType());
+        $query->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query->executeQuery()->fetchAllAssociative();
     }

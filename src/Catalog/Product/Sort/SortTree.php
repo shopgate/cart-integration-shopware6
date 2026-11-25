@@ -64,7 +64,8 @@ class SortTree
     public function getPaginatedCategoryProducts(
         CategoryEntity $category,
         int $page,
-        int $limit = 100
+        int $limit = 100,
+        bool $withAggregations = true
     ): ProductListingResult {
         $channel = $this->contextManager->getSalesContext();
         $productSorts = $this->getSorts($channel);
@@ -72,6 +73,9 @@ class SortTree
         $request = new Request();
         $request->setMethod(Request::METHOD_POST);
         $request->request->set('p', $page);
+        if (!$withAggregations) {
+            $request->request->set('no-aggregations', true);
+        }
         $request->setSession(new Session()); // 3rd party subscriber support
         if ($orderKey = $this->getSortOrderKey($category, $productSorts)) {
             $request->request->set('order', $orderKey);

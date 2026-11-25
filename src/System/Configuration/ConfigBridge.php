@@ -37,6 +37,7 @@ class ConfigBridge
     public const ADVANCED_CONFIG_INDEXER_STREAM_UPDATES = self::SYSTEM_CONFIG_DOMAIN . 'disableStreamUpdates';
     public const ADVANCED_CONFIG_INDEXER_WRITE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerWriteType';
     public const ADVANCED_CONFIG_INDEXER_DELETE_TYPE = self::SYSTEM_CONFIG_DOMAIN . 'indexerDeleteType';
+    public const ADVANCED_CONFIG_INDEXER_USE_QUEUE = self::SYSTEM_CONFIG_DOMAIN . 'indexerUseQueue';
     public const ADVANCED_CONFIG_LOGGING_BASIC = self::SYSTEM_CONFIG_DOMAIN . 'basicLogging';
     public const ADVANCED_CONFIG_LOGGING_DETAIL = self::SYSTEM_CONFIG_DOMAIN . 'detailedLogging';
     // it can handle writing to a DB with same entries & update them
@@ -57,6 +58,23 @@ class ConfigBridge
     private ?SystemConfigCollection $config = null;
     private ?ShopgateApiCredentialsEntity $apiCredentialsEntity = null;
     private array $error = [];
+
+    /**
+     * Category sort order updates run in the message queue unless explicitly disabled (SG-385).
+     * An unset or empty value counts as enabled, so existing installations use the queue after an update
+     * without saving the plugin configuration first. String values as written by
+     * `bin/console system:config:set` ("false", "0") are interpreted as booleans.
+     * Read globally: the indexer runs without a sales channel.
+     */
+    public static function isIndexerQueueEnabled(SystemConfigService $systemConfigService): bool
+    {
+        $value = $systemConfigService->get(self::ADVANCED_CONFIG_INDEXER_USE_QUEUE);
+        if ($value === null || $value === '') {
+            return true;
+        }
+
+        return filter_var($value, \FILTER_VALIDATE_BOOLEAN, \FILTER_NULL_ON_FAILURE) !== false;
+    }
 
     public function __construct(
         private readonly EntityRepository $pluginRepository,

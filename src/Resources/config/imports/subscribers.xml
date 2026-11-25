@@ -16,6 +16,7 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="Shopgate\Shopware\Catalog\Subscribers\ProductIndexerSubscriber">
+            <argument key="$messageBus" type="service" id="messenger.default_bus"/>
             <argument key="$indexer" type="service" id="Shopgate\Shopware\Catalog\DataAbstractionLayer\CategoryProductMappingIndexer"/>
             <argument key="$logger" type="service" id="shopgate.go.fallback.logger" />
             <argument key="$systemConfigService" type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
