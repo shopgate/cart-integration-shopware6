@@ -1,3 +1,8 @@
+# 3.10.6
+- fixed slow product and category saves in the Administration: the Shopgate category sort order is now updated by the message queue instead of within the save request
+- added config "Update category sort order in the background (message queue)", enabled by default. It requires a running message queue worker (CLI worker recommended); shops without a worker can disable it to update the sort order within the save request as before
+- changed category sort order indexer to skip listing aggregations when loading category products
+
 # 3.10.5
 - fixed plugin installation and activation on Shopware 6.7.14+ (generic Shopgate shipping method requires a price)
 

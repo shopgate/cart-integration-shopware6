@@ -77,6 +77,9 @@ newman:
       - DOCKER_IMAGE: 'dockware/shopware:6.6.10.23'
         PLATFORM_BRANCH: '6.6.10.23'
         PHP_VERSION: '8.3'
+      - DOCKER_IMAGE: 'dockware/shopware:6.7.6.2'
+        PLATFORM_BRANCH: '6.7.6.2'
+        PHP_VERSION: '8.3'
       - DOCKER_IMAGE: 'dockware/shopware:6.7.9.0'
         PLATFORM_BRANCH: '6.7.9.0'
         PHP_VERSION: '8.3'
@@ -87,6 +90,8 @@ newman:
     - tags
   script:
     - bin/console debug:event-dispatcher >/dev/null
+    # SG-385: sort index updates are queued; the job has no consumer, so queued messages run inline
+    - printf '\nMESSENGER_TRANSPORT_DSN=sync://\nMESSENGER_TRANSPORT_LOW_PRIORITY_DSN=sync://\n' >> $PROJECT_ROOT/.env.local
     - export APP_URL="http://$HOSTNAME"
     - cd $CI_PROJECT_DIR/tests
     - npm install > /dev/null

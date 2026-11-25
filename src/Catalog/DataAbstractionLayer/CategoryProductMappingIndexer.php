@@ -31,6 +31,8 @@ use function json_decode;
 
 class CategoryProductMappingIndexer extends EntityIndexer
 {
+    public const NAME = 'shopgate.go.category.product.mapping.indexer';
+
     public function __construct(
         private readonly Connection $db,
         private readonly IteratorFactory $iteratorFactory,
@@ -44,7 +46,7 @@ class CategoryProductMappingIndexer extends EntityIndexer
 
     public function getName(): string
     {
-        return 'shopgate.go.category.product.mapping.indexer';
+        return self::NAME;
     }
 
     public function iterate(?array $offset): ?EntityIndexingMessage
@@ -95,7 +97,13 @@ class CategoryProductMappingIndexer extends EntityIndexer
         }
 
         $this->logger->logBasics('Queuing partial index', ['categories' => array_values($ids)]);
-        return new CategoryProductIndexingMessage(array_values($ids), null, $event->getContext());
+        // queued by default (SG-385): rebuilding a category inline blocks the admin save request
+        return new CategoryProductIndexingMessage(
+            array_values($ids),
+            null,
+            $event->getContext(),
+            forceQueue: ConfigBridge::isIndexerQueueEnabled($this->systemConfigService)
+        );
     }
 
     /**
